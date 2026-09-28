@@ -158,3 +158,23 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
 - **Note:** In code, amounts keep the generic word "reward" (`rewardAmountWei`,
   `calculateSessionReward`). If the token is ever renamed, only the contract
   name and UI copy change.
+
+## D-015 — Toolchain pins found in Phase 0
+
+- **Decision:**
+  - Bun installs a **hoisted** `node_modules` (`bunfig.toml` → `linker = "hoisted"`).
+  - The API pins **`mongodb` to v6**.
+  - Every workspace uses **TypeScript 6**, the version Expo SDK 57 pins, not TypeScript 7.
+  - Solidity is pinned to **0.8.37** with `evm_version = "cancun"`.
+- **Why:**
+  - Bun's default isolated linker installed several copies of `react-native`,
+    `expo-modules-core` and other native packages, one per peer-dependency
+    combination. `expo-doctor` flags this, and duplicate native modules break
+    autolinking. Hoisted is the layout React Native tooling assumes.
+  - `mongodb` v7 pulls `bson@7`, which still crashes at import time on Bun 1.3.9
+    (re-checked in Phase 0, same failure `meAsAgent` hit).
+  - One TypeScript version across the monorepo avoids two compilers disagreeing.
+  - An explicit EVM version means a compiler bump can't silently emit opcodes
+    Monad doesn't support.
+- **Revisit when:** an Expo SDK upgrade (TypeScript version), a Bun release fixes
+  `bson@7`, or Monad documents support for a newer EVM version.

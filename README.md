@@ -1,1 +1,76 @@
 # StrideMon
+
+A move-to-earn game on Monad: own a Sneaker NFT, walk or run to earn **SOLE**,
+and spend it to repair and upgrade the Sneaker. `MVP.md` is the product brief;
+`docs/` is the architecture and the phased build plan (start at `docs/README.md`).
+
+## Prerequisites
+
+| Tool | Version | Used for |
+|------|---------|----------|
+| Bun | 1.3+ | package manager, API runtime, tests |
+| Node.js | **22.13+** (24 recommended) | Expo CLI, Metro, Jest |
+| Foundry | 1.5+ (`forge`, `cast`, `anvil`) | contracts |
+| MongoDB | 8.x (`mongod` on your PATH) | local database |
+| A phone | iOS 16.4+ or Android 7+ | the development build |
+| Xcode | 26.4+ | only for local iOS builds (EAS builds don't need it) |
+
+> **Bun installed through Volta?** Volta runs the `bun` package with the Node
+> version that was the default when you installed it, and every script Bun
+> starts (including `expo` and `jest`) inherits that Node. If it's older than
+> 22.13, reinstall Bun under a newer default:
+> `volta install node@24 && volta install bun`.
+
+## Setup
+
+```sh
+bun install                              # every workspace, hoisted node_modules
+cp apps/api/.env.example apps/api/.env
+cp apps/mobile/.env.example apps/mobile/.env   # then set your laptop's LAN IP
+```
+
+## Running
+
+```sh
+bun run db:start       # project-local mongod on 127.0.0.1:27019 (data in .mongo/)
+bun run dev:api        # API on :3000 (logs its LAN URL on boot). Docs at /docs
+bun run dev:mobile     # Metro dev server for the development build
+```
+
+`GET /health` answers `{ "status": "ok", "mongo": "connected" }`.
+
+### The app on a phone
+
+The app uses a **development build**, not Expo Go. Build it once, and again
+whenever a native dependency changes:
+
+```sh
+cd apps/mobile
+bunx eas-cli login
+bunx eas-cli init                              # links the project to your Expo account
+bunx eas-cli build --profile development --platform ios   # or android
+```
+
+Install the build on the phone, run `bun run dev:mobile`, and open the dev
+server from the app. The phone reaches the API through
+`EXPO_PUBLIC_API_BASE_URL`, which must be your laptop's LAN IP (`localhost` on
+the phone is the phone). Both devices have to be on the same Wi-Fi.
+
+## Checks
+
+```sh
+bun run typecheck      # tsc in every workspace
+bun run lint           # Biome (bun run format applies safe fixes)
+bun run test           # every workspace's tests (API tests need db:start)
+bun run contracts:test # forge test
+```
+
+## Layout
+
+```text
+apps/mobile         Expo + React Native + Expo Router
+apps/api            Fastify 5 on Bun, MongoDB, viem
+packages/shared     zod API contracts, domain types, game-rule mirror
+packages/chain      ABIs, deployed addresses, Monad chain definitions
+packages/contracts  Foundry: SneakerNft, SoleToken, SneakerGame
+```

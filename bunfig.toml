@@ -1,0 +1,5 @@
+[install]
+# React Native needs exactly one copy of each native package. Bun's isolated
+# linker creates one copy per peer-dependency combination, which breaks
+# autolinking, so this repo uses a classic hoisted node_modules.
+linker = "hoisted"

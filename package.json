@@ -1,0 +1,31 @@
+{
+  "name": "stridemon",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/shared",
+    "packages/chain"
+  ],
+  "scripts": {
+    "dev": "bun --filter '@stridemon/api' --filter '@stridemon/mobile' dev",
+    "dev:api": "bun --filter @stridemon/api dev",
+    "dev:mobile": "bun --filter @stridemon/mobile dev",
+    "db:start": "./scripts/mongodb.sh start",
+    "db:stop": "./scripts/mongodb.sh stop",
+    "db:status": "./scripts/mongodb.sh status",
+    "db:logs": "./scripts/mongodb.sh logs",
+    "typecheck": "bun --filter '*' typecheck",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "bun --filter '*' test",
+    "contracts:build": "cd packages/contracts && forge build",
+    "contracts:test": "cd packages/contracts && forge test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

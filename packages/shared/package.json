@@ -1,0 +1,22 @@
+{
+  "name": "@stridemon/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./api-contracts": "./src/api-contracts/index.ts",
+    "./domain": "./src/domain/index.ts",
+    "./errors": "./src/errors/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "typescript": "~6.0.3"
+  }
+}

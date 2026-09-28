@@ -4,7 +4,7 @@ This folder is the source of truth for **how** we build the product described in
 [`../MVP.md`](../MVP.md). `MVP.md` says *what* the game is; these docs say how the
 system is shaped, how the code is written, and in which order it is built.
 
-No code exists yet. Every phase in [`roadmap.md`](roadmap.md) is built against
+Every phase in [`roadmap.md`](roadmap.md) is built against
 these documents, and when a decision changes, the doc changes first.
 
 ## Reading order
@@ -40,7 +40,7 @@ these documents, and when a decision changes, the doc changes first.
 
 | Phase | State |
 |-------|-------|
-| 0 — Foundations | Not started |
+| 0 — Foundations | Done, except the on-device check (needs an EAS or local dev build) |
 | 1 — Smart contracts | Not started |
 | 2 — Wallet & sign-in | Not started |
 | 3 — Starter Sneaker & home | Not started |

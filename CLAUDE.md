@@ -33,6 +33,17 @@ Everything targets **Monad testnet** until Phase 10.
 - Mobile rules (`docs/architecture/mobile-app.md`): `app/` screens are thin, features own their logic, and only `lib/api-client` calls `fetch`.
 - A change is done when typecheck, lint and tests pass (plus `forge test` for contract changes).
 
+## Toolchain gotchas
+
+- **`mongodb` is pinned to v6.** v7 pulls `bson@7`, which crashes at import time on Bun (D-015).
+- **`node_modules` is hoisted** (`bunfig.toml`). React Native needs a single copy of each native package.
+- **Add mobile dependencies with `npx expo install <pkg>`** (from `apps/mobile`), so versions match the Expo SDK. Run it with Node 22.13+.
+- **`@babel/runtime` is a direct mobile dependency.** Babel-compiled app code imports its helpers.
+- **Jest's `transformIgnorePatterns`** (in `apps/mobile/package.json`) also exempts `@stridemon`. Keep them if you edit the list.
+- **Contracts** use Soldeer (no git submodules). Import `@openzeppelin/contracts/…` and `forge-std/…` (see `remappings.txt`).
+- API tests use real Mongo: run `bun run db:start` first.
+
 ## Current phase
 
-No code yet. Next: **Phase 0: Foundations** (`docs/phases/phase-00-foundations.md`).
+Phase 0 is done, except the on-device check. Next: **Phase 1: Smart contracts**
+(`docs/phases/phase-01-smart-contracts.md`).

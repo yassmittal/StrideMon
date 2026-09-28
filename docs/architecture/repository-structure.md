@@ -9,6 +9,7 @@ monad/                         repo folder (the product is StrideMon)
 ├── CLAUDE.md                  day-to-day working guide
 ├── docs/                      architecture, conventions, phases (how)
 ├── package.json               workspaces + root scripts only, no app code
+├── bunfig.toml                hoisted node_modules (React Native needs one copy of each native package)
 ├── biome.json                 lint + format for every TS workspace
 ├── tsconfig.base.json         strict compiler options every workspace extends
 ├── scripts/                   repo-level dev scripts (local mongod, ABI export)
@@ -41,6 +42,7 @@ packages/shared/src/
 │   ├── energy.ts
 │   └── game-rule-fixtures.json  shared test vectors (also read by Foundry tests)
 ├── domain/                    plain domain types: ActivitySessionStatus, ApiErrorCode, …
+├── errors/                    getErrorMessage (turns a caught `unknown` into a message)
 └── units/                     unit conversion helpers: metersToKilometers, formatTokenAmount
 ```
 
@@ -72,8 +74,11 @@ packages/chain/src/
 
 ### `packages/contracts`
 
-A Foundry project. It is not a TypeScript workspace: Bun ignores it, and it
-has its own `foundry.toml`.
+A Foundry project. It is not a TypeScript workspace: it has no `package.json`,
+so the root `workspaces` list names `packages/shared` and `packages/chain`
+explicitly instead of `packages/*`. It has its own `foundry.toml`, and its
+Soldeer dependencies are imported as `@openzeppelin/contracts/…` and
+`forge-std/…` through `remappings.txt`.
 
 ### `apps/api` — `@stridemon/api`
 
@@ -97,18 +102,18 @@ apps/api ─────┤
   `packages/*`.
 - `packages/shared` and `packages/chain` do not depend on each other.
 
-## Root scripts (planned)
+## Root scripts
 
 | Script | Does |
 |--------|------|
 | `bun run dev` | API + Expo dev server together |
 | `bun run dev:api` / `bun run dev:mobile` | one at a time |
-| `bun run db:start` / `db:stop` | project-local `mongod` on port **27019** (27018 is taken by `meAsAgent`) |
+| `bun run db:start` / `db:stop` / `db:status` / `db:logs` | project-local `mongod` on port **27019** (27018 is taken by `meAsAgent`) |
 | `bun run typecheck` | `tsc --noEmit` in every TS workspace |
-| `bun run lint` / `bun run format` | Biome |
+| `bun run lint` / `bun run format` | Biome check / Biome check with safe fixes applied |
 | `bun run test` | every workspace's tests |
-| `bun run contracts:test` | `forge test` |
-| `bun run chain:export-abis` | Foundry `out/` → `packages/chain/src/abis/` |
+| `bun run contracts:build` / `contracts:test` | `forge build` / `forge test` |
+| `bun run chain:export-abis` | Foundry `out/` → `packages/chain/src/abis/` (added in Phase 1) |
 
 ## File and folder naming
 

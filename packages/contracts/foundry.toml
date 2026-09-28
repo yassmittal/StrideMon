@@ -1,0 +1,37 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["dependencies"]
+solc_version = "0.8.37"
+# Explicit rather than the compiler default, so a solc bump can't silently emit
+# opcodes Monad doesn't support yet.
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+fs_permissions = [{ access = "read", path = "../shared/src/game-rules" }]
+
+[profile.default.fuzz]
+runs = 512
+
+[rpc_endpoints]
+monad_testnet = "${MONAD_RPC_URL}"
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
+
+[soldeer]
+remappings_generate = false
+remappings_regenerate = false
+remappings_location = "txt"
+recursive_deps = false
+
+[dependencies]
+forge-std = "1.16.2"
+"@openzeppelin-contracts" = "5.7.0"

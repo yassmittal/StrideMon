@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment: only the documented examples are committed
+.env
+.env.*
+!.env.example
+
+# Project-local MongoDB (scripts/mongodb.sh)
+.mongo/
+
+# Foundry
+packages/contracts/out/
+packages/contracts/cache/
+packages/contracts/dependencies/
+packages/contracts/broadcast/*/31337/
+
+# Expo / React Native
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+apps/mobile/ios/
+apps/mobile/android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Tooling
+coverage/
+*.tsbuildinfo
+.DS_Store
+*.log
