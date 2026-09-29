@@ -162,7 +162,9 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
 ## D-015 — Toolchain pins found in Phase 0
 
 - **Decision:**
-  - Bun installs a **hoisted** `node_modules` (`bunfig.toml` → `linker = "hoisted"`).
+  - Bun installs a **hoisted** `node_modules` (`bunfig.toml` → `linker = "hoisted"`)
+    and does **not** auto-install peer dependencies (`peer = false`).
+  - EAS builds pin the same Bun version as local development (`eas.json` → `"bun"`).
   - The API pins **`mongodb` to v6**.
   - Every workspace uses **TypeScript 6**, the version Expo SDK 57 pins, not TypeScript 7.
   - Solidity is pinned to **0.8.37** with `evm_version = "cancun"`.
@@ -171,6 +173,13 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
     `expo-modules-core` and other native packages, one per peer-dependency
     combination. `expo-doctor` flags this, and duplicate native modules break
     autolinking. Hoisted is the layout React Native tooling assumes.
+  - With auto-installed peers, `expo-router`'s drawer pulled in
+    `react-native-reanimated` and `react-native-gesture-handler`, without
+    `react-native-worklets`. Every installed native package is autolinked, so
+    the app would have compiled modules it doesn't use, and one of them was
+    missing a dependency. Needed peers are now declared explicitly.
+  - The first EAS build failed because EAS ran a newer Bun, which couldn't
+    parse the lockfile the local Bun wrote.
   - `mongodb` v7 pulls `bson@7`, which still crashes at import time on Bun 1.3.9
     (re-checked in Phase 0, same failure `meAsAgent` hit).
   - One TypeScript version across the monorepo avoids two compilers disagreeing.

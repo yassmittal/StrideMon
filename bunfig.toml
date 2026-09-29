@@ -3,3 +3,9 @@
 # linker creates one copy per peer-dependency combination, which breaks
 # autolinking, so this repo uses a classic hoisted node_modules.
 linker = "hoisted"
+
+# Don't auto-install peer dependencies. In React Native an installed package is
+# an autolinked native module, so an unused peer (expo-router's drawer pulls in
+# react-native-reanimated and gesture-handler) would be compiled into the app.
+# Peers the app really needs are declared explicitly, via `npx expo install`.
+peer = false
