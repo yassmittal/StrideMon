@@ -164,6 +164,9 @@ STOP pressed
 - There is one `StyleSheet.create` per component file, at the bottom, named `styles`.
 - Visual design is set in Phase 8. Phases 0–7 use the tokens with a plain
   palette, so a restyle later only touches `theme/` and `components/ui`.
+- The Phase 8 values, fonts, motion and component specs are in
+  [`design-system.md`](design-system.md). It also adds the `fontFamilies`,
+  `letterSpacings`, `lineHeights`, `shadows`, `motion` and `layout` tokens.
 
 ## Environment
 

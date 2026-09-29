@@ -18,9 +18,17 @@ clean visual design, no dead ends, and a rehearsed script.
   environment variables.
 
 ### Product polish
-- A visual design pass: theme tokens, a Sneaker illustration, and typography.
-  Because of the Phase 0–7 discipline, this should only touch `theme/`,
-  `components/ui` and the feature components' styles.
+- A visual design pass: theme tokens, a Sneaker illustration, and typography,
+  applying [`../architecture/design-system.md`](../architecture/design-system.md)
+  (modeled on lusion.co, D-017). Because of the Phase 0–7 discipline, this
+  should only touch `theme/`, `components/ui` and the feature components' styles.
+  - Token values from design-system §2 to §7. Existing token names are kept, and
+    the new ones are added.
+  - Fonts: Aeonik (buy the app licence from CoType first) and IBM Plex Mono,
+    loaded with `expo-font`, with the splash screen held until they load.
+  - The `components/ui` set from design-system §8, including its press
+    animations (text roll, dot fill).
+  - The Sneaker art sits on the dark `HeroPanel`.
 - On-chain SVG art in `SneakerNft.tokenURI` that reflects level and durability,
   so the explorer and wallets show a picture. *(This is the first item to cut if
   time is short.)*
@@ -41,3 +49,4 @@ clean visual design, no dead ends, and a rehearsed script.
 - [ ] Two full rehearsals on the hosted stack, on both iOS and Android, without touching a laptop.
 - [ ] The explorer links in the app open the right pages.
 - [ ] The pause switch has been tested: pausing `SneakerGame` shows a friendly "maintenance" state.
+- [ ] No raw hex, pixel or font values outside `src/theme/`, and every screen matches the design-system §9 treatment.

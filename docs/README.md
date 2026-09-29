@@ -23,6 +23,7 @@ these documents, and when a decision changes, the doc changes first.
 | 10 | [`architecture/game-rules.md`](architecture/game-rules.md) | Touching energy, rewards, durability, repair or upgrade numbers. |
 | 11 | [`architecture/security.md`](architecture/security.md) | Touching auth, keys, validation or contracts. |
 | 12 | [`conventions/testing.md`](conventions/testing.md) | Writing tests (i.e. always). |
+| 13 | [`architecture/design-system.md`](architecture/design-system.md) | Styling anything in `apps/mobile` (colors, type, spacing, motion, components). Applied in Phase 8. |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else

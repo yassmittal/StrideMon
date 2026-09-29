@@ -215,3 +215,21 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
   (`foundryup -i v1.8.3`).
 - **Revisit when:** Monad publishes a revision that changes gas or opcode
   behavior (bump Foundry), or a contract wants CLZ or other post-Cancun opcodes.
+
+## D-017 — Visual design modeled on lusion.co
+
+- **Decision:** StrideMon's visual language (color, type, spacing, radii, motion
+  and components) follows **lusion.co**. The exact values were read from
+  Lusion's production CSS, its WebGL bundle and computed styles on 2026-09-29.
+  They are recorded in `architecture/design-system.md` and applied in Phase 8.
+- **Why:** The owner picked it from a shortlist of Awwwards Site-of-the-Year-level
+  references. Its "one 3D hero object on a calm off-white page" structure fits
+  a single Sneaker NFT. Its dark sections with a lime progress fill map directly
+  onto an active run and the energy bar.
+- **Trade-off:** We copy the system (values, layout rules, interaction patterns),
+  never Lusion's assets or code. **Aeonik is a paid font** (CoType Foundry), so an
+  app licence is needed before a public build. LusionMono is proprietary and is
+  replaced by IBM Plex Mono. A few states Lusion doesn't have (disabled,
+  success) are derived and marked as such in the doc.
+- **Revisit when:** the Aeonik licence isn't obtainable in time (fall back to
+  Satoshi), or user testing shows the 10 pt uppercase labels are too small.
