@@ -45,7 +45,13 @@ Everything targets **Monad testnet** until Phase 10.
 - **Foundry ≥ 1.8 is required** (`foundryup -i v1.8.3`), with `network = "monad"` in `foundry.toml` (D-016). **After editing Solidity, if a result looks stale, run `forge clean`.** Foundry 1.8.3's build cache has skipped a changed file ("No files changed").
 - **Deploy keys** live in `packages/contracts/.env` (gitignored). After a deploy, run `bun run chain:export-abis` so `@stridemon/chain` picks up the ABIs and addresses.
 - API tests use real Mongo (`bun run db:start` first) and a throwaway **Anvil** that the test
-  helper starts, so Foundry's `anvil` must be on the `PATH` (D-018).
+  helper starts, so Foundry's `anvil` must be on the `PATH` (D-018). Outbox tests deploy the
+  contracts to that Anvil from `packages/contracts/out/`, so run `bun run contracts:build` first.
+  **Never broadcast `DeployGame.s.sol` to a local Anvil:** it shares chain id 10143 with the
+  testnet and would overwrite `deployments/10143.json` (D-019).
+- **The API's game-server key** (`GAME_SERVER_PRIVATE_KEY` in `apps/api/.env`) is the same key as
+  in `packages/contracts/.env`. The outbox sends every mint and gas drip with it (about 0.13 MON
+  per new player), so keep it funded from the faucet.
 - **Wallet stack pins (D-018):** AppKit RN 2.0.6 needs **wagmi 2.x** (not 3). WalletConnect packages
   are held at 2.21.10 by root `overrides`, with `valtio` at 2.1.8. Don't bump one on its own.
 - **Running the app on the phone:** start Metro with `cd apps/mobile && bunx expo start --clear`.
@@ -63,7 +69,8 @@ Everything targets **Monad testnet** until Phase 10.
 
 ## Current phase
 
-Phases 0, 1 and 2 are done (2026-09-29). The contracts are live and verified on Monad testnet;
-addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Phase 2's sign-in,
-restore, sign-out and revoke were verified on an Android phone with MetaMask. **Next: Phase 3:
-Starter Sneaker & home** (`docs/phases/phase-03-starter-sneaker-and-home.md`).
+Phases 0 to 3 are done (2026-09-29). The contracts are live and verified on Monad testnet;
+addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Sign-in (Phase 2) and the
+starter Sneaker, gas drip and Home (Phase 3) were verified on an Android phone with MetaMask.
+The transaction outbox (D-012, D-019) is live and sends the game server's transactions.
+**Next: Phase 4: Activity tracking** (`docs/phases/phase-04-activity-tracking.md`).

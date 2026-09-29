@@ -1,4 +1,8 @@
-export { calculateCurrentEnergy, calculateEnergyAfterSpending } from './energy'
+export {
+  calculateCurrentEnergy,
+  calculateEnergyAfterSpending,
+  calculateSecondsUntilNextEnergyPoint,
+} from './energy'
 export type { GameConfig } from './game-config'
 export {
   calculateDurabilityLoss,

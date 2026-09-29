@@ -31,7 +31,7 @@ apps/api/src/
 │   ├── rate-limit.ts
 │   ├── error-handler.ts           maps errors to the ApiError response shape
 │   ├── api-docs.ts                OpenAPI + Swagger UI (dev only)
-│   └── background-jobs.ts         runs jobs/ on intervals with Mongo leases
+│   └── background-jobs.ts         runs jobs/ on intervals, one process per job (jobLeases lease)
 │
 ├── routes/<resource>/
 │   ├── index.ts                 THIN: method + url + schema + preHandler + delegate to a handler
@@ -67,7 +67,8 @@ apps/api/src/
 ├── common/                      small cross-cutting helpers (errors, time, ids)
 │   └── api-error.ts
 │
-├── test-support/                test-only helpers: buildTestServer (throwaway DB), startTestChain (Anvil)
+├── test-support/                test-only helpers: buildTestServer (throwaway DB), startTestChain (Anvil),
+│                                deployTestContracts (D-019), runOutboxJob, signInTestPlayer
 │
 └── types/
     └── fastify.d.ts             declaration merging for decorators — never cast instead
@@ -169,18 +170,23 @@ upgrade: the app reads and writes those on-chain directly.
 | `GAME_SERVER_PRIVATE_KEY` | `0x…` | **testnet only**; KMS in Phase 10 |
 | `GAS_DRIP_AMOUNT_WEI` | `"100000000000000000"` | 0.1 testnet MON |
 
+Contract addresses come from `@stridemon/chain` for `MONAD_CHAIN_ID`, and boot fails if
+that chain has none. API tests pass `buildServer({ contractAddresses })` instead, with the
+addresses of the contracts they deployed to their Anvil (D-019).
+
 Code reads `fastify.config.mongodbUri`, never `process.env.MONGODB_URI`.
 
 ## The transaction outbox (from Phase 3)
 
 ```text
-handler                        Mongo chainTransactions            job (single leaseholder)
+handler                        Mongo chainTransactions            job (holds the jobLeases lease)
   │ insert {kind, idempotencyKey,  │                                 │
   │         payload, status:queued}│                                 │
   │──────────────────────────────→│                                 │
-  │ (duplicate key? → return the   │   claim oldest queued (lease) ←─│
-  │  existing one)                 │                                 │ simulate → sign → broadcast
-  │                                │←─ status: submitted, hash ──────│
+  │ (duplicate key? → return the   │  1. re-check every submitted ←──│
+  │  existing one)                 │  2. oldest queued ←─────────────│ simulate → sign
+  │                                │←─ submitted: hash, nonce, ──────│
+  │                                │   signedTransaction             │ broadcast
   │                                │                                 │ wait for receipt
   │                                │←─ confirmed / failed ───────────│
   │                                │                                 │ on settleSession: parse
@@ -188,13 +194,46 @@ handler                        Mongo chainTransactions            job (single le
   │                                │                                 │ activitySessions.settlement
 ```
 
-- **One sender at a time** per game-server key, enforced by a Mongo lease, so
-  nonces never collide.
+- **One sender at a time** per game-server key. Each run first takes the
+  `processChainTransactions` lease in `jobLeases`, and renews it between
+  transactions (D-019).
+- **One nonce at a time.** Outstanding `submitted` records are settled before a
+  new transaction is signed, so the next nonce is always the chain's `pending`
+  count.
 - **Simulate before sending** (`simulateContract`). A predictable revert (such
   as `NotSneakerOwner`) becomes a `failed` record with a clear reason, and no gas
   is wasted.
-- **Crash recovery:** a `submitted` record that has a hash is re-checked by
-  receipt before anything is re-sent.
+- **Sign, save, then broadcast (D-019).** The signed bytes, hash and nonce are in
+  Mongo before anything leaves the process.
+- **Crash recovery:** a `submitted` record is re-checked by receipt, never
+  re-signed. No receipt, and its nonce is still unused → the saved bytes are
+  broadcast again. No receipt, and another transaction used its nonce → it goes
+  back to `queued`.
+- **Transient failures** (RPC down, not enough MON) leave the record where it is,
+  with `lastError`, and the next run retries.
+- **Side effects on success** are written by the job: a confirmed
+  `mintStarterSneaker` sets `users.hasReceivedStarterSneaker`, and a confirmed
+  `sendGasDrip` sets `users.hasReceivedGasDrip`.
+- In `NODE_ENV=test` the interval runner doesn't start. Tests call
+  `processChainTransactions` directly, so they are deterministic.
+
+### Onboarding responses (Phase 3)
+
+`POST /v1/onboarding/starter-sneaker` enqueues the starter mint and the gas drip
+(in that order) and returns the same body as `GET /v1/onboarding/status`:
+
+```json
+{
+  "starterSneaker": { "status": "pending", "transactionHash": null },
+  "gasDrip": { "status": "notStarted", "transactionHash": null }
+}
+```
+
+Each step is `notStarted` (no outbox record), `pending` (`queued` or
+`submitted`), `confirmed` or `failed`. `transactionHash` is set once the
+transaction is signed, so the app can link to the explorer while it waits. The
+Sneaker itself (its id and stats) is read from the chain by the app, never from
+this response.
 
 ## Logging
 

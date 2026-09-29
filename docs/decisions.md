@@ -278,3 +278,44 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
   be ours to maintain.
 - **Revisit when:** Reown publishes an SDK 57 example or an AppKit release that supports
   wagmi 3, or the device test in Phase 2 fails.
+
+## D-019 — The outbox signs before it broadcasts; outbox tests deploy from Foundry artifacts
+
+Checked at Phase 3 start (2026-09-29). Refines D-012.
+
+- **Decision:**
+  1. **Sign, save, then broadcast.** For each queued transaction, the sender signs it locally,
+     saves `submitted` with the hash, nonce and **signed transaction** in one Mongo write, and
+     only then broadcasts. Recovery never builds a second transaction while the first could still
+     land. If the chain has no receipt yet, the sender re-broadcasts the saved bytes. If the
+     nonce was used by some other transaction (for example a manual `cast send` with the same
+     key), the saved transaction can never be mined, so the record goes back to `queued` and
+     is signed again.
+  2. **The lease belongs to the job, not to each record.** `plugins/background-jobs.ts` takes a
+     lease per job name in a `jobLeases` collection before each run, and renews it between
+     transactions. Only the leaseholder sends, so two API processes can never race on one
+     nonce. `chainTransactions.lease` is dropped, because a per-record lease can't stop two
+     processes from each sending a different record with the same nonce.
+     The holder is `<hostname>:<apiPort>`, not a random id. A process killed without a clean
+     shutdown (a crash, or `bun --watch` reloading) never releases its lease. Measured on
+     2026-09-29, a random id made the restarted API wait out the whole 60 s lease before it
+     sent anything. The lease keeps nonces in order but isn't what prevents double-sends: the
+     `queued → submitted` save is conditional, so only one signer of a record can ever
+     broadcast it.
+  3. **Outbox tests deploy the contracts to the test Anvil with viem, from Foundry's
+     `packages/contracts/out/` artifacts** (`test-support/deploy-test-contracts.ts`). They
+     don't use `forge script`. The test Anvil runs with chain id 10143, and a broadcast of
+     `DeployGame.s.sol` there would overwrite `deployments/10143.json` and the live
+     `broadcast/…/10143/` log. `buildServer` takes an optional `contractAddresses` override
+     for these tests; normal runs take the addresses from `@stridemon/chain`.
+- **Why:** with "broadcast, then save the hash", a crash between the two steps leaves a
+  `queued` record whose transaction may already be mined. Sending it again could double-send
+  a gas drip or a settlement. The contract guards the mint and the settlement, but not the gas
+  drip. Saving the signed bytes first closes that gap.
+- **Trade-off:** the test helper repeats `DeployGame.s.sol`'s role wiring (five `grantRole`
+  calls). The game config comes from `game-rule-fixtures.json`, which `DeployGame.t.sol`
+  already pins the real deploy to. If the wiring drifts, the outbox tests fail with a revert,
+  not silently. API tests need `bun run contracts:build` to have produced `out/`.
+- **Revisit when:** there's more than one game-server key, or a fee spike leaves saved
+  transactions under-priced for long (re-signing at the same nonce with a higher fee would then
+  be needed).

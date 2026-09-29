@@ -44,7 +44,7 @@ these documents, and when a decision changes, the doc changes first.
 | 0 — Foundations | Done (verified on an Android phone via an EAS development build, 2026-09-29) |
 | 1 — Smart contracts | Done (deployed and verified on Monad testnet, `cast` loop run on-chain, 2026-09-29) |
 | 2 — Wallet & sign-in | Done (connect, sign-in, restore, sign-out and revoke verified on an Android phone with MetaMask, 2026-09-29) |
-| 3 — Starter Sneaker & home | Not started |
+| 3 — Starter Sneaker & home | Done (starter mint + gas drip verified on an Android phone and live on Monad testnet in ~5 s; outbox crash recovery tested against Anvil, 2026-09-29) |
 | 4 — Activity tracking | Not started |
 | 5 — Settlement & rewards | Not started |
 | 6 — Repair & upgrade | Not started |

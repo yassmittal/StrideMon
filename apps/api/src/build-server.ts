@@ -1,3 +1,4 @@
+import type { StrideMonContractAddresses } from '@stridemon/chain'
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify'
 import {
   serializerCompiler,
@@ -6,6 +7,7 @@ import {
 } from 'fastify-type-provider-zod'
 import { apiDocsPlugin } from './plugins/api-docs'
 import { authenticationPlugin } from './plugins/authentication'
+import { backgroundJobsPlugin } from './plugins/background-jobs'
 import { chainClientsPlugin } from './plugins/chain-clients'
 import { type ApiConfig, envPlugin, parseApiConfig } from './plugins/env'
 import { errorHandlerPlugin } from './plugins/error-handler'
@@ -15,9 +17,12 @@ import { rateLimitPlugin } from './plugins/rate-limit'
 import { authRoutes } from './routes/auth'
 import { healthRoutes } from './routes/health'
 import { meRoutes } from './routes/me'
+import { onboardingRoutes } from './routes/onboarding'
 
 type BuildServerOptions = {
   environmentVariables: Record<string, string | undefined>
+  /** Tests only: the contracts they deployed to their Anvil (D-019). */
+  contractAddresses?: StrideMonContractAddresses
 }
 
 /**
@@ -26,8 +31,9 @@ type BuildServerOptions = {
  */
 export async function buildServer({
   environmentVariables,
+  contractAddresses,
 }: BuildServerOptions): Promise<FastifyInstance> {
-  const apiConfig = parseApiConfig(environmentVariables)
+  const apiConfig = parseApiConfig(environmentVariables, contractAddresses)
 
   const fastify = Fastify({
     logger: buildLoggerOptions(apiConfig),
@@ -42,6 +48,7 @@ export async function buildServer({
   await fastify.register(mongoIndexesPlugin)
   await fastify.register(chainClientsPlugin)
   await fastify.register(authenticationPlugin)
+  await fastify.register(backgroundJobsPlugin)
   if (apiConfig.nodeEnvironment === 'development') {
     await fastify.register(apiDocsPlugin)
   }
@@ -49,6 +56,7 @@ export async function buildServer({
   await fastify.register(healthRoutes)
   await fastify.register(authRoutes, { prefix: '/v1' })
   await fastify.register(meRoutes, { prefix: '/v1' })
+  await fastify.register(onboardingRoutes, { prefix: '/v1' })
 
   return fastify
 }

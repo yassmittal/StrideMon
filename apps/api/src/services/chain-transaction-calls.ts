@@ -1,0 +1,47 @@
+import { type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
+import type { ChainTransactionKind } from '@stridemon/shared/domain'
+import { type Abi, type Address, getAddress } from 'viem'
+import {
+  mintStarterSneakerPayloadSchema,
+  sendGasDripPayloadSchema,
+} from '../lib/chain-transactions/chain-transaction-payloads'
+
+/** What an outbox record asks the chain to do. */
+export type ChainTransactionCall = {
+  to: Address
+  valueWei: bigint
+  /** Set for contract calls, which are simulated before signing. `null` for a plain transfer. */
+  contractCall: { abi: Abi; functionName: string; args: readonly unknown[] } | null
+}
+
+/**
+ * Turns an outbox record into the call to sign. The payload is parsed here,
+ * because it comes back from Mongo untyped.
+ */
+export function buildChainTransactionCall(
+  { kind, payload }: { kind: ChainTransactionKind; payload: unknown },
+  contractAddresses: StrideMonContractAddresses,
+): ChainTransactionCall {
+  switch (kind) {
+    case 'mintStarterSneaker': {
+      const { walletAddress } = mintStarterSneakerPayloadSchema.parse(payload)
+      return {
+        to: contractAddresses.sneakerGame,
+        valueWei: 0n,
+        contractCall: {
+          abi: sneakerGameAbi,
+          functionName: 'mintStarterSneaker',
+          args: [getAddress(walletAddress)],
+        },
+      }
+    }
+    case 'sendGasDrip': {
+      const { walletAddress, amountWei } = sendGasDripPayloadSchema.parse(payload)
+      return { to: getAddress(walletAddress), valueWei: BigInt(amountWei), contractCall: null }
+    }
+    default: {
+      const unhandledKind: never = kind
+      throw new Error(`Unhandled chain transaction kind: ${String(unhandledKind)}`)
+    }
+  }
+}

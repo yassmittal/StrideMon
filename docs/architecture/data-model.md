@@ -182,10 +182,10 @@ Every transaction the **game server** sends. Player-signed transactions
 type ChainTransactionKind = 'mintStarterSneaker' | 'settleSession' | 'sendGasDrip'
 
 type ChainTransactionStatus =
-  | 'queued'      // written, not yet sent
-  | 'submitted'   // broadcast, we have a hash
+  | 'queued'      // written, not yet signed
+  | 'submitted'   // signed and saved (D-019), then broadcast. Has a hash
   | 'confirmed'   // receipt status success
-  | 'failed'      // reverted or exhausted retries — see lastError
+  | 'failed'      // simulation or the transaction reverted — see lastError
 
 type ChainTransactionDocument = {
   _id: ObjectId
@@ -195,9 +195,9 @@ type ChainTransactionDocument = {
   status: ChainTransactionStatus
   transactionHash: string | null
   senderNonce: number | null
-  attemptCount: number
+  signedTransaction: string | null  // the signed bytes, saved before broadcast (D-019)
+  attemptCount: number          // broadcasts so far
   lastError: string | null
-  lease: { holderId: string; expiresAt: Date } | null
   createdAt: Date
   updatedAt: Date
 }
@@ -206,4 +206,26 @@ type ChainTransactionDocument = {
 Indexes: `{ idempotencyKey: 1 }` unique, `{ status: 1, createdAt: 1 }`.
 
 The unique `idempotencyKey` is what makes "enqueue a settlement" safe to call
-twice.
+twice. Phase 3 keys: `mintStarterSneaker:<walletAddress>` and
+`sendGasDrip:<walletAddress>` (lowercase), so each wallet gets at most one of each.
+
+A transient failure (the RPC is down, the game server is out of MON) leaves the
+record where it was, with `lastError` set, and the next run retries it. Only a
+revert is `failed`.
+
+## `jobLeases`
+
+Which API process may run a background job right now (D-019). The outbox sender
+holds `processChainTransactions`, so only one process ever signs with the
+game-server key.
+
+```ts
+type JobLeaseDocument = {
+  _id: string          // the job name, e.g. "processChainTransactions"
+  holderId: string     // "<hostname>:<apiPort>", so a restarted process reclaims its own lease
+  expiresAt: Date      // renewed while the job runs; anyone may take it after this
+  updatedAt: Date
+}
+```
+
+No extra indexes: every lookup is by `_id`.

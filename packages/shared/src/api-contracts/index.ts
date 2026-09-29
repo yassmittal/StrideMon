@@ -29,4 +29,13 @@ export {
   currentUserResponseSchema,
   currentUserSchema,
 } from './me'
+export {
+  type OnboardingStatusResponse,
+  type OnboardingStep,
+  type OnboardingStepStatus,
+  onboardingStatusResponseSchema,
+  onboardingStepSchema,
+  onboardingStepStatusSchema,
+  transactionHashSchema,
+} from './onboarding'
 export { walletAddressSchema } from './wallet-address'

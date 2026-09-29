@@ -1,3 +1,4 @@
+import { formatCountdown } from './format-countdown'
 import { formatTokenAmount } from './format-token-amount'
 import { formatWalletAddress } from './format-wallet-address'
 
@@ -25,5 +26,21 @@ describe('formatTokenAmount', () => {
 
   it('shows a zero balance as 0', () => {
     expect(formatTokenAmount({ amountWei: 0n, decimals: 18, symbol: 'MON' })).toBe('0 MON')
+  })
+})
+
+describe('formatCountdown', () => {
+  it('shows minutes and zero-padded seconds under an hour', () => {
+    expect(formatCountdown(1799)).toBe('29:59')
+    expect(formatCountdown(65)).toBe('1:05')
+  })
+
+  it('adds hours from an hour up', () => {
+    expect(formatCountdown(3845)).toBe('1:04:05')
+  })
+
+  it('never shows a negative or fractional time', () => {
+    expect(formatCountdown(-3)).toBe('0:00')
+    expect(formatCountdown(4.2)).toBe('0:05')
   })
 })

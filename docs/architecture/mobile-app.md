@@ -37,8 +37,7 @@ apps/mobile/
 │   └── with-wallet-app-queries.js  lets AppKit see installed wallets (Android <queries>, iOS schemes)
 ├── app/                         ROUTES ONLY. Each file is a thin screen that composes features
 │   ├── _layout.tsx                root: providers, auth gate
-│   ├── index.tsx                "/" in Phase 2: redirects by auth status. Removed when (tabs)/index.tsx lands
-│   ├── (onboarding)/
+│   ├── (onboarding)/            initial route: welcome (a signed-out launch lands there)
 │   │   ├── welcome.tsx              "Walk. Earn. Upgrade your Sneaker."
 │   │   └── connect-wallet.tsx
 │   ├── (tabs)/
@@ -64,23 +63,25 @@ apps/mobile/
     │   │   ├── sign-in-state.ts       the sign-in steps and their error copy
     │   │   └── auth-token-storage.ts
     │   ├── wallet/                  useWalletConnection, useMonBalance, WalletAddress, MonBalance
-    │   ├── onboarding/
+    │   ├── onboarding/              useStarterSneakerOnboarding, StarterSneakerMinting ("Minting your Sneaker…")
     │   ├── sneaker/
-    │   │   ├── hooks/               useSneaker.ts, useSneakerEnergy.ts, useRepairSneaker.ts
+    │   │   ├── hooks/               useOwnedSneaker, useSneakerAttributes, useSneakerEnergy, useGameConfig (Phase 3); useRepairSneaker (Phase 6)
     │   │   └── components/          SneakerCard.tsx, SneakerStatRow.tsx, RepairPanel.tsx
     │   ├── activity-session/
     │   │   ├── location-tracking/   background task, sample buffer, uploader
     │   │   ├── hooks/               useActiveActivitySession.ts, useFinishActivitySession.ts
     │   │   └── components/          LiveRunStats.tsx, SessionSummaryCard.tsx
     │   └── rewards/
-    │       └── hooks/               useRewardBalance.ts
+    │       ├── hooks/               useRewardBalance.ts
+    │       └── components/          RewardBalanceCard.tsx
     │
     ├── components/ui/           generic, feature-agnostic building blocks
-    │   ├── Screen.tsx, Button.tsx, Card.tsx, StatValue.tsx, ProgressBar.tsx, ErrorState.tsx
+    │   ├── Screen.tsx, Button.tsx, Card.tsx, StatValue.tsx, ProgressBar.tsx, ErrorState.tsx,
+    │   │   ExternalLink.tsx, LoadingScreen.tsx
     │
     ├── lib/
     │   ├── api-client/              one typed fetch wrapper: base URL, auth header, refresh-on-401, ApiError parsing
-    │   ├── chain/                   wagmi + AppKit config
+    │   ├── chain/                   wagmi + AppKit config, contract addresses, explorer URLs
     │   └── format/                  formatDistance, formatDuration, formatTokenAmount
     │
     ├── providers/AppProviders.tsx   QueryClient, Wagmi, AppKit, SafeArea, theme — composed once
@@ -155,6 +156,24 @@ STOP pressed
 
   Each step has a distinct UI state (`idle | awaitingSignature | confirming | succeeded | failed`).
   Players must always know whether they're waiting on their wallet or on the chain.
+
+## The starter Sneaker (Phase 3)
+
+Home decides what to show from the chain, not from the API:
+
+- **The wallet owns a Sneaker** (`balanceOf` > 0) → the Sneaker card, the SOLE
+  balance and START.
+- **It owns none** → the "Minting your Sneaker…" screen. It calls
+  `POST /v1/onboarding/starter-sneaker` once (idempotent), then polls
+  `GET /v1/onboarding/status` every 2 s. Each step (Sneaker, gas) shows pending,
+  confirmed with an explorer link, or failed with a way forward. Once the mint is
+  confirmed, it re-reads the chain until the Sneaker appears, since an RPC node
+  can lag a block behind.
+
+Sneaker stats, energy and the SOLE balance are wagmi reads. Energy's value comes
+from `SneakerGame.currentEnergy`; the countdown to the next point is computed on
+the device from the on-chain `energyUpdatedAt`, and the value is read again when
+it reaches zero.
 
 ## Auth on the device
 

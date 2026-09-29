@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { calculateCurrentEnergy, calculateEnergyAfterSpending } from './energy'
+import {
+  calculateCurrentEnergy,
+  calculateEnergyAfterSpending,
+  calculateSecondsUntilNextEnergyPoint,
+} from './energy'
 import { FIXTURE_GAME_CONFIG, gameRuleFixtures } from './game-rule-fixtures.test-support'
 
 describe('energy (shared fixtures)', () => {
@@ -49,5 +53,68 @@ describe('energy (estimate-only behavior)', () => {
         gameConfig: FIXTURE_GAME_CONFIG,
       }),
     ).toThrow(RangeError)
+  })
+})
+
+describe('calculateSecondsUntilNextEnergyPoint', () => {
+  const ENERGY_UPDATED_AT = 1_790_000_000n
+
+  it('returns null when energy is full', () => {
+    const secondsUntilNextPoint = calculateSecondsUntilNextEnergyPoint({
+      storedEnergy: FIXTURE_GAME_CONFIG.maxEnergy,
+      energyUpdatedAt: ENERGY_UPDATED_AT,
+      currentTimestampSeconds: ENERGY_UPDATED_AT + 60n,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(secondsUntilNextPoint).toBeNull()
+  })
+
+  it('counts down from the last regeneration anchor', () => {
+    const secondsUntilNextPoint = calculateSecondsUntilNextEnergyPoint({
+      storedEnergy: 4,
+      energyUpdatedAt: ENERGY_UPDATED_AT,
+      currentTimestampSeconds: ENERGY_UPDATED_AT + 600n,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(secondsUntilNextPoint).toBe(FIXTURE_GAME_CONFIG.energyRegenerationSeconds - 600)
+  })
+
+  it('keeps partial progress after whole points have regenerated', () => {
+    const regenerationSeconds = BigInt(FIXTURE_GAME_CONFIG.energyRegenerationSeconds)
+
+    const secondsUntilNextPoint = calculateSecondsUntilNextEnergyPoint({
+      storedEnergy: 4,
+      energyUpdatedAt: ENERGY_UPDATED_AT,
+      currentTimestampSeconds: ENERGY_UPDATED_AT + 2n * regenerationSeconds + 100n,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(secondsUntilNextPoint).toBe(FIXTURE_GAME_CONFIG.energyRegenerationSeconds - 100)
+  })
+
+  it('returns null once regeneration has refilled energy to the cap', () => {
+    const regenerationSeconds = BigInt(FIXTURE_GAME_CONFIG.energyRegenerationSeconds)
+
+    const secondsUntilNextPoint = calculateSecondsUntilNextEnergyPoint({
+      storedEnergy: FIXTURE_GAME_CONFIG.maxEnergy - 1,
+      energyUpdatedAt: ENERGY_UPDATED_AT,
+      currentTimestampSeconds: ENERGY_UPDATED_AT + regenerationSeconds,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(secondsUntilNextPoint).toBeNull()
+  })
+
+  it('waits a whole interval when the device clock is behind chain time', () => {
+    const secondsUntilNextPoint = calculateSecondsUntilNextEnergyPoint({
+      storedEnergy: 4,
+      energyUpdatedAt: ENERGY_UPDATED_AT,
+      currentTimestampSeconds: ENERGY_UPDATED_AT - 30n,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(secondsUntilNextPoint).toBe(FIXTURE_GAME_CONFIG.energyRegenerationSeconds)
   })
 })

@@ -7,7 +7,8 @@
     "./api-contracts": "./src/api-contracts/index.ts",
     "./domain": "./src/domain/index.ts",
     "./errors": "./src/errors/index.ts",
-    "./game-rules": "./src/game-rules/index.ts"
+    "./game-rules": "./src/game-rules/index.ts",
+    "./game-rules/fixtures": "./src/game-rules/game-rule-fixtures.test-support.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

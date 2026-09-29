@@ -1,13 +1,13 @@
 import type { Db, MongoClient } from 'mongodb'
-import type { PublicClient } from 'viem'
 import type { AuthenticatedUser } from '../plugins/authentication'
+import type { ChainClients } from '../plugins/chain-clients'
 import type { ApiConfig } from '../plugins/env'
 
 declare module 'fastify' {
   interface FastifyInstance {
     config: ApiConfig
     mongo: { client: MongoClient; database: Db }
-    chain: { publicClient: PublicClient }
+    chain: ChainClients
     authenticate: (request: FastifyRequest) => Promise<void>
   }
 

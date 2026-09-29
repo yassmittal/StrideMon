@@ -1,5 +1,10 @@
-import { SUPPORTED_CHAINS } from '@stridemon/chain'
+import {
+  CONTRACT_ADDRESSES_BY_CHAIN_ID,
+  type StrideMonContractAddresses,
+  SUPPORTED_CHAINS,
+} from '@stridemon/chain'
 import fastifyPlugin from 'fastify-plugin'
+import type { Hex } from 'viem'
 import { z } from 'zod'
 
 // 64 random bytes as hex is 128 characters; anything under 64 is too weak for HS256.
@@ -9,6 +14,11 @@ const positiveIntegerStringSchema = z
   .string()
   .regex(/^[1-9]\d*$/, 'must be a positive whole number')
   .transform(Number)
+
+const weiAmountStringSchema = z
+  .string()
+  .regex(/^[1-9]\d*$/, 'must be a positive whole number of wei')
+  .transform(BigInt)
 
 const environmentVariablesSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
@@ -42,6 +52,11 @@ const environmentVariablesSchema = z.object({
       }
       return supportedChain
     }),
+  GAME_SERVER_PRIVATE_KEY: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{64}$/, 'must be a 0x-prefixed 32-byte hex private key')
+    .transform((privateKey) => privateKey as Hex),
+  GAS_DRIP_AMOUNT_WEI: weiAmountStringSchema,
 })
 
 type SupportedChain = (typeof SUPPORTED_CHAINS)[number]
@@ -56,6 +71,10 @@ export type ApiConfig = {
   siweDomain: string
   monadRpcUrl: string
   monadChain: SupportedChain
+  /** Never logged. Signs every outbox transaction. */
+  gameServerPrivateKey: Hex
+  gasDripAmountWei: bigint
+  contractAddresses: StrideMonContractAddresses
 }
 
 /**
@@ -64,6 +83,7 @@ export type ApiConfig = {
  */
 export function parseApiConfig(
   environmentVariables: Record<string, string | undefined>,
+  contractAddressesOverride?: StrideMonContractAddresses,
 ): ApiConfig {
   const parseResult = environmentVariablesSchema.safeParse(environmentVariables)
   if (!parseResult.success) {
@@ -76,6 +96,14 @@ export function parseApiConfig(
   }
 
   const variables = parseResult.data
+  const contractAddresses =
+    contractAddressesOverride ?? CONTRACT_ADDRESSES_BY_CHAIN_ID[variables.MONAD_CHAIN_ID.id]
+  if (contractAddresses === undefined) {
+    throw new Error(
+      `No contract addresses for chain ${variables.MONAD_CHAIN_ID.id} in @stridemon/chain. Deploy, then run \`bun run chain:export-abis\`.`,
+    )
+  }
+
   return {
     nodeEnvironment: variables.NODE_ENV,
     apiPort: variables.API_PORT,
@@ -86,6 +114,9 @@ export function parseApiConfig(
     siweDomain: variables.SIWE_DOMAIN,
     monadRpcUrl: variables.MONAD_RPC_URL,
     monadChain: variables.MONAD_CHAIN_ID,
+    gameServerPrivateKey: variables.GAME_SERVER_PRIVATE_KEY,
+    gasDripAmountWei: variables.GAS_DRIP_AMOUNT_WEI,
+    contractAddresses,
   }
 }
 

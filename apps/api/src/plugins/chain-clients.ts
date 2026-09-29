@@ -1,17 +1,38 @@
 import fastifyPlugin from 'fastify-plugin'
-import { createPublicClient, http } from 'viem'
+import {
+  type Account,
+  type Chain,
+  createPublicClient,
+  createWalletClient,
+  http,
+  type PublicClient,
+  type Transport,
+  type WalletClient,
+} from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+
+/** The game server's signer: the account holding `GAME_SERVER_ROLE`. */
+export type GameServerWalletClient = WalletClient<Transport, Chain, Account>
+
+export type ChainClients = {
+  publicClient: PublicClient
+  gameServerWalletClient: GameServerWalletClient
+}
 
 /**
- * Decorates `fastify.chain` with a viem public client for Monad. The game-server
- * wallet client joins it in Phase 3.
+ * Decorates `fastify.chain` with a viem public client for Monad reads and the
+ * game-server wallet client that signs outbox transactions.
  */
 export const chainClientsPlugin = fastifyPlugin(
   async (fastify) => {
-    const publicClient = createPublicClient({
-      chain: fastify.config.monadChain,
-      transport: http(fastify.config.monadRpcUrl),
+    const { monadChain, monadRpcUrl, gameServerPrivateKey } = fastify.config
+    const publicClient = createPublicClient({ chain: monadChain, transport: http(monadRpcUrl) })
+    const gameServerWalletClient = createWalletClient({
+      account: privateKeyToAccount(gameServerPrivateKey),
+      chain: monadChain,
+      transport: http(monadRpcUrl),
     })
-    fastify.decorate('chain', { publicClient })
+    fastify.decorate('chain', { publicClient, gameServerWalletClient })
   },
   { name: 'chain-clients', dependencies: ['env'] },
 )

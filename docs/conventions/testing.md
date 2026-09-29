@@ -65,5 +65,10 @@ Every validation rule has a passing and a failing case at minimum:
   local Anvil (`anvil`, from Foundry) that the API test helper starts, never to
   the testnet RPC, so tests don't fail when the network does.
 - API tests need `bun run db:start` and Foundry's `anvil` on the `PATH`.
+- Outbox and chain-reader tests also deploy the contracts to that Anvil with
+  `test-support/deploy-test-contracts.ts`, from Foundry's `packages/contracts/out/`.
+  Run `bun run contracts:build` first. Never broadcast `DeployGame.s.sol` to the test
+  Anvil: it shares chain id 10143 with the testnet and would overwrite
+  `deployments/10143.json` (D-019).
 - Tests are part of the phase, not a later phase. A phase isn't done while its
   tests are missing.

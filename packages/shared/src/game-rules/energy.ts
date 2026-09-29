@@ -53,6 +53,23 @@ export function calculateEnergyAfterSpending({
   }
 }
 
+/**
+ * Seconds until the next energy point regenerates, or `null` when energy is full.
+ * For the countdown on Home; the energy value itself is read from the chain.
+ */
+export function calculateSecondsUntilNextEnergyPoint(
+  currentEnergyInput: CalculateCurrentEnergyInput,
+): number | null {
+  const { energyUpdatedAt, currentTimestampSeconds, gameConfig } = currentEnergyInput
+  if (calculateCurrentEnergy(currentEnergyInput) >= gameConfig.maxEnergy) return null
+
+  const regenerationSeconds = BigInt(gameConfig.energyRegenerationSeconds)
+  const elapsedSeconds = currentTimestampSeconds - energyUpdatedAt
+  // A device clock behind chain time: the next point is a whole interval away at most.
+  if (elapsedSeconds <= 0n) return gameConfig.energyRegenerationSeconds
+  return Number(regenerationSeconds - (elapsedSeconds % regenerationSeconds))
+}
+
 function calculateRegeneratedPoints({
   energyUpdatedAt,
   currentTimestampSeconds,

@@ -6,3 +6,4 @@ export {
   type StrideMonContractAddresses,
 } from './contract-addresses'
 export { monadTestnet, SUPPORTED_CHAINS, type SupportedChainId } from './monad-chains'
+export { SOLE_TOKEN_DECIMALS, SOLE_TOKEN_SYMBOL } from './sole-token'

@@ -42,3 +42,32 @@ export async function upsertUserOnSignIn(
 export function findUserById(database: Db, userId: ObjectId): Promise<UserDocument | null> {
   return getUsersCollection(database).findOne({ _id: userId })
 }
+
+export function findUserByWalletAddress(
+  database: Db,
+  walletAddress: string,
+): Promise<UserDocument | null> {
+  return getUsersCollection(database).findOne({ walletAddress: walletAddress.toLowerCase() })
+}
+
+/** Set by the outbox job once the starter mint is confirmed on-chain. */
+export async function markUserReceivedStarterSneaker(
+  database: Db,
+  { walletAddress, now }: { walletAddress: string; now: Date },
+): Promise<void> {
+  await getUsersCollection(database).updateOne(
+    { walletAddress: walletAddress.toLowerCase() },
+    { $set: { hasReceivedStarterSneaker: true, updatedAt: now } },
+  )
+}
+
+/** Set by the outbox job once the gas drip is confirmed on-chain. */
+export async function markUserReceivedGasDrip(
+  database: Db,
+  { walletAddress, now }: { walletAddress: string; now: Date },
+): Promise<void> {
+  await getUsersCollection(database).updateOne(
+    { walletAddress: walletAddress.toLowerCase() },
+    { $set: { hasReceivedGasDrip: true, updatedAt: now } },
+  )
+}

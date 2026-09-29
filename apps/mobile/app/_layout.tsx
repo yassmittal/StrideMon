@@ -28,7 +28,6 @@ function AuthGate() {
   const isSignedIn = authSession.status === 'signedIn'
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
       <Stack.Protected guard={isSignedIn}>
         <Stack.Screen name="(tabs)" />
       </Stack.Protected>
