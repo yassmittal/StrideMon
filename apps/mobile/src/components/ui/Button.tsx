@@ -11,6 +11,8 @@ import {
 type ButtonProps = {
   label: string
   onPress: () => void
+  /** `secondary` is for the less important action next to a primary one. */
+  variant?: 'primary' | 'secondary'
   accessibilityLabel?: string
   isDisabled?: boolean
   isLoading?: boolean
@@ -19,10 +21,12 @@ type ButtonProps = {
 export function Button({
   label,
   onPress,
+  variant = 'primary',
   accessibilityLabel,
   isDisabled = false,
   isLoading = false,
 }: ButtonProps) {
+  const isSecondary = variant === 'secondary'
   const isInteractive = !isDisabled && !isLoading
 
   return (
@@ -34,14 +38,15 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        pressed && styles.buttonPressed,
+        isSecondary && styles.buttonSecondary,
+        pressed && (isSecondary ? styles.buttonSecondaryPressed : styles.buttonPressed),
         !isInteractive && styles.buttonDisabled,
       ]}
     >
       {isLoading ? (
-        <ActivityIndicator color={colors.textOnPrimary} />
+        <ActivityIndicator color={isSecondary ? colors.primary : colors.textOnPrimary} />
       ) : (
-        <Text style={styles.label}>{label}</Text>
+        <Text style={[styles.label, isSecondary && styles.labelSecondary]}>{label}</Text>
       )}
     </Pressable>
   )
@@ -60,6 +65,12 @@ const styles = StyleSheet.create({
   buttonPressed: {
     backgroundColor: colors.primaryPressed,
   },
+  buttonSecondary: {
+    backgroundColor: colors.surface,
+  },
+  buttonSecondaryPressed: {
+    backgroundColor: colors.disabled,
+  },
   buttonDisabled: {
     backgroundColor: colors.disabled,
   },
@@ -67,5 +78,8 @@ const styles = StyleSheet.create({
     color: colors.textOnPrimary,
     fontSize: fontSizes.body,
     fontWeight: fontWeights.semibold,
+  },
+  labelSecondary: {
+    color: colors.primary,
   },
 })

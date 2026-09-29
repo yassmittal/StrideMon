@@ -15,7 +15,7 @@ depend on it, so it has to be solid here.
 - `api-contracts/onboarding.ts`: `onboardingStatusResponseSchema` (per step: `notStarted | pending | confirmed | failed`).
 
 ### `apps/api`
-- `plugins/chain-clients.ts`: the viem `publicClient` and the game-server `walletClient`.
+- `plugins/chain-clients.ts`: add the game-server `walletClient` next to the `publicClient` from Phase 2.
 - `plugins/background-jobs.ts`: interval runner with Mongo leases.
 - `repositories/chain-transactions-repository.ts`: enqueue (idempotent via the unique key), claim with lease, and status transitions.
 - `services/chain-transaction-sender.ts`: simulate → send → wait for receipt, one nonce at a time.
@@ -31,6 +31,7 @@ depend on it, so it has to be solid here.
 - `components/ui/`: `Card`, `StatValue`, `ProgressBar`.
 - `features/sneaker/components/SneakerCard.tsx`: id, level, efficiency, durability bar, energy `n / 10`, and a "View on explorer" link.
 - `(tabs)/index.tsx` (home): SneakerCard, reward balance, and a START button (disabled until Phase 4).
+  It takes over `/`, so delete Phase 2's `app/index.tsx` redirect, and give `(onboarding)/_layout.tsx` `welcome` as its initial route so a signed-out launch lands there.
 
 ## Out of scope
 Activity sessions; buying Sneakers; multiple Sneakers per player.

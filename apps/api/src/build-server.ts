@@ -5,11 +5,16 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 import { apiDocsPlugin } from './plugins/api-docs'
+import { authenticationPlugin } from './plugins/authentication'
+import { chainClientsPlugin } from './plugins/chain-clients'
 import { type ApiConfig, envPlugin, parseApiConfig } from './plugins/env'
 import { errorHandlerPlugin } from './plugins/error-handler'
 import { mongoPlugin } from './plugins/mongo'
+import { mongoIndexesPlugin } from './plugins/mongo-indexes'
 import { rateLimitPlugin } from './plugins/rate-limit'
+import { authRoutes } from './routes/auth'
 import { healthRoutes } from './routes/health'
+import { meRoutes } from './routes/me'
 
 type BuildServerOptions = {
   environmentVariables: Record<string, string | undefined>
@@ -34,11 +39,16 @@ export async function buildServer({
   await fastify.register(errorHandlerPlugin)
   await fastify.register(rateLimitPlugin)
   await fastify.register(mongoPlugin)
+  await fastify.register(mongoIndexesPlugin)
+  await fastify.register(chainClientsPlugin)
+  await fastify.register(authenticationPlugin)
   if (apiConfig.nodeEnvironment === 'development') {
     await fastify.register(apiDocsPlugin)
   }
 
   await fastify.register(healthRoutes)
+  await fastify.register(authRoutes, { prefix: '/v1' })
+  await fastify.register(meRoutes, { prefix: '/v1' })
 
   return fastify
 }

@@ -233,3 +233,48 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
   success) are derived and marked as such in the doc.
 - **Revisit when:** the Aeonik licence isn't obtainable in time (fall back to
   Satoshi), or user testing shows the 10 pt uppercase labels are too small.
+
+## D-018 — Reown AppKit v2 on Expo SDK 57, checked at Phase 2 start
+
+- **Decision:** D-010 stands. The app uses **`@reown/appkit-react-native` 2.0.6** (the
+  AppKit core, which owns the modal) plus **`@reown/appkit-wagmi-react-native` 2.0.6** (the
+  wagmi adapter), with **wagmi 2.x** and viem. Pins that come with it:
+  - `wagmi` stays on **2.19.x**. wagmi 3 exists, but the adapter's peer range is `wagmi <3`.
+  - `@walletconnect/react-native-compat` and `@walletconnect/utils` are **2.21.10**, the
+    WalletConnect version AppKit 2.0.6 pins through `@walletconnect/universal-provider`.
+    Root `overrides` hold `universal-provider`, `ethereum-provider` (pulled in by
+    `@wagmi/connectors`) and `valtio` (2.1.8) to one version each, so only one
+    WalletConnect stack gets bundled.
+  - AppKit's native peers (`@react-native-async-storage/async-storage`,
+    `@react-native-community/netinfo`, `react-native-get-random-values`, `react-native-svg`,
+    `expo-application`) are declared directly, at the versions `expo install` maps for SDK 57
+    (D-015: Bun doesn't install peers here).
+  - Monad testnet is passed to AppKit as our own viem chain from `@stridemon/chain`, with
+    its RPC URL taken from `EXPO_PUBLIC_MONAD_RPC_URL`.
+  - The API verifies SIWE signatures with viem's `verifySiweMessage`, which needs a public
+    client. Its `eth_call` makes smart-contract wallets (ERC-1271/6492) work as well as EOAs.
+    So the `publicClient` half of `plugins/chain-clients.ts` arrives in Phase 2, and the
+    game-server wallet client stays in Phase 3. API tests run that call against a local
+    **Anvil** started by the test helper, so they don't depend on the testnet RPC.
+- **Why (checked 2026-09-29 against npm, docs.reown.com and Reown's GitHub):**
+  - AppKit 2.0.6 (released 2026-07-14) declares `react-native >=0.72` and `react >=18`, so
+    RN 0.86 and React 19.2 are inside its ranges. It is plain JS on top of standard native
+    modules, and every one of those modules has an Expo SDK 57 mapping.
+  - Reown's own Expo example (`reown-com/react-native-examples` → `appkit-expo-wagmi`,
+    updated 2026-09-15) runs AppKit 2.0.5 on **Expo SDK 55 / RN 0.83 / React 19.2**. Nothing
+    Reown publishes has been tested on SDK 57 yet, and there's no open issue against 56 or 57.
+  - Reown's install guide asks for `babel-preset-expo` with `unstable_transformImportMeta`,
+    because `valtio` reads `import.meta`. On SDK 57 that option is renamed
+    `transformImportMeta` and **defaults to on**, so no `babel.config.js` is needed. This
+    was issue #506, a build failure on RN 0.82.
+  - `createAppKit` requires a `storage` implementation in v2. We back it with AsyncStorage,
+    the store WalletConnect already uses. Refresh tokens still go in `expo-secure-store`.
+  - Chain 10143 isn't in Reown's hosted-RPC list, so the wagmi adapter falls back to the
+    chain's own `rpcUrls.default`. The adapter builds its own transports and ignores any we
+    pass, so the RPC URL has to be set on the chain object.
+- **Trade-off:** we run two Expo SDKs ahead of anything Reown has tested. If the modal or
+  the relay breaks on the device, the fallback is `@walletconnect/universal-provider`
+  directly with our own connect screen. Wallet deep linking and session storage would then
+  be ours to maintain.
+- **Revisit when:** Reown publishes an SDK 57 example or an AppKit release that supports
+  wagmi 3, or the device test in Phase 2 fails.

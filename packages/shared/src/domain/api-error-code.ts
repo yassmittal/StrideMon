@@ -8,6 +8,9 @@ export const API_ERROR_CODES = [
   'NOT_FOUND',
   'RATE_LIMITED',
   'INTERNAL_ERROR',
+  'INVALID_SIGNATURE',
+  'NONCE_EXPIRED',
+  'REFRESH_TOKEN_REVOKED',
 ] as const
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number]

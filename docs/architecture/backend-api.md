@@ -46,7 +46,9 @@ apps/api/src/
 │   │   ├── haversine-distance.ts
 │   │   └── speed-band.ts
 │   └── auth/
-│       └── build-siwe-message.ts
+│       ├── build-siwe-message.ts
+│       ├── access-token.ts          sign / verify the access JWT (jose)
+│       └── generate-refresh-token.ts, hash-refresh-token.ts, generate-siwe-nonce.ts
 │
 ├── repositories/                ALL MongoDB access, one file per collection
 │   ├── users-repository.ts
@@ -54,6 +56,7 @@ apps/api/src/
 │   └── …
 │
 ├── services/                    external I/O other than Mongo
+│   ├── siwe-signature-verifier.ts viem verifySiweMessage (EOA + ERC-1271/6492 wallets)
 │   ├── sneaker-chain-reader.ts    reads SneakerNft / SneakerGame / SoleToken
 │   └── chain-transaction-sender.ts signs and broadcasts outbox transactions
 │
@@ -63,6 +66,8 @@ apps/api/src/
 │
 ├── common/                      small cross-cutting helpers (errors, time, ids)
 │   └── api-error.ts
+│
+├── test-support/                test-only helpers: buildTestServer (throwaway DB), startTestChain (Anvil)
 │
 └── types/
     └── fastify.d.ts             declaration merging for decorators — never cast instead
@@ -98,10 +103,10 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | Method | Path | Phase | Purpose |
 |--------|------|-------|---------|
 | GET | `/health` | 0 | liveness (no prefix) |
-| POST | `/v1/auth/nonce` | 2 | `{ walletAddress }` → SIWE message to sign |
+| POST | `/v1/auth/nonce` | 2 | `{ walletAddress }` → `{ message }`, the SIWE message to sign |
 | POST | `/v1/auth/verify` | 2 | `{ message, signature }` → `{ accessToken, refreshToken, user }` |
-| POST | `/v1/auth/refresh` | 2 | rotate refresh token |
-| POST | `/v1/auth/sign-out` | 2 | 🔒 revoke current auth session |
+| POST | `/v1/auth/refresh` | 2 | `{ refreshToken }` → the same shape as verify, with a rotated refresh token |
+| POST | `/v1/auth/sign-out` | 2 | 🔒 `{ refreshToken }` → 204. Revokes that auth session. The access token only carries the user, so the body names the auth session |
 | GET | `/v1/me` | 2 | 🔒 current user + onboarding state |
 | POST | `/v1/onboarding/starter-sneaker` | 3 | 🔒 enqueue starter mint + gas drip (idempotent) |
 | GET | `/v1/onboarding/status` | 3 | 🔒 state of those transactions |

@@ -10,11 +10,12 @@ from one codebase.
 |------|---------|--------------|
 | Navigation | `expo-router` | File-based routes, typed routes, deep links for free |
 | Server state (API) | `@tanstack/react-query` | Caching, retries, polling (settlement), invalidation |
-| Chain state + wallet | `@reown/appkit-wagmi-react-native` + `wagmi` + `viem` | Connect wallet, typed contract reads and writes from `@stridemon/chain` ABIs |
+| Chain state + wallet | `@reown/appkit-react-native` + `@reown/appkit-wagmi-react-native` + `wagmi` 2 + `viem` | Connect wallet, typed contract reads and writes from `@stridemon/chain` ABIs. Versions and pins: D-018 |
 | Small client state | `zustand` | Active-run UI state. Only where React Query and wagmi don't fit |
 | Location | `expo-location` + `expo-task-manager` | Foreground + background GPS |
 | Durable local buffer | `react-native-mmkv` | GPS samples survive the app being killed mid-run |
 | Secrets on device | `expo-secure-store` | Refresh token (Keychain / Keystore) |
+| Wallet session storage | `@react-native-async-storage/async-storage` | AppKit and WalletConnect persist the wallet connection here. Never tokens |
 | Validation | `zod` (via `@stridemon/shared`) | Same schemas as the API |
 | Styling | React Native `StyleSheet` + typed theme tokens | Zero dependencies, predictable. See "Styling" |
 | Tests | `jest-expo` + React Native Testing Library | See `conventions/testing.md` |
@@ -32,8 +33,11 @@ Never copy server or chain data into zustand.
 ```text
 apps/mobile/
 ├── app.config.ts                Expo config (typed), plugins, permissions strings
+├── plugins/                     local config plugins (plain JS, loaded by path)
+│   └── with-wallet-app-queries.js  lets AppKit see installed wallets (Android <queries>, iOS schemes)
 ├── app/                         ROUTES ONLY. Each file is a thin screen that composes features
 │   ├── _layout.tsx                root: providers, auth gate
+│   ├── index.tsx                "/" in Phase 2: redirects by auth status. Removed when (tabs)/index.tsx lands
 │   ├── (onboarding)/
 │   │   ├── welcome.tsx              "Walk. Earn. Upgrade your Sneaker."
 │   │   └── connect-wallet.tsx
@@ -52,11 +56,14 @@ apps/mobile/
 └── src/
     ├── features/                one folder per product feature, same names as the API resources
     │   ├── auth/
-    │   │   ├── api/                 auth-api.ts: requestNonce, verifySignature, refresh
-    │   │   ├── hooks/               useSignIn.ts, useAuthenticatedUser.ts
-    │   │   ├── components/          SignInButton.tsx
+    │   │   ├── api/                 auth-api.ts (nonce, verify, refresh, sign-out), current-user-api.ts
+    │   │   ├── hooks/               useSignIn, useSignOut, useCurrentUser, useAuthSession
+    │   │   ├── components/          SignInPanel.tsx
+    │   │   ├── auth-session.ts        restore / start / refresh (single-flight) / sign out
+    │   │   ├── auth-session-store.ts  zustand: restoring | signedOut | signedIn(+ access token)
+    │   │   ├── sign-in-state.ts       the sign-in steps and their error copy
     │   │   └── auth-token-storage.ts
-    │   ├── wallet/
+    │   ├── wallet/                  useWalletConnection, useMonBalance, WalletAddress, MonBalance
     │   ├── onboarding/
     │   ├── sneaker/
     │   │   ├── hooks/               useSneaker.ts, useSneakerEnergy.ts, useRepairSneaker.ts
@@ -154,7 +161,14 @@ STOP pressed
 - The access token lives **in memory only**.
 - The refresh token lives in `expo-secure-store`.
 - `lib/api-client` attaches the access token. On `401` it refreshes once,
-  retries once, and signs the user out if the refresh also fails.
+  retries once, and signs the user out if the refresh also fails. It gets tokens
+  through an `AccessTokenSource` the auth feature registers at launch, so `lib/`
+  never imports `features/`.
+- Refreshes are **single-flight**: concurrent 401s share one refresh request.
+  Refresh tokens are single-use, and a second parallel refresh would look like a
+  stolen token and revoke every auth session.
+- The root layout gates with `Stack.Protected`: signed in → `(tabs)`, otherwise
+  `(onboarding)`. Signing in or out flips the guard, which drops the other side's history.
 - On launch: if a refresh token exists, refresh silently. Otherwise go to onboarding.
 
 ## Styling

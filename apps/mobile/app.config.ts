@@ -23,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     predictiveBackGestureEnabled: false,
   },
-  plugins: ['expo-router'],
+  plugins: ['expo-router', 'expo-secure-store', './plugins/with-wallet-app-queries.js'],
   experiments: {
     typedRoutes: true,
   },

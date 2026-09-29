@@ -73,13 +73,22 @@ type AuthSessionDocument = {
   deviceLabel: string | null     // e.g. "iPhone 15", for a future "your devices" screen
   expiresAt: Date
   revokedAt: Date | null
+  revocationReason: AuthSessionRevocationReason | null   // set together with revokedAt
   createdAt: Date
   updatedAt: Date
 }
+
+type AuthSessionRevocationReason =
+  | 'rotated'        // its refresh token was exchanged for a new auth session
+  | 'signedOut'      // the player signed out on this device
+  | 'reuseDetected'  // another of the user's rotated tokens was replayed
 ```
 
 Indexes: `{ refreshTokenHash: 1 }` unique, `{ userId: 1 }`, and `{ expiresAt: 1 }` TTL.
-Refresh tokens rotate: each refresh revokes the old hash and stores a new one.
+Refresh tokens rotate: each refresh revokes the old auth session (`rotated`) and
+inserts a new one. Only a replayed **`rotated`** token means a copy exists, so only
+that revokes every auth session of the user. A signed-out token is just refused, so
+a stale request from one device can't sign the player out everywhere.
 
 ## `activitySessions`
 

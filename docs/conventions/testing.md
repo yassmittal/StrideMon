@@ -9,7 +9,7 @@ idempotency. Don't chase a coverage number on glue code.
 |---------|--------|-------|
 | `packages/contracts` | `forge test` (unit, fuzz, invariant) | Every rule in `game-rules.md`; roles; idempotent settlement; burn-only-from-sender; reward-supply invariant |
 | `packages/shared` | `bun test` | Game-rule mirror vs fixtures; unit helpers; schema edge cases |
-| `apps/api` | `bun test` + `fastify.inject` against a throwaway Mongo database | `lib/activity-validation` (heavy); route contracts; auth flow; outbox idempotency |
+| `apps/api` | `bun test` + `fastify.inject` against a throwaway Mongo database and, for chain calls, a local Anvil | `lib/activity-validation` (heavy); route contracts; auth flow; outbox idempotency |
 | `apps/mobile` | `jest-expo` + React Native Testing Library | Hooks with logic (`useActiveActivitySession`), formatting, screens' loading/empty/error states |
 | End to end | Maestro (Phase 8) | The demo script from `MVP.md` §21 on a real build |
 
@@ -61,6 +61,9 @@ Every validation rule has a passing and a failing case at minimum:
   not `it('works')`.
 - One behavior per test, following Arrange → Act → Assert.
 - Test pure functions without mocks. Test I/O at the boundary with real Mongo
-  (a throwaway database) rather than mocking the driver.
+  (a throwaway database) rather than mocking the driver. Chain calls go to a
+  local Anvil (`anvil`, from Foundry) that the API test helper starts, never to
+  the testnet RPC, so tests don't fail when the network does.
+- API tests need `bun run db:start` and Foundry's `anvil` on the `PATH`.
 - Tests are part of the phase, not a later phase. A phase isn't done while its
   tests are missing.

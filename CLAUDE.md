@@ -44,10 +44,23 @@ Everything targets **Monad testnet** until Phase 10.
 - **Contracts** use Soldeer (no git submodules). Import `@openzeppelin/contracts/…` and `forge-std/…` (see `remappings.txt`).
 - **Foundry ≥ 1.8 is required** (`foundryup -i v1.8.3`), with `network = "monad"` in `foundry.toml` (D-016). **After editing Solidity, if a result looks stale, run `forge clean`.** Foundry 1.8.3's build cache has skipped a changed file ("No files changed").
 - **Deploy keys** live in `packages/contracts/.env` (gitignored). After a deploy, run `bun run chain:export-abis` so `@stridemon/chain` picks up the ABIs and addresses.
-- API tests use real Mongo: run `bun run db:start` first.
+- API tests use real Mongo (`bun run db:start` first) and a throwaway **Anvil** that the test
+  helper starts, so Foundry's `anvil` must be on the `PATH` (D-018).
+- **Wallet stack pins (D-018):** AppKit RN 2.0.6 needs **wagmi 2.x** (not 3). WalletConnect packages
+  are held at 2.21.10 by root `overrides`, with `valtio` at 2.1.8. Don't bump one on its own.
+- **Running the app on the phone:** start Metro with `cd apps/mobile && bunx expo start --clear`.
+  `bun run dev:mobile` goes through `bun --filter`, which has no TTY, so it prints no QR code.
+  `EXPO_PUBLIC_API_BASE_URL` must be the laptop's current LAN IP (`ipconfig getifaddr en0`).
+- **The wallet must have Monad Testnet (10143) enabled** before connecting. Otherwise MetaMask
+  approves a WalletConnect session with no accounts, and AppKit throws
+  `Cannot read property 'setDefaultChain' of undefined`. After a failed connect, clear the app's
+  data so the broken session isn't restored.
+- Local Expo config plugins are **plain JS** in `apps/mobile/plugins/`, listed by path in
+  `app.config.ts`. The config loader can't import a `.ts` file from `app.config.ts`.
 
 ## Current phase
 
 Phases 0 and 1 are done (2026-09-29). The contracts are live and verified on Monad testnet;
-addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Next: **Phase 2: Wallet &
-sign-in** (`docs/phases/phase-02-wallet-and-sign-in.md`).
+addresses are in `packages/contracts/README.md` and `@stridemon/chain`. **Phase 2: Wallet &
+sign-in** is built and its tests pass. It needs a new EAS development build and the device
+checks in `docs/phases/phase-02-wallet-and-sign-in.md` before it counts as done.
