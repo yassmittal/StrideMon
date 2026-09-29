@@ -12,6 +12,10 @@ clean visual design, no dead ends, and a rehearsed script.
 - MongoDB Atlas free tier, with network access restricted to the host.
 - Structured logs you can search during the demo.
 - An EAS build profile for the demo (internal distribution), pointing at the hosted API.
+  Unlike the development build, this one bundles its JavaScript, and `.env`
+  files are never uploaded to EAS (they're gitignored). The `EXPO_PUBLIC_*`
+  values must therefore be set on the profile (`eas.json` → `env`) or as EAS
+  environment variables.
 
 ### Product polish
 - A visual design pass: theme tokens, a Sneaker illustration, and typography.

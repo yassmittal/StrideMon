@@ -21,6 +21,12 @@ and the app remembers them across restarts.
 - Tests: the full sign-in flow with a viem test account, nonce reuse rejected, expired nonce rejected, refresh rotation, and refresh-token reuse revoking every auth session.
 
 ### `apps/mobile`
+
+> **Needs a new development build.** The wallet SDK and `expo-secure-store` are
+> native. Add them with `bunx expo install`, and declare every peer they need
+> explicitly, because Bun doesn't auto-install peers here (D-015). Then rebuild
+> (EAS or a local emulator build) before testing on a device.
+
 - `lib/chain/`: AppKit + wagmi config for Monad testnet. **Verify** that current AppKit supports Expo and the chain before building on it.
 - `features/wallet/`: connect and disconnect, and show the connected address.
 - `features/auth/`: `useSignIn` (connect → nonce → `signMessage` → verify → store tokens), `auth-token-storage.ts` (secure store), and refresh-on-401 inside `lib/api-client`.

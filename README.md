@@ -51,8 +51,9 @@ bunx eas-cli init                              # links the project to your Expo 
 bunx eas-cli build --profile development --platform ios   # or android
 ```
 
-Install the build on the phone, run `bun run dev:mobile`, and open the dev
-server from the app. The phone reaches the API through
+Install the build on the phone, run `bun run dev:mobile`, then open StrideMon
+on the phone, tap **Scan QR code** and scan the QR code Metro prints in the
+terminal. The phone reaches the API through
 `EXPO_PUBLIC_API_BASE_URL`, which must be your laptop's LAN IP (`localhost` on
 the phone is the phone). Both devices have to be on the same Wi-Fi.
 

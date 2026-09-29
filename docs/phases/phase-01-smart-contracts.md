@@ -9,6 +9,11 @@ works through `cast`, before a single screen exists.
 
 **Read first:** `architecture/smart-contracts.md`, `architecture/game-rules.md`, `architecture/security.md` → Smart contracts.
 
+**Confirm before writing code:** which EVM version Monad testnet supports
+(`foundry.toml` pins `cancun`, see D-015; raise it only if Monad documents
+support), and which explorer and verification method Monad testnet uses (viem's
+chain definition points at `testnet.monadexplorer.com`).
+
 ## Deliverables
 
 ### `packages/contracts`

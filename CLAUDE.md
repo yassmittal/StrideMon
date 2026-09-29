@@ -46,5 +46,5 @@ Everything targets **Monad testnet** until Phase 10.
 
 ## Current phase
 
-Phase 0 is done, except the on-device check. Next: **Phase 1: Smart contracts**
+Phase 0 is done (verified on an Android phone, 2026-09-29). Next: **Phase 1: Smart contracts**
 (`docs/phases/phase-01-smart-contracts.md`).

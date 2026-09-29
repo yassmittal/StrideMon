@@ -28,6 +28,12 @@ on both platforms.
 - Tests: the synthetic-trace suite from `conventions/testing.md`, and route tests for every new error code.
 
 ### `apps/mobile`
+
+> **Needs a new development build.** `expo-location`, `expo-task-manager`,
+> `react-native-mmkv` and the background-location permissions are native. Add
+> the packages with `bunx expo install` and declare their peers explicitly
+> (D-015). Then rebuild.
+
 - `features/activity-session/location-tracking/`:
   - `location-task.ts`: the TaskManager task, defined at module scope and registered at app entry.
   - `location-sample-buffer.ts`: MMKV-backed append, read-unsent and mark-sent.

@@ -40,7 +40,7 @@ these documents, and when a decision changes, the doc changes first.
 
 | Phase | State |
 |-------|-------|
-| 0 — Foundations | Done, except the on-device check (needs an EAS or local dev build) |
+| 0 — Foundations | Done (verified on an Android phone via an EAS development build, 2026-09-29) |
 | 1 — Smart contracts | Not started |
 | 2 — Wallet & sign-in | Not started |
 | 3 — Starter Sneaker & home | Not started |
