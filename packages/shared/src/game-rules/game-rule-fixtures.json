@@ -1,0 +1,183 @@
+{
+  "gameConfig": {
+    "maxLevel": 30,
+    "maxEnergy": 10,
+    "maxDurability": 100,
+    "starterEfficiency": 10,
+    "efficiencyGainPerLevel": 2,
+    "durabilityLossPerMinuteBasisPoints": 3000,
+    "energyRegenerationSeconds": 1800,
+    "rewardPerEfficiencyMinuteWei": "500000000000000000",
+    "repairCostPerPointWei": "700000000000000000",
+    "repairCostPerPointIncreasePerLevelWei": "100000000000000000",
+    "upgradeCostPerLevelWei": "50000000000000000000"
+  },
+  "energy": [
+    {
+      "name": "a full Sneaker spends its whole energy in one session",
+      "input": {
+        "storedEnergy": 10,
+        "energyUpdatedAt": 1790000000,
+        "currentTimestamp": 1790000000,
+        "energySpent": 10
+      },
+      "expect": {
+        "currentEnergy": 10,
+        "storedEnergyAfterSpending": 0,
+        "energyUpdatedAtAfterSpending": 1790000000
+      }
+    },
+    {
+      "name": "zero energy stays zero until a whole interval passes",
+      "input": {
+        "storedEnergy": 0,
+        "energyUpdatedAt": 1790000000,
+        "currentTimestamp": 1790001799,
+        "energySpent": 0
+      },
+      "expect": {
+        "currentEnergy": 0,
+        "storedEnergyAfterSpending": 0,
+        "energyUpdatedAtAfterSpending": 1790000000
+      }
+    },
+    {
+      "name": "regenerates one point per interval",
+      "input": {
+        "storedEnergy": 0,
+        "energyUpdatedAt": 1790000000,
+        "currentTimestamp": 1790005400,
+        "energySpent": 0
+      },
+      "expect": {
+        "currentEnergy": 3,
+        "storedEnergyAfterSpending": 3,
+        "energyUpdatedAtAfterSpending": 1790005400
+      }
+    },
+    {
+      "name": "keeps partial progress toward the next point when spending",
+      "input": {
+        "storedEnergy": 2,
+        "energyUpdatedAt": 1790000000,
+        "currentTimestamp": 1790006000,
+        "energySpent": 4
+      },
+      "expect": {
+        "currentEnergy": 5,
+        "storedEnergyAfterSpending": 1,
+        "energyUpdatedAtAfterSpending": 1790005400
+      }
+    },
+    {
+      "name": "caps regeneration at max energy",
+      "input": {
+        "storedEnergy": 4,
+        "energyUpdatedAt": 1790000000,
+        "currentTimestamp": 1790036900,
+        "energySpent": 0
+      },
+      "expect": {
+        "currentEnergy": 10,
+        "storedEnergyAfterSpending": 10,
+        "energyUpdatedAtAfterSpending": 1790036000
+      }
+    }
+  ],
+  "session": [
+    {
+      "name": "MVP example: 10 minutes at efficiency 10",
+      "input": { "activeMinutes": 10, "currentEnergy": 10, "efficiency": 10, "durability": 100 },
+      "expect": {
+        "rewardedMinutes": 10,
+        "rewardAmountWei": "50000000000000000000",
+        "durabilityLoss": 3
+      }
+    },
+    {
+      "name": "caps rewarded minutes at current energy",
+      "input": { "activeMinutes": 25, "currentEnergy": 4, "efficiency": 10, "durability": 100 },
+      "expect": {
+        "rewardedMinutes": 4,
+        "rewardAmountWei": "20000000000000000000",
+        "durabilityLoss": 2
+      }
+    },
+    {
+      "name": "zero energy earns nothing and costs no durability",
+      "input": { "activeMinutes": 30, "currentEnergy": 0, "efficiency": 10, "durability": 100 },
+      "expect": { "rewardedMinutes": 0, "rewardAmountWei": "0", "durabilityLoss": 0 }
+    },
+    {
+      "name": "zero active minutes earn nothing",
+      "input": { "activeMinutes": 0, "currentEnergy": 10, "efficiency": 10, "durability": 100 },
+      "expect": { "rewardedMinutes": 0, "rewardAmountWei": "0", "durabilityLoss": 0 }
+    },
+    {
+      "name": "rounds durability loss up",
+      "input": { "activeMinutes": 1, "currentEnergy": 10, "efficiency": 12, "durability": 100 },
+      "expect": {
+        "rewardedMinutes": 1,
+        "rewardAmountWei": "6000000000000000000",
+        "durabilityLoss": 1
+      }
+    },
+    {
+      "name": "durability floor: loss is capped at the remaining durability",
+      "input": { "activeMinutes": 10, "currentEnergy": 10, "efficiency": 10, "durability": 2 },
+      "expect": {
+        "rewardedMinutes": 10,
+        "rewardAmountWei": "50000000000000000000",
+        "durabilityLoss": 2
+      }
+    },
+    {
+      "name": "max level efficiency (68) for a full session",
+      "input": { "activeMinutes": 10, "currentEnergy": 10, "efficiency": 68, "durability": 100 },
+      "expect": {
+        "rewardedMinutes": 10,
+        "rewardAmountWei": "340000000000000000000",
+        "durabilityLoss": 3
+      }
+    }
+  ],
+  "repair": [
+    {
+      "name": "MVP example: level 1 at durability 72",
+      "input": { "level": 1, "durability": 72 },
+      "expect": { "repairCostWei": "19600000000000000000" }
+    },
+    {
+      "name": "full durability costs nothing",
+      "input": { "level": 1, "durability": 100 },
+      "expect": { "repairCostWei": "0" }
+    },
+    {
+      "name": "cost per point rises with level",
+      "input": { "level": 5, "durability": 90 },
+      "expect": { "repairCostWei": "11000000000000000000" }
+    },
+    {
+      "name": "max level repaired from zero durability",
+      "input": { "level": 30, "durability": 0 },
+      "expect": { "repairCostWei": "360000000000000000000" }
+    }
+  ],
+  "upgrade": [
+    {
+      "name": "MVP example: level 1 to 2",
+      "input": { "level": 1 },
+      "expect": { "upgradeCostWei": "50000000000000000000" }
+    },
+    {
+      "name": "cost scales with level",
+      "input": { "level": 10 },
+      "expect": { "upgradeCostWei": "500000000000000000000" }
+    },
+    {
+      "name": "last upgrade before max level",
+      "input": { "level": 29 },
+      "expect": { "upgradeCostWei": "1450000000000000000000" }
+    }
+  ]
+}

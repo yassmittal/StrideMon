@@ -42,9 +42,12 @@ Everything targets **Monad testnet** until Phase 10.
 - **`@babel/runtime` is a direct mobile dependency.** Babel-compiled app code imports its helpers.
 - **Jest's `transformIgnorePatterns`** (in `apps/mobile/package.json`) also exempts `@stridemon`. Keep them if you edit the list.
 - **Contracts** use Soldeer (no git submodules). Import `@openzeppelin/contracts/…` and `forge-std/…` (see `remappings.txt`).
+- **Foundry ≥ 1.8 is required** (`foundryup -i v1.8.3`), with `network = "monad"` in `foundry.toml` (D-016). **After editing Solidity, if a result looks stale, run `forge clean`.** Foundry 1.8.3's build cache has skipped a changed file ("No files changed").
+- **Deploy keys** live in `packages/contracts/.env` (gitignored). After a deploy, run `bun run chain:export-abis` so `@stridemon/chain` picks up the ABIs and addresses.
 - API tests use real Mongo: run `bun run db:start` first.
 
 ## Current phase
 
-Phase 0 is done (verified on an Android phone, 2026-09-29). Next: **Phase 1: Smart contracts**
-(`docs/phases/phase-01-smart-contracts.md`).
+Phases 0 and 1 are done (2026-09-29). The contracts are live and verified on Monad testnet;
+addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Next: **Phase 2: Wallet &
+sign-in** (`docs/phases/phase-02-wallet-and-sign-in.md`).

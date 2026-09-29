@@ -20,13 +20,22 @@ TypeScript (the estimates). They are kept identical with one fixture file:
 
 ```text
 packages/shared/src/game-rules/game-rule-fixtures.json
-[
-  { "name": "MVP example: 10 minutes at efficiency 10",
-    "input":  { "rewardedMinutes": 10, "efficiency": 10 },
-    "expect": { "rewardAmountWei": "50000000000000000000", "durabilityLoss": 3 } },
-  …
-]
+{
+  "gameConfig": { "maxEnergy": 10, "rewardPerEfficiencyMinuteWei": "500000000000000000", … },
+  "session": [
+    { "name": "MVP example: 10 minutes at efficiency 10",
+      "input":  { "activeMinutes": 10, "currentEnergy": 10, "efficiency": 10, "durability": 100 },
+      "expect": { "rewardedMinutes": 10, "rewardAmountWei": "50000000000000000000", "durabilityLoss": 3 } },
+    …
+  ],
+  "energy": […], "repair": […], "upgrade": […]
+}
 ```
+
+- One array per formula, all sharing the file's `gameConfig`, which must equal
+  the initial config `DeployGame.s.sol` deploys (a Foundry test checks this).
+- Wei amounts are decimal **strings**. A JSON number above 2^53 loses precision
+  in JavaScript.
 
 - `packages/contracts/test/GameMath.t.sol` reads it with `vm.readFile` + `vm.parseJson`.
 - `packages/shared/src/game-rules/*.test.ts` imports it.

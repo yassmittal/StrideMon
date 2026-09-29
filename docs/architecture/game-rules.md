@@ -40,6 +40,14 @@ When energy is spent, `storedEnergy` becomes `currentEnergy − spent`, and
 `energyUpdatedAt` advances by the regeneration time already credited. It does
 **not** reset to `now`, so partial progress toward the next point is never lost.
 
+```text
+energyUpdatedAt ← energyUpdatedAt + regeneratedPoints × energyRegenerationSeconds
+```
+
+`regeneratedPoints` is the uncapped count of whole intervals. When the Sneaker
+sat at `maxEnergy`, the whole intervals spent full are credited as well (they
+earn nothing), so at most one interval's worth of partial progress carries over.
+
 ## Starting a session (checked by the API before it accepts a run)
 
 - The caller owns the Sneaker (`ownerOf(tokenId) == walletAddress`).
@@ -81,7 +89,9 @@ durabilityLoss = ceil(rewardedMinutes × durabilityLossPerMinuteBasisPoints / 10
 durabilityLossPerMinuteBasisPoints = 3_000   (0.3 per minute)
 ```
 
-Check: 10 minutes → `ceil(3.0)` = **3**. ✓ Durability never goes below 0.
+Check: 10 minutes → `ceil(3.0)` = **3**. ✓ Durability never goes below 0:
+the loss is capped at the Sneaker's current durability, and the capped value is
+what `settleSession` emits and `previewSessionReward` returns.
 
 - **Durability 0:** the Sneaker can't start a session until it is repaired.
 - **Durability below 50:** reward × 0.5. This gives players a reason to repair

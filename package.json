@@ -20,7 +20,8 @@
     "format": "biome check --write .",
     "test": "bun --filter '*' test",
     "contracts:build": "cd packages/contracts && forge build",
-    "contracts:test": "cd packages/contracts && forge test"
+    "contracts:test": "cd packages/contracts && forge test",
+    "chain:export-abis": "bun run contracts:build && bun packages/chain/scripts/export-abis.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14"

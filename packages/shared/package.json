@@ -6,7 +6,8 @@
   "exports": {
     "./api-contracts": "./src/api-contracts/index.ts",
     "./domain": "./src/domain/index.ts",
-    "./errors": "./src/errors/index.ts"
+    "./errors": "./src/errors/index.ts",
+    "./game-rules": "./src/game-rules/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

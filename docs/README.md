@@ -41,7 +41,7 @@ these documents, and when a decision changes, the doc changes first.
 | Phase | State |
 |-------|-------|
 | 0 — Foundations | Done (verified on an Android phone via an EAS development build, 2026-09-29) |
-| 1 — Smart contracts | Not started |
+| 1 — Smart contracts | Done (deployed and verified on Monad testnet, `cast` loop run on-chain, 2026-09-29) |
 | 2 — Wallet & sign-in | Not started |
 | 3 — Starter Sneaker & home | Not started |
 | 4 — Activity tracking | Not started |

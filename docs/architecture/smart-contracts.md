@@ -4,9 +4,9 @@ Foundry project in `packages/contracts`, using Solidity (latest stable 0.8.x,
 pinned in `foundry.toml`) and OpenZeppelin Contracts v5 via Soldeer. It is
 deployed to **Monad testnet** until Phase 10.
 
-> Verify at Phase 1 start: Monad testnet chain id (10143 at time of writing),
-> the public RPC URL, the block explorer and its contract-verification method.
-> Record them in `packages/chain/src/monad-chains.ts`, not in this doc.
+Confirmed at Phase 1 start (D-016): chain id 10143, Foundry ≥ 1.8 with
+`network = "monad"`, `evm_version = "cancun"`, and verification on MonadVision
+through Sourcify. The chain definition lives in `packages/chain/src/monad-chains.ts`.
 
 ## Three contracts, three responsibilities
 
@@ -36,7 +36,10 @@ roles and revoke them from the old one. Nobody's Sneaker or balance moves.
 
 ## `SneakerNft`
 
-ERC-721 + ERC721Enumerable + AccessControl.
+ERC-721 + ERC721Enumerable + AccessControl. Name `StrideMon Sneaker`, symbol
+`SNEAKER`, both passed to the constructor by `DeployGame.s.sol`. Token ids start
+at 1. `mint` uses `_mint`, not `_safeMint`: the game mints to player wallets, and
+skipping the receiver callback keeps external calls out of the mint path.
 
 `ERC721Enumerable` lets the app and API list "Sneakers owned by this wallet"
 straight from the chain (`tokenOfOwnerByIndex`) without running an indexer. It
@@ -58,12 +61,14 @@ struct SneakerAttributes {
 | `mint(address to, SneakerAttributes attributes) → tokenId` | `GAME_ROLE` | New Sneaker |
 | `setAttributes(uint256 tokenId, SneakerAttributes attributes)` | `GAME_ROLE` | The only way stats change |
 | `getAttributes(uint256 tokenId) → SneakerAttributes` | public view | Raw storage |
-| `tokenURI(uint256 tokenId)` | public view | Base64 JSON built on-chain from attributes (SVG image in Phase 8) |
+| `tokenURI(uint256 tokenId)` | public view | Base64 JSON built on-chain from attributes: Level, Efficiency, Durability (SVG image in Phase 8) |
 
 Events: `SneakerMinted(tokenId, owner, attributes)`, `SneakerAttributesUpdated(tokenId, attributes)`.
 
 The NFT contract holds **no game logic**, not even energy regeneration. It
-stores what it's given, and `SneakerGame` interprets it.
+stores what it's given, and `SneakerGame` interprets it. That is also why
+`tokenURI` doesn't show energy: the stored value is stale until `SneakerGame`
+applies regeneration, so marketplaces would show the wrong number.
 
 ## `SoleToken`
 
@@ -83,7 +88,8 @@ constructor by `DeployGame.s.sol`, not hardcoded in the contract.
 
 ## `SneakerGame`
 
-AccessControl + Pausable + ReentrancyGuard.
+AccessControl + Pausable + ReentrancyGuardTransient. OpenZeppelin 5.x deprecates
+the storage-based `ReentrancyGuard`, and Monad supports Cancun's transient storage.
 
 Roles:
 
@@ -92,6 +98,9 @@ Roles:
 | `DEFAULT_ADMIN_ROLE` | deployer (testnet), multisig (mainnet) | grant roles, `setGameConfig` |
 | `GAME_SERVER_ROLE` | API relayer key | `mintStarterSneaker`, `settleSession` |
 | `PAUSER_ROLE` | deployer / ops key | `pause`, `unpause` |
+
+Pausing stops every state-changing function: `mintStarterSneaker`,
+`settleSession`, `repair` and `upgrade`. Views keep working.
 
 Functions:
 
@@ -102,10 +111,33 @@ Functions:
 | `repair(uint256 tokenId)` | Sneaker owner | Burns `quoteRepairCost`, restores durability |
 | `upgrade(uint256 tokenId)` | Sneaker owner | Burns `quoteUpgradeCost`, level +1, efficiency + gain |
 | `currentEnergy(uint256 tokenId) → uint16` | view | Lazy regeneration (see `game-rules.md`) |
-| `quoteRepairCost(uint256 tokenId) → uint256` | view | The mobile app shows exactly this |
-| `quoteUpgradeCost(uint256 tokenId) → uint256` | view | Same |
-| `previewSessionReward(tokenId, activeMinutes) → (reward, durabilityLoss, rewardedMinutes)` | view | Same math as `settleSession`, without side effects |
+| `quoteRepairCost(uint256 tokenId) → uint256` | view | The mobile app shows exactly this. 0 at full durability |
+| `quoteUpgradeCost(uint256 tokenId) → uint256` | view | Same. Reverts `SneakerAtMaxLevel` at max level |
+| `previewSessionReward(tokenId, activeMinutes) → (rewardAmountWei, durabilityLoss, rewardedMinutes)` | view | Same math as `settleSession`, without side effects |
 | `setGameConfig(GameConfig config)` | admin | Tune numbers from `game-rules.md` |
+| `getGameConfig() → GameConfig` | view | The config in force |
+
+```solidity
+struct GameConfig {                            // initial values from game-rules.md
+    uint16  maxLevel;                            // 30
+    uint16  maxEnergy;                           // 10
+    uint16  maxDurability;                       // 100
+    uint16  starterEfficiency;                   // 10
+    uint16  efficiencyGainPerLevel;              // 2
+    uint16  durabilityLossPerMinuteBasisPoints;  // 3_000
+    uint32  energyRegenerationSeconds;           // 1_800
+    uint256 rewardPerEfficiencyMinuteWei;        // 0.5 SOLE
+    uint256 repairCostPerPointWei;               // 0.7 SOLE (at level 1)
+    uint256 repairCostPerPointIncreasePerLevelWei; // 0.1 SOLE
+    uint256 upgradeCostPerLevelWei;              // 50 SOLE
+}
+```
+
+`setGameConfig` (and the constructor) reject a config that would break the math
+or make the game unplayable, with `InvalidGameConfig()`: zero
+`energyRegenerationSeconds`, `maxEnergy`, `maxDurability` or `starterEfficiency`,
+or `maxLevel` below the starter level (1). Every accepted config emits
+`GameConfigUpdated(config)`.
 
 ```solidity
 struct SessionSettlement {
@@ -124,12 +156,18 @@ struct SessionSettlement {
 3. Compute `rewardedMinutes`, `reward` and `durabilityLoss` using the **same
    internal function** as `previewSessionReward`.
 4. Write the new attributes (energy spent, durability reduced) to `SneakerNft`.
-5. Mint `reward` to `player`.
-6. Emit `SessionSettled(sessionId, tokenId, player, rewardedMinutes, distanceMeters, reward, durabilityLoss)`.
+5. Mint `reward` to `player` (skipped when it is 0).
+6. Emit `SessionSettled(sessionId, tokenId, player, rewardedMinutes, distanceMeters, rewardAmountWei, durabilityLoss)`.
+
+`repair` emits `SneakerRepaired(tokenId, owner, durabilityRestored, repairCostWei)`
+and `upgrade` emits `SneakerUpgraded(tokenId, owner, newLevel, newEfficiency, upgradeCostWei)`.
+If the owner's SOLE balance is short, OpenZeppelin's `ERC20InsufficientBalance`
+bubbles up.
 
 Custom errors, not revert strings: `SessionAlreadySettled(bytes32)`,
 `NotSneakerOwner(uint256 tokenId, address caller)`, `SneakerAtMaxLevel(uint256)`,
-`StarterSneakerAlreadyClaimed(address)`, `NothingToRepair(uint256)`, …
+`StarterSneakerAlreadyClaimed(address)`, `NothingToRepair(uint256)`,
+`InvalidGameConfig()`.
 
 ## Project layout
 
@@ -142,16 +180,22 @@ packages/contracts/
 │   ├── SneakerGame.sol
 │   └── libraries/
 │       └── GameMath.sol          pure functions: energy, reward, costs
+├── deployments/
+│   └── <chainId>.json            chain id, addresses, deployer, game server (written by DeployGame)
 ├── script/
 │   ├── DeployGame.s.sol          deploys all three, wires roles, writes addresses JSON
-│   └── UpdateGameConfig.s.sol
+│   └── UpdateGameConfig.s.sol    (added the first time the config is retuned)
 └── test/
     ├── SneakerNft.t.sol
     ├── SoleToken.t.sol
-    ├── SneakerGame.t.sol
-    ├── GameMath.t.sol            reads packages/shared/.../game-rule-fixtures.json
+    ├── SneakerGame.t.sol         starter mint, settlement, views, config, pause
+    ├── SneakerGameRepairUpgrade.t.sol
+    ├── GameMath.t.sol            reads packages/shared/.../game-rule-fixtures.json, plus fuzz
+    ├── DeployGame.t.sol          role wiring; initial config == fixture config
+    ├── helpers/                  GameTestBase (deploys via DeployGame), fixture reader
     └── invariants/
-        └── SoleSupply.invariant.t.sol
+        ├── SoleSupply.invariant.t.sol
+        └── SoleSupplyHandler.sol
 ```
 
 `GameMath` is a library of pure functions. Keeping the math out of storage-touching
@@ -170,10 +214,16 @@ code makes it trivially testable against the shared fixtures.
 
 ## Deployment flow (testnet)
 
-1. Fund the deployer and game-server keys from the Monad testnet faucet.
-2. `forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast --verify`.
+1. Fund the deployer and game-server keys from the Monad testnet faucet. The
+   keys live in `packages/contracts/.env` (gitignored; `.env.example` lists the
+   variables).
+2. From `packages/contracts`:
+   `forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast --verify --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/`.
 3. The script grants roles: `GAME_ROLE` on the NFT, `MINTER_ROLE`/`BURNER_ROLE`
    on the token, and `GAME_SERVER_ROLE` to the API relayer address.
 4. The script writes `deployments/<chainId>.json`. `bun run chain:export-abis`
    copies the ABIs and addresses into `packages/chain`.
-5. Verify the source on the explorer so judges can read it.
+5. Check the verified source on MonadVision so judges can read it. If
+   `--verify` failed, rerun `forge verify-contract <address> <Contract> --chain 10143
+   --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/`
+   for each contract.

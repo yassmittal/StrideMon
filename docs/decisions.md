@@ -187,3 +187,31 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
     Monad doesn't support.
 - **Revisit when:** an Expo SDK upgrade (TypeScript version), a Bun release fixes
   `bson@7`, or Monad documents support for a newer EVM version.
+
+## D-016 — Monad testnet tooling, confirmed at Phase 1 start
+
+- **Decision:**
+  - **Foundry 1.8.3** (≥ 1.8 is what Monad requires), with `network = "monad"` in
+    `foundry.toml`. Local tests, scripts and Anvil then use Monad's gas model,
+    opcode pricing and 128 KB contract size limit.
+  - `evm_version` **stays `cancun`** (D-015).
+  - Contracts are verified on **MonadVision** (`testnet.monadvision.com`) through
+    its **Sourcify** endpoint, `https://sourcify-api-monad.blockvision.org/`. It
+    needs no API key. Monadscan (`testnet.monadscan.com`, Etherscan API with a
+    key) is the fallback.
+  - `packages/chain` overrides viem's block explorer for Monad testnet with
+    MonadVision.
+- **Why:**
+  - Monad's docs (checked 2026-09-29) say releases before Foundry 1.8 don't
+    model Monad execution. Monad charges the full **gas limit**, not the gas used,
+    and it reprices storage (MIP-8, `MONAD_TEN`). A script simulated with
+    Ethereum pricing would pick the wrong gas limits.
+  - Monad documents Prague-era precompiles (EIP-2537, EIP-2935, EIP-7702) and
+    Osaka's CLZ opcode (MIP-5). So a newer `evm_version` would work, but these
+    contracts gain nothing from it, and `cancun` needs no retesting.
+  - viem's `testnet.monadexplorer.com` now 308-redirects to MonadVision.
+    Linking to it directly skips the redirect.
+- **Trade-off:** everyone who builds the contracts needs Foundry ≥ 1.8
+  (`foundryup -i v1.8.3`).
+- **Revisit when:** Monad publishes a revision that changes gas or opcode
+  behavior (bump Foundry), or a contract wants CLZ or other post-Cancun opcodes.
