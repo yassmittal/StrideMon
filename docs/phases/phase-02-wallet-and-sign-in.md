@@ -38,10 +38,10 @@ and the app remembers them across restarts.
 The Sneaker, the gas drip and the starter mint (Phase 3).
 
 ## Definition of done
-- [ ] Fresh install → connect wallet → sign → lands on tabs.
-- [ ] Kill and reopen the app → still signed in, with no wallet prompt.
-- [ ] Sign out → back to onboarding, and the refresh token is revoked server-side.
-- [ ] Rejecting the signature in the wallet shows a clear, recoverable message.
+- [x] Fresh install → connect wallet → sign → lands on tabs.
+- [x] Kill and reopen the app → still signed in, with no wallet prompt.
+- [x] Sign out → back to onboarding, and the refresh token is revoked server-side.
+- [x] Rejecting the signature in the wallet shows a clear, recoverable message.
 - [x] API tests cover every auth error code.
 
 ## Demo check

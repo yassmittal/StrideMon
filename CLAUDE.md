@@ -50,17 +50,20 @@ Everything targets **Monad testnet** until Phase 10.
   are held at 2.21.10 by root `overrides`, with `valtio` at 2.1.8. Don't bump one on its own.
 - **Running the app on the phone:** start Metro with `cd apps/mobile && bunx expo start --clear`.
   `bun run dev:mobile` goes through `bun --filter`, which has no TTY, so it prints no QR code.
-  `EXPO_PUBLIC_API_BASE_URL` must be the laptop's current LAN IP (`ipconfig getifaddr en0`).
-- **The wallet must have Monad Testnet (10143) enabled** before connecting. Otherwise MetaMask
-  approves a WalletConnect session with no accounts, and AppKit throws
-  `Cannot read property 'setDefaultChain' of undefined`. After a failed connect, clear the app's
-  data so the broken session isn't restored.
+  `EXPO_PUBLIC_API_BASE_URL` must be the laptop's current LAN IP. On this Mac the Wi-Fi
+  is `en1`, so use `ipconfig getifaddr en1` (`en0` prints nothing).
+- **The wallet must have Monad Testnet (10143) enabled** before connecting, and MetaMask's connect
+  sheet must list it. Otherwise MetaMask approves a WalletConnect session with no `eip155`
+  accounts, and AppKit throws `Cannot read property 'setDefaultChain' of undefined`. The cause is
+  traced in the source: the universal provider's `createProviders()` skips a namespace with zero
+  accounts, then `WalletConnectConnector.connect` calls `setDefaultChain` on it. After a failed
+  connect, clear the app's data so the broken session isn't restored.
 - Local Expo config plugins are **plain JS** in `apps/mobile/plugins/`, listed by path in
   `app.config.ts`. The config loader can't import a `.ts` file from `app.config.ts`.
 
 ## Current phase
 
-Phases 0 and 1 are done (2026-09-29). The contracts are live and verified on Monad testnet;
-addresses are in `packages/contracts/README.md` and `@stridemon/chain`. **Phase 2: Wallet &
-sign-in** is built and its tests pass. It needs a new EAS development build and the device
-checks in `docs/phases/phase-02-wallet-and-sign-in.md` before it counts as done.
+Phases 0, 1 and 2 are done (2026-09-29). The contracts are live and verified on Monad testnet;
+addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Phase 2's sign-in,
+restore, sign-out and revoke were verified on an Android phone with MetaMask. **Next: Phase 3:
+Starter Sneaker & home** (`docs/phases/phase-03-starter-sneaker-and-home.md`).
