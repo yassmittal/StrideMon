@@ -1,4 +1,23 @@
 export {
+  type ActivitySession,
+  type ActivitySessionParams,
+  type ActivitySessionResponse,
+  type ActivityValidationResult,
+  activitySessionParamsSchema,
+  activitySessionResponseSchema,
+  activitySessionSchema,
+  activityValidationResultSchema,
+  type LocationSample,
+  locationSampleSchema,
+  MAX_LOCATION_SAMPLES_PER_UPLOAD,
+  type StartActivitySessionBody,
+  startActivitySessionBodySchema,
+  type UploadLocationSamplesBody,
+  type UploadLocationSamplesResponse,
+  uploadLocationSamplesBodySchema,
+  uploadLocationSamplesResponseSchema,
+} from './activity-sessions'
+export {
   type ApiErrorResponse,
   apiErrorCodeSchema,
   apiErrorResponseSchema,
@@ -38,4 +57,5 @@ export {
   onboardingStepStatusSchema,
   transactionHashSchema,
 } from './onboarding'
+export { tokenIdStringSchema } from './token-id'
 export { walletAddressSchema } from './wallet-address'

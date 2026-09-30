@@ -1,9 +1,19 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
-import { Button } from '../../src/components/ui/Button'
+import { router } from 'expo-router'
+import { ActivityIndicator, StyleSheet, Text } from 'react-native'
 import { Card } from '../../src/components/ui/Card'
 import { ErrorState } from '../../src/components/ui/ErrorState'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
 import { Screen } from '../../src/components/ui/Screen'
+import { ActiveRunBanner } from '../../src/features/activity-session/components/ActiveRunBanner'
+import { StartRunPanel } from '../../src/features/activity-session/components/StartRunPanel'
+import { useFinishActivitySession } from '../../src/features/activity-session/hooks/useFinishActivitySession'
+import { useLocalActiveActivitySession } from '../../src/features/activity-session/hooks/useLocalActiveActivitySession'
+import { useStartRunFlow } from '../../src/features/activity-session/hooks/useStartRunFlow'
+import { describeRunError } from '../../src/features/activity-session/run-error-messages'
+import {
+  describeStartRunBlockedReason,
+  findStartRunBlockedReason,
+} from '../../src/features/activity-session/start-run-availability'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { StarterSneakerMinting } from '../../src/features/onboarding/components/StarterSneakerMinting'
 import { useStarterSneakerOnboarding } from '../../src/features/onboarding/hooks/useStarterSneakerOnboarding'
@@ -13,9 +23,12 @@ import { SneakerCard } from '../../src/features/sneaker/components/SneakerCard'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
 import { useOwnedSneaker } from '../../src/features/sneaker/hooks/useOwnedSneaker'
 import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneakerAttributes'
-import { useSneakerEnergy } from '../../src/features/sneaker/hooks/useSneakerEnergy'
+import {
+  type SneakerEnergy,
+  useSneakerEnergy,
+} from '../../src/features/sneaker/hooks/useSneakerEnergy'
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
-import { colors, fontSizes, fontWeights, spacing } from '../../src/theme'
+import { colors, fontSizes, fontWeights } from '../../src/theme'
 
 /** Home: the player's Sneaker, or the starter mint while they don't have one yet. */
 export default function HomeScreen() {
@@ -141,12 +154,78 @@ function SneakerHome({ walletAddress, sneakerTokenId }: SneakerHomeProps) {
         onRetryPress={() => rewardBalanceQuery.refetch()}
       />
 
-      <View style={styles.startSection}>
-        {/* TODO(phase-4): start an activity session. */}
-        <Button label="Start a run" onPress={() => {}} isDisabled />
-        <Text style={styles.caption}>Tracking walks and runs arrives in the next update.</Text>
-      </View>
+      <RunSection
+        sneakerTokenId={sneakerTokenId}
+        sneakerStats={
+          attributes === undefined || energy === undefined
+            ? undefined
+            : { efficiency: attributes.efficiency, durability: attributes.durability, energy }
+        }
+      />
     </Screen>
+  )
+}
+
+type RunSectionProps = {
+  sneakerTokenId: bigint
+  /** `undefined` while the Sneaker's stats load: START waits for them. */
+  sneakerStats: { efficiency: number; durability: number; energy: SneakerEnergy } | undefined
+}
+
+/** START, or Resume / Finish when a run is still in progress on this phone. */
+function RunSection({ sneakerTokenId, sneakerStats }: RunSectionProps) {
+  const localActiveActivitySessionQuery = useLocalActiveActivitySession()
+  const { startRun, isStarting, errorMessage: startErrorMessage } = useStartRunFlow()
+  const finishMutation = useFinishActivitySession()
+
+  if (localActiveActivitySessionQuery.isError) {
+    return (
+      <ErrorState
+        message="Couldn’t check for a run in progress."
+        onRetryPress={() => localActiveActivitySessionQuery.refetch()}
+        isRetrying={localActiveActivitySessionQuery.isRefetching}
+      />
+    )
+  }
+  const localActiveActivitySession = localActiveActivitySessionQuery.data
+  if (localActiveActivitySession === undefined || sneakerStats === undefined) {
+    return <ActivityIndicator color={colors.primary} accessibilityLabel="Checking for a run" />
+  }
+
+  if (localActiveActivitySession !== null) {
+    return (
+      <ActiveRunBanner
+        onResumePress={() => router.push('/run/active')}
+        onFinishPress={() =>
+          finishMutation.mutate(localActiveActivitySession.activitySessionId, {
+            onSuccess: (activitySession) =>
+              router.push(`/run/summary/${activitySession.activitySessionId}`),
+          })
+        }
+        isFinishing={finishMutation.isPending}
+        errorMessage={finishMutation.error === null ? null : describeRunError(finishMutation.error)}
+      />
+    )
+  }
+
+  const blockedReason = findStartRunBlockedReason({
+    currentEnergy: sneakerStats.energy.currentEnergy,
+    durability: sneakerStats.durability,
+  })
+  return (
+    <StartRunPanel
+      onStartPress={() => startRun({ sneakerTokenId, efficiency: sneakerStats.efficiency })}
+      blockedReasonMessage={
+        blockedReason === null
+          ? null
+          : describeStartRunBlockedReason({
+              blockedReason,
+              secondsUntilNextEnergyPoint: sneakerStats.energy.secondsUntilNextEnergyPoint,
+            })
+      }
+      isStarting={isStarting}
+      errorMessage={startErrorMessage}
+    />
   )
 }
 
@@ -155,13 +234,5 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.title,
     fontWeight: fontWeights.bold,
     color: colors.textPrimary,
-  },
-  startSection: {
-    gap: spacing.small,
-  },
-  caption: {
-    fontSize: fontSizes.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
   },
 })

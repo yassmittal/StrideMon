@@ -22,8 +22,29 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
+    // D-023: expo-task-manager schedules persisted jobs, which Android refuses without this.
+    // Without it the app crashes at the first GPS fix (expo/expo#48935). Granted at install.
+    permissions: ['android.permission.RECEIVE_BOOT_COMPLETED'],
   },
-  plugins: ['expo-router', 'expo-secure-store', './plugins/with-wallet-app-queries.js'],
+  plugins: [
+    'expo-router',
+    'expo-secure-store',
+    [
+      'expo-location',
+      {
+        // D-020: foreground ("while using the app") permission only. Both stores reject vague copy.
+        locationWhenInUsePermission:
+          'StrideMon uses your location during a walk or run to measure its time, distance and speed. Only your active minutes and distance are recorded on-chain, never your route.',
+        locationAlwaysAndWhenInUsePermission: false,
+        locationAlwaysPermission: false,
+        // Keeps recording with the screen locked: iOS background mode, Android foreground service.
+        isIosBackgroundLocationEnabled: true,
+        isAndroidForegroundServiceEnabled: true,
+        isAndroidBackgroundLocationEnabled: false,
+      },
+    ],
+    './plugins/with-wallet-app-queries.js',
+  ],
   experiments: {
     typedRoutes: true,
   },

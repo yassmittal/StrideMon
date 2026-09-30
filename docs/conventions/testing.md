@@ -53,7 +53,8 @@ Every validation rule has a passing and a failing case at minimum:
 - teleport jump in the middle → that segment is dropped and the rest still counts
 - mocked location → rejected
 - clock set into the future → samples dropped
-- 30 s of standing still inside a walk → that minute doesn't count
+- a full minute of standing still inside a walk → that minute doesn't count, while 30 s of
+  standing inside a walking minute still does (its average stays in the band, D-021)
 
 ## Rules
 

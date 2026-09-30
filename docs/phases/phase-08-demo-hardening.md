@@ -45,6 +45,13 @@ clean visual design, no dead ends, and a rehearsed script.
   a fallback for each step (e.g. a pre-recorded walk if the venue has no GPS signal).
 - Maestro flow for the non-GPS parts (sign-in → home → repair → upgrade → transfer).
 
+### iOS device day (D-022)
+- One day with a borrowed iPhone and an EAS iOS development build (needs a paid Apple
+  Developer account and the device's UDID registered first).
+- Re-run the device checks of Phases 2–7 on it, starting with Phase 4's locked-phone walk:
+  the blue location indicator, background delivery, uploads while locked (D-020's keychain
+  note), and "kill the app and reopen" losing no samples.
+
 ## Definition of done
 - [ ] Two full rehearsals on the hosted stack, on both iOS and Android, without touching a laptop.
 - [ ] The explorer links in the app open the right pages.

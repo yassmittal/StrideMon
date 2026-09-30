@@ -12,8 +12,8 @@ from one codebase.
 | Server state (API) | `@tanstack/react-query` | Caching, retries, polling (settlement), invalidation |
 | Chain state + wallet | `@reown/appkit-react-native` + `@reown/appkit-wagmi-react-native` + `wagmi` 2 + `viem` | Connect wallet, typed contract reads and writes from `@stridemon/chain` ABIs. Versions and pins: D-018 |
 | Small client state | `zustand` | Active-run UI state. Only where React Query and wagmi don't fit |
-| Location | `expo-location` + `expo-task-manager` | Foreground + background GPS |
-| Durable local buffer | `react-native-mmkv` | GPS samples survive the app being killed mid-run |
+| Location | `expo-location` + `expo-task-manager` | GPS that keeps running with the screen locked (foreground service on Android, background mode on iOS). Versions and permissions: D-020 |
+| Durable local buffer | `expo-sqlite` | GPS samples survive the app being killed mid-run. First-party, one table (D-020) |
 | Secrets on device | `expo-secure-store` | Refresh token (Keychain / Keystore) |
 | Wallet session storage | `@react-native-async-storage/async-storage` | AppKit and WalletConnect persist the wallet connection here. Never tokens |
 | Validation | `zod` (via `@stridemon/shared`) | Same schemas as the API |
@@ -32,6 +32,7 @@ Never copy server or chain data into zustand.
 
 ```text
 apps/mobile/
+├── index.ts                     entry: defines the location task and registers the API token source, then loads expo-router (D-020)
 ├── app.config.ts                Expo config (typed), plugins, permissions strings
 ├── plugins/                     local config plugins (plain JS, loaded by path)
 │   └── with-wallet-app-queries.js  lets AppKit see installed wallets (Android <queries>, iOS schemes)
@@ -47,6 +48,8 @@ apps/mobile/
 │   │   ├── history.tsx              past activity sessions
 │   │   └── profile.tsx              wallet, sign out
 │   ├── run/
+│   │   ├── _layout.tsx
+│   │   ├── location-permission.tsx  explainer before the one OS location prompt
 │   │   ├── active.tsx               live run screen
 │   │   └── summary/[activitySessionId].tsx
 │   └── sneaker/
@@ -60,6 +63,7 @@ apps/mobile/
     │   │   ├── components/          SignInPanel.tsx
     │   │   ├── auth-session.ts        restore / start / refresh (single-flight) / sign out
     │   │   ├── auth-session-store.ts  zustand: restoring | signedOut | signedIn(+ access token)
+    │   │   ├── connect-api-client-to-auth-session.ts  registers the token source; imported by index.ts (D-020)
     │   │   ├── sign-in-state.ts       the sign-in steps and their error copy
     │   │   └── auth-token-storage.ts
     │   ├── wallet/                  useWalletConnection, useMonBalance, WalletAddress, MonBalance
@@ -68,9 +72,13 @@ apps/mobile/
     │   │   ├── hooks/               useOwnedSneaker, useSneakerAttributes, useSneakerEnergy, useGameConfig (Phase 3); useRepairSneaker (Phase 6)
     │   │   └── components/          SneakerCard.tsx, SneakerStatRow.tsx, RepairPanel.tsx
     │   ├── activity-session/
-    │   │   ├── location-tracking/   background task, sample buffer, uploader
-    │   │   ├── hooks/               useActiveActivitySession.ts, useFinishActivitySession.ts
-    │   │   └── components/          LiveRunStats.tsx, SessionSummaryCard.tsx
+    │   │   ├── api/                 activity-sessions-api.ts (start, upload samples, finish, fetch one)
+    │   │   ├── location-tracking/   location task, SQLite database + sample buffer + local active-session record,
+    │   │   │                        uploader, location updates, permission request
+    │   │   ├── hooks/               useStartActivitySession, useActiveActivitySession, useFinishActivitySession,
+    │   │   │                        useActivitySession, useLocalActiveActivitySession
+    │   │   ├── live-run-stats.ts      pure: elapsed time, distance, speed and estimated reward from buffered samples
+    │   │   └── components/          LiveRunStats, ActivitySessionSummaryCard, ActiveRunBanner, StartRunPanel
     │   └── rewards/
     │       ├── hooks/               useRewardBalance.ts
     │       └── components/          RewardBalanceCard.tsx
@@ -109,21 +117,23 @@ apps/mobile/
 ```text
 START pressed
   │
-  ├── request foreground permission ("While Using")
-  ├── request background permission (Android: separate prompt; iOS: "Always" upgrade)
-  ├── POST /v1/activity-sessions  → activitySessionId
+  ├── foreground permission ("While using the app") only, after an explainer screen (D-020)
+  ├── POST /v1/activity-sessions  → activitySessionId, saved as the local active session (SQLite)
   └── Location.startLocationUpdatesAsync(TASK_NAME, {
         accuracy: BestForNavigation,
         timeInterval: ~3 s, distanceInterval: ~5 m,
-        foregroundService: { notificationTitle: "Run in progress" },   // Android
-        showsBackgroundLocationIndicator: true,                        // iOS
+        foregroundService: { notificationTitle: "Run in progress" },   // Android: keeps GPS alive when locked
+        showsBackgroundLocationIndicator: true, activityType: Fitness,  // iOS
+        pausesUpdatesAutomatically: false,                              // iOS
       })
 
-Background task (defined at module top level, NOT inside a component)
-  └── for each location → assign sequenceNumber → append to MMKV buffer
+Location task (defined at module top level from index.ts, NOT inside a component or route)
+  ├── drop a fix more than 60 s older than its delivery (Android's cached last location, D-024)
+  ├── for each location → assign the next sequenceNumber → append to the SQLite buffer
+  └── upload unsent samples if the last upload was ≥ 15 s ago (keeps a locked-phone run fresh)
 
-Uploader (runs while the app is alive, every ~15 s and on finish)
-  └── read unsent samples from buffer → POST …/location-samples → mark sent
+Uploader (single-flight; from the task, every ~15 s on the run screen, and on finish)
+  └── read up to 500 unsent samples → POST …/location-samples → mark sent → repeat
 
 STOP pressed
   ├── stop location updates
@@ -134,8 +144,10 @@ STOP pressed
 - The live screen's distance, speed and **estimated** reward come from the local
   buffer plus `@stridemon/shared/game-rules`. They're labelled "estimated" until
   settlement returns the real numbers.
-- If the app is killed mid-run, reopening it finds the active session (via the
-  API) and the buffered samples (via MMKV), and offers **Resume** or **Finish**.
+- If the app is killed mid-run, reopening it finds the local active session and
+  the buffered samples (both in SQLite), checks the session with the API, and
+  offers **Resume** or **Finish** on Home. On Android a swipe-away doesn't stop
+  tracking: the foreground service keeps running and starts the JS headless (D-020).
 - Permission copy (`NSLocationWhenInUseUsageDescription`, etc.) is set in
   `app.config.ts` and says plainly why we need location. Both stores reject
   vague permission strings.

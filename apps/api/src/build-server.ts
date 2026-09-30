@@ -14,6 +14,7 @@ import { errorHandlerPlugin } from './plugins/error-handler'
 import { mongoPlugin } from './plugins/mongo'
 import { mongoIndexesPlugin } from './plugins/mongo-indexes'
 import { rateLimitPlugin } from './plugins/rate-limit'
+import { activitySessionRoutes } from './routes/activity-sessions'
 import { authRoutes } from './routes/auth'
 import { healthRoutes } from './routes/health'
 import { meRoutes } from './routes/me'
@@ -57,6 +58,7 @@ export async function buildServer({
   await fastify.register(authRoutes, { prefix: '/v1' })
   await fastify.register(meRoutes, { prefix: '/v1' })
   await fastify.register(onboardingRoutes, { prefix: '/v1' })
+  await fastify.register(activitySessionRoutes, { prefix: '/v1' })
 
   return fastify
 }

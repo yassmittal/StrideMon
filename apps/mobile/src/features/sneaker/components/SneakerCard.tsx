@@ -3,7 +3,7 @@ import { Card } from '../../../components/ui/Card'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
 import { ProgressBar } from '../../../components/ui/ProgressBar'
 import { StatValue } from '../../../components/ui/StatValue'
-import { formatCountdown } from '../../../lib/format/format-countdown'
+import { formatDuration } from '../../../lib/format/format-duration'
 import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
 import type { SneakerEnergy } from '../hooks/useSneakerEnergy'
 
@@ -58,7 +58,7 @@ export function SneakerCard({
 function describeEnergyRegeneration({ secondsUntilNextEnergyPoint }: SneakerEnergy): string {
   if (secondsUntilNextEnergyPoint === null)
     return 'Full energy. Every point is one rewarded minute.'
-  return `Next energy point in ${formatCountdown(secondsUntilNextEnergyPoint)}`
+  return `Next energy point in ${formatDuration(secondsUntilNextEnergyPoint)}`
 }
 
 const styles = StyleSheet.create({

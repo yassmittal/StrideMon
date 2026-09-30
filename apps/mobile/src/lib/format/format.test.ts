@@ -1,4 +1,6 @@
-import { formatCountdown } from './format-countdown'
+import { formatDistance } from './format-distance'
+import { formatDuration } from './format-duration'
+import { formatSpeed } from './format-speed'
 import { formatTokenAmount } from './format-token-amount'
 import { formatWalletAddress } from './format-wallet-address'
 
@@ -29,18 +31,41 @@ describe('formatTokenAmount', () => {
   })
 })
 
-describe('formatCountdown', () => {
+describe('formatDuration', () => {
   it('shows minutes and zero-padded seconds under an hour', () => {
-    expect(formatCountdown(1799)).toBe('29:59')
-    expect(formatCountdown(65)).toBe('1:05')
+    expect(formatDuration(1799)).toBe('29:59')
+    expect(formatDuration(65)).toBe('1:05')
   })
 
   it('adds hours from an hour up', () => {
-    expect(formatCountdown(3845)).toBe('1:04:05')
+    expect(formatDuration(3845)).toBe('1:04:05')
   })
 
   it('never shows a negative or fractional time', () => {
-    expect(formatCountdown(-3)).toBe('0:00')
-    expect(formatCountdown(4.2)).toBe('0:05')
+    expect(formatDuration(-3)).toBe('0:00')
+    expect(formatDuration(4.2)).toBe('0:05')
+  })
+})
+
+describe('formatDistance', () => {
+  it('shows whole meters under a kilometer', () => {
+    expect(formatDistance(842.7)).toBe('842 m')
+    expect(formatDistance(0)).toBe('0 m')
+  })
+
+  it('shows kilometers with two decimals from a kilometer up', () => {
+    expect(formatDistance(1_000)).toBe('1.00 km')
+    expect(formatDistance(12_345)).toBe('12.35 km')
+  })
+})
+
+describe('formatSpeed', () => {
+  it('shows one decimal of km/h', () => {
+    expect(formatSpeed(5.04)).toBe('5.0 km/h')
+    expect(formatSpeed(12.36)).toBe('12.4 km/h')
+  })
+
+  it('never shows a negative speed', () => {
+    expect(formatSpeed(-3.6)).toBe('0.0 km/h')
   })
 })

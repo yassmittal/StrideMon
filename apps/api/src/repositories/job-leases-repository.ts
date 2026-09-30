@@ -5,7 +5,7 @@ const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
 export type JobLeaseDocument = {
   /** The job name, e.g. `processChainTransactions`. */
   _id: string
-  /** Random per API process. */
+  /** `<hostname>:<apiPort>` of the process holding it (D-019). */
   holderId: string
   /** Anyone may take the lease after this. */
   expiresAt: Date

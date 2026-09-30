@@ -1,7 +1,7 @@
 {
   "name": "@stridemon/mobile",
   "version": "0.0.0",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "dependencies": {
     "@babel/runtime": "^7.29.7",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -18,9 +18,12 @@
     "expo-constants": "~57.0.19",
     "expo-dev-client": "~57.0.19",
     "expo-linking": "~57.0.11",
+    "expo-location": "~57.0.20",
     "expo-router": "~57.0.23",
     "expo-secure-store": "~57.0.4",
+    "expo-sqlite": "~57.0.3",
     "expo-status-bar": "~57.0.1",
+    "expo-task-manager": "~57.0.21",
     "react": "19.2.3",
     "react-native": "0.86.3",
     "react-native-get-random-values": "~1.11.0",

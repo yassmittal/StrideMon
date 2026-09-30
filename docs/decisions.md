@@ -319,3 +319,151 @@ Checked at Phase 3 start (2026-09-29). Refines D-012.
 - **Revisit when:** there's more than one game-server key, or a fee spike leaves saved
   transactions under-priced for long (re-signing at the same nonce with a higher fee would then
   be needed).
+
+## D-020 — Location tracking stack on Expo SDK 57: expo-sqlite, foreground permission only
+
+Checked at Phase 4 start (2026-09-29), against npm, the SDK 57 docs and the installed native
+sources. Supersedes the `react-native-mmkv` row in `architecture/mobile-app.md` and the
+"foreground, then background" permission step in the Phase 4 spec.
+
+- **Decision:**
+  1. **`expo-location` `~57.0.20` and `expo-task-manager` `~57.0.21`**, both at the version
+     `expo install` maps for SDK 57. Their peers are `expo`, `react` and `react-native`, which the
+     app already declares. `expo-task-manager` brings **`unimodules-app-loader` 57.0.2**, a native
+     package (Android `HeadlessAppLoader`), so it gets compiled in. That's expected, not a stray peer.
+  2. **The sample buffer is `expo-sqlite` `~57.0.3`, not `react-native-mmkv`.** Its peers are
+     already declared, and its one dependency is `await-lock` (plain JS). Its config plugin only
+     writes build flags when it gets options, so it isn't listed in `app.config.ts`.
+  3. **Foreground ("while using the app") location permission only.** There's one explainer
+     screen before the one OS prompt. The app never asks for "Always" / "Allow all the time".
+     `app.config.ts` sets `isIosBackgroundLocationEnabled: true` (`UIBackgroundModes: location`),
+     `isAndroidForegroundServiceEnabled: true` (`FOREGROUND_SERVICE` +
+     `FOREGROUND_SERVICE_LOCATION`), `isAndroidBackgroundLocationEnabled: false`, and removes the
+     unused `NSLocationAlways…` strings.
+  4. **The location task is defined from a custom entry file** (`apps/mobile/index.ts`, which then
+     imports `expo-router/entry`), and the entry also registers the API client's access-token
+     source. Routes are loaded lazily, so a task defined in a route file wouldn't exist when the
+     task runs headless.
+  5. **The location task uploads samples too** (throttled, single-flight), not only the run screen.
+     So a walk with the phone locked keeps the server's session fresh for the 30-minute abandon job.
+- **Why:**
+  - `react-native-mmkv` has no SDK 57 mapping. Version 4 is a Nitro module with the peer
+    `react-native-nitro-modules: "*"`, which would be a second native C++ package. 4.3.2 was generated
+    and tested against nitro **0.35.9**, while npm's latest nitro is **0.37.1** (with core
+    template changes in 0.37.0). Nitro 0.35.9 predates RN 0.86, so neither pairing has been shown
+    to work on RN 0.86. An unpinned nitro version is what crashed Android at startup in mmkv issue #980.
+    MMKV's advantage is synchronous speed, and the buffer writes one sample every few seconds.
+    `expo-sqlite` is first-party, and append / read-unsent / mark-sent maps onto one indexed table.
+  - Both platforms start location updates with foreground permission alone (read in the SDK 57
+    source). Android's `startLocationUpdatesAsync` skips its background-permission check when
+    `foregroundService` is set. iOS only calls `ensureForegroundLocationPermissions`, and with
+    `UIBackgroundModes: location` it keeps delivering in the background, showing the blue
+    indicator. Asking for background access would add a second prompt, extra copy and a Google
+    Play background-location declaration, and tracking works without it.
+  - On Android, the location service outlives a swipe-away (`killServiceOnDestroy` defaults to
+    false), and `TaskService` then starts the app's `reactHost` headless. Under the New
+    Architecture that's the same single React host the UI uses, so there's only ever one JS
+    runtime. Refresh-token rotation stays single-flight. `TaskService` also registers a
+    `HeadlessJsTaskContext`, so JS timers and promises keep running in the background.
+  - `expo-location`'s `mocked` flag is **Android-only** (`Location.isFromMockProvider`). On iOS it's
+    absent, and the app sends `isMockedLocation: false`.
+  - `expo-task-manager`'s config plugin is applied automatically and **always** adds `fetch` to
+    iOS `UIBackgroundModes` (read in `plugin/build/withTaskManager.js`). We don't use background
+    fetch. It's harmless, but App Review may ask about it, so it's noted here. Checked with
+    `bunx expo config --type introspect`: Android gets `FOREGROUND_SERVICE` and
+    `FOREGROUND_SERVICE_LOCATION`, with no `ACCESS_BACKGROUND_LOCATION`, and iOS gets only the
+    when-in-use string.
+- **Trade-off:** there's no mock-location signal on iOS until Phase 10's device attestation.
+  Without "Always", tracking can't be *started* from the background, only continued, which is
+  all a run needs. On iOS the refresh token uses secure-store's default `WHEN_UNLOCKED` keychain
+  class, so a locked phone can't refresh an expired access token. Its uploads wait until the phone
+  is unlocked, and the samples stay safe in SQLite in the meantime.
+- **Revisit when:** the iOS device pass (D-022) shows uploads stalling long enough to hit the
+  abandon job (then move the refresh token to `AFTER_FIRST_UNLOCK`), or a feature needs to start
+  tracking from the background (geofenced auto-start).
+
+## D-021 — Activity validation rules, made precise for Phase 4
+
+`architecture/security.md` sets the rules. This entry records the choices Phase 4 had to make
+where the rules were loose, and the test case that contradicted them.
+
+- **Decision:**
+  1. **A minute is a whole 60 s window from the first valid sample.** Segments that cross a
+     minute boundary are split across the minutes in proportion to time. A trailing partial
+     minute never counts.
+  2. **Average-speed rule, as written.** A minute counts when its average speed (distance ÷ time
+     over its non-teleport segments) is 1–20 km/h and no sampling gap longer than 60 s touches
+     it. So 30 s of standing inside a walking minute (average about 2.5 km/h) **still counts**, and
+     `testing.md`'s case becomes "a full minute standing still doesn't count". A player who stops
+     at a crossing doesn't lose the minute.
+  3. **Clock tolerance of 60 s on the session window.** A sample counts if it's within
+     `[startedAt − 60 s, finishedAt + 60 s]` and at most `startedAt + 4 h + 60 s`: the same 60 s
+     the "future of `receivedAt`" rule already allows. `startedAt` and `finishedAt` are server
+     time, and `recordedAt` is the phone's.
+  4. **A sample without an accuracy is dropped**, the same as one worse than 50 m.
+  5. **A rejected run is a result, not an error.** `POST …/finish` answers 200 with
+     `status: 'rejected'` and a `rejectionReason` (`MOCK_LOCATION_DETECTED` or
+     `INSUFFICIENT_ACTIVITY_DATA`, both `ApiErrorCode`s). Finish is idempotent: calling it again on
+     a finished session returns the session as it is. A crash mid-validation leaves `validating`,
+     and the next finish call validates again. Only `abandoned` answers `ACTIVITY_SESSION_NOT_ACTIVE`.
+  6. `calculateHaversineDistanceMeters` lives in `packages/shared/src/geo/`, because the live run
+     screen needs it too. `estimateLiveReward` takes `gameConfig`, like the other reward functions.
+- **Why:** each point is either unspecified in `security.md` or would otherwise punish honest
+  players for a phone clock a few seconds off, or for a finish response lost on a bad connection.
+- **Trade-off:** GPS jitter while standing still can look like slow movement. The device-side
+  `distanceInterval` (5 m) is the first defence. If a real walk shows inflated distance, a
+  server-side anchor filter comes next, with the doc updated first.
+- **Revisit when:** a device walk measures more than 10% off a known route.
+
+## D-022 — iOS device testing is deferred to one day at the end of the MVP
+
+- **Decision:** Phases 4–7 are verified on the Android phone only. iOS gets a single device day
+  (an iPhone borrowed from a mentor) at the end of the MVP, in Phase 8. That day re-runs each
+  phase's device checks, including Phase 4's locked-phone walk.
+- **Why:** there's no iPhone or paid Apple Developer account available now. An EAS iOS
+  development build needs both (internal distribution registers the device's UDID).
+- **Trade-off:** iOS-only problems (the location indicator, background delivery, keychain
+  access while locked, D-020) surface late, all at once. The code keeps iOS options set
+  (`UIBackgroundModes`, `showsBackgroundLocationIndicator`, `activityType`) so that day is a
+  test, not a port.
+- **Revisit when:** an iPhone is available earlier.
+
+## D-023 — The app declares `RECEIVE_BOOT_COMPLETED` for expo-task-manager (Android)
+
+Found on the Android phone at the first Phase 4 run (2026-09-30). Adds to D-020.
+
+- **Decision:** `app.config.ts` lists `android.permission.RECEIVE_BOOT_COMPLETED` in
+  `android.permissions`. It's a normal permission: granted at install, with no prompt.
+- **Why:** the app crashed at the first GPS fix after START with
+  `IllegalArgumentException: requested job be persisted without holding RECEIVE_BOOT_COMPLETED
+  permission`. Read in the installed source (`expo-task-manager` 57.0.21,
+  `TaskManagerUtils.createJobInfo`), every task event is scheduled as a JobScheduler job with
+  `.setPersisted(true)`, and Android refuses persisted jobs without that permission. Neither
+  `expo-task-manager` nor `expo-location` declares it. The surrounding `try` catches
+  `IllegalStateException`, but Android throws `IllegalArgumentException`, so the process dies.
+  `startLocationUpdatesAsync` itself succeeds, so the crash looks unrelated to START. This is the
+  open upstream bug expo/expo#48935, reported against SDK 56. It also affects 57.
+- **Trade-off:** one more line in the manifest that the app doesn't otherwise need. The app never
+  starts tracking at boot: the permission only lets expo-task-manager's persisted jobs be scheduled.
+- **Revisit when:** expo/expo#48935 is fixed in an SDK 57 patch (the library then declares the
+  permission itself), and the line can go.
+
+## D-024 — The location task drops stale fixes (Android's cached last location)
+
+Found on the Android phone in Phase 4 (2026-09-30), by replaying two real runs through the
+validator.
+
+- **Decision:** the location task drops a fix whose timestamp is more than **60 s** older than the
+  moment it's delivered (both from the phone's clock), before it reaches the buffer. The server's
+  validation rules don't change.
+- **Why:** in both runs, the first fix arrived timestamped 550–660 s *before* START: Android hands
+  out its cached last-known location first, and the next fix came ~10 minutes of timestamps later.
+  The server dropped the oldest one (outside the session window) and reported a misleading
+  `deviceClockMismatch`. When a cached fix falls within the 60 s clock tolerance (one did, at −57 s),
+  it's kept and sets where the minute windows start, so a stretch of standing still before START
+  fills up the first minute. Comparing a fix with the phone's own clock at delivery is immune to
+  the phone's clock differing from the server's.
+- **Trade-off:** a fix delivered more than a minute late would be lost. The foreground service
+  delivers fixes within seconds (no deferred updates are configured), so this never happens in a run.
+- **Revisit when:** deferred or batched updates are turned on to save battery. A batch can
+  legitimately be older than 60 s.

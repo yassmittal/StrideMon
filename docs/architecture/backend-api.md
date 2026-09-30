@@ -42,9 +42,10 @@ apps/api/src/
 │
 ├── lib/<domain>/                PURE domain logic. No fastify, no mongo, no viem clients, no I/O
 │   ├── activity-validation/
-│   │   ├── validate-activity.ts
-│   │   ├── haversine-distance.ts
-│   │   └── speed-band.ts
+│   │   ├── validate-activity.ts       composes the rest; security.md → Activity validation
+│   │   ├── filter-plausible-samples.ts
+│   │   ├── bucket-samples-into-minutes.ts
+│   │   └── speed-band.ts              (haversine distance is in @stridemon/shared/geo, D-021)
 │   └── auth/
 │       ├── build-siwe-message.ts
 │       ├── access-token.ts          sign / verify the access JWT (jose)
@@ -234,6 +235,49 @@ Each step is `notStarted` (no outbox record), `pending` (`queued` or
 transaction is signed, so the app can link to the explorer while it waits. The
 Sneaker itself (its id and stats) is read from the chain by the app, never from
 this response.
+
+### Activity session responses (Phase 4)
+
+Every activity-session route answers with `{ activitySession }`:
+
+```json
+{
+  "activitySession": {
+    "activitySessionId": "66f9…",
+    "sneakerTokenId": "7",
+    "status": "settling",
+    "startedAt": "2026-09-29T10:00:00.000Z",
+    "finishedAt": "2026-09-29T10:11:05.000Z",
+    "energyAtStart": 10,
+    "validationResult": { "activeMinutes": 10, "distanceMeters": 842, "averageSpeedKilometersPerHour": 5.05,
+                          "rejectedSampleCount": 2, "warnings": ["lowGpsAccuracy"] },
+    "rejectionReason": null
+  }
+}
+```
+
+Except the sample upload, which answers `{ newSampleCount, duplicateSampleCount }`.
+
+| Route | Errors |
+|-------|--------|
+| `POST /activity-sessions` (201) | `SNEAKER_NOT_OWNED` 403, `SNEAKER_OUT_OF_ENERGY` 409, `SNEAKER_NEEDS_REPAIR` 409, `ACTIVITY_SESSION_ALREADY_ACTIVE` 409 (details name the active `activitySessionId`, so the app can resume it) |
+| `POST …/location-samples` | `NOT_FOUND` 404, `ACTIVITY_SESSION_NOT_ACTIVE` 409, `VALIDATION_FAILED` 400 (over 500 samples) |
+| `POST …/finish` | `NOT_FOUND` 404, `ACTIVITY_SESSION_NOT_ACTIVE` 409 (only when `abandoned`) |
+| `GET …/:activitySessionId` | `NOT_FOUND` 404 (also for someone else's session) |
+
+- **Start** reads the chain (`sneaker-chain-reader`): ownership first, then energy and
+  durability. The "one active session per wallet and per Sneaker" rule is the partial unique
+  indexes. Two concurrent starts can't both insert, because a duplicate key becomes
+  `ACTIVITY_SESSION_ALREADY_ACTIVE`.
+- **Upload** inserts unordered. A duplicate `(activitySessionId, sequenceNumber)` is counted and
+  skipped, so re-sending a batch is harmless. Each upload bumps the session's `updatedAt`.
+- **Finish** moves `active → validating` in one conditional write, validates, then stores
+  `settling` (with `validationResult`) or `rejected` (with `rejectionReason`). It's idempotent:
+  a finished session is returned unchanged, and one left in `validating` by a crash is validated
+  again (D-021). Phase 5 adds the settlement enqueue after validation.
+- **`jobs/abandon-stale-activity-sessions.ts`** runs every minute through `plugins/background-jobs.ts`
+  under its own lease. It marks every `active` session whose `updatedAt` is 30 minutes old as `abandoned`.
+- Sample uploads have their own rate-limit budget (security.md → API hardening).
 
 ## Logging
 

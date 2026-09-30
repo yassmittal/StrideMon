@@ -8,5 +8,6 @@ export {
   calculateDurabilityLoss,
   calculateRewardedMinutes,
   calculateSessionReward,
+  estimateLiveReward,
 } from './reward-estimate'
 export { calculateRepairCost, calculateUpgradeCost } from './sneaker-costs'

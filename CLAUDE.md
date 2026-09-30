@@ -54,7 +54,8 @@ Everything targets **Monad testnet** until Phase 10.
   per new player), so keep it funded from the faucet.
 - **Wallet stack pins (D-018):** AppKit RN 2.0.6 needs **wagmi 2.x** (not 3). WalletConnect packages
   are held at 2.21.10 by root `overrides`, with `valtio` at 2.1.8. Don't bump one on its own.
-- **Running the app on the phone:** start Metro with `cd apps/mobile && bunx expo start --clear`.
+- **Running the app on the phone:** the whole loop (build, find the APK link, install, run, debug) is in
+  `docs/device-testing.md`. Start Metro with `cd apps/mobile && bunx expo start --clear`.
   `bun run dev:mobile` goes through `bun --filter`, which has no TTY, so it prints no QR code.
   `EXPO_PUBLIC_API_BASE_URL` must be the laptop's current LAN IP. On this Mac the Wi-Fi
   is `en1`, so use `ipconfig getifaddr en1` (`en0` prints nothing).
@@ -64,6 +65,15 @@ Everything targets **Monad testnet** until Phase 10.
   traced in the source: the universal provider's `createProviders()` skips a namespace with zero
   accounts, then `WalletConnectConnector.connect` calls `setDefaultChain` on it. After a failed
   connect, clear the app's data so the broken session isn't restored.
+- **The app entry is `apps/mobile/index.ts`, not `expo-router/entry`** (D-020). It defines the
+  location task and registers the API token source before the router loads, because Android
+  starts the JS headless for location fixes. Keep `expo-router/entry` as its last import.
+- **Typed routes live in `.expo/types/router.d.ts`** (gitignored) and only regenerate when
+  `expo start` runs. After adding a route, start Metro once (any port), or the typecheck rejects
+  the new path.
+- **A `bun test` timeout kills the test's spawned processes, including the shared Anvil**, and
+  every later test in that file then fails with "HTTP request failed". Give a slow chain test
+  (for example one that deploys its own contracts) an explicit timeout.
 - Local Expo config plugins are **plain JS** in `apps/mobile/plugins/`, listed by path in
   `app.config.ts`. The config loader can't import a `.ts` file from `app.config.ts`.
 
@@ -73,4 +83,11 @@ Phases 0 to 3 are done (2026-09-29). The contracts are live and verified on Mona
 addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Sign-in (Phase 2) and the
 starter Sneaker, gas drip and Home (Phase 3) were verified on an Android phone with MetaMask.
 The transaction outbox (D-012, D-019) is live and sends the game server's transactions.
-**Next: Phase 4: Activity tracking** (`docs/phases/phase-04-activity-tracking.md`).
+**Now: Phase 4: Activity tracking** (`docs/phases/phase-04-activity-tracking.md`). The code and
+tests are done, and runs work on the Android phone (decisions D-020 to D-024; D-023 and D-024 are
+fixes found on the device). Still open before Phase 4 is done:
+- a 10-minute locked-phone walk outdoors, on a 400 m track, distance within ~10% of laps × 400 m
+- a car ride (as a passenger) that validates to 0 active minutes
+- kill-and-reopen: can't pass on a development build (`docs/device-testing.md` §8). Decide whether
+  to add a build profile with bundled JS now (needs a new decision, D-025) or defer it to Phase 8.
+Then mark Phase 4 done in `docs/README.md` and ask before starting Phase 5 (settlement & rewards).

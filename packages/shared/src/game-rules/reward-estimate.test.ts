@@ -4,6 +4,7 @@ import {
   calculateDurabilityLoss,
   calculateRewardedMinutes,
   calculateSessionReward,
+  estimateLiveReward,
 } from './reward-estimate'
 
 describe('session reward (shared fixtures)', () => {
@@ -29,4 +30,39 @@ describe('session reward (shared fixtures)', () => {
       expect(durabilityLoss).toBe(fixture.expect.durabilityLoss)
     })
   }
+})
+
+describe('estimateLiveReward', () => {
+  it('matches the MVP example after 10 minutes at efficiency 10: 50 SOLE', () => {
+    const rewardAmountWei = estimateLiveReward({
+      elapsedActiveSeconds: 600,
+      efficiency: 10,
+      currentEnergy: 10,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(rewardAmountWei).toBe(50n * 10n ** 18n)
+  })
+
+  it('counts whole minutes only, so 59 seconds earn nothing yet', () => {
+    const rewardAmountWei = estimateLiveReward({
+      elapsedActiveSeconds: 59,
+      efficiency: 10,
+      currentEnergy: 10,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(rewardAmountWei).toBe(0n)
+  })
+
+  it('stops growing once the minutes reach the energy the run started with', () => {
+    const rewardAmountWei = estimateLiveReward({
+      elapsedActiveSeconds: 25 * 60,
+      efficiency: 10,
+      currentEnergy: 4,
+      gameConfig: FIXTURE_GAME_CONFIG,
+    })
+
+    expect(rewardAmountWei).toBe(20n * 10n ** 18n)
+  })
 })

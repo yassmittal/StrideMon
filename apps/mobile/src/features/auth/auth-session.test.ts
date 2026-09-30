@@ -51,7 +51,7 @@ function readAuthSession() {
 
 describe('auth session', () => {
   beforeAll(() => {
-    // The same wiring useRestoreAuthSessionOnLaunch does in the app.
+    // The same wiring index.ts does in the app (connect-api-client-to-auth-session.ts).
     registerAccessTokenSource(authSessionAccessTokenSource)
   })
 

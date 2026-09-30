@@ -30,6 +30,7 @@ function AuthGate() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={isSignedIn}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="run" />
       </Stack.Protected>
       <Stack.Protected guard={!isSignedIn}>
         <Stack.Screen name="(onboarding)" />

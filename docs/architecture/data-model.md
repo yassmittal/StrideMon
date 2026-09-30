@@ -134,9 +134,22 @@ type ActivitySessionDocument = {
 
   rejectionReason: ActivitySessionRejectionReason | null
   createdAt: Date
-  updatedAt: Date
+  updatedAt: Date                        // also bumped by every sample upload (see the cleanup job)
 }
+
+type ActivitySessionRejectionReason =    // each is also an ApiErrorCode
+  | 'MOCK_LOCATION_DETECTED'             // Phase 4
+  | 'INSUFFICIENT_ACTIVITY_DATA'         // Phase 4
+  | 'SNEAKER_TRANSFERRED_DURING_SESSION' // Phase 5
+
+type ActivityValidationWarning =         // security.md → Activity validation
+  | 'lowGpsAccuracy' | 'deviceClockMismatch' | 'sessionTooLong'
+  | 'teleportDetected' | 'samplingGap' | 'vehicleSpeedDetected'
 ```
+
+`validationResult` is set when validation accepts the run, and `rejectionReason` when
+it rejects it. Only one of them is ever non-null. An active session whose `updatedAt`
+is 30 minutes old (no sample upload since) is `abandoned` by the cleanup job.
 
 Indexes:
 
@@ -161,7 +174,7 @@ type LocationSampleDocument = {
   longitude: number
   accuracyMeters: number | null
   speedMetersPerSecond: number | null
-  isMockedLocation: boolean     // Android reports this, and iOS 15+ partially
+  isMockedLocation: boolean     // Android only (expo-location `mocked`); always false from iOS (D-020)
   receivedAt: Date              // server time, used to detect clock tampering
 }
 ```

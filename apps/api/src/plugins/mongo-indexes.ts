@@ -1,7 +1,9 @@
 import fastifyPlugin from 'fastify-plugin'
+import { getActivitySessionsCollection } from '../repositories/activity-sessions-repository'
 import { getAuthNoncesCollection } from '../repositories/auth-nonces-repository'
 import { getAuthSessionsCollection } from '../repositories/auth-sessions-repository'
 import { getChainTransactionsCollection } from '../repositories/chain-transactions-repository'
+import { getLocationSamplesCollection } from '../repositories/location-samples-repository'
 import { getUsersCollection } from '../repositories/users-repository'
 
 /**
@@ -25,6 +27,26 @@ export const mongoIndexesPlugin = fastifyPlugin(
     await getChainTransactionsCollection(database).createIndexes([
       { key: { idempotencyKey: 1 }, unique: true },
       { key: { status: 1, createdAt: 1 } },
+    ])
+    await getActivitySessionsCollection(database).createIndexes([
+      { key: { userId: 1, createdAt: -1 } },
+      // The database, not a read-then-check, enforces one active session per wallet and per Sneaker.
+      {
+        key: { walletAddress: 1 },
+        unique: true,
+        partialFilterExpression: { status: 'active' },
+        name: 'oneActiveSessionPerWallet',
+      },
+      {
+        key: { sneakerTokenId: 1 },
+        unique: true,
+        partialFilterExpression: { status: 'active' },
+        name: 'oneActiveSessionPerSneaker',
+      },
+      { key: { status: 1, updatedAt: 1 } },
+    ])
+    await getLocationSamplesCollection(database).createIndexes([
+      { key: { activitySessionId: 1, sequenceNumber: 1 }, unique: true },
     ])
   },
   { name: 'mongo-indexes', dependencies: ['mongo'] },

@@ -8,7 +8,9 @@
     "./domain": "./src/domain/index.ts",
     "./errors": "./src/errors/index.ts",
     "./game-rules": "./src/game-rules/index.ts",
-    "./game-rules/fixtures": "./src/game-rules/game-rule-fixtures.test-support.ts"
+    "./game-rules/fixtures": "./src/game-rules/game-rule-fixtures.test-support.ts",
+    "./geo": "./src/geo/index.ts",
+    "./units": "./src/units/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -21,7 +21,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 // Anvil's default dev accounts #0 and #1: public, well-known keys that only ever
 // hold Anvil's fake ETH. Never use them on a real network.
-const ANVIL_DEPLOYER_PRIVATE_KEY =
+export const ANVIL_DEPLOYER_PRIVATE_KEY =
   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
 export const ANVIL_GAME_SERVER_PRIVATE_KEY =
   '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d'
