@@ -45,6 +45,11 @@ clean visual design, no dead ends, and a rehearsed script.
   a fallback for each step (e.g. a pre-recorded walk if the venue has no GPS signal).
 - Maestro flow for the non-GPS parts (sign-in → home → repair → upgrade → transfer).
 
+### Phase 4's outdoor checks (D-025)
+- On the hosted API with the bundled-JS build: a 10-minute locked-phone walk on a 400 m track
+  (distance within ~10% of laps × 400 m), a car ride as a passenger (0 active minutes), and
+  kill-and-reopen mid-walk (no samples lost). Run them on Android, and again on the iOS day.
+
 ### iOS device day (D-022)
 - One day with a borrowed iPhone and an EAS iOS development build (needs a paid Apple
   Developer account and the device's UDID registered first).

@@ -83,11 +83,8 @@ Phases 0 to 3 are done (2026-09-29). The contracts are live and verified on Mona
 addresses are in `packages/contracts/README.md` and `@stridemon/chain`. Sign-in (Phase 2) and the
 starter Sneaker, gas drip and Home (Phase 3) were verified on an Android phone with MetaMask.
 The transaction outbox (D-012, D-019) is live and sends the game server's transactions.
-**Now: Phase 4: Activity tracking** (`docs/phases/phase-04-activity-tracking.md`). The code and
-tests are done, and runs work on the Android phone (decisions D-020 to D-024; D-023 and D-024 are
-fixes found on the device). Still open before Phase 4 is done:
-- a 10-minute locked-phone walk outdoors, on a 400 m track, distance within ~10% of laps × 400 m
-- a car ride (as a passenger) that validates to 0 active minutes
-- kill-and-reopen: can't pass on a development build (`docs/device-testing.md` §8). Decide whether
-  to add a build profile with bundled JS now (needs a new decision, D-025) or defer it to Phase 8.
-Then mark Phase 4 done in `docs/README.md` and ask before starting Phase 5 (settlement & rewards).
+Phase 4 (activity tracking) is done (2026-09-30): runs start, track, upload and validate on the
+Android phone (D-020 to D-024). Its outdoor walk, car and kill-and-reopen checks moved to Phase 8,
+which brings the hosted API and a bundled-JS build (D-025).
+**Next: Phase 5: Settlement & rewards** (`docs/phases/phase-05-settlement-and-rewards.md`). The next
+decision number is D-026.

@@ -54,11 +54,15 @@ foreground permission only), D-021 (validation rules made precise), D-022 (iOS l
 Minting rewards and changing durability (Phase 5). Maps or route drawing (nice to have; Phase 8 or later).
 
 ## Definition of done
-- [ ] A 10-minute outdoor walk on **Android**, with the phone locked in a pocket, produces a sensible distance (within about 10% of a known route: laps of a 400 m running track). iOS repeats this on the device day in Phase 8 (D-022).
-- [ ] Driving in a car produces 0 active minutes.
-- [ ] Killing the app mid-walk and reopening it loses no samples. This needs a build with its JS bundled in: a development build can't restart in the background (`device-testing.md` §8).
-- [ ] Starting a second session while one is active is refused (the DB index enforces it).
-- [ ] The validation test suite covers every rule in `security.md`.
+
+Closed on 2026-09-30 with the walk, car and kill-and-reopen checks moved to Phase 8
+(D-025): they need the hosted API and a bundled-JS build.
+
+- [ ] *(Phase 8, D-025)* A 10-minute outdoor walk on **Android**, with the phone locked in a pocket, produces a sensible distance (within about 10% of a known route: laps of a 400 m running track). iOS repeats this on the device day in Phase 8 (D-022).
+- [ ] *(Phase 8, D-025)* Driving in a car produces 0 active minutes.
+- [ ] *(Phase 8, D-025)* Killing the app mid-walk and reopening it loses no samples. This needs a build with its JS bundled in: a development build can't restart in the background (`device-testing.md` §8).
+- [x] Starting a second session while one is active is refused (the DB index enforces it).
+- [x] The validation test suite covers every rule in `security.md`.
 
 ## Demo check
 Walk around the block, press STOP, and see validated minutes and distance.

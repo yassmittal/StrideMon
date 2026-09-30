@@ -46,7 +46,7 @@ these documents, and when a decision changes, the doc changes first.
 | 1 — Smart contracts | Done (deployed and verified on Monad testnet, `cast` loop run on-chain, 2026-09-29) |
 | 2 — Wallet & sign-in | Done (connect, sign-in, restore, sign-out and revoke verified on an Android phone with MetaMask, 2026-09-29) |
 | 3 — Starter Sneaker & home | Done (starter mint + gas drip verified on an Android phone and live on Monad testnet in ~5 s; outbox crash recovery tested against Anvil, 2026-09-29) |
-| 4 — Activity tracking | Code and tests done; runs verified on Android (2026-09-30). Open: 10-minute track walk, car check, kill-and-reopen (needs bundled JS). iOS on the Phase 8 device day (D-022) |
+| 4 — Activity tracking | Done (runs verified on an Android phone, 2026-09-30). The outdoor walk, car and kill-and-reopen checks move to Phase 8 (D-025); iOS too (D-022) |
 | 5 — Settlement & rewards | Not started |
 | 6 — Repair & upgrade | Not started |
 | 7 — Sneaker transfer (**MVP complete**) | Not started |

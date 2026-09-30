@@ -467,3 +467,23 @@ validator.
   delivers fixes within seconds (no deferred updates are configured), so this never happens in a run.
 - **Revisit when:** deferred or batched updates are turned on to save battery. A batch can
   legitimately be older than 60 s.
+
+## D-025 — Phase 4 closes with its outdoor device checks moved to Phase 8
+
+- **Decision:** Phase 4 is done. Three of its Definition-of-done checks move to Phase 8, where
+  the hosted API and a bundled-JS build exist:
+  - the 10-minute locked-phone walk on a 400 m track (distance within ~10%)
+  - the car ride that validates to 0 active minutes
+  - kill-and-reopen losing no samples
+- **Why:** in development the app gets its JS from Metro on the laptop and talks to the API on the
+  laptop, both over the home Wi-Fi. A 400 m track or a car ride is out of Wi-Fi range. What *was*
+  verified on the Android phone (2026-09-30): START, the location permission, live stats, samples
+  uploaded, STOP, and server validation of real runs (1 active minute, 103 m, 6.2 km/h on one; a
+  correctly-0 slow run on another). Replaying those runs found D-023 and D-024, both fixed. The
+  validation rules themselves are covered by the synthetic-trace suite, including a 1 km route
+  within 1% and a 50 km/h drive giving 0 minutes.
+- **Trade-off:** real-world distance accuracy and the car case are unproven until Phase 8. If they
+  fail there, the rules in `security.md` get tuned then, with a decision entry. That's later
+  than planned, but Phase 5's settlement only consumes `activeMinutes` and `distanceMeters`.
+- **Revisit when:** the API is hosted (Phase 8), or a walk can be done in Wi-Fi range. The app
+  buffers samples offline and uploads them later, but START and STOP need the API.
