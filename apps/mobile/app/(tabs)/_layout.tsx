@@ -5,6 +5,7 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: colors.primary }}>
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="sneaker" options={{ title: 'Sneaker' }} />
       <Tabs.Screen name="history" options={{ title: 'History' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>

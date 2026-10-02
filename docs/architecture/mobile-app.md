@@ -69,8 +69,12 @@ apps/mobile/
     │   ├── wallet/                  useWalletConnection, useMonBalance, WalletAddress, MonBalance
     │   ├── onboarding/              useStarterSneakerOnboarding, StarterSneakerMinting ("Minting your Sneaker…")
     │   ├── sneaker/
-    │   │   ├── hooks/               useOwnedSneaker, useSneakerAttributes, useSneakerEnergy, useGameConfig (Phase 3); useRepairSneaker (Phase 6)
-    │   │   └── components/          SneakerCard.tsx, SneakerStatRow.tsx, RepairPanel.tsx
+    │   │   ├── hooks/               useOwnedSneaker, useSneakerAttributes, useSneakerEnergy, useGameConfig (Phase 3);
+    │   │   │                        useSneakerGameTransaction, useRepairSneaker, useUpgradeSneaker (Phase 6)
+    │   │   ├── sneaker-game-transaction-state.ts  the transaction state union and its error copy
+    │   │   ├── sneaker-action-availability.ts     why Repair / Upgrade is disabled
+    │   │   └── components/          SneakerCard; RepairPanel and UpgradePanel (thin configs of SneakerActionPanel),
+    │   │                            SneakerTransactionSheet (confirm → wallet → chain → done), StatChangeRow
     │   ├── activity-session/
     │   │   ├── api/                 activity-sessions-api.ts (start, upload samples, finish, fetch one)
     │   │   ├── location-tracking/   location task, SQLite database + sample buffer + local active-session record,
