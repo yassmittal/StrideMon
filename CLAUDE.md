@@ -74,6 +74,9 @@ Everything targets **Monad testnet** until Phase 10.
 - **A `bun test` timeout kills the test's spawned processes, including the shared Anvil**, and
   every later test in that file then fails with "HTTP request failed". Give a slow chain test
   (for example one that deploys its own contracts) an explicit timeout.
+- **Match viem errors by `name`/`code`, never `instanceof`.** Metro can load viem's ESM and CJS
+  builds side by side, so a wallet cancel from wagmi isn't an instance of the app's
+  `UserRejectedRequestError`. Use `lib/chain/error-chain.ts` and `isWalletRejection`.
 - Local Expo config plugins are **plain JS** in `apps/mobile/plugins/`, listed by path in
   `app.config.ts`. The config loader can't import a `.ts` file from `app.config.ts`.
 
@@ -89,5 +92,8 @@ which brings the hosted API and a bundled-JS build (D-025).
 Phase 5 (settlement & rewards) is done (2026-10-02): STOP settles on Monad through the outbox, the
 summary shows the real reward, and History lists past runs (D-026). Verified on the Android phone
 (+25 SOLE for a 5-minute walk, matching the chain).
-**Next: Phase 6: Repair & upgrade** (`docs/phases/phase-06-repair-and-upgrade.md`). The next
+Phase 6 (repair & upgrade) is done (2026-10-03): the Sneaker tab repairs and upgrades through the
+player's own wallet with one shared hook (`useSneakerGameTransaction`), verified on the Android phone
+(repair 96 → 100, level 1 → 2, next run 6 SOLE/min).
+**Next: Phase 7: Sneaker transfer** (`docs/phases/phase-07-sneaker-transfer.md`). The next
 decision number is D-027.

@@ -48,7 +48,7 @@ these documents, and when a decision changes, the doc changes first.
 | 3 — Starter Sneaker & home | Done (starter mint + gas drip verified on an Android phone and live on Monad testnet in ~5 s; outbox crash recovery tested against Anvil, 2026-09-29) |
 | 4 — Activity tracking | Done (runs verified on an Android phone, 2026-09-30). The outdoor walk, car and kill-and-reopen checks move to Phase 8 (D-025); iOS too (D-022) |
 | 5 — Settlement & rewards | Done (a 5-minute walk settled +25 SOLE, durability −2 on an Android phone, matching the chain and `tokenURI`, 2026-10-02) |
-| 6 — Repair & upgrade | Not started |
+| 6 — Repair & upgrade | Done (repair 96 → 100 for 2.8 SOLE, upgrade 1 → 2 for 50 SOLE, wallet cancel, and the next run paying 6 SOLE/min verified on an Android phone, 2026-10-03). The durability-below-50 penalty was skipped |
 | 7 — Sneaker transfer (**MVP complete**) | Not started |
 | 8 — Demo hardening | Not started |
 | 9 — Marketplace (optional) | Not started |

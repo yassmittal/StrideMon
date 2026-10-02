@@ -32,11 +32,14 @@ involved.
 Partial repairs, and attribute points or stat allocation.
 
 ## Definition of done
-- [ ] Repair at durability 72 costs what `quoteRepairCost` returns, and the balance and durability update on-chain.
-- [ ] Upgrade 1 → 2 costs 50, and efficiency goes 10 → 12, visible in `tokenURI`.
-- [ ] The next settled session uses efficiency 12 (reward goes up).
-- [ ] Every disabled state and wallet-rejection path is handled.
-- [ ] Repair and upgrade share one hook with no duplicated transaction logic.
+- [x] Repair at durability 72 costs what `quoteRepairCost` returns, and the balance and durability update on-chain.
+  (Verified on the phone at durability 96: 2.8 SOLE, 96 → 100.)
+- [x] Upgrade 1 → 2 costs 50, and efficiency goes 10 → 12, visible in `tokenURI`.
+- [x] The next settled session uses efficiency 12 (reward goes up): 6 SOLE per minute, up from 5.
+- [x] Every disabled state and wallet-rejection path is handled.
+- [x] Repair and upgrade share one hook with no duplicated transaction logic.
+
+The optional durability-below-50 penalty was not built.
 
 ## Demo check
 `MVP.md` §21 Demo 5: use the earned rewards to go from level 1 to 2.
