@@ -1,9 +1,8 @@
-import { SOLE_TOKEN_DECIMALS, SOLE_TOKEN_SYMBOL } from '@stridemon/chain'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
 import { Card } from '../../../components/ui/Card'
 import { ErrorState } from '../../../components/ui/ErrorState'
 import { StatValue } from '../../../components/ui/StatValue'
-import { formatTokenAmount } from '../../../lib/format/format-token-amount'
+import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
 import { colors, fontSizes } from '../../../theme'
 
 type RewardBalanceCardProps = {
@@ -52,17 +51,7 @@ function RewardBalanceContent({
       />
     )
   }
-  return (
-    <StatValue
-      label="SOLE balance"
-      size="large"
-      value={formatTokenAmount({
-        amountWei: rewardBalanceWei,
-        decimals: SOLE_TOKEN_DECIMALS,
-        symbol: SOLE_TOKEN_SYMBOL,
-      })}
-    />
-  )
+  return <StatValue label="SOLE balance" size="large" value={formatSoleAmount(rewardBalanceWei)} />
 }
 
 const styles = StyleSheet.create({

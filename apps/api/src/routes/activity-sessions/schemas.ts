@@ -1,6 +1,8 @@
 import {
+  activitySessionPageSchema,
   activitySessionParamsSchema,
   activitySessionResponseSchema,
+  listActivitySessionsQuerySchema,
   startActivitySessionBodySchema,
   uploadLocationSamplesBodySchema,
   uploadLocationSamplesResponseSchema,
@@ -37,4 +39,12 @@ export const readActivitySessionRouteSchema = {
   security: [{ bearerAuth: [] }],
   params: activitySessionParamsSchema,
   response: { 200: activitySessionResponseSchema },
+}
+
+export const listActivitySessionsRouteSchema = {
+  tags: ['activity-sessions'],
+  summary: 'Your activity sessions, newest first (cursor-paginated)',
+  security: [{ bearerAuth: [] }],
+  querystring: listActivitySessionsQuerySchema,
+  response: { 200: activitySessionPageSchema },
 }

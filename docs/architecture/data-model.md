@@ -123,13 +123,13 @@ type ActivitySessionDocument = {
     warnings: ActivityValidationWarning[]
   } | null
 
-  settlement: {
-    chainTransactionId: ObjectId
-    transactionHash: string | null
-    rewardAmountWei: string | null        // from the SessionSettled event, not our estimate
-    durabilityLoss: number | null
-    rewardedMinutes: number | null
-    settledAt: Date | null
+  settlement: {                          // written once, when settled (D-026)
+    chainTransactionId: ObjectId | null  // null only for a 0-minute run (no transaction sent)
+    transactionHash: string | null       // null only for a 0-minute run
+    rewardAmountWei: string              // from the SessionSettled event, not our estimate
+    durabilityLoss: number
+    rewardedMinutes: number
+    settledAt: Date
   } | null
 
   rejectionReason: ActivitySessionRejectionReason | null
@@ -148,7 +148,8 @@ type ActivityValidationWarning =         // security.md → Activity validation
 ```
 
 `validationResult` is set when validation accepts the run, and `rejectionReason` when
-it rejects it. Only one of them is ever non-null. An active session whose `updatedAt`
+it rejects it. Only one of them is non-null, except for `SNEAKER_TRANSFERRED_DURING_SESSION`:
+that run passed validation, so it keeps its `validationResult`. An active session whose `updatedAt`
 is 30 minutes old (no sample upload since) is `abandoned` by the cleanup job.
 
 Indexes:

@@ -3,6 +3,8 @@ export const fontSizes = {
   body: 16,
   title: 22,
   display: 32,
+  /** The one number a result screen is about: "+50 SOLE". */
+  hero: 48,
 } as const
 
 export const fontWeights = {

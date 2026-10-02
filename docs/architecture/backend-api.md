@@ -274,7 +274,13 @@ Except the sample upload, which answers `{ newSampleCount, duplicateSampleCount 
 - **Finish** moves `active → validating` in one conditional write, validates, then stores
   `settling` (with `validationResult`) or `rejected` (with `rejectionReason`). It's idempotent:
   a finished session is returned unchanged, and one left in `validating` by a crash is validated
-  again (D-021). Phase 5 adds the settlement enqueue after validation.
+  again (D-021). A valid run is then queued for settlement (`settleSession:<activitySessionId>`),
+  also on a retried finish, and a 0-minute run is `settled` at once with no transaction (D-026).
+- **Settlement** (Phase 5): on the receipt, the outbox job reads `SessionSettled` and writes
+  `settlement` + `settled`. A simulated `NotSneakerOwner` revert rejects the session with
+  `SNEAKER_TRANSFERRED_DURING_SESSION`.
+- **History** `GET /activity-sessions?cursor=…&limit=20` (max 50) returns `{ items, nextCursor }`,
+  newest first. The cursor is opaque; one the API didn't issue is `VALIDATION_FAILED`.
 - **`jobs/abandon-stale-activity-sessions.ts`** runs every minute through `plugins/background-jobs.ts`
   under its own lease. It marks every `active` session whose `updatedAt` is 30 minutes old as `abandoned`.
 - Sample uploads have their own rate-limit budget (security.md → API hardening).

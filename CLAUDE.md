@@ -86,5 +86,8 @@ The transaction outbox (D-012, D-019) is live and sends the game server's transa
 Phase 4 (activity tracking) is done (2026-09-30): runs start, track, upload and validate on the
 Android phone (D-020 to D-024). Its outdoor walk, car and kill-and-reopen checks moved to Phase 8,
 which brings the hosted API and a bundled-JS build (D-025).
-**Next: Phase 5: Settlement & rewards** (`docs/phases/phase-05-settlement-and-rewards.md`). The next
-decision number is D-026.
+Phase 5 (settlement & rewards) is done (2026-10-02): STOP settles on Monad through the outbox, the
+summary shows the real reward, and History lists past runs (D-026). Verified on the Android phone
+(+25 SOLE for a 5-minute walk, matching the chain).
+**Next: Phase 6: Repair & upgrade** (`docs/phases/phase-06-repair-and-upgrade.md`). The next
+decision number is D-027.

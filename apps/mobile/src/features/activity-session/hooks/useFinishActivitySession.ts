@@ -7,6 +7,7 @@ import { clearLocalActiveActivitySession } from '../location-tracking/local-acti
 import { flushLocationSamples } from '../location-tracking/location-sample-uploader'
 import { stopLocationTracking } from '../location-tracking/location-updates'
 import { buildActivitySessionQueryKey } from './useActivitySession'
+import { ACTIVITY_SESSION_HISTORY_QUERY_KEY } from './useActivitySessionHistory'
 import { LOCAL_ACTIVE_ACTIVITY_SESSION_QUERY_KEY } from './useLocalActiveActivitySession'
 
 /**
@@ -29,6 +30,7 @@ export function useFinishActivitySession() {
     // never re-renders as "no run in progress" on its way out.
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: LOCAL_ACTIVE_ACTIVITY_SESSION_QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: ACTIVITY_SESSION_HISTORY_QUERY_KEY })
     },
   })
 }

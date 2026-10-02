@@ -1,9 +1,10 @@
 import { type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
 import type { ChainTransactionKind } from '@stridemon/shared/domain'
-import { type Abi, type Address, getAddress } from 'viem'
+import { type Abi, type Address, getAddress, type Hex } from 'viem'
 import {
   mintStarterSneakerPayloadSchema,
   sendGasDripPayloadSchema,
+  settleSessionPayloadSchema,
 } from '../lib/chain-transactions/chain-transaction-payloads'
 
 /** What an outbox record asks the chain to do. */
@@ -38,6 +39,26 @@ export function buildChainTransactionCall(
     case 'sendGasDrip': {
       const { walletAddress, amountWei } = sendGasDripPayloadSchema.parse(payload)
       return { to: getAddress(walletAddress), valueWei: BigInt(amountWei), contractCall: null }
+    }
+    case 'settleSession': {
+      const settlement = settleSessionPayloadSchema.parse(payload)
+      return {
+        to: contractAddresses.sneakerGame,
+        valueWei: 0n,
+        contractCall: {
+          abi: sneakerGameAbi,
+          functionName: 'settleSession',
+          args: [
+            {
+              sessionId: settlement.onChainSessionId as Hex,
+              tokenId: BigInt(settlement.sneakerTokenId),
+              player: getAddress(settlement.walletAddress),
+              activeMinutes: settlement.activeMinutes,
+              distanceMeters: settlement.distanceMeters,
+            },
+          ],
+        },
+      }
     }
     default: {
       const unhandledKind: never = kind

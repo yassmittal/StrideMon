@@ -6,7 +6,7 @@ import { Screen } from '../../../src/components/ui/Screen'
 import { ActivitySessionSummaryCard } from '../../../src/features/activity-session/components/ActivitySessionSummaryCard'
 import { useActivitySession } from '../../../src/features/activity-session/hooks/useActivitySession'
 
-/** How a finished run was judged. Phase 5 adds settlement polling and the reward. */
+/** A finished run: settling on Monad, then the SOLE it earned. Opened after STOP and from History. */
 export default function ActivitySessionSummaryScreen() {
   const { activitySessionId } = useLocalSearchParams<{ activitySessionId: string }>()
   const activitySessionQuery = useActivitySession(activitySessionId)
@@ -28,7 +28,10 @@ export default function ActivitySessionSummaryScreen() {
   return (
     <Screen isScrollable>
       <ActivitySessionSummaryCard activitySession={activitySessionQuery.data} />
-      <Button label="Back to Home" onPress={() => router.dismissTo('/')} />
+      <Button
+        label="Done"
+        onPress={() => (router.canGoBack() ? router.back() : router.dismissTo('/'))}
+      />
     </Screen>
   )
 }

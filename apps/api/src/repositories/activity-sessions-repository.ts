@@ -23,9 +23,23 @@ export type ActivitySessionDocument = {
   energyAtStart: number
   validationResult: ActivityValidationResult | null
   rejectionReason: ActivitySessionRejectionReason | null
+  /** Written once, when the session is settled (D-026). */
+  settlement: ActivitySessionSettlementRecord | null
   createdAt: Date
   /** Also bumped by every sample upload: the abandon job reads it. */
   updatedAt: Date
+}
+
+/** What the chain reported in `SessionSettled`, never our estimate. */
+export type ActivitySessionSettlementRecord = {
+  /** `null` only for a 0-minute run, which settles without a transaction. */
+  chainTransactionId: ObjectId | null
+  transactionHash: string | null
+  /** Wei as a decimal string. */
+  rewardAmountWei: string
+  durabilityLoss: number
+  rewardedMinutes: number
+  settledAt: Date
 }
 
 export function getActivitySessionsCollection(database: Db): Collection<ActivitySessionDocument> {
@@ -69,6 +83,7 @@ export async function insertActiveActivitySession(
     energyAtStart,
     validationResult: null,
     rejectionReason: null,
+    settlement: null,
     createdAt: now,
     updatedAt: now,
   }
@@ -128,7 +143,7 @@ export async function markActivitySessionValidating(
   return updateResult.modifiedCount === 1
 }
 
-/** validating → settling, with the validated numbers. Phase 5 enqueues the settlement. */
+/** validating → settling, with the validated numbers. The finish handler then enqueues the settlement. */
 export async function markActivitySessionSettling(
   database: Db,
   {
@@ -143,6 +158,48 @@ export async function markActivitySessionSettling(
   )
 }
 
+/**
+ * validating → settled for a run with 0 active minutes: nothing to send to the
+ * chain, so it settles at once with no reward.
+ */
+export async function markActivitySessionSettledWithoutTransaction(
+  database: Db,
+  {
+    activitySessionId,
+    validationResult,
+    now,
+  }: { activitySessionId: ObjectId; validationResult: ActivityValidationResult; now: Date },
+): Promise<void> {
+  const settlement: ActivitySessionSettlementRecord = {
+    chainTransactionId: null,
+    transactionHash: null,
+    rewardAmountWei: '0',
+    durabilityLoss: 0,
+    rewardedMinutes: 0,
+    settledAt: now,
+  }
+  await getActivitySessionsCollection(database).updateOne(
+    { _id: activitySessionId, status: 'validating' },
+    { $set: { status: 'settled', validationResult, settlement, updatedAt: now } },
+  )
+}
+
+/** settling → settled, with what the `SessionSettled` event reported. Safe to repeat. */
+export async function markActivitySessionSettled(
+  database: Db,
+  {
+    activitySessionId,
+    settlement,
+    now,
+  }: { activitySessionId: ObjectId; settlement: ActivitySessionSettlementRecord; now: Date },
+): Promise<void> {
+  await getActivitySessionsCollection(database).updateOne(
+    { _id: activitySessionId, status: 'settling' },
+    { $set: { status: 'settled', settlement, updatedAt: now } },
+  )
+}
+
+/** validating → rejected (validation said no), or settling → rejected (the chain said no). */
 export async function markActivitySessionRejected(
   database: Db,
   {
@@ -156,7 +213,7 @@ export async function markActivitySessionRejected(
   },
 ): Promise<void> {
   await getActivitySessionsCollection(database).updateOne(
-    { _id: activitySessionId, status: 'validating' },
+    { _id: activitySessionId, status: { $in: ['validating', 'settling'] } },
     { $set: { status: 'rejected', rejectionReason, updatedAt: now } },
   )
 }
@@ -171,4 +228,36 @@ export async function abandonActivitySessionsIdleSince(
     { $set: { status: 'abandoned', updatedAt: now } },
   )
   return updateResult.modifiedCount
+}
+
+/**
+ * One page of the user's history, newest first. `after` is the last session of the
+ * previous page. Reads one extra, so the caller knows whether another page exists.
+ */
+export function listActivitySessionsOfUser(
+  database: Db,
+  {
+    userId,
+    after,
+    limit,
+  }: {
+    userId: ObjectId
+    after: { createdAt: Date; activitySessionId: ObjectId } | null
+    limit: number
+  },
+): Promise<ActivitySessionDocument[]> {
+  const afterFilter =
+    after === null
+      ? {}
+      : {
+          $or: [
+            { createdAt: { $lt: after.createdAt } },
+            { createdAt: after.createdAt, _id: { $lt: after.activitySessionId } },
+          ],
+        }
+  return getActivitySessionsCollection(database)
+    .find({ userId, ...afterFilter })
+    .sort({ createdAt: -1, _id: -1 })
+    .limit(limit)
+    .toArray()
 }

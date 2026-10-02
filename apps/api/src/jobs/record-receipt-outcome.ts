@@ -1,9 +1,15 @@
-import type { Db } from 'mongodb'
+import { type Db, ObjectId } from 'mongodb'
 import type { TransactionReceipt } from 'viem'
 import {
   mintStarterSneakerPayloadSchema,
   sendGasDripPayloadSchema,
+  settleSessionPayloadSchema,
 } from '../lib/chain-transactions/chain-transaction-payloads'
+import { readSessionSettledEvent } from '../lib/chain-transactions/read-session-settled-event'
+import {
+  markActivitySessionRejected,
+  markActivitySessionSettled,
+} from '../repositories/activity-sessions-repository'
 import {
   type ChainTransactionDocument,
   markChainTransactionConfirmed,
@@ -45,7 +51,7 @@ export async function recordReceiptOutcome(
 
   // Side effect first: if the process dies before `confirmed` is written, the
   // next run finds the receipt again and repeats this idempotent write.
-  await applyConfirmedSideEffect(options.database, chainTransaction, now)
+  await applyConfirmedSideEffect(options.database, chainTransaction, receipt, now)
   await markChainTransactionConfirmed(options.database, { chainTransactionId, now })
   options.log.info(
     {
@@ -57,9 +63,28 @@ export async function recordReceiptOutcome(
   )
 }
 
-async function applyConfirmedSideEffect(
+/**
+ * A settlement the simulation refused because the Sneaker changed hands mid-run
+ * rejects the session (phase 5). Any other revert leaves it `settling` (D-026).
+ */
+export async function recordSimulatedRevert(
   database: Db,
   { kind, payload }: ChainTransactionDocument,
+  revertReason: string,
+): Promise<void> {
+  if (kind !== 'settleSession' || !revertReason.startsWith('NotSneakerOwner(')) return
+  const { activitySessionId } = settleSessionPayloadSchema.parse(payload)
+  await markActivitySessionRejected(database, {
+    activitySessionId: new ObjectId(activitySessionId),
+    rejectionReason: 'SNEAKER_TRANSFERRED_DURING_SESSION',
+    now: new Date(),
+  })
+}
+
+async function applyConfirmedSideEffect(
+  database: Db,
+  { _id: chainTransactionId, kind, payload }: ChainTransactionDocument,
+  receipt: TransactionReceipt,
   now: Date,
 ): Promise<void> {
   switch (kind) {
@@ -71,6 +96,26 @@ async function applyConfirmedSideEffect(
     case 'sendGasDrip': {
       const { walletAddress } = sendGasDripPayloadSchema.parse(payload)
       await markUserReceivedGasDrip(database, { walletAddress, now })
+      return
+    }
+    case 'settleSession': {
+      const { activitySessionId, onChainSessionId } = settleSessionPayloadSchema.parse(payload)
+      const sessionSettled = readSessionSettledEvent(receipt.logs, onChainSessionId)
+      if (sessionSettled === null) {
+        throw new Error(`No SessionSettled event in ${receipt.transactionHash}`)
+      }
+      await markActivitySessionSettled(database, {
+        activitySessionId: new ObjectId(activitySessionId),
+        settlement: {
+          chainTransactionId,
+          transactionHash: receipt.transactionHash,
+          rewardAmountWei: sessionSettled.rewardAmountWei.toString(),
+          durabilityLoss: sessionSettled.durabilityLoss,
+          rewardedMinutes: sessionSettled.rewardedMinutes,
+          settledAt: now,
+        },
+        now,
+      })
       return
     }
     default: {

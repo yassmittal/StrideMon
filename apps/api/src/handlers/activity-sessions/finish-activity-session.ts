@@ -6,19 +6,23 @@ import type { AuthenticatedUser } from '../../plugins/authentication'
 import {
   type ActivitySessionDocument,
   markActivitySessionRejected,
+  markActivitySessionSettledWithoutTransaction,
   markActivitySessionSettling,
   markActivitySessionValidating,
 } from '../../repositories/activity-sessions-repository'
 import { listLocationSamplesOfActivitySession } from '../../repositories/location-samples-repository'
+import { enqueueSessionSettlement } from './enqueue-session-settlement'
 import { getOwnActivitySession } from './get-own-activity-session'
 import { toActivitySession } from './to-activity-session'
 
 const HTTP_STATUS_CONFLICT = 409
 
 /**
- * Ends a session and validates it: `settling` with the validated numbers, or
- * `rejected` with a reason (D-021). Safe to call again: a finished session comes
- * back unchanged, and one a crash left in `validating` is validated again.
+ * Ends a session, validates it (D-021) and queues its settlement on Monad: `settling`
+ * with the validated numbers, `settled` straight away for 0 active minutes, or
+ * `rejected` with a reason. Safe to call again: a finished session comes back
+ * unchanged, one a crash left in `validating` is validated again, and a `settling`
+ * one has its (idempotent) settlement enqueued again (D-026).
  */
 export async function finishActivitySession({
   database,
@@ -45,10 +49,13 @@ export async function finishActivitySession({
     await markActivitySessionValidating(database, { activitySessionId: activitySession._id, now })
   }
 
-  const finishedActivitySession = await readActivitySession()
+  let finishedActivitySession = await readActivitySession()
   if (finishedActivitySession.status === 'validating') {
     await validateAndRecord({ database, activitySession: finishedActivitySession, now })
-    return { activitySession: toActivitySession(await readActivitySession()) }
+    finishedActivitySession = await readActivitySession()
+  }
+  if (finishedActivitySession.status === 'settling') {
+    await enqueueSessionSettlement({ database, activitySession: finishedActivitySession, now })
   }
   return { activitySession: toActivitySession(finishedActivitySession) }
 }
@@ -74,6 +81,14 @@ async function validateAndRecord({
 
   switch (validationOutcome.outcome) {
     case 'accepted':
+      if (validationOutcome.validationResult.activeMinutes === 0) {
+        await markActivitySessionSettledWithoutTransaction(database, {
+          activitySessionId: activitySession._id,
+          validationResult: validationOutcome.validationResult,
+          now,
+        })
+        return
+      }
       await markActivitySessionSettling(database, {
         activitySessionId: activitySession._id,
         validationResult: validationOutcome.validationResult,

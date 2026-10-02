@@ -135,4 +135,17 @@ Phase 4's, and how to run them:
   should be within 10% of laps × 400 m.
 - **Car:** as a passenger, run for at least 3 minutes. The summary shows 0 active minutes.
 - **Kill and reopen:** needs a build with bundled JS (§8).
-- Runs don't spend energy until Phase 5, so these can be repeated freely.
+- Since Phase 5, every settled run spends energy (1 point per rewarded minute, refilling 1 point
+  every 30 minutes), so leave a gap between repeat runs.
+
+Phase 5's check, within Wi-Fi range:
+
+- On Home, note the SOLE balance, energy and durability. Press START and walk steadily for
+  3–4 minutes (a minute only counts as a whole minute at 1–20 km/h). Press STOP.
+- The summary shows "Settling on Monad…", then **+N SOLE**, "N rewarded min" and "Durability −N".
+  For N minutes at efficiency 10, the reward is 5 × N SOLE. Tap **View transaction** and check the
+  `SessionSettled` event on MonadVision.
+- Tap **Done**. Home shows the new SOLE balance and lower energy and durability. The balance
+  matches MetaMask, and the Sneaker's explorer page (`tokenURI`) shows the same durability.
+- The **History** tab lists the run at the top with its reward and a "Settled" badge. Tapping it
+  opens the same summary.

@@ -20,4 +20,6 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
   ACTIVITY_SESSION_NOT_ACTIVE: 'This run has already ended.',
   MOCK_LOCATION_DETECTED: 'This run used a simulated location, so it can’t earn rewards.',
   INSUFFICIENT_ACTIVITY_DATA: 'There wasn’t enough GPS data to count this run.',
+  SNEAKER_TRANSFERRED_DURING_SESSION:
+    'The Sneaker changed owner during this run, so it can’t earn rewards.',
 }

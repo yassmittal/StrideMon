@@ -17,16 +17,70 @@ const SETTLING_ACTIVITY_SESSION: ActivitySession = {
     warnings: [],
   },
   rejectionReason: null,
+  settlement: null,
+}
+
+const SETTLED_ACTIVITY_SESSION: ActivitySession = {
+  ...SETTLING_ACTIVITY_SESSION,
+  status: 'settled',
+  settlement: {
+    transactionHash: `0x${'ab'.repeat(32)}`,
+    rewardAmountWei: '50000000000000000000',
+    durabilityLoss: 3,
+    rewardedMinutes: 10,
+    settledAt: '2026-09-29T06:11:03.000Z',
+  },
 }
 
 describe('ActivitySessionSummaryCard', () => {
-  it('shows the validated minutes, distance and average speed', async () => {
+  it('says it’s settling on Monad, above the validated numbers', async () => {
     await render(<ActivitySessionSummaryCard activitySession={SETTLING_ACTIVITY_SESSION} />)
 
-    expect(screen.getByText('Run validated')).toBeTruthy()
+    expect(screen.getByText('Settling on Monad…')).toBeTruthy()
+    expect(screen.getByLabelText('Duration: 11:00')).toBeTruthy()
     expect(screen.getByLabelText('Active minutes: 10')).toBeTruthy()
     expect(screen.getByLabelText('Distance: 842 m')).toBeTruthy()
     expect(screen.getByLabelText('Average speed: 5.1 km/h')).toBeTruthy()
+  })
+
+  it('shows the SOLE earned, the durability lost and a link to the transaction', async () => {
+    await render(<ActivitySessionSummaryCard activitySession={SETTLED_ACTIVITY_SESSION} />)
+
+    expect(screen.getByLabelText('You earned +50 SOLE')).toBeTruthy()
+    expect(screen.getByText('Durability −3')).toBeTruthy()
+    expect(screen.getByRole('link', { name: /settlement transaction/ })).toBeTruthy()
+  })
+
+  it('explains when energy capped the rewarded minutes', async () => {
+    await render(
+      <ActivitySessionSummaryCard
+        activitySession={{
+          ...SETTLED_ACTIVITY_SESSION,
+          settlement: {
+            ...SETTLED_ACTIVITY_SESSION.settlement!,
+            rewardAmountWei: '20000000000000000000',
+            rewardedMinutes: 4,
+          },
+        }}
+      />,
+    )
+
+    expect(screen.getByLabelText('You earned +20 SOLE')).toBeTruthy()
+    expect(screen.getByText(/energy for 4 of your 10 active minutes/)).toBeTruthy()
+  })
+
+  it('says a run whose Sneaker changed owner didn’t count', async () => {
+    await render(
+      <ActivitySessionSummaryCard
+        activitySession={{
+          ...SETTLING_ACTIVITY_SESSION,
+          status: 'rejected',
+          rejectionReason: 'SNEAKER_TRANSFERRED_DURING_SESSION',
+        }}
+      />,
+    )
+
+    expect(screen.getByText(/changed owner/)).toBeTruthy()
   })
 
   it('explains each warning the validator raised', async () => {
@@ -46,21 +100,34 @@ describe('ActivitySessionSummaryCard', () => {
     expect(screen.getByText(/looks like a vehicle/)).toBeTruthy()
   })
 
-  it('explains which minutes count when none of the run did', async () => {
+  it('says a run with no full minute earned nothing, without showing 0 m and 0 km/h', async () => {
     await render(
       <ActivitySessionSummaryCard
         activitySession={{
-          ...SETTLING_ACTIVITY_SESSION,
+          ...SETTLED_ACTIVITY_SESSION,
+          finishedAt: '2026-09-29T06:01:03.000Z',
           validationResult: {
-            ...SETTLING_ACTIVITY_SESSION.validationResult!,
+            ...SETTLED_ACTIVITY_SESSION.validationResult!,
             activeMinutes: 0,
             distanceMeters: 0,
+            averageSpeedKilometersPerHour: 0,
+          },
+          settlement: {
+            transactionHash: null,
+            rewardAmountWei: '0',
+            durabilityLoss: 0,
+            rewardedMinutes: 0,
+            settledAt: '2026-09-29T06:01:03.000Z',
           },
         }}
       />,
     )
 
-    expect(screen.getByText(/whole minute of moving at 1–20/)).toBeTruthy()
+    expect(screen.getByText('No SOLE this time')).toBeTruthy()
+    expect(screen.getByText(/full minute of walking/)).toBeTruthy()
+    expect(screen.getByLabelText('Duration: 1:03')).toBeTruthy()
+    expect(screen.queryByLabelText(/^Distance/)).toBeNull()
+    expect(screen.queryByText(/\+0 SOLE/)).toBeNull()
   })
 
   it('says a run with a simulated location didn’t count', async () => {

@@ -1,11 +1,13 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { finishActivitySession } from '../../handlers/activity-sessions/finish-activity-session'
+import { listActivitySessions } from '../../handlers/activity-sessions/list-activity-sessions'
 import { readActivitySession } from '../../handlers/activity-sessions/read-activity-session'
 import { startActivitySession } from '../../handlers/activity-sessions/start-activity-session'
 import { uploadLocationSamples } from '../../handlers/activity-sessions/upload-location-samples'
 import { readAuthenticatedUser } from '../../plugins/authentication'
 import {
   finishActivitySessionRouteSchema,
+  listActivitySessionsRouteSchema,
   readActivitySessionRouteSchema,
   startActivitySessionRouteSchema,
   uploadLocationSamplesRouteSchema,
@@ -62,6 +64,18 @@ export const activitySessionRoutes: FastifyPluginAsyncZod = async (fastify) => {
         authenticatedUser: readAuthenticatedUser(request),
         activitySessionId: request.params.activitySessionId,
         now: new Date(),
+      }),
+  )
+
+  fastify.get(
+    '/activity-sessions',
+    { schema: listActivitySessionsRouteSchema, preHandler: fastify.authenticate },
+    (request) =>
+      listActivitySessions({
+        database: fastify.mongo.database,
+        authenticatedUser: readAuthenticatedUser(request),
+        cursor: request.query.cursor,
+        limit: request.query.limit,
       }),
   )
 

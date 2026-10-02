@@ -1,7 +1,13 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
-import { type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
+import {
+  type StrideMonContractAddresses,
+  sneakerGameAbi,
+  sneakerNftAbi,
+  soleTokenAbi,
+} from '@stridemon/chain'
 import {
   type ActivitySession,
+  activitySessionPageSchema,
   activitySessionResponseSchema,
   apiErrorResponseSchema,
   type LocationSample,
@@ -22,7 +28,9 @@ import {
 } from 'viem'
 import { generatePrivateKey, type PrivateKeyAccount, privateKeyToAccount } from 'viem/accounts'
 import type { ValidationSample } from '../../lib/activity-validation/validation-sample'
+import { buildSessionSettlementIdempotencyKey } from '../../lib/chain-transactions/chain-transaction-payloads'
 import { getActivitySessionsCollection } from '../../repositories/activity-sessions-repository'
+import { getChainTransactionsCollection } from '../../repositories/chain-transactions-repository'
 import { getLocationSamplesCollection } from '../../repositories/location-samples-repository'
 import { buildWalkingTrace } from '../../test-support/build-synthetic-trace'
 import { buildTestServer } from '../../test-support/build-test-server'
@@ -31,6 +39,7 @@ import {
   deployTestContracts,
 } from '../../test-support/deploy-test-contracts'
 import { giveTestPlayerSneaker } from '../../test-support/give-test-player-sneaker'
+import { runOutboxJob } from '../../test-support/run-outbox-job'
 import { signInTestPlayer } from '../../test-support/sign-in-test-player'
 import { startTestChain, type TestChain } from '../../test-support/start-test-chain'
 
@@ -42,6 +51,8 @@ const WALK_BACKDATE_MILLISECONDS = (WALK_DURATION_SECONDS + 30) * 1000
 // also gets its spawned processes killed, which would take the shared Anvil down with it.
 const WORN_OUT_SNEAKER_TEST_TIMEOUT_MILLISECONDS = 30_000
 const MAXIMUM_DURABILITY_LOSS_PER_MINUTE_BASIS_POINTS = 65_535
+// MVP.md: 10 minutes × efficiency 10 × 0.5 SOLE.
+const MVP_EXAMPLE_REWARD_AMOUNT_WEI = 50n * 10n ** 18n
 
 let testChain: TestChain
 let contractAddresses: StrideMonContractAddresses
@@ -349,6 +360,118 @@ describe('POST /v1/activity-sessions/:activitySessionId/finish', () => {
   })
 })
 
+describe('settlement', () => {
+  it('settles the MVP example on-chain: +50 SOLE, durability 100 → 97, energy 10 → 0', async () => {
+    const activitySession = await startBackdatedWalk()
+    await finishActivitySession(activitySession.activitySessionId)
+
+    await runOutboxJob(server)
+
+    const settledActivitySession = await readActivitySession(activitySession.activitySessionId)
+    expect(settledActivitySession.status).toBe('settled')
+    expect(settledActivitySession.settlement).toMatchObject({
+      rewardAmountWei: MVP_EXAMPLE_REWARD_AMOUNT_WEI.toString(),
+      durabilityLoss: 3,
+      rewardedMinutes: 10,
+    })
+    expect(settledActivitySession.settlement?.transactionHash).toMatch(/^0x[0-9a-f]{64}$/)
+    expect(await readChainState()).toEqual({
+      rewardBalanceWei: MVP_EXAMPLE_REWARD_AMOUNT_WEI,
+      durability: 97,
+      currentEnergy: 0,
+    })
+  })
+
+  it('enqueues one settlement even when finish is retried', async () => {
+    const activitySession = await startBackdatedWalk()
+
+    await finishActivitySession(activitySession.activitySessionId)
+    await finishActivitySession(activitySession.activitySessionId)
+
+    const settlementCount = await getChainTransactionsCollection(
+      server.mongo.database,
+    ).countDocuments({
+      idempotencyKey: buildSessionSettlementIdempotencyKey(activitySession.activitySessionId),
+    })
+    expect(settlementCount).toBe(1)
+  })
+
+  it('settles once when the API restarts between submitted and confirmed', async () => {
+    const activitySession = await startBackdatedWalk()
+    await finishActivitySession(activitySession.activitySessionId)
+    await runOutboxJob(server)
+    // As if the API died after broadcasting, before it recorded the receipt.
+    await getChainTransactionsCollection(server.mongo.database).updateOne(
+      { idempotencyKey: buildSessionSettlementIdempotencyKey(activitySession.activitySessionId) },
+      { $set: { status: 'submitted' } },
+    )
+    await getActivitySessionsCollection(server.mongo.database).updateOne(
+      { _id: new ObjectId(activitySession.activitySessionId) },
+      { $set: { status: 'settling', settlement: null } },
+    )
+
+    await runOutboxJob(server)
+
+    expect((await readActivitySession(activitySession.activitySessionId)).status).toBe('settled')
+    expect((await readChainState()).rewardBalanceWei).toBe(MVP_EXAMPLE_REWARD_AMOUNT_WEI)
+  })
+
+  it('settles a run with 0 active minutes at once, with no transaction', async () => {
+    const activitySession = await startBackdatedWalk({ speedKilometersPerHour: 0 })
+
+    const finishedActivitySession = await finishActivitySession(activitySession.activitySessionId)
+
+    expect(finishedActivitySession).toMatchObject({
+      status: 'settled',
+      settlement: { transactionHash: null, rewardAmountWei: '0', rewardedMinutes: 0 },
+    })
+    expect(await getChainTransactionsCollection(server.mongo.database).countDocuments({})).toBe(2)
+  })
+
+  it('rejects the run when the Sneaker changed owner mid-run (SNEAKER_TRANSFERRED_DURING_SESSION)', async () => {
+    const activitySession = await startBackdatedWalk()
+    await transferSneakerAway()
+    await finishActivitySession(activitySession.activitySessionId)
+
+    await runOutboxJob(server)
+
+    expect(await readActivitySession(activitySession.activitySessionId)).toMatchObject({
+      status: 'rejected',
+      rejectionReason: 'SNEAKER_TRANSFERRED_DURING_SESSION',
+      settlement: null,
+    })
+  })
+})
+
+describe('GET /v1/activity-sessions', () => {
+  it('lists the player’s sessions newest first, one page at a time', async () => {
+    const activitySessionIds: string[] = []
+    for (let sessionIndex = 0; sessionIndex < 3; sessionIndex++) {
+      const activitySession = await startActivitySession()
+      await finishActivitySession(activitySession.activitySessionId)
+      activitySessionIds.push(activitySession.activitySessionId)
+    }
+
+    const firstPage = await listActivitySessions('?limit=2')
+    const secondPage = await listActivitySessions(`?limit=2&cursor=${firstPage.nextCursor}`)
+
+    const [oldestId, middleId, newestId] = activitySessionIds
+    expect(firstPage.items.map((item) => item.activitySessionId)).toEqual([newestId!, middleId!])
+    expect(secondPage.items.map((item) => item.activitySessionId)).toEqual([oldestId!])
+    expect(secondPage.nextCursor).toBeNull()
+  })
+
+  it('refuses a cursor it didn’t issue (VALIDATION_FAILED)', async () => {
+    const response = await server.inject({
+      method: 'GET',
+      url: '/v1/activity-sessions?cursor=nonsense',
+      headers: authorizationHeader(),
+    })
+
+    expectApiError(response, 400, 'VALIDATION_FAILED')
+  })
+})
+
 describe('GET /v1/activity-sessions/:activitySessionId', () => {
   it('returns the player’s session', async () => {
     const activitySession = await startActivitySession()
@@ -439,8 +562,10 @@ async function finishActivitySession(activitySessionId: string): Promise<Activit
  */
 async function startBackdatedWalk({
   hasMockedLocation = false,
+  speedKilometersPerHour = 5,
 }: {
   hasMockedLocation?: boolean
+  speedKilometersPerHour?: number
 } = {}): Promise<ActivitySession> {
   const activitySession = await startActivitySession()
   const backdatedStartedAt = new Date(Date.now() - WALK_BACKDATE_MILLISECONDS)
@@ -448,10 +573,15 @@ async function startBackdatedWalk({
     { _id: new ObjectId(activitySession.activitySessionId) },
     { $set: { startedAt: backdatedStartedAt } },
   )
-  const samples = buildUploadSamples(backdatedStartedAt, WALK_DURATION_SECONDS).map(
-    (sample, sampleIndex) =>
+  const samples = buildWalkingTrace({
+    startedAt: backdatedStartedAt,
+    durationSeconds: WALK_DURATION_SECONDS,
+    speedKilometersPerHour,
+  })
+    .map(toUploadSample)
+    .map((sample, sampleIndex) =>
       sampleIndex === 50 ? { ...sample, isMockedLocation: hasMockedLocation } : sample,
-  )
+    )
   const uploadResponse = await requestUpload(activitySession.activitySessionId, samples)
   expect(uploadResponse.statusCode).toBe(200)
   return activitySession
@@ -461,6 +591,72 @@ function buildUploadSamples(startedAt: Date, durationSeconds: number): LocationS
   return buildWalkingTrace({ durationSeconds, speedKilometersPerHour: 5, startedAt }).map(
     toUploadSample,
   )
+}
+
+async function readActivitySession(activitySessionId: string): Promise<ActivitySession> {
+  const response = await server.inject({
+    method: 'GET',
+    url: `/v1/activity-sessions/${activitySessionId}`,
+    headers: authorizationHeader(),
+  })
+  expect(response.statusCode).toBe(200)
+  return activitySessionResponseSchema.parse(response.json()).activitySession
+}
+
+async function listActivitySessions(queryString: string) {
+  const response = await server.inject({
+    method: 'GET',
+    url: `/v1/activity-sessions${queryString}`,
+    headers: authorizationHeader(),
+  })
+  expect(response.statusCode).toBe(200)
+  return activitySessionPageSchema.parse(response.json())
+}
+
+/** The player's SOLE balance and the Sneaker's durability and energy, as the chain has them. */
+async function readChainState() {
+  const publicClient: PublicClient = server.chain.publicClient
+  const [rewardBalanceWei, attributes, currentEnergy] = await Promise.all([
+    publicClient.readContract({
+      address: contractAddresses.soleToken,
+      abi: soleTokenAbi,
+      functionName: 'balanceOf',
+      args: [playerAccount.address],
+    }),
+    publicClient.readContract({
+      address: contractAddresses.sneakerNft,
+      abi: sneakerNftAbi,
+      functionName: 'getAttributes',
+      args: [sneakerTokenId],
+    }),
+    publicClient.readContract({
+      address: contractAddresses.sneakerGame,
+      abi: sneakerGameAbi,
+      functionName: 'currentEnergy',
+      args: [sneakerTokenId],
+    }),
+  ])
+  return { rewardBalanceWei, durability: attributes.durability, currentEnergy }
+}
+
+/** The player sends their Sneaker to a fresh wallet, paying gas from their testnet drip. */
+async function transferSneakerAway(): Promise<void> {
+  const playerWalletClient = createWalletClient({
+    account: playerAccount,
+    chain: server.config.monadChain,
+    transport: http(testChain.rpcUrl),
+  })
+  const transactionHash = await playerWalletClient.writeContract({
+    address: contractAddresses.sneakerNft,
+    abi: sneakerNftAbi,
+    functionName: 'transferFrom',
+    args: [
+      playerAccount.address,
+      privateKeyToAccount(generatePrivateKey()).address,
+      sneakerTokenId,
+    ],
+  })
+  await waitForSuccessfulReceipt(transactionHash)
 }
 
 function toUploadSample(sample: ValidationSample): LocationSample {

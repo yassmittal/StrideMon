@@ -35,6 +35,7 @@ function buildServerSession(status: ActivitySession['status']): ActivitySession 
     energyAtStart: 10,
     validationResult: null,
     rejectionReason: null,
+    settlement: null,
   }
 }
 

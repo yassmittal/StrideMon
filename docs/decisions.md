@@ -487,3 +487,25 @@ validator.
   than planned, but Phase 5's settlement only consumes `activeMinutes` and `distanceMeters`.
 - **Revisit when:** the API is hosted (Phase 8), or a walk can be done in Wi-Fi range. The app
   buffers samples offline and uploads them later, but START and STOP need the API.
+
+## D-026 — Settlement details, kept small for the hackathon
+
+Made at Phase 5 start (2026-09-30).
+
+- **Decision:**
+  1. The `settleSession` outbox payload uses the TypeScript vocabulary:
+     `{ activitySessionId, onChainSessionId, sneakerTokenId, walletAddress, activeMinutes, distanceMeters }`.
+     `activitySessionId` lets the job find the session by `_id` when the receipt arrives.
+  2. Finish marks the session `settling`, then enqueues the settlement. A finish call that finds
+     the session already `settling` enqueues again, which the idempotency key makes a no-op, so
+     a crash between the two writes is recovered the same way D-021 recovers `validating`.
+  3. `activitySessions.settlement` is written once, when the session becomes `settled`. Its
+     `chainTransactionId` and `transactionHash` are `null` only for a 0-minute run, which is
+     settled at finish without a transaction.
+  4. Only `NotSneakerOwner` maps to a session rejection. Any other revert leaves the outbox record
+     `failed` (with the reason) and the session `settling`, for a human to look at.
+- **Why:** it's a hackathon build. The happy path and the cases the phase names are covered, and
+  nothing more.
+- **Trade-off:** a settlement that fails for another reason (the contract paused, a config change)
+  leaves the app on "Settling on Monad…" until someone fixes it by hand.
+- **Revisit when:** Phase 8 hardening, or a settlement actually fails that way.

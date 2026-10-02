@@ -9,10 +9,17 @@ type ExternalLinkProps = {
   url: string
   /** When the visible label alone is ambiguous, such as "View" next to a list item. */
   accessibilityLabel?: string
+  /** `onPrimary` on a primary-colored background. */
+  tone?: 'default' | 'onPrimary'
 }
 
 /** Opens a web page (the block explorer) in the phone's browser. */
-export function ExternalLink({ label, url, accessibilityLabel }: ExternalLinkProps) {
+export function ExternalLink({
+  label,
+  url,
+  accessibilityLabel,
+  tone = 'default',
+}: ExternalLinkProps) {
   function handlePress() {
     Linking.openURL(url).catch((error: unknown) => {
       console.warn('Opening the link failed', url, error)
@@ -27,7 +34,7 @@ export function ExternalLink({ label, url, accessibilityLabel }: ExternalLinkPro
       onPress={handlePress}
       style={({ pressed }) => [styles.link, pressed && styles.linkPressed]}
     >
-      <Text style={styles.label}>{label} ↗</Text>
+      <Text style={[styles.label, tone === 'onPrimary' && styles.labelOnPrimary]}>{label} ↗</Text>
     </Pressable>
   )
 }
@@ -44,5 +51,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSizes.body,
     color: colors.primary,
+  },
+  labelOnPrimary: {
+    color: colors.textOnPrimary,
+    textDecorationLine: 'underline',
   },
 })

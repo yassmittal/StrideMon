@@ -1,5 +1,7 @@
 import {
   type ActivitySession,
+  type ActivitySessionPage,
+  activitySessionPageSchema,
   activitySessionResponseSchema,
   type LocationSample,
   type UploadLocationSamplesResponse,
@@ -51,4 +53,17 @@ export async function fetchActivitySession(activitySessionId: string): Promise<A
     requiresAuthentication: true,
   })
   return activitySessionResponse.activitySession
+}
+
+/** One page of history, newest first. `cursor` is the previous page's `nextCursor`. */
+export function fetchActivitySessionPage(cursor: string | null): Promise<ActivitySessionPage> {
+  return requestJson({
+    method: 'GET',
+    path:
+      cursor === null
+        ? '/v1/activity-sessions'
+        : `/v1/activity-sessions?cursor=${encodeURIComponent(cursor)}`,
+    responseSchema: activitySessionPageSchema,
+    requiresAuthentication: true,
+  })
 }

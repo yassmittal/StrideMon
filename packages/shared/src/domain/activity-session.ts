@@ -14,6 +14,7 @@ export type ActivitySessionStatus = (typeof ACTIVITY_SESSION_STATUSES)[number]
 export const ACTIVITY_SESSION_REJECTION_REASONS = [
   'MOCK_LOCATION_DETECTED',
   'INSUFFICIENT_ACTIVITY_DATA',
+  'SNEAKER_TRANSFERRED_DURING_SESSION',
 ] as const
 
 export type ActivitySessionRejectionReason = (typeof ACTIVITY_SESSION_REJECTION_REASONS)[number]

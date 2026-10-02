@@ -1,5 +1,9 @@
 /** Transactions the game server sends through the outbox (data-model.md → chainTransactions). */
-export const CHAIN_TRANSACTION_KINDS = ['mintStarterSneaker', 'sendGasDrip'] as const
+export const CHAIN_TRANSACTION_KINDS = [
+  'mintStarterSneaker',
+  'sendGasDrip',
+  'settleSession',
+] as const
 
 export type ChainTransactionKind = (typeof CHAIN_TRANSACTION_KINDS)[number]
 

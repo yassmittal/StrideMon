@@ -4,6 +4,7 @@ import {
   ACTIVITY_SESSION_STATUSES,
   ACTIVITY_VALIDATION_WARNINGS,
 } from '../domain/activity-session'
+import { transactionHashSchema } from './onboarding'
 import { tokenIdStringSchema } from './token-id'
 
 /** security.md → API hardening: an upper bound on samples per upload request. */
@@ -59,6 +60,18 @@ export const activityValidationResultSchema = z.object({
 })
 export type ActivityValidationResult = z.infer<typeof activityValidationResultSchema>
 
+/** What `SneakerGame.settleSession` did, read from its `SessionSettled` event. */
+export const activitySessionSettlementSchema = z.object({
+  /** `null` only for a 0-minute run, which settles without a transaction (D-026). */
+  transactionHash: transactionHashSchema.nullable(),
+  /** SOLE minted, in wei, as a decimal string. */
+  rewardAmountWei: z.string().regex(/^\d+$/, 'must be a whole number of wei'),
+  durabilityLoss: z.int().nonnegative(),
+  rewardedMinutes: z.int().nonnegative(),
+  settledAt: z.iso.datetime(),
+})
+export type ActivitySessionSettlement = z.infer<typeof activitySessionSettlementSchema>
+
 export const activitySessionSchema = z.object({
   activitySessionId: z.string(),
   sneakerTokenId: tokenIdStringSchema,
@@ -71,6 +84,8 @@ export const activitySessionSchema = z.object({
   validationResult: activityValidationResultSchema.nullable(),
   /** Set once validation rejected the session. */
   rejectionReason: z.enum(ACTIVITY_SESSION_REJECTION_REASONS).nullable(),
+  /** Set once the session is `settled`. */
+  settlement: activitySessionSettlementSchema.nullable(),
 })
 export type ActivitySession = z.infer<typeof activitySessionSchema>
 
@@ -79,3 +94,26 @@ export const activitySessionResponseSchema = z.object({
   activitySession: activitySessionSchema,
 })
 export type ActivitySessionResponse = z.infer<typeof activitySessionResponseSchema>
+
+const DEFAULT_ACTIVITY_SESSION_PAGE_SIZE = 20
+const MAX_ACTIVITY_SESSION_PAGE_SIZE = 50
+
+/** `GET /v1/activity-sessions?cursor=…&limit=20`: history, newest first. */
+export const listActivitySessionsQuerySchema = z.object({
+  /** Opaque: the `nextCursor` of the previous page. */
+  cursor: z.string().min(1).optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(MAX_ACTIVITY_SESSION_PAGE_SIZE)
+    .default(DEFAULT_ACTIVITY_SESSION_PAGE_SIZE),
+})
+export type ListActivitySessionsQuery = z.infer<typeof listActivitySessionsQuerySchema>
+
+export const activitySessionPageSchema = z.object({
+  items: z.array(activitySessionSchema),
+  /** `null` on the last page. */
+  nextCursor: z.string().nullable(),
+})
+export type ActivitySessionPage = z.infer<typeof activitySessionPageSchema>

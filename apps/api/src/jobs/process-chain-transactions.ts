@@ -22,7 +22,7 @@ import {
   simulateAndSignChainTransaction,
   waitForChainTransactionReceipt,
 } from '../services/chain-transaction-sender'
-import { recordReceiptOutcome } from './record-receipt-outcome'
+import { recordReceiptOutcome, recordSimulatedRevert } from './record-receipt-outcome'
 
 export const PROCESS_CHAIN_TRANSACTIONS_JOB_NAME = 'processChainTransactions'
 
@@ -154,6 +154,7 @@ async function sendQueuedChainTransaction(
       lastError: `Simulation reverted: ${signingResult.revertReason}`,
       now: new Date(),
     })
+    await recordSimulatedRevert(options.database, chainTransaction, signingResult.revertReason)
     return true
   }
 
