@@ -81,6 +81,10 @@ Everything targets **Monad testnet** until Phase 10.
 - **Match viem errors by `name`/`code`, never `instanceof`.** Metro can load viem's ESM and CJS
   builds side by side, so a wallet cancel from wagmi isn't an instance of the app's
   `UserRejectedRequestError`. Use `lib/chain/error-chain.ts` and `isWalletRejection`.
+- **Text sets a font family, never `fontWeight`** (Phase 8.1). Android picks a custom font by file,
+  so a weight is a family (`fontFamilies.medium`, `monoRegular`). Spread `...textStyles.<size>`
+  and override `fontFamily` after it. Import IBM Plex Mono per weight
+  (`@expo-google-fonts/ibm-plex-mono/400Regular`): the package root bundles all 14 weights.
 - Local Expo config plugins are **plain JS** in `apps/mobile/plugins/`, listed by path in
   `app.config.ts`. The config loader can't import a `.ts` file from `app.config.ts`.
 
@@ -103,4 +107,9 @@ Phase 7 (Sneaker transfer) is done (2026-10-03): transfer reuses `useSneakerGame
 has a Sneaker picker and an empty state (D-027). Verified on the Android phone with two MetaMask
 accounts (#4 sent A → B and back, stats intact). **The MVP is complete.**
 **Now: Phase 8: Demo hardening** (`docs/phases/phase-08-demo-hardening.md`), built in seven parts
-with deployment last (D-028). Next up: 8.1, design foundation. The next decision number is D-029.
+with deployment last (D-028). 8.1 (design foundation) is done (2026-10-03): Lusion tokens in
+`src/theme/` (`textStyles`, `fontFamilies`, `layout`, `motion`), Satoshi + IBM Plex Mono via
+`expo-font`, the `components/ui` set (`Button` variants, `Panel`, `DarkPanel`, `HeroPanel`,
+`MetaLabel`, `CounterText`, dark `ProgressBar`), haptics in `lib/haptics`, and the new
+welcome, sign-in, minting and Home screens. Checked on the Android phone.
+**Next: 8.2** (design across the rest of the app). The next decision number is D-029.
