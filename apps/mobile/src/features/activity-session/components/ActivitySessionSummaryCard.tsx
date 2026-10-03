@@ -1,7 +1,7 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
-import { Card } from '../../../components/ui/Card'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { Panel } from '../../../components/ui/Panel'
+import { colors, spacing, textStyles } from '../../../theme'
 import { describeRejectionReason } from '../activity-session-copy'
 import { calculateActivitySessionDurationSeconds } from '../activity-session-duration'
 import { RunStatsCard } from './RunStatsCard'
@@ -61,13 +61,13 @@ export function ActivitySessionSummaryCard({ activitySession }: ActivitySessionS
     case 'active':
     case 'validating':
       return (
-        <Card>
+        <Panel>
           <ActivityIndicator color={colors.primary} />
           <Text style={styles.title} accessibilityRole="header">
             Checking your run…
           </Text>
           <Text style={styles.message}>The server is validating your GPS.</Text>
-        </Card>
+        </Panel>
       )
     case 'abandoned':
       return (
@@ -94,12 +94,12 @@ function MessageCard({
   isError?: boolean
 }) {
   return (
-    <Card>
+    <Panel>
       <Text style={styles.title} accessibilityRole="header">
         {title}
       </Text>
       <Text style={[styles.message, isError && styles.errorMessage]}>{message}</Text>
-    </Card>
+    </Panel>
   )
 }
 
@@ -108,12 +108,11 @@ const styles = StyleSheet.create({
     gap: spacing.medium,
   },
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   message: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textPrimary,
   },
   errorMessage: {

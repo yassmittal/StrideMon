@@ -2,7 +2,7 @@ import type { OnboardingStep } from '@stridemon/shared/api-contracts'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
 import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
-import { colors, fontSizes, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 
 // Wide enough for the spinner, so the step labels line up whatever the indicator is.
 const INDICATOR_WIDTH = 24
@@ -13,7 +13,7 @@ type OnboardingStepRowProps = {
   statusText: { pending: string; confirmed: string; failed: string }
 }
 
-/** One onboarding transaction: its state, in words, and its explorer link once signed. */
+/** One onboarding transaction on the black minting screen: its state, and its explorer link once signed. */
 export function OnboardingStepRow({ label, step, statusText }: OnboardingStepRowProps) {
   const description = describeStepStatus(step, statusText)
   return (
@@ -30,6 +30,7 @@ export function OnboardingStepRow({ label, step, statusText }: OnboardingStepRow
           label="View"
           accessibilityLabel={`${label}: view the transaction on the explorer`}
           url={buildTransactionExplorerUrl(step.transactionHash)}
+          tone="onDark"
         />
       )}
     </View>
@@ -39,7 +40,7 @@ export function OnboardingStepRow({ label, step, statusText }: OnboardingStepRow
 function StepIndicator({ step }: { step: OnboardingStep }) {
   switch (step.status) {
     case 'pending':
-      return <ActivityIndicator color={colors.primary} style={styles.indicator} />
+      return <ActivityIndicator color={colors.textOnDark} style={styles.indicatorBox} />
     case 'confirmed':
       return <Text style={[styles.indicator, styles.indicatorConfirmed]}>✓</Text>
     case 'failed':
@@ -78,34 +79,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.medium,
+    paddingVertical: spacing.medium,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.overlayOnDark,
   },
   text: {
     flex: 1,
     gap: spacing.extraSmall,
   },
   label: {
-    fontSize: fontSizes.body,
-    color: colors.textPrimary,
+    ...textStyles.body,
+    color: colors.textOnDark,
   },
   status: {
-    fontSize: fontSizes.caption,
-    color: colors.textSecondary,
+    ...textStyles.caption,
+    color: colors.textOnDarkMuted,
+    textTransform: 'uppercase',
   },
   statusFailed: {
-    color: colors.danger,
+    color: colors.dangerAccent,
+  },
+  indicatorBox: {
+    width: INDICATOR_WIDTH,
   },
   indicator: {
+    ...textStyles.title,
     width: INDICATOR_WIDTH,
     textAlign: 'center',
-    fontSize: fontSizes.title,
   },
   indicatorConfirmed: {
-    color: colors.success,
+    color: colors.highlight,
   },
   indicatorFailed: {
-    color: colors.danger,
+    color: colors.dangerAccent,
   },
   indicatorNotStarted: {
-    color: colors.textSecondary,
+    color: colors.textOnDarkMuted,
   },
 })

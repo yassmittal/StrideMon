@@ -25,21 +25,24 @@ lusion.co, D-017). Like every design part, it only touches `theme/`, `components
 feature components' styles.
 
 - Token values from design-system §2 to §7. Existing token names are kept, and the new ones are added.
-- Fonts: Aeonik (buy the app licence from CoType first; if not, the free Satoshi fallback from
-  design-system §3.1) and IBM Plex Mono, loaded with `expo-font`, with the splash screen held
-  until they load.
+- Fonts: Satoshi (the free fallback from design-system §3.1; no Aeonik licence is bought) and
+  IBM Plex Mono, loaded with `expo-font`, with the splash screen held until they load.
 - The `components/ui` set from design-system §8, including its press animations (text roll, dot fill).
+  8.1 builds the pieces its screens use; `TextField`, `CrossMarks` and `IconCircleButton` come with
+  8.2's screens.
 - Haptics on START, STOP and success (`expo-haptics`). They're here so that one new development
   build covers both native packages.
-- Applied to sign-in, "Minting your Sneaker…" and Home (design-system §9). Home gets its dark
-  `HeroPanel`; the Sneaker art that fills it comes in 8.3.
+- The new fonts and palette reach every screen, because every text style moves to `textStyles`
+  and the old weights go.
+- Sign-in, "Minting your Sneaker…" and Home get their full design-system §9 layout. Home gets
+  its dark `HeroPanel`; the Sneaker art that fills it comes in 8.3.
 
 **On the phone:** the three screens match §9, the fonts load with no flash, START and STOP buzz.
 
 ## 8.2 — Design across the app
 
 - Active run, run summary, the Sneaker tab (repair, upgrade, transfer sheets), History and
-  Profile get the design-system §9 treatment.
+  Profile get their full design-system §9 layout.
 - No raw hex, pixel or font values remain outside `src/theme/`.
 
 **On the phone:** every screen matches §9.

@@ -2,17 +2,17 @@ import type { ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { colors, radii, spacing } from '../../theme'
 
-type CardProps = {
+type PanelProps = {
   children: ReactNode
 }
 
-/** A raised surface that groups related content. Becomes design-system.md's `Panel` in Phase 8. */
-export function Card({ children }: CardProps) {
-  return <View style={styles.card}>{children}</View>
+/** design-system.md §8: a white card on the off-white page. Stack panels with a small gap. */
+export function Panel({ children }: PanelProps) {
+  return <View style={styles.panel}>{children}</View>
 }
 
 const styles = StyleSheet.create({
-  card: {
+  panel: {
     padding: spacing.large,
     borderRadius: radii.medium,
     backgroundColor: colors.surface,

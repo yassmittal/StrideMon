@@ -1,9 +1,11 @@
 import { router } from 'expo-router'
 import type { ReactNode } from 'react'
-import { ActivityIndicator, StyleSheet, Text } from 'react-native'
-import { Card } from '../../src/components/ui/Card'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { ErrorState } from '../../src/components/ui/ErrorState'
+import { HeroPanel } from '../../src/components/ui/HeroPanel'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
+import { MetaLabel } from '../../src/components/ui/MetaLabel'
+import { Panel } from '../../src/components/ui/Panel'
 import { Screen } from '../../src/components/ui/Screen'
 import { ActiveRunBanner } from '../../src/features/activity-session/components/ActiveRunBanner'
 import { StartRunPanel } from '../../src/features/activity-session/components/StartRunPanel'
@@ -31,7 +33,7 @@ import {
   useSneakerEnergy,
 } from '../../src/features/sneaker/hooks/useSneakerEnergy'
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
-import { colors, fontSizes, fontWeights } from '../../src/theme'
+import { colors, fontFamilies, spacing, textStyles } from '../../src/theme'
 
 /**
  * Home: the selected Sneaker (with a picker when the wallet owns several), the starter
@@ -79,9 +81,7 @@ export default function HomeScreen() {
       if (!selectedSneaker.hasClaimedStarterSneaker) return <StarterSneakerOnboarding />
       return (
         <Screen isScrollable>
-          <Text style={styles.title} accessibilityRole="header">
-            StrideMon
-          </Text>
+          <HomeHeader />
           {walletAddress !== undefined && <NoSneakersCard walletAddress={walletAddress} />}
         </Screen>
       )
@@ -106,11 +106,23 @@ export default function HomeScreen() {
   }
 }
 
+/** The wordmark, as on Lusion's header. */
+function HomeHeader() {
+  return (
+    <View style={styles.header}>
+      <Text style={styles.wordmark} accessibilityRole="header">
+        StrideMon
+      </Text>
+      <MetaLabel items={['Monad testnet']} />
+    </View>
+  )
+}
+
 /** Shown until the chain says the wallet owns a Sneaker; Home then switches by itself. */
 function StarterSneakerOnboarding() {
   const { mintingState, retry, isRetrying } = useStarterSneakerOnboarding()
   return (
-    <Screen isScrollable>
+    <Screen tone="dark">
       <StarterSneakerMinting
         mintingState={mintingState}
         onRetryPress={retry}
@@ -149,23 +161,21 @@ function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHo
 
   return (
     <Screen isScrollable>
-      <Text style={styles.title} accessibilityRole="header">
-        StrideMon
-      </Text>
+      <HomeHeader />
 
       {sneakerPicker}
 
       {isSneakerError ? (
-        <Card>
+        <Panel>
           <ErrorState
             message="Couldn’t read your Sneaker’s stats from Monad."
             onRetryPress={handleSneakerRetryPress}
           />
-        </Card>
+        </Panel>
       ) : attributes === undefined || gameConfig === undefined || energy === undefined ? (
-        <Card>
-          <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your Sneaker" />
-        </Card>
+        <HeroPanel>
+          <ActivityIndicator color={colors.textOnDark} accessibilityLabel="Loading your Sneaker" />
+        </HeroPanel>
       ) : (
         <SneakerCard
           sneakerTokenId={sneakerTokenId}
@@ -220,7 +230,7 @@ function RunSection({ sneakerTokenId, sneakerStats }: RunSectionProps) {
   }
   const localActiveActivitySession = localActiveActivitySessionQuery.data
   if (localActiveActivitySession === undefined || sneakerStats === undefined) {
-    return <ActivityIndicator color={colors.primary} accessibilityLabel="Checking for a run" />
+    return <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Checking for a run" />
   }
 
   if (localActiveActivitySession !== null) {
@@ -261,9 +271,15 @@ function RunSection({ sneakerTokenId, sneakerStats }: RunSectionProps) {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: spacing.small,
+  },
+  wordmark: {
+    ...textStyles.title,
+    fontFamily: fontFamilies.medium,
     color: colors.textPrimary,
   },
 })

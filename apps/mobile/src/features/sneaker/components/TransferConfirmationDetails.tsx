@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
+import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
 
 type TransferConfirmationDetailsProps = {
   sneakerTokenId: bigint
@@ -51,12 +51,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   rowLabel: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
   rowValue: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
+    fontFamily: fontFamilies.medium,
     color: colors.textPrimary,
   },
   divider: {
@@ -64,10 +64,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.disabled,
   },
   walletAddress: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
     color: colors.textPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoMedium,
   },
   warning: {
     padding: spacing.medium,
@@ -76,16 +75,15 @@ const styles = StyleSheet.create({
     gap: spacing.extraSmall,
   },
   warningTitle: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.bold,
+    ...textStyles.body,
     color: colors.danger,
   },
   warningBody: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textPrimary,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
 })

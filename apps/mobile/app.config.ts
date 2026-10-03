@@ -29,6 +29,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
+    // Fonts load at runtime (`useFonts` in app/_layout.tsx) while the splash screen stays up.
+    'expo-font',
+    [
+      'expo-splash-screen',
+      {
+        // design-system.md §2.2 `background`, so the splash hands over to the first screen.
+        backgroundColor: '#F0F1FA',
+        image: './assets/splash-icon.png',
+        imageWidth: 200,
+      },
+    ],
     [
       'expo-location',
       {

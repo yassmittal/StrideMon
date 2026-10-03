@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
-import { Card } from '../../../components/ui/Card'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { DarkPanel } from '../../../components/ui/DarkPanel'
+import { colors, spacing, textStyles } from '../../../theme'
 
 type ActiveRunBannerProps = {
   onResumePress: () => void
@@ -18,46 +18,29 @@ export function ActiveRunBanner({
   errorMessage,
 }: ActiveRunBannerProps) {
   return (
-    <Card>
-      <Text style={styles.title} accessibilityRole="header">
-        Run in progress
-      </Text>
-      <Text style={styles.message}>
-        Your GPS points are saved on this phone. Resume the run, or finish it to see how it counted.
-      </Text>
+    <View style={styles.container}>
+      <DarkPanel
+        title="Run in progress"
+        description="Your GPS points are saved on this phone. Resume the run, or finish it to see how it counted."
+        onPress={onResumePress}
+        accessibilityLabel="Resume the run in progress"
+      />
       {errorMessage !== null && (
         <Text style={styles.error} accessibilityRole="alert">
           {errorMessage}
         </Text>
       )}
-      <View style={styles.actions}>
-        <Button label="Resume" onPress={onResumePress} isDisabled={isFinishing} />
-        <Button
-          label="Finish"
-          variant="secondary"
-          onPress={onFinishPress}
-          isLoading={isFinishing}
-        />
-      </View>
-    </Card>
+      <Button label="Finish" variant="secondary" onPress={onFinishPress} isLoading={isFinishing} />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
-    color: colors.textPrimary,
-  },
-  message: {
-    fontSize: fontSizes.body,
-    color: colors.textPrimary,
+  container: {
+    gap: spacing.small,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
-  },
-  actions: {
-    gap: spacing.small,
   },
 })

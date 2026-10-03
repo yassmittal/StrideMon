@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, fontWeights } from '../../../theme'
+import { colors, fontFamilies, textStyles } from '../../../theme'
 
 export type StatChange = {
   label: string
@@ -32,12 +32,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
   },
   values: {
-    fontSize: fontSizes.body,
-    fontVariant: ['tabular-nums'],
+    ...textStyles.body,
+    fontFamily: fontFamilies.monoRegular,
   },
   valueBefore: {
     color: colors.textSecondary,
@@ -47,6 +47,5 @@ const styles = StyleSheet.create({
   },
   valueAfter: {
     color: colors.primary,
-    fontWeight: fontWeights.bold,
   },
 })

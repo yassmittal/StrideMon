@@ -1,6 +1,6 @@
 import { StyleSheet, Text } from 'react-native'
 import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
-import { colors, fontSizes, fontWeights } from '../../../theme'
+import { colors, fontFamilies, textStyles } from '../../../theme'
 
 type WalletAddressProps = {
   walletAddress: string
@@ -16,9 +16,8 @@ export function WalletAddress({ walletAddress }: WalletAddressProps) {
 
 const styles = StyleSheet.create({
   walletAddress: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.title,
     color: colors.textPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoRegular,
   },
 })

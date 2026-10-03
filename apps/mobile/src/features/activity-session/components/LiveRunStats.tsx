@@ -1,13 +1,13 @@
 import { SOLE_TOKEN_DECIMALS, SOLE_TOKEN_SYMBOL } from '@stridemon/chain'
 import { StyleSheet, Text, View } from 'react-native'
-import { Card } from '../../../components/ui/Card'
+import { Panel } from '../../../components/ui/Panel'
 import { StatValue } from '../../../components/ui/StatValue'
 import type { ApiClientErrorCode } from '../../../lib/api-client'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
 import { formatSpeed } from '../../../lib/format/format-speed'
 import { formatTokenAmount } from '../../../lib/format/format-token-amount'
-import { colors, fontSizes, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 import type { LiveRunStats as LiveRunStatsValues } from '../live-run-stats'
 
 type LiveRunStatsProps = {
@@ -27,7 +27,7 @@ export function LiveRunStats({
   return (
     <View style={styles.container}>
       <StatValue label="Time" size="large" value={formatDuration(liveRunStats.elapsedSeconds)} />
-      <Card>
+      <Panel>
         <View style={styles.row}>
           <View style={styles.cell}>
             <StatValue label="Distance" value={formatDistance(liveRunStats.distanceMeters)} />
@@ -64,7 +64,7 @@ export function LiveRunStats({
         <Text style={styles.caption}>
           Estimates assume every minute counts. The server checks your GPS when you stop.
         </Text>
-      </Card>
+      </Panel>
       <Text style={styles.caption} accessibilityLiveRegion="polite">
         {describeRecordingStatus({
           recordedSampleCount: liveRunStats.recordedSampleCount,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
 })

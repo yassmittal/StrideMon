@@ -1,17 +1,25 @@
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
+import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Screen } from '../../src/components/ui/Screen'
 import { SignInPanel } from '../../src/features/auth/components/SignInPanel'
 import { useSignIn } from '../../src/features/auth/hooks/useSignIn'
 import { useWalletConnection } from '../../src/features/wallet/hooks/useWalletConnection'
-import { colors, fontSizes, fontWeights } from '../../src/theme'
+import { colors, spacing, textStyles } from '../../src/theme'
+
+const OPTICAL_PULL_LEFT = -0.05 * (textStyles.heading.fontSize ?? 0)
 
 export default function ConnectWalletScreen() {
   const { walletAddress, openWalletPicker, disconnectWallet } = useWalletConnection()
   const { signInState, signIn } = useSignIn()
 
   return (
-    <Screen>
-      <Text style={styles.title}>Connect your wallet</Text>
+    <Screen isScrollable>
+      <MetaLabel items={['Sign in', walletAddress === undefined ? 'Step 1 of 2' : 'Step 2 of 2']} />
+      <View style={styles.header}>
+        <Text style={styles.title} accessibilityRole="header">
+          {walletAddress === undefined ? 'Connect your wallet' : 'Prove it’s yours'}
+        </Text>
+      </View>
       <SignInPanel
         walletAddress={walletAddress}
         signInState={signInState}
@@ -24,9 +32,12 @@ export default function ConnectWalletScreen() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    paddingVertical: spacing.sectionSmall,
+  },
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.heading,
+    marginLeft: OPTICAL_PULL_LEFT,
     color: colors.textPrimary,
   },
 })

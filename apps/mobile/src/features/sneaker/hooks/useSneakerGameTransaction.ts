@@ -8,6 +8,7 @@ import { hasViemErrorNamed } from '../../../lib/chain/error-chain'
 import { invalidateChainReads } from '../../../lib/chain/invalidate-chain-reads'
 import { isWalletRejection } from '../../../lib/chain/is-wallet-rejection'
 import { monadChain } from '../../../lib/chain/monad-chain'
+import { playSuccessHaptic } from '../../../lib/haptics/play-haptic'
 import type {
   SneakerGameCall,
   SneakerGameTransactionErrorCode,
@@ -63,6 +64,7 @@ export function useSneakerGameTransaction() {
         setTransactionState({ phase: 'confirming', transactionHash })
         const receipt = await chainReader.waitForTransactionReceipt({ hash: transactionHash })
         await invalidateChainReads(queryClient)
+        if (receipt.status === 'success') playSuccessHaptic()
         setTransactionState(
           receipt.status === 'success'
             ? { phase: 'succeeded', transactionHash }

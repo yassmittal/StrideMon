@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, fontWeights, spacing } from '../../theme'
+import { colors, fontFamilies, spacing, textStyles } from '../../theme'
 
 type StatValueProps = {
   label: string
@@ -8,10 +8,7 @@ type StatValueProps = {
   size?: 'regular' | 'large'
 }
 
-/**
- * A labelled number. Every stat goes through here, so Phase 8 can switch all
- * numbers to IBM Plex Mono (design-system.md → Typography) in one place.
- */
+/** A labelled number, in IBM Plex Mono like every number (design-system.md §3.1). */
 export function StatValue({ label, value, size = 'regular' }: StatValueProps) {
   return (
     <View style={styles.container} accessible accessibilityLabel={`${label}: ${value}`}>
@@ -26,17 +23,17 @@ const styles = StyleSheet.create({
     gap: spacing.extraSmall,
   },
   label: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
+    textTransform: 'uppercase',
   },
   value: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.title,
+    fontFamily: fontFamilies.monoRegular,
     color: colors.textPrimary,
-    // Digits keep one width, so a changing number doesn't shift its neighbours.
-    fontVariant: ['tabular-nums'],
   },
   valueLarge: {
-    fontSize: fontSizes.display,
+    ...textStyles.heading,
+    fontFamily: fontFamilies.monoRegular,
   },
 })

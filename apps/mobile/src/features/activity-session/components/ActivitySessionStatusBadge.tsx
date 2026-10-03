@@ -1,12 +1,12 @@
 import type { ActivitySessionStatus } from '@stridemon/shared/domain'
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
+import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
 import { describeActivitySessionStatus, type StatusTone } from '../activity-session-copy'
 
 const TONE_COLORS: Record<StatusTone, { text: string; background: string }> = {
   neutral: { text: colors.textSecondary, background: colors.background },
   pending: { text: colors.primary, background: colors.primarySurface },
-  success: { text: colors.success, background: colors.successSurface },
+  success: { text: colors.textPrimary, background: colors.successSurface },
   danger: { text: colors.danger, background: colors.dangerSurface },
 }
 
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
   },
   label: {
-    fontSize: fontSizes.caption,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.caption,
+    fontFamily: fontFamilies.medium,
   },
 })

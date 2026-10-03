@@ -6,11 +6,11 @@ import { formatDuration } from '../../../lib/format/format-duration'
 import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
 import {
   colors,
-  fontSizes,
-  fontWeights,
+  fontFamilies,
   MINIMUM_TOUCH_TARGET_SIZE,
   radii,
   spacing,
+  textStyles,
 } from '../../../theme'
 import { describeActivitySessionStatus } from '../activity-session-copy'
 import { calculateActivitySessionDurationSeconds } from '../activity-session-duration'
@@ -82,23 +82,22 @@ const styles = StyleSheet.create({
     gap: spacing.extraSmall,
   },
   date: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
+    fontFamily: fontFamilies.medium,
     color: colors.textPrimary,
   },
   details: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoRegular,
   },
   side: {
     alignItems: 'flex-end',
     gap: spacing.extraSmall,
   },
   reward: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.bold,
-    color: colors.success,
-    fontVariant: ['tabular-nums'],
+    ...textStyles.body,
+    color: colors.textPrimary,
+    fontFamily: fontFamilies.monoMedium,
   },
 })

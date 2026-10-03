@@ -1,6 +1,6 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 import { ActivitySessionHistoryItem } from './ActivitySessionHistoryItem'
 
 // Start loading the next page when the list is within half a screen of its end.
@@ -89,12 +89,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.large,
   },
   emptyTitle: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   emptyMessage: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },

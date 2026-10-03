@@ -12,7 +12,7 @@ import { useLocalActiveActivitySession } from '../../src/features/activity-sessi
 import type { LocalActiveActivitySession } from '../../src/features/activity-session/location-tracking/local-active-activity-session'
 import { describeRunError } from '../../src/features/activity-session/run-error-messages'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
-import { colors, fontSizes, fontWeights, spacing } from '../../src/theme'
+import { colors, spacing, textStyles } from '../../src/theme'
 
 /** The live run: stats while GPS records, and STOP. */
 export default function ActiveRunScreen() {
@@ -120,15 +120,14 @@ function ActiveRun({
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   stopSection: {
     gap: spacing.small,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
   },
 })

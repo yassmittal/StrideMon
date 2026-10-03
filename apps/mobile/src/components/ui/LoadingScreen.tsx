@@ -1,5 +1,5 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, spacing } from '../../theme'
+import { colors, spacing, textStyles } from '../../theme'
 
 type LoadingScreenProps = {
   accessibilityLabel: string
@@ -11,7 +11,7 @@ type LoadingScreenProps = {
 export function LoadingScreen({ accessibilityLabel, message }: LoadingScreenProps) {
   return (
     <View style={styles.container} accessibilityLabel={accessibilityLabel}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      <ActivityIndicator size="large" color={colors.textPrimary} />
       {message !== undefined && <Text style={styles.message}>{message}</Text>}
     </View>
   )
@@ -26,7 +26,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   message: {
-    fontSize: fontSizes.body,
+    ...textStyles.caption,
     color: colors.textSecondary,
+    textTransform: 'uppercase',
   },
 })

@@ -1,9 +1,9 @@
 import { router } from 'expo-router'
 import type { ReactNode } from 'react'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
-import { Card } from '../../src/components/ui/Card'
 import { ErrorState } from '../../src/components/ui/ErrorState'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
+import { Panel } from '../../src/components/ui/Panel'
 import { Screen } from '../../src/components/ui/Screen'
 import { useLocalActiveActivitySession } from '../../src/features/activity-session/hooks/useLocalActiveActivitySession'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
@@ -21,7 +21,7 @@ import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneake
 import { useSneakerEnergy } from '../../src/features/sneaker/hooks/useSneakerEnergy'
 import { useUpgradeSneaker } from '../../src/features/sneaker/hooks/useUpgradeSneaker'
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
-import { colors, fontSizes, fontWeights } from '../../src/theme'
+import { colors, textStyles } from '../../src/theme'
 
 /** Sneaker detail: stats, spending SOLE to repair and upgrade it, and sending it to another wallet. */
 export default function SneakerScreen() {
@@ -128,19 +128,19 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
       {sneakerPicker}
 
       {isError ? (
-        <Card>
+        <Panel>
           <ErrorState
             message="Couldn’t read your Sneaker from Monad."
             onRetryPress={handleRetryPress}
           />
-        </Card>
+        </Panel>
       ) : attributes === undefined ||
         gameConfig === undefined ||
         energy === undefined ||
         rewardBalanceWei === undefined ? (
-        <Card>
+        <Panel>
           <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your Sneaker" />
-        </Card>
+        </Panel>
       ) : (
         <>
           <SneakerCard
@@ -191,12 +191,11 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   caption: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
   },
 })

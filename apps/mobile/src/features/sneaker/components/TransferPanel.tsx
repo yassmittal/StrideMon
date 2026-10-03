@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from 'react-native'
 import { Button } from '../../../components/ui/Button'
-import { Card } from '../../../components/ui/Card'
-import { colors, fontSizes, fontWeights } from '../../../theme'
+import { Panel } from '../../../components/ui/Panel'
+import { colors, textStyles } from '../../../theme'
 
 /** The settlement would be rejected if the Sneaker changed hands mid-run, so the app says so first. */
 export const TRANSFER_BLOCKED_DURING_RUN_MESSAGE =
@@ -20,7 +20,7 @@ export function TransferPanel({
   onTransferPress,
 }: TransferPanelProps) {
   return (
-    <Card>
+    <Panel>
       <Text style={styles.title} accessibilityRole="header">
         Send to another wallet
       </Text>
@@ -34,22 +34,21 @@ export function TransferPanel({
         isDisabled={isRunInProgress}
       />
       {isRunInProgress && <Text style={styles.caption}>{TRANSFER_BLOCKED_DURING_RUN_MESSAGE}</Text>}
-    </Card>
+    </Panel>
   )
 }
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   description: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
     textAlign: 'center',
   },

@@ -1,9 +1,9 @@
-import { ActivityIndicator, StyleSheet, Text } from 'react-native'
-import { Card } from '../../../components/ui/Card'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { CounterText } from '../../../components/ui/CounterText'
 import { ErrorState } from '../../../components/ui/ErrorState'
-import { StatValue } from '../../../components/ui/StatValue'
-import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
-import { colors, fontSizes } from '../../../theme'
+import { Panel } from '../../../components/ui/Panel'
+import { formatSoleAmount, formatSoleAmountNumber } from '../../../lib/format/format-sole-amount'
+import { colors, spacing, textStyles } from '../../../theme'
 
 type RewardBalanceCardProps = {
   rewardBalanceWei: bigint | undefined
@@ -12,7 +12,7 @@ type RewardBalanceCardProps = {
   onRetryPress: () => void
 }
 
-/** The player's SOLE, read from `SoleToken`. */
+/** The player's SOLE, read from `SoleToken`, as a rolling counter. */
 export function RewardBalanceCard({
   rewardBalanceWei,
   isLoading,
@@ -20,7 +20,11 @@ export function RewardBalanceCard({
   onRetryPress,
 }: RewardBalanceCardProps) {
   return (
-    <Card>
+    <Panel>
+      <View style={styles.labelRow}>
+        <Text style={styles.label}>Your balance</Text>
+        <Text style={styles.label}>SOLE</Text>
+      </View>
       <RewardBalanceContent
         rewardBalanceWei={rewardBalanceWei}
         isLoading={isLoading}
@@ -30,7 +34,7 @@ export function RewardBalanceCard({
       <Text style={styles.caption}>
         Earn SOLE by walking and running with your Sneaker, then spend it on repairs and upgrades.
       </Text>
-    </Card>
+    </Panel>
   )
 }
 
@@ -41,7 +45,7 @@ function RewardBalanceContent({
   onRetryPress,
 }: RewardBalanceCardProps) {
   if (isLoading) {
-    return <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your SOLE" />
+    return <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading your SOLE" />
   }
   if (isError || rewardBalanceWei === undefined) {
     return (
@@ -51,12 +55,27 @@ function RewardBalanceContent({
       />
     )
   }
-  return <StatValue label="SOLE balance" size="large" value={formatSoleAmount(rewardBalanceWei)} />
+  return (
+    <CounterText
+      value={formatSoleAmountNumber(rewardBalanceWei)}
+      accessibilityLabel={`SOLE balance: ${formatSoleAmount(rewardBalanceWei)}`}
+    />
+  )
 }
 
 const styles = StyleSheet.create({
-  caption: {
-    fontSize: fontSizes.caption,
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  label: {
+    ...textStyles.caption,
     color: colors.textSecondary,
+    textTransform: 'uppercase',
+  },
+  caption: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
+    paddingTop: spacing.small,
   },
 })

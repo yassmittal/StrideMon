@@ -6,7 +6,7 @@ import { useSignOut } from '../../src/features/auth/hooks/useSignOut'
 import { MonBalance } from '../../src/features/wallet/components/MonBalance'
 import { WalletAddress } from '../../src/features/wallet/components/WalletAddress'
 import { useMonBalance } from '../../src/features/wallet/hooks/useMonBalance'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../src/theme'
+import { colors, radii, spacing, textStyles } from '../../src/theme'
 
 export default function ProfileScreen() {
   const currentUserQuery = useCurrentUser()
@@ -49,8 +49,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   card: {
@@ -60,14 +59,14 @@ const styles = StyleSheet.create({
     gap: spacing.small,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
   errorState: {
     gap: spacing.medium,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
   },
 })

@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { formatTokenAmount } from '../../../lib/format/format-token-amount'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 
 type MonBalanceProps = {
   balance: { value: bigint; decimals: number; symbol: string } | undefined
@@ -34,16 +34,15 @@ const styles = StyleSheet.create({
     gap: spacing.extraSmall,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
   amount: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
   },
 })

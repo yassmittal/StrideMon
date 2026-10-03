@@ -7,7 +7,7 @@ import {
 } from '../../../lib/chain/explorer-urls'
 import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
 import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
+import { colors, radii, spacing, textStyles } from '../../../theme'
 import {
   describeSneakerGameTransactionError,
   type SneakerGameTransactionErrorCode,
@@ -187,8 +187,7 @@ export function FailedStep({
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
     textAlign: 'center',
   },
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.disabled,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
   centered: {
@@ -225,8 +224,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.successSurface,
   },
   successMark: {
-    fontSize: fontSizes.display,
-    fontWeight: fontWeights.bold,
-    color: colors.success,
+    ...textStyles.display,
+    color: colors.textPrimary,
   },
 })

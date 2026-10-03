@@ -3,7 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
 import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
 import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
+import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
 
 type SettlementHeroCardProps =
   | { phase: 'settling' }
@@ -50,7 +50,7 @@ export function SettlementHeroCard(props: SettlementHeroCardProps) {
             label="View transaction"
             url={buildTransactionExplorerUrl(settlement.transactionHash)}
             accessibilityLabel="View the settlement transaction on the explorer"
-            tone="onPrimary"
+            tone="onDark"
           />
         </View>
       )}
@@ -98,36 +98,33 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   noRewardTitle: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   noRewardCaption: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },
   heroTitle: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textOnPrimary,
   },
   heroLabel: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textOnPrimary,
     opacity: 0.8,
   },
   heroCaption: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textOnPrimary,
     opacity: 0.8,
     textAlign: 'center',
   },
   rewardAmount: {
-    fontSize: fontSizes.hero,
-    fontWeight: fontWeights.bold,
+    ...textStyles.hero,
     color: colors.textOnPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoRegular,
   },
   chipRow: {
     flexDirection: 'row',
@@ -142,8 +139,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryPressed,
   },
   chipLabel: {
-    fontSize: fontSizes.caption,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.caption,
+    fontFamily: fontFamilies.medium,
     color: colors.textOnPrimary,
   },
   linkOnPrimary: {

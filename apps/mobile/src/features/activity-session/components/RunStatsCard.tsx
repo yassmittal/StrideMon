@@ -3,12 +3,12 @@ import type {
   ActivityValidationResult,
 } from '@stridemon/shared/api-contracts'
 import { StyleSheet, Text, View } from 'react-native'
-import { Card } from '../../../components/ui/Card'
+import { Panel } from '../../../components/ui/Panel'
 import { StatValue } from '../../../components/ui/StatValue'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
 import { formatSpeed } from '../../../lib/format/format-speed'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 import { describeWarning } from '../activity-session-copy'
 
 type RunStatsCardProps = {
@@ -25,7 +25,7 @@ export function RunStatsCard({ validationResult, durationSeconds, settlement }: 
     settlement !== null && settlement.rewardedMinutes < validationResult.activeMinutes
 
   return (
-    <Card>
+    <Panel>
       <Text style={styles.title} accessibilityRole="header">
         Your run
       </Text>
@@ -69,14 +69,13 @@ export function RunStatsCard({ validationResult, durationSeconds, settlement }: 
       {hasActiveMinutes && (
         <Text style={styles.caption}>Distance and speed count active minutes only.</Text>
       )}
-    </Card>
+    </Panel>
   )
 }
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.bold,
+    ...textStyles.body,
     color: colors.textPrimary,
   },
   grid: {
@@ -88,15 +87,15 @@ const styles = StyleSheet.create({
     width: '50%',
   },
   note: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textPrimary,
   },
   warning: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
 })

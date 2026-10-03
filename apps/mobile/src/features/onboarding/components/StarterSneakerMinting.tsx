@@ -1,8 +1,9 @@
 import type { OnboardingStep } from '@stridemon/shared/api-contracts'
 import { StyleSheet, Text, View } from 'react-native'
-import { Card } from '../../../components/ui/Card'
+import { CounterText } from '../../../components/ui/CounterText'
 import { ErrorState } from '../../../components/ui/ErrorState'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
+import { colors, spacing, textStyles } from '../../../theme'
 import {
   describeStarterSneakerRequestError,
   type StarterSneakerMintingState,
@@ -17,10 +18,12 @@ type StarterSneakerMintingProps = {
 
 const NOT_STARTED_STEP: OnboardingStep = { status: 'notStarted', transactionHash: null }
 const WAITING_STEP: OnboardingStep = { status: 'pending', transactionHash: null }
+const ONBOARDING_STEP_COUNT = 2
 
 /**
- * The "Minting your Sneaker…" screen: both onboarding transactions as steps, each
- * pending, done (with an explorer link) or failed, and a way forward on failure.
+ * The "Minting your Sneaker…" screen, black like Lusion's preloader: both onboarding
+ * transactions as steps (pending, done with an explorer link, or failed), a way forward
+ * on failure, and a big percent of the steps confirmed.
  */
 export function StarterSneakerMinting({
   mintingState,
@@ -28,10 +31,15 @@ export function StarterSneakerMinting({
   isRetrying,
 }: StarterSneakerMintingProps) {
   const { starterSneakerStep, gasDripStep } = readSteps(mintingState)
+  const confirmedStepCount = [starterSneakerStep, gasDripStep].filter(
+    (step) => step.status === 'confirmed',
+  ).length
+  const progressPercent = Math.round((confirmedStepCount / ONBOARDING_STEP_COUNT) * 100)
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <MetaLabel items={['Starter Sneaker', 'Monad testnet']} tone="dark" />
         <Text style={styles.title} accessibilityRole="header">
           {describeTitle(mintingState)}
         </Text>
@@ -41,7 +49,7 @@ export function StarterSneakerMinting({
         </Text>
       </View>
 
-      <Card>
+      <View style={styles.steps}>
         <OnboardingStepRow
           label="Your starter Sneaker"
           step={starterSneakerStep}
@@ -52,12 +60,18 @@ export function StarterSneakerMinting({
           step={gasDripStep}
           statusText={{ pending: 'Sending…', confirmed: 'In your wallet', failed: 'Not sent' }}
         />
-      </Card>
+      </View>
 
       <MintingFeedback
         mintingState={mintingState}
         onRetryPress={onRetryPress}
         isRetrying={isRetrying}
+      />
+
+      <CounterText
+        value={`${progressPercent}%`}
+        tone="dark"
+        accessibilityLabel={`${confirmedStepCount} of ${ONBOARDING_STEP_COUNT} steps done`}
       />
     </View>
   )
@@ -76,6 +90,7 @@ function MintingFeedback({ mintingState, onRetryPress, isRetrying }: StarterSnea
           message={describeStarterSneakerRequestError(mintingState.errorCode)}
           onRetryPress={onRetryPress}
           isRetrying={isRetrying}
+          tone="dark"
         />
       )
     case 'mintFailed':
@@ -85,6 +100,7 @@ function MintingFeedback({ mintingState, onRetryPress, isRetrying }: StarterSnea
           onRetryPress={onRetryPress}
           isRetrying={isRetrying}
           retryLabel="Check again"
+          tone="dark"
         />
       )
     default: {
@@ -131,22 +147,27 @@ function describeTitle(mintingState: StarterSneakerMintingState): string {
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.large,
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    gap: spacing.extraLarge,
   },
   header: {
-    gap: spacing.small,
+    gap: spacing.medium,
   },
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
-    color: colors.textPrimary,
+    ...textStyles.heading,
+    color: colors.textOnDark,
   },
   explanation: {
-    fontSize: fontSizes.body,
-    color: colors.textSecondary,
+    ...textStyles.body,
+    color: colors.textOnDarkMuted,
+  },
+  steps: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.overlayOnDark,
   },
   progress: {
-    fontSize: fontSizes.body,
-    color: colors.textPrimary,
+    ...textStyles.body,
+    color: colors.textOnDark,
   },
 })

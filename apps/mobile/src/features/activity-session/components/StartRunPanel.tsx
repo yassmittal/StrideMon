@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
-import { colors, fontSizes, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 
 type StartRunPanelProps = {
   onStartPress: () => void
@@ -21,6 +21,7 @@ export function StartRunPanel({
     <View style={styles.container}>
       <Button
         label="Start a run"
+        variant="callToAction"
         onPress={onStartPress}
         isDisabled={blockedReasonMessage !== null}
         isLoading={isStarting}
@@ -40,14 +41,15 @@ export function StartRunPanel({
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.small,
+    gap: spacing.medium,
+    paddingTop: spacing.small,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
     textAlign: 'center',
   },

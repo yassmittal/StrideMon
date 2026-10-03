@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
-import { colors, fontSizes, radii, spacing } from '../../../theme'
+import { colors, radii, spacing, textStyles } from '../../../theme'
 import { WalletAddress } from '../../wallet/components/WalletAddress'
 import { describeSignInError, type SignInState } from '../sign-in-state'
 
@@ -40,24 +40,26 @@ export function SignInPanel({
 
   return (
     <View style={styles.card}>
-      <Text style={styles.caption}>Connected wallet</Text>
+      <Text style={styles.label}>Connected wallet</Text>
       <WalletAddress walletAddress={walletAddress} />
       <Text style={styles.explanation}>
         Sign a message to prove this wallet is yours. It’s free and sends no transaction.
       </Text>
       <SignInProgress signInState={signInState} />
-      <Button
-        label="Sign to verify it’s you"
-        onPress={onSignInPress}
-        isLoading={isBusy}
-        accessibilityLabel="Sign to verify it’s you"
-      />
-      <Button
-        label="Use a different wallet"
-        variant="secondary"
-        onPress={onDisconnectWalletPress}
-        isDisabled={isBusy}
-      />
+      <View style={styles.actions}>
+        <Button
+          label="Sign to verify it’s you"
+          onPress={onSignInPress}
+          isLoading={isBusy}
+          accessibilityLabel="Sign to verify it’s you"
+        />
+        <Button
+          label="Use a different wallet"
+          variant="secondary"
+          onPress={onDisconnectWalletPress}
+          isDisabled={isBusy}
+        />
+      </View>
     </View>
   )
 }
@@ -92,20 +94,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     gap: spacing.medium,
   },
+  actions: {
+    gap: spacing.small,
+  },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
+  },
+  label: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
   },
   explanation: {
-    fontSize: fontSizes.body,
-    color: colors.textSecondary,
+    ...textStyles.body,
+    color: colors.textPrimary,
   },
   progress: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textPrimary,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
   },
 })

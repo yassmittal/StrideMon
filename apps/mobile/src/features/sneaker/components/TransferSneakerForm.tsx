@@ -2,15 +2,15 @@ import { useState } from 'react'
 import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native'
 import type { Address } from 'viem'
 import { Button } from '../../../components/ui/Button'
-import { Card } from '../../../components/ui/Card'
+import { Panel } from '../../../components/ui/Panel'
 import { StatValue } from '../../../components/ui/StatValue'
 import {
   colors,
-  fontSizes,
-  fontWeights,
+  fontFamilies,
   MINIMUM_TOUCH_TARGET_SIZE,
   radii,
   spacing,
+  textStyles,
 } from '../../../theme'
 import type { SneakerGameTransactionState } from '../sneaker-game-transaction-state'
 import { describeTransferRecipientProblem, toTransferRecipient } from '../transfer-recipient'
@@ -86,7 +86,7 @@ export function TransferSneakerForm({
         Send Sneaker #{sneakerTokenId.toString()}
       </Text>
 
-      <Card>
+      <Panel>
         {sneakerStats === undefined ? (
           <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your Sneaker" />
         ) : (
@@ -100,9 +100,9 @@ export function TransferSneakerForm({
           </View>
         )}
         <Text style={styles.caption}>These stats live on the Sneaker and go with it.</Text>
-      </Card>
+      </Panel>
 
-      <Card>
+      <Panel>
         <Text style={styles.fieldLabel} nativeID="recipient-label">
           Recipient wallet address
         </Text>
@@ -132,7 +132,7 @@ export function TransferSneakerForm({
             </Text>
           </View>
         )}
-      </Card>
+      </Panel>
 
       <Button
         label="Review transfer"
@@ -154,8 +154,7 @@ export function TransferSneakerForm({
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   stats: {
@@ -163,12 +162,12 @@ const styles = StyleSheet.create({
     gap: spacing.extraLarge,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
   fieldLabel: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
+    fontFamily: fontFamilies.medium,
     color: colors.textPrimary,
   },
   input: {
@@ -179,15 +178,15 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2,
     borderColor: colors.disabled,
     backgroundColor: colors.background,
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoRegular,
   },
   inputInvalid: {
     borderColor: colors.danger,
   },
   problem: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.danger,
   },
   recipient: {
@@ -197,18 +196,17 @@ const styles = StyleSheet.create({
     gap: spacing.extraSmall,
   },
   recipientLabel: {
-    fontSize: fontSizes.caption,
-    fontWeight: fontWeights.semibold,
-    color: colors.success,
+    ...textStyles.caption,
+    fontFamily: fontFamilies.medium,
+    color: colors.textPrimary,
   },
   recipientAddress: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
     color: colors.textPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoMedium,
   },
   blocked: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
     textAlign: 'center',
   },

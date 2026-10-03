@@ -1,6 +1,7 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../../lib/api-client'
+import { playRunStoppedHaptic } from '../../../lib/haptics/play-haptic'
 import { finishActivitySession } from '../api/activity-sessions-api'
 import { openActivitySessionDatabase } from '../location-tracking/activity-session-database'
 import { clearLocalActiveActivitySession } from '../location-tracking/local-active-activity-session'
@@ -20,6 +21,7 @@ export function useFinishActivitySession() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: finishRun,
+    onMutate: playRunStoppedHaptic,
     onSuccess: (activitySession) => {
       queryClient.setQueryData(
         buildActivitySessionQueryKey(activitySession.activitySessionId),

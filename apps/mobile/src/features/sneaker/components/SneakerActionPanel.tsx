@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
-import { Card } from '../../../components/ui/Card'
 import { ErrorState } from '../../../components/ui/ErrorState'
+import { Panel } from '../../../components/ui/Panel'
 import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
+import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
 import type { SneakerActionCost } from '../sneaker-action-cost'
 import type { SneakerGameTransactionState } from '../sneaker-game-transaction-state'
 import {
@@ -72,7 +72,7 @@ export function SneakerActionPanel({
   }
 
   return (
-    <Card>
+    <Panel>
       <View style={styles.header}>
         <Text style={styles.title} accessibilityRole="header">
           {title}
@@ -115,7 +115,7 @@ export function SneakerActionPanel({
         onConfirmPress={onConfirmPress}
         onClosePress={handleSheetClosePress}
       />
-    </Card>
+    </Panel>
   )
 }
 
@@ -126,8 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   costChip: {
@@ -137,13 +136,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySurface,
   },
   costChipLabel: {
-    fontSize: fontSizes.caption,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.caption,
     color: colors.primary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoMedium,
   },
   description: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
   },
   statChanges: {
@@ -153,7 +151,7 @@ const styles = StyleSheet.create({
     gap: spacing.small,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
     textAlign: 'center',
   },

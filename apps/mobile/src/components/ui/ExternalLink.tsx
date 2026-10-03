@@ -1,5 +1,5 @@
 import { Linking, Pressable, StyleSheet, Text } from 'react-native'
-import { colors, fontSizes, MINIMUM_TOUCH_TARGET_SIZE } from '../../theme'
+import { colors, fontFamilies, MINIMUM_TOUCH_TARGET_SIZE, textStyles } from '../../theme'
 
 // Feedback that the press registered, without a background to flash.
 const PRESSED_OPACITY = 0.6
@@ -9,8 +9,8 @@ type ExternalLinkProps = {
   url: string
   /** When the visible label alone is ambiguous, such as "View" next to a list item. */
   accessibilityLabel?: string
-  /** `onPrimary` on a primary-colored background. */
-  tone?: 'default' | 'onPrimary'
+  /** `onDark` on a dark panel or screen. */
+  tone?: 'default' | 'onDark'
 }
 
 /** Opens a web page (the block explorer) in the phone's browser. */
@@ -34,7 +34,7 @@ export function ExternalLink({
       onPress={handlePress}
       style={({ pressed }) => [styles.link, pressed && styles.linkPressed]}
     >
-      <Text style={[styles.label, tone === 'onPrimary' && styles.labelOnPrimary]}>{label} ↗</Text>
+      <Text style={[styles.label, tone === 'onDark' && styles.labelOnDark]}>{label} ↗</Text>
     </Pressable>
   )
 }
@@ -49,11 +49,12 @@ const styles = StyleSheet.create({
     opacity: PRESSED_OPACITY,
   },
   label: {
-    fontSize: fontSizes.body,
-    color: colors.primary,
+    ...textStyles.caption,
+    fontFamily: fontFamilies.medium,
+    color: colors.accent,
+    textTransform: 'uppercase',
   },
-  labelOnPrimary: {
-    color: colors.textOnPrimary,
-    textDecorationLine: 'underline',
+  labelOnDark: {
+    color: colors.textOnDark,
   },
 })

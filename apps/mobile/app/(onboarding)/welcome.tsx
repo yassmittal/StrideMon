@@ -1,19 +1,29 @@
 import { router } from 'expo-router'
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../src/components/ui/Button'
+import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Screen } from '../../src/components/ui/Screen'
 import { ApiHealthStatus } from '../../src/features/health/components/ApiHealthStatus'
 import { useApiHealth } from '../../src/features/health/hooks/useApiHealth'
-import { colors, fontSizes, fontWeights, spacing } from '../../src/theme'
+import { colors, spacing, textStyles } from '../../src/theme'
+
+// Lusion pulls display lines left so the glyph edge meets the gutter (design-system.md §3.3).
+const OPTICAL_PULL_LEFT = -0.05 * (textStyles.displayLarge.fontSize ?? 0)
 
 export default function WelcomeScreen() {
   const apiHealthQuery = useApiHealth()
 
   return (
     <Screen>
+      <MetaLabel items={['StrideMon', 'Move to earn', 'Monad']} />
       <View style={styles.hero}>
-        <Text style={styles.title}>StrideMon</Text>
-        <Text style={styles.tagline}>Walk. Earn. Upgrade your Sneaker.</Text>
+        <Text style={styles.headline} accessibilityRole="header">
+          Walk.{'\n'}Earn.{'\n'}Upgrade.
+        </Text>
+        <Text style={styles.intro}>
+          Your Sneaker is an NFT on Monad. Walk or run with it to earn SOLE, then spend SOLE to
+          repair and level it up.
+        </Text>
       </View>
       {/* Kept from Phase 0: a wrong LAN IP shows up here, before sign-in fails on it. */}
       <ApiHealthStatus
@@ -23,7 +33,7 @@ export default function WelcomeScreen() {
         isRefetching={apiHealthQuery.isRefetching}
         onRetryPress={() => apiHealthQuery.refetch()}
       />
-      <Button label="Get started" onPress={() => router.push('/connect-wallet')} />
+      <Button label="Connect wallet" onPress={() => router.push('/connect-wallet')} />
     </Screen>
   )
 }
@@ -32,15 +42,15 @@ const styles = StyleSheet.create({
   hero: {
     flex: 1,
     justifyContent: 'center',
-    gap: spacing.small,
+    gap: spacing.large,
   },
-  title: {
-    fontSize: fontSizes.display,
-    fontWeight: fontWeights.bold,
+  headline: {
+    ...textStyles.displayLarge,
+    marginLeft: OPTICAL_PULL_LEFT,
     color: colors.textPrimary,
   },
-  tagline: {
-    fontSize: fontSizes.title,
-    color: colors.textSecondary,
+  intro: {
+    ...textStyles.intro,
+    color: colors.textPrimary,
   },
 })

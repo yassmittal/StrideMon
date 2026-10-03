@@ -1,6 +1,6 @@
 import { StyleSheet, Text } from 'react-native'
-import { Card } from '../../../components/ui/Card'
-import { colors, fontSizes, fontWeights } from '../../../theme'
+import { Panel } from '../../../components/ui/Panel'
+import { colors, fontFamilies, textStyles } from '../../../theme'
 
 type NoSneakersCardProps = {
   walletAddress: string
@@ -12,7 +12,7 @@ type NoSneakersCardProps = {
  */
 export function NoSneakersCard({ walletAddress }: NoSneakersCardProps) {
   return (
-    <Card>
+    <Panel>
       <Text style={styles.title} accessibilityRole="header">
         No Sneakers in this wallet
       </Text>
@@ -24,28 +24,26 @@ export function NoSneakersCard({ walletAddress }: NoSneakersCardProps) {
         {walletAddress}
       </Text>
       <Text style={styles.caption}>A Sneaker sent here shows up by itself.</Text>
-    </Card>
+    </Panel>
   )
 }
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   body: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textSecondary,
   },
   walletAddress: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
     color: colors.textPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoMedium,
   },
   caption: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
 })

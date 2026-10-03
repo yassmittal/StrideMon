@@ -5,7 +5,7 @@ import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
 import { Screen } from '../../src/components/ui/Screen'
 import { ActivitySessionHistoryList } from '../../src/features/activity-session/components/ActivitySessionHistoryList'
 import { useActivitySessionHistory } from '../../src/features/activity-session/hooks/useActivitySessionHistory'
-import { colors, fontSizes, fontWeights } from '../../src/theme'
+import { colors, textStyles } from '../../src/theme'
 
 /** Past runs, newest first. Tapping one opens its summary. */
 export default function HistoryScreen() {
@@ -51,8 +51,7 @@ export default function HistoryScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
 })

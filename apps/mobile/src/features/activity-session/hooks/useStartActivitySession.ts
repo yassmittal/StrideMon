@@ -1,6 +1,7 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ApiError } from '../../../lib/api-client'
+import { playRunStartedHaptic } from '../../../lib/haptics/play-haptic'
 import { fetchActivitySession, startActivitySession } from '../api/activity-sessions-api'
 import { openActivitySessionDatabase } from '../location-tracking/activity-session-database'
 import { ensureLocationTracking } from '../location-tracking/ensure-location-tracking'
@@ -26,6 +27,7 @@ export function useStartActivitySession() {
     mutationFn: startRun,
     // Straight into the cache, so the run screen opens on the new run, not a stale "none".
     onSuccess: (localActiveActivitySession) => {
+      playRunStartedHaptic()
       queryClient.setQueryData(LOCAL_ACTIVE_ACTIVITY_SESSION_QUERY_KEY, localActiveActivitySession)
     },
     // A failure may still have saved the run (GPS didn't start): Home then offers Resume.

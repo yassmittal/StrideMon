@@ -1,11 +1,11 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import {
   colors,
-  fontSizes,
-  fontWeights,
+  fontFamilies,
   MINIMUM_TOUCH_TARGET_SIZE,
   radii,
   spacing,
+  textStyles,
 } from '../../../theme'
 
 type SneakerPickerProps = {
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     gap: spacing.small,
   },
   label: {
-    fontSize: fontSizes.caption,
+    ...textStyles.caption,
     color: colors.textSecondary,
   },
   list: {
@@ -86,10 +86,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySurface,
   },
   chipLabel: {
-    fontSize: fontSizes.body,
-    fontWeight: fontWeights.semibold,
+    ...textStyles.body,
     color: colors.textPrimary,
-    fontVariant: ['tabular-nums'],
+    fontFamily: fontFamilies.monoMedium,
   },
   chipLabelSelected: {
     color: colors.textOnPrimary,

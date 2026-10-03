@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { colors, spacing, textStyles } from '../../../theme'
 import type { LocationPermissionState } from '../location-tracking/request-location-permission'
 
 type LocationPermissionExplainerProps = {
@@ -71,16 +71,15 @@ const styles = StyleSheet.create({
     gap: spacing.medium,
   },
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+    ...textStyles.title,
     color: colors.textPrimary,
   },
   body: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.textPrimary,
   },
   error: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
   },
   actions: {

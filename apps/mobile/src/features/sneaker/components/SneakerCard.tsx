@@ -1,10 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { Card } from '../../../components/ui/Card'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
+import { HeroPanel } from '../../../components/ui/HeroPanel'
 import { ProgressBar } from '../../../components/ui/ProgressBar'
-import { StatValue } from '../../../components/ui/StatValue'
 import { formatDuration } from '../../../lib/format/format-duration'
-import { colors, fontSizes, fontWeights, spacing } from '../../../theme'
+import { colors, fontFamilies, spacing, textStyles } from '../../../theme'
 import type { SneakerEnergy } from '../hooks/useSneakerEnergy'
 
 type SneakerCardProps = {
@@ -17,7 +16,10 @@ type SneakerCardProps = {
   explorerUrl: string
 }
 
-/** The Sneaker at a glance: id, level, efficiency, durability and energy, all read from chain. */
+/**
+ * The Sneaker on Home's dark hero panel: id, level, efficiency, durability and energy,
+ * all read from chain. The Sneaker's picture takes the middle of the panel in Phase 8.3.
+ */
 export function SneakerCard({
   sneakerTokenId,
   level,
@@ -28,7 +30,7 @@ export function SneakerCard({
   explorerUrl,
 }: SneakerCardProps) {
   return (
-    <Card>
+    <HeroPanel>
       <View style={styles.header}>
         <Text style={styles.title} accessibilityRole="header">
           Sneaker #{sneakerTokenId.toString()}
@@ -37,21 +39,35 @@ export function SneakerCard({
           label="Explorer"
           accessibilityLabel={`View Sneaker ${sneakerTokenId} on the explorer`}
           url={explorerUrl}
+          tone="onDark"
         />
       </View>
 
       <View style={styles.stats}>
-        <StatValue label="Level" value={String(level)} />
-        <StatValue label="Efficiency" value={String(efficiency)} />
+        <HeroStat label="Level" value={String(level)} />
+        <HeroStat label="Efficiency" value={String(efficiency)} />
       </View>
 
-      <ProgressBar label="Durability" value={durability} maximum={maxDurability} />
-
-      <View style={styles.energy}>
-        <ProgressBar label="Energy" value={energy.currentEnergy} maximum={energy.maxEnergy} />
+      <View style={styles.bars}>
+        <ProgressBar label="Durability" value={durability} maximum={maxDurability} tone="dark" />
+        <ProgressBar
+          label="Energy"
+          value={energy.currentEnergy}
+          maximum={energy.maxEnergy}
+          tone="dark"
+        />
         <Text style={styles.caption}>{describeEnergyRegeneration(energy)}</Text>
       </View>
-    </Card>
+    </HeroPanel>
+  )
+}
+
+function HeroStat({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.stat} accessible accessibilityLabel={`${label}: ${value}`}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
   )
 }
 
@@ -68,20 +84,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
-    color: colors.textPrimary,
+    ...textStyles.caption,
+    fontFamily: fontFamilies.medium,
+    color: colors.textOnDark,
+    textTransform: 'uppercase',
   },
   stats: {
     flexDirection: 'row',
-    gap: spacing.extraLarge,
+    gap: spacing.sectionSmall,
   },
-  energy: {
-    gap: spacing.small,
+  stat: {
+    gap: spacing.extraSmall,
+  },
+  statValue: {
+    ...textStyles.display,
+    fontFamily: fontFamilies.monoRegular,
+    letterSpacing: 0,
+    color: colors.textOnDark,
+  },
+  statLabel: {
+    ...textStyles.caption,
+    color: colors.textOnDarkMuted,
+    textTransform: 'uppercase',
+  },
+  bars: {
+    gap: spacing.medium,
   },
   caption: {
-    fontSize: fontSizes.caption,
-    color: colors.textSecondary,
-    fontVariant: ['tabular-nums'],
+    ...textStyles.caption,
+    color: colors.textOnDarkMuted,
   },
 })

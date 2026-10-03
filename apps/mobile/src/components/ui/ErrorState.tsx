@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, fontSizes, spacing } from '../../theme'
+import { colors, spacing, textStyles } from '../../theme'
 import { Button } from './Button'
 
 type ErrorStateProps = {
@@ -7,6 +7,8 @@ type ErrorStateProps = {
   onRetryPress: () => void
   isRetrying?: boolean
   retryLabel?: string
+  /** `dark` on a black screen, where Lusion's brighter red reads better. */
+  tone?: 'light' | 'dark'
 }
 
 /** Something couldn't load: says what, and offers the way forward. */
@@ -15,10 +17,14 @@ export function ErrorState({
   onRetryPress,
   isRetrying = false,
   retryLabel = 'Try again',
+  tone = 'light',
 }: ErrorStateProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.message} accessibilityRole="alert">
+      <Text
+        style={[styles.message, tone === 'dark' && styles.messageOnDark]}
+        accessibilityRole="alert"
+      >
         {message}
       </Text>
       <Button
@@ -36,7 +42,10 @@ const styles = StyleSheet.create({
     gap: spacing.medium,
   },
   message: {
-    fontSize: fontSizes.body,
+    ...textStyles.body,
     color: colors.danger,
+  },
+  messageOnDark: {
+    color: colors.dangerAccent,
   },
 })

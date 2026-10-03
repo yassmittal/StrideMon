@@ -120,6 +120,18 @@ plus a few new tokens.
 | `scrim` *(new)* | `rgba(0, 0, 0, 0.9)` | Full-screen overlays |
 | `crossMark` *(new)* | `#999999` | "+" corner marks |
 
+Three Phase 0–7 tokens have no Lusion counterpart. They keep their names with
+**derived** values:
+
+| Token | Value | Use |
+|---|---|---|
+| `primarySurface` | `rgba(0, 22, 236, 0.1)` | Pressed or pending wash, Lusion's menu hover (`#0016EC` at 0.1) |
+| `successSurface` | `#C1FF00` | A success badge: lime fill, black text |
+| `dangerSurface` | `rgba(233, 0, 0, 0.08)` | Behind an error or warning, `danger` text on it |
+
+`success` is lime, so success is never shown as lime text on a light screen. On
+light screens it's black text on a `successSurface` fill.
+
 ---
 
 ## 3. Typography
@@ -135,6 +147,14 @@ plus a few new tokens.
 If the Aeonik licence isn't bought in time for the demo, **Satoshi** (Indian Type
 Foundry, free on Fontshare) is the closest free geometric grotesk. This fallback
 is **derived**: it's an approximation, not what Lusion uses.
+
+**Chosen for StrideMon (Phase 8.1): Satoshi.** No Aeonik licence is bought.
+`Satoshi-Regular` and `Satoshi-Medium` (TTF, from Fontshare) live in
+`apps/mobile/assets/fonts/` next to the licence, `Satoshi-FFL.txt` (ITF Free Font
+License 2.0). It allows embedding in an app, but not sharing the files from a
+public server. The repository is public for the hackathon, and Yash chose to keep
+the files in it anyway (2026-10-03). To remove that risk, swap Satoshi for an SIL OFL
+font from `@expo-google-fonts` (only `src/theme/fonts.ts` and the font files change).
 
 Rendering: Lusion sets `-webkit-font-smoothing: antialiased` and uses
 `font-display: block`. That means text waits for the font and never flashes a
@@ -322,6 +342,10 @@ In the app these become `Easing.bezier(0.4, 0, 0.1, 1)` and friends, from
 
 Sizes are Phone values at 390 pt.
 
+The three pills are one `Button` with a `variant` (`primary`, `secondary`,
+`callToAction`), so the call sites from Phases 0–7 keep their import. `Card`
+becomes `Panel`. `MediaCard` and `MenuListItem` are built when a screen needs one.
+
 | Component | Spec (from Lusion) | StrideMon use |
 |---|---|---|
 | **`PrimaryPillButton`** | `primary` background, white `button` text (14/500/UPPER), height **45**, padding `0 16 0 23` (`0 1.125em 0 1.625em` at 14), `pill` radius, trailing white **4 pt dot** (gap 9, `0.625em` at 14). Press: interaction 3. | Sign in, START, Confirm transaction |
@@ -364,10 +388,17 @@ For reference only. **Nothing here is applied before Phase 8.**
 
 - `src/theme/colors.ts`, `spacing.ts`, `radii.ts`, `typography.ts`: set the values
   in §2.2, §4.2, §5 and §3.2 to §3.3. Existing keys keep their names, and new keys are added.
-- New `src/theme/fonts.ts` (`fontFamilies`: `display = 'Aeonik'`,
-  `mono = 'IBMPlexMono'`, with a regular and a medium file each), plus
-  `letterSpacings`, `lineHeights`, `shadows`, `motion` and `layout`.
+- New `src/theme/fonts.ts` (`fontFamilies`: `regular` and `medium` for Satoshi,
+  `monoRegular` and `monoMedium` for IBM Plex Mono). Android picks a font by file,
+  not by `fontWeight`, so text sets a family per weight and never a `fontWeight`.
+  Plus `letterSpacings`, `lineHeights`, `shadows`, `motion` and `layout`.
+- `textStyles` in `typography.ts` combines a §3.3 row (family, size, line height,
+  letter spacing) into one style to spread: `...textStyles.body`. Case stays with the
+  component (`MetaLabel` and the buttons uppercase their text).
 - Load fonts with `expo-font` (`bunx expo install expo-font @expo-google-fonts/ibm-plex-mono`),
   and keep the splash screen up until they are loaded.
 - Build the §8 components in `src/components/ui/`.
-- Replace the call sites that use `fontWeights.semibold` and `fontWeights.bold`.
+- Replace the call sites that use `fontWeights.semibold` and `fontWeights.bold`. The
+  `fontWeights` token goes with them: the weight is the family (`fontFamilies.medium`).
+- Component sizes (pill heights, dot sizes, the progress track) are `layout` tokens too,
+  so no pixel value lives outside `src/theme/`.
