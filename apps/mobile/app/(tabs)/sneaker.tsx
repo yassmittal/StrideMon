@@ -1,29 +1,39 @@
+import { router } from 'expo-router'
+import type { ReactNode } from 'react'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
 import { Card } from '../../src/components/ui/Card'
 import { ErrorState } from '../../src/components/ui/ErrorState'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
 import { Screen } from '../../src/components/ui/Screen'
+import { useLocalActiveActivitySession } from '../../src/features/activity-session/hooks/useLocalActiveActivitySession'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { useRewardBalance } from '../../src/features/rewards/hooks/useRewardBalance'
+import { NoSneakersCard } from '../../src/features/sneaker/components/NoSneakersCard'
 import { RepairPanel } from '../../src/features/sneaker/components/RepairPanel'
 import { SneakerCard } from '../../src/features/sneaker/components/SneakerCard'
+import { SneakerPicker } from '../../src/features/sneaker/components/SneakerPicker'
+import { TransferPanel } from '../../src/features/sneaker/components/TransferPanel'
 import { UpgradePanel } from '../../src/features/sneaker/components/UpgradePanel'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
-import { useOwnedSneaker } from '../../src/features/sneaker/hooks/useOwnedSneaker'
 import { useRepairSneaker } from '../../src/features/sneaker/hooks/useRepairSneaker'
+import { useSelectedSneaker } from '../../src/features/sneaker/hooks/useSelectedSneaker'
 import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneakerAttributes'
 import { useSneakerEnergy } from '../../src/features/sneaker/hooks/useSneakerEnergy'
 import { useUpgradeSneaker } from '../../src/features/sneaker/hooks/useUpgradeSneaker'
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
 import { colors, fontSizes, fontWeights } from '../../src/theme'
 
-/** Sneaker detail: stats, then spending SOLE to repair and upgrade it. */
+/** Sneaker detail: stats, spending SOLE to repair and upgrade it, and sending it to another wallet. */
 export default function SneakerScreen() {
   const currentUserQuery = useCurrentUser()
   const walletAddress = currentUserQuery.data?.user.walletAddress
-  const { ownedSneaker, refetch: refetchOwnedSneaker } = useOwnedSneaker(walletAddress)
+  const {
+    selectedSneaker,
+    pickSneaker,
+    refetch: refetchSelectedSneaker,
+  } = useSelectedSneaker(walletAddress)
 
-  switch (ownedSneaker.status) {
+  switch (selectedSneaker.status) {
     case 'loading':
       return (
         <LoadingScreen
@@ -36,7 +46,7 @@ export default function SneakerScreen() {
         <Screen>
           <ErrorState
             message="Couldn’t read your Sneaker from Monad. Check your connection and try again."
-            onRetryPress={refetchOwnedSneaker}
+            onRetryPress={refetchSelectedSneaker}
           />
         </Screen>
       )
@@ -44,16 +54,30 @@ export default function SneakerScreen() {
       return (
         <Screen>
           <Text style={styles.title}>Sneaker</Text>
-          <Text style={styles.caption}>Your starter Sneaker is on its way. Check Home.</Text>
+          {selectedSneaker.hasClaimedStarterSneaker && walletAddress !== undefined ? (
+            <NoSneakersCard walletAddress={walletAddress} />
+          ) : (
+            <Text style={styles.caption}>Your starter Sneaker is on its way. Check Home.</Text>
+          )}
         </Screen>
       )
     case 'owned':
       return (
-        <SneakerDetail walletAddress={walletAddress} sneakerTokenId={ownedSneaker.sneakerTokenId} />
+        <SneakerDetail
+          walletAddress={walletAddress}
+          sneakerTokenId={selectedSneaker.selectedSneakerTokenId}
+          sneakerPicker={
+            <SneakerPicker
+              sneakerTokenIds={selectedSneaker.sneakerTokenIds}
+              selectedSneakerTokenId={selectedSneaker.selectedSneakerTokenId}
+              onSneakerPress={pickSneaker}
+            />
+          }
+        />
       )
     default: {
-      const unhandledOwnedSneaker: never = ownedSneaker
-      throw new Error(`Unhandled Sneaker state: ${JSON.stringify(unhandledOwnedSneaker)}`)
+      const unhandledSelectedSneaker: never = selectedSneaker
+      throw new Error(`Unhandled Sneaker state: ${String(unhandledSelectedSneaker)}`)
     }
   }
 }
@@ -61,9 +85,10 @@ export default function SneakerScreen() {
 type SneakerDetailProps = {
   walletAddress: string | undefined
   sneakerTokenId: bigint
+  sneakerPicker: ReactNode
 }
 
-function SneakerDetail({ walletAddress, sneakerTokenId }: SneakerDetailProps) {
+function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerDetailProps) {
   const attributesQuery = useSneakerAttributes(sneakerTokenId)
   const gameConfigQuery = useGameConfig()
   const sneakerEnergy = useSneakerEnergy({
@@ -74,6 +99,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId }: SneakerDetailProps) {
   const rewardBalanceQuery = useRewardBalance(walletAddress)
   const repair = useRepairSneaker(sneakerTokenId)
   const upgrade = useUpgradeSneaker(sneakerTokenId)
+  const localActiveActivitySessionQuery = useLocalActiveActivitySession()
 
   const attributes = attributesQuery.data
   const gameConfig = gameConfigQuery.data
@@ -98,6 +124,8 @@ function SneakerDetail({ walletAddress, sneakerTokenId }: SneakerDetailProps) {
       <Text style={styles.title} accessibilityRole="header">
         Sneaker
       </Text>
+
+      {sneakerPicker}
 
       {isError ? (
         <Card>
@@ -143,6 +171,17 @@ function SneakerDetail({ walletAddress, sneakerTokenId }: SneakerDetailProps) {
             transactionState={upgrade.transactionState}
             onConfirmPress={upgrade.submitUpgrade}
             onTransactionReset={upgrade.resetUpgrade}
+          />
+          <TransferPanel
+            sneakerTokenId={sneakerTokenId}
+            // While the check loads, it counts as no run: settlement rejects a mid-run transfer anyway.
+            isRunInProgress={Boolean(localActiveActivitySessionQuery.data)}
+            onTransferPress={() =>
+              router.push({
+                pathname: '/sneaker/transfer',
+                params: { sneakerTokenId: sneakerTokenId.toString() },
+              })
+            }
           />
         </>
       )}

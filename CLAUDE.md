@@ -74,6 +74,10 @@ Everything targets **Monad testnet** until Phase 10.
 - **A `bun test` timeout kills the test's spawned processes, including the shared Anvil**, and
   every later test in that file then fails with "HTTP request failed". Give a slow chain test
   (for example one that deploys its own contracts) an explicit timeout.
+- **Killing the app while a wallet request is open breaks the WalletConnect session.** After
+  reopening, every request fails with `Invalid Id` from MetaMask (plus "emitting session_request…
+  without any listeners"). Nothing reaches the chain. Fix: Profile → sign out (it disconnects the
+  wallet), then sign in again. Seen in Phase 7.
 - **Match viem errors by `name`/`code`, never `instanceof`.** Metro can load viem's ESM and CJS
   builds side by side, so a wallet cancel from wagmi isn't an instance of the app's
   `UserRejectedRequestError`. Use `lib/chain/error-chain.ts` and `isWalletRejection`.
@@ -95,5 +99,8 @@ summary shows the real reward, and History lists past runs (D-026). Verified on 
 Phase 6 (repair & upgrade) is done (2026-10-03): the Sneaker tab repairs and upgrades through the
 player's own wallet with one shared hook (`useSneakerGameTransaction`), verified on the Android phone
 (repair 96 → 100, level 1 → 2, next run 6 SOLE/min).
-**Next: Phase 7: Sneaker transfer** (`docs/phases/phase-07-sneaker-transfer.md`). The next
-decision number is D-027.
+Phase 7 (Sneaker transfer) is done (2026-10-03): transfer reuses `useSneakerGameTransaction`, Home
+has a Sneaker picker and an empty state (D-027). Verified on the Android phone with two MetaMask
+accounts (#4 sent A → B and back, stats intact). **The MVP is complete.**
+**Next: Phase 8: Demo hardening** (`docs/phases/phase-08-demo-hardening.md`). The next decision
+number is D-028.

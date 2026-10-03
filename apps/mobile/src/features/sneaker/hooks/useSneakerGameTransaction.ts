@@ -1,4 +1,4 @@
-import { sneakerGameAbi } from '@stridemon/chain'
+import { sneakerGameAbi, sneakerNftAbi } from '@stridemon/chain'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useRef, useState } from 'react'
 import type { Address } from 'viem'
@@ -17,9 +17,9 @@ import type {
 type ChainReader = NonNullable<ReturnType<typeof usePublicClient>>
 
 /**
- * The one hook for player transactions on `SneakerGame` (mobile-app.md → Wallet and
- * chain): check gas → the wallet signs → wait for the receipt → re-read the chain.
- * Repair and upgrade are thin wrappers around it.
+ * The one hook for player transactions (mobile-app.md → Wallet and chain): check gas →
+ * the wallet signs → wait for the receipt → re-read the chain. Repair, upgrade and
+ * transfer are thin wrappers around it (D-027).
  */
 export function useSneakerGameTransaction() {
   const { address: walletAddress } = useAccount()
@@ -48,11 +48,17 @@ export function useSneakerGameTransaction() {
         }
 
         setTransactionState({ phase: 'awaitingSignature' })
-        const transactionHash = await writeContractAsync({
-          ...toContractCall(sneakerGameCall),
-          account: walletAddress,
-          chainId: monadChain.id,
-        })
+        const walletCall = { account: walletAddress, chainId: monadChain.id } as const
+        const transactionHash =
+          sneakerGameCall.functionName === 'transfer'
+            ? await writeContractAsync({
+                ...toTransferContractCall({ transferCall: sneakerGameCall, walletAddress }),
+                ...walletCall,
+              })
+            : await writeContractAsync({
+                ...toSneakerGameContractCall(sneakerGameCall),
+                ...walletCall,
+              })
 
         setTransactionState({ phase: 'confirming', transactionHash })
         const receipt = await chainReader.waitForTransactionReceipt({ hash: transactionHash })
@@ -86,12 +92,31 @@ export function useSneakerGameTransaction() {
   return { transactionState, submit, reset }
 }
 
-function toContractCall({ functionName, sneakerTokenId }: SneakerGameCall) {
+type TransferCall = Extract<SneakerGameCall, { functionName: 'transfer' }>
+type SneakerGameContractCall = Exclude<SneakerGameCall, TransferCall>
+
+// Two builders, not one: viem can't type a call whose ABI is a union of two contracts.
+function toSneakerGameContractCall({ functionName, sneakerTokenId }: SneakerGameContractCall) {
   return {
     address: contractAddresses.sneakerGame,
     abi: sneakerGameAbi,
     functionName,
     args: [sneakerTokenId],
+  } as const
+}
+
+function toTransferContractCall({
+  transferCall,
+  walletAddress,
+}: {
+  transferCall: TransferCall
+  walletAddress: Address
+}) {
+  return {
+    address: contractAddresses.sneakerNft,
+    abi: sneakerNftAbi,
+    functionName: 'safeTransferFrom',
+    args: [walletAddress, transferCall.recipientWalletAddress, transferCall.sneakerTokenId],
   } as const
 }
 
@@ -111,10 +136,15 @@ async function canPayGas({
   sneakerGameCall: SneakerGameCall
 }): Promise<boolean> {
   const [gasUnits, feesPerGas, monBalanceWei] = await Promise.all([
-    chainReader.estimateContractGas({
-      ...toContractCall(sneakerGameCall),
-      account: walletAddress,
-    }),
+    sneakerGameCall.functionName === 'transfer'
+      ? chainReader.estimateContractGas({
+          ...toTransferContractCall({ transferCall: sneakerGameCall, walletAddress }),
+          account: walletAddress,
+        })
+      : chainReader.estimateContractGas({
+          ...toSneakerGameContractCall(sneakerGameCall),
+          account: walletAddress,
+        }),
     chainReader.estimateFeesPerGas(),
     chainReader.getBalance({ address: walletAddress }),
   ])

@@ -1,8 +1,12 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
-import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
+import {
+  buildSneakerExplorerUrl,
+  buildTransactionExplorerUrl,
+} from '../../../lib/chain/explorer-urls'
 import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
+import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
 import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
 import {
   describeSneakerGameTransactionError,
@@ -10,6 +14,7 @@ import {
 } from '../sneaker-game-transaction-state'
 import type { SneakerTransactionConfirmation } from './SneakerTransactionSheet'
 import { StatChangeRow } from './StatChangeRow'
+import { TransferConfirmationDetails } from './TransferConfirmationDetails'
 
 const SUCCESS_BADGE_SIZE = 64
 
@@ -24,12 +29,32 @@ export function ConfirmationStep({
   onConfirmPress: () => void
   onCancelPress: () => void
 }) {
-  const { statChanges, costWei, rewardBalanceWei } = confirmation
   return (
     <>
       <Text style={styles.title} accessibilityRole="header">
         {title}
       </Text>
+      {confirmation.kind === 'spend' ? (
+        <SpendConfirmationDetails confirmation={confirmation} />
+      ) : (
+        <TransferConfirmationDetails
+          sneakerTokenId={confirmation.sneakerTokenId}
+          recipientWalletAddress={confirmation.recipientWalletAddress}
+        />
+      )}
+      <Button label="Confirm in wallet" onPress={onConfirmPress} />
+      <Button label="Not now" variant="secondary" onPress={onCancelPress} />
+    </>
+  )
+}
+
+function SpendConfirmationDetails({
+  confirmation: { statChanges, costWei, rewardBalanceWei },
+}: {
+  confirmation: Extract<SneakerTransactionConfirmation, { kind: 'spend' }>
+}) {
+  return (
+    <>
       <View style={styles.rows}>
         {statChanges.map((statChange) => (
           <StatChangeRow key={statChange.label} {...statChange} />
@@ -45,8 +70,6 @@ export function ConfirmationStep({
         You spend {formatSoleAmount(costWei)}. Your wallet opens next to approve it, and Monad
         charges a small fee in MON.
       </Text>
-      <Button label="Confirm in wallet" onPress={onConfirmPress} />
-      <Button label="Not now" variant="secondary" onPress={onCancelPress} />
     </>
   )
 }
@@ -98,19 +121,34 @@ export function SucceededStep({
         <Text style={styles.title} accessibilityRole="header">
           {title}
         </Text>
-        <Text style={styles.caption}>Spent {formatSoleAmount(confirmation.costWei)}</Text>
+        {confirmation.kind === 'spend' ? (
+          <Text style={styles.caption}>Spent {formatSoleAmount(confirmation.costWei)}</Text>
+        ) : (
+          <Text style={[styles.caption, styles.centeredText]}>
+            Now owned by {formatWalletAddress(confirmation.recipientWalletAddress)}
+          </Text>
+        )}
       </View>
-      <View style={styles.rows}>
-        {confirmation.statChanges.map((statChange) => (
-          <StatChangeRow key={statChange.label} {...statChange} />
-        ))}
-      </View>
+      {confirmation.kind === 'spend' && (
+        <View style={styles.rows}>
+          {confirmation.statChanges.map((statChange) => (
+            <StatChangeRow key={statChange.label} {...statChange} />
+          ))}
+        </View>
+      )}
       <View style={styles.centered}>
         <ExternalLink
           label="View transaction"
           url={buildTransactionExplorerUrl(transactionHash)}
           accessibilityLabel="View the transaction on the explorer"
         />
+        {confirmation.kind === 'transfer' && (
+          <ExternalLink
+            label="See the new owner on the explorer"
+            url={buildSneakerExplorerUrl(confirmation.sneakerTokenId)}
+            accessibilityLabel={`View Sneaker ${confirmation.sneakerTokenId} and its new owner on the explorer`}
+          />
+        )}
       </View>
       <Button label="Done" onPress={onDonePress} />
     </>

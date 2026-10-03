@@ -11,13 +11,25 @@ import type { StatChange } from './StatChangeRow'
 // Dims the screen behind the sheet without hiding it.
 const BACKDROP_COLOR = 'rgba(17, 20, 24, 0.5)'
 
-export type SneakerTransactionConfirmation = {
-  confirmationTitle: string
-  successTitle: string
-  statChanges: readonly StatChange[]
-  costWei: bigint
-  rewardBalanceWei: bigint
-}
+/** What the player is about to do, snapshotted when they tapped the action. */
+export type SneakerTransactionConfirmation =
+  | {
+      /** Repair or upgrade: SOLE is spent and stats change. */
+      kind: 'spend'
+      confirmationTitle: string
+      successTitle: string
+      statChanges: readonly StatChange[]
+      costWei: bigint
+      rewardBalanceWei: bigint
+    }
+  | {
+      /** The Sneaker leaves this wallet (D-027). */
+      kind: 'transfer'
+      confirmationTitle: string
+      successTitle: string
+      sneakerTokenId: bigint
+      recipientWalletAddress: string
+    }
 
 type SneakerTransactionSheetProps = {
   /** What the player saw when they tapped the action. `null` hides the sheet. */
@@ -28,7 +40,7 @@ type SneakerTransactionSheetProps = {
 }
 
 /**
- * A bottom sheet that walks one repair or upgrade through confirm → wallet → chain →
+ * A bottom sheet that walks one repair, upgrade or transfer through confirm → wallet → chain →
  * done. It can't be dismissed while the wallet or chain is busy, so the player
  * always sees how it ended.
  */

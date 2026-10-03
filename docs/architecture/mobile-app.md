@@ -69,11 +69,16 @@ apps/mobile/
     │   ├── wallet/                  useWalletConnection, useMonBalance, WalletAddress, MonBalance
     │   ├── onboarding/              useStarterSneakerOnboarding, StarterSneakerMinting ("Minting your Sneaker…")
     │   ├── sneaker/
-    │   │   ├── hooks/               useOwnedSneaker, useSneakerAttributes, useSneakerEnergy, useGameConfig (Phase 3);
-    │   │   │                        useSneakerGameTransaction, useRepairSneaker, useUpgradeSneaker (Phase 6)
+    │   │   ├── hooks/               useOwnedSneakers, useSelectedSneaker (Phase 7), useSneakerAttributes,
+    │   │   │                        useSneakerEnergy, useGameConfig (Phase 3);
+    │   │   │                        useSneakerGameTransaction, useRepairSneaker, useUpgradeSneaker (Phase 6);
+    │   │   │                        useTransferSneaker (Phase 7)
     │   │   ├── sneaker-game-transaction-state.ts  the transaction state union and its error copy
     │   │   ├── sneaker-action-availability.ts     why Repair / Upgrade is disabled
-    │   │   └── components/          SneakerCard; RepairPanel and UpgradePanel (thin configs of SneakerActionPanel),
+    │   │   ├── selected-sneaker-store.ts          zustand: the Sneaker the player picked (D-027)
+    │   │   ├── transfer-recipient.ts              checks the recipient address (valid, not yourself)
+    │   │   └── components/          SneakerCard, SneakerPicker, NoSneakersCard; RepairPanel and UpgradePanel
+    │   │                            (thin configs of SneakerActionPanel), TransferPanel,
     │   │                            SneakerTransactionSheet (confirm → wallet → chain → done), StatChangeRow
     │   ├── activity-session/
     │   │   ├── api/                 activity-sessions-api.ts (start, upload samples, finish, fetch one)
@@ -164,7 +169,7 @@ STOP pressed
   the API.
 - Player transactions (repair, upgrade, transfer) follow one pattern, wrapped
   in a single reusable hook `useSneakerGameTransaction`:
-  1. Read the quote (`quoteRepairCost`).
+  1. Read the quote (`quoteRepairCost`). A transfer has no quote, only the network fee.
   2. Show a confirmation with the cost and current balance.
   3. `writeContract` opens the wallet app and the player signs.
   4. `waitForTransactionReceipt`.
@@ -179,7 +184,12 @@ Home decides what to show from the chain, not from the API:
 
 - **The wallet owns a Sneaker** (`balanceOf` > 0) → the Sneaker card, the SOLE
   balance and START.
-- **It owns none** → the "Minting your Sneaker…" screen. It calls
+- **It owns more than one** (it received a Sneaker, Phase 7) → a picker above the
+  Sneaker card. The picked Sneaker drives START, repair, upgrade and transfer (D-027).
+- **It owns none and has already claimed its starter** (`hasClaimedStarterSneaker`,
+  for example after sending its only Sneaker away) → an empty state. The starter is
+  one per address and is never minted again (D-027).
+- **It owns none and hasn't claimed** → the "Minting your Sneaker…" screen. It calls
   `POST /v1/onboarding/starter-sneaker` once (idempotent), then polls
   `GET /v1/onboarding/status` every 2 s. Each step (Sneaker, gas) shows pending,
   confirmed with an explorer link, or failed with a way forward. Once the mint is

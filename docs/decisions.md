@@ -509,3 +509,27 @@ Made at Phase 5 start (2026-09-30).
 - **Trade-off:** a settlement that fails for another reason (the contract paused, a config change)
   leaves the app on "Settling on Monad…" until someone fixes it by hand.
 - **Revisit when:** Phase 8 hardening, or a settlement actually fails that way.
+
+## D-027 — Sneaker transfer reuses the Phase 6 flow; Home follows a selected Sneaker
+
+Made at Phase 7 start (2026-10-03).
+
+- **Decision:**
+  1. `useSneakerGameTransaction` also sends `SneakerNft.safeTransferFrom(player, recipient, tokenId)`.
+     Its call type gains a `transfer` variant. The gas check, wallet step, receipt wait, chain
+     re-read and error copy are shared with repair and upgrade. `SneakerTransactionSheet` gets a
+     transfer confirmation (no SOLE cost, "You will no longer own this Sneaker") next to the
+     existing spend confirmation.
+  2. The Sneaker the player picked is kept in a small zustand store, so Home (START) and the
+     Sneaker tab (repair, upgrade, transfer) act on the same one. When the picked Sneaker is no
+     longer in the wallet, the first owned one is used.
+  3. A wallet with zero Sneakers shows the starter onboarding only while
+     `SneakerGame.hasClaimedStarterSneaker` is false. Once it's true, Home shows an empty state
+     ("No Sneakers in this wallet"), since the starter is never minted twice.
+- **Why:** one transaction flow for every player action, as `mobile-app.md` asks. The selection is
+  UI state that two screens share, which is what zustand is for here. Reading the claim flag from
+  the chain keeps the chain the source of truth, with no new API field.
+- **Trade-off:** the selection isn't persisted, so a relaunch starts on the first Sneaker. The
+  hook's name still says `SneakerGame` although transfer goes to `SneakerNft`.
+- **Revisit when:** a wallet commonly holds many Sneakers (Phase 9 marketplace), where the picker
+  and the selection may need persisting.

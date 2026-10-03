@@ -31,6 +31,7 @@ function AuthGate() {
       <Stack.Protected guard={isSignedIn}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="run" />
+        <Stack.Screen name="sneaker/transfer" />
       </Stack.Protected>
       <Stack.Protected guard={!isSignedIn}>
         <Stack.Screen name="(onboarding)" />

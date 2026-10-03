@@ -56,7 +56,14 @@ export function SneakerActionPanel({
   function handleActionPress() {
     if (costWei === undefined) return
     onTransactionReset()
-    setConfirmation({ confirmationTitle, successTitle, statChanges, costWei, rewardBalanceWei })
+    setConfirmation({
+      kind: 'spend',
+      confirmationTitle,
+      successTitle,
+      statChanges,
+      costWei,
+      rewardBalanceWei,
+    })
   }
 
   function handleSheetClosePress() {

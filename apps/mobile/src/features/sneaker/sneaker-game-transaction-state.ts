@@ -1,10 +1,12 @@
-import type { Hash } from 'viem'
+import type { Address, Hash } from 'viem'
 
-/** A player transaction on `SneakerGame`, signed by the player's own wallet. */
-export type SneakerGameCall = {
-  functionName: 'repair' | 'upgrade'
-  sneakerTokenId: bigint
-}
+/**
+ * A player transaction signed by the player's own wallet: repair or upgrade on
+ * `SneakerGame`, or sending the Sneaker to another wallet on `SneakerNft` (D-027).
+ */
+export type SneakerGameCall =
+  | { functionName: 'repair' | 'upgrade'; sneakerTokenId: bigint }
+  | { functionName: 'transfer'; sneakerTokenId: bigint; recipientWalletAddress: Address }
 
 export type SneakerGameTransactionErrorCode =
   | 'WALLET_REJECTED'
@@ -40,7 +42,7 @@ export function describeSneakerGameTransactionError(
     case 'NOT_ENOUGH_GAS':
       return 'Your wallet doesn’t have enough MON to pay the network fee. Top it up from the Monad testnet faucet, then try again.'
     case 'CHAIN_REJECTED':
-      return 'Monad refused this transaction, usually because your balance or Sneaker just changed. Check the numbers and try again.'
+      return 'Monad refused this transaction, usually because your balance or Sneaker just changed, or the address can’t receive a Sneaker. Check and try again.'
     case 'TRANSACTION_FAILED':
       return 'Something went wrong talking to your wallet or Monad. Check your connection and try again.'
     default: {

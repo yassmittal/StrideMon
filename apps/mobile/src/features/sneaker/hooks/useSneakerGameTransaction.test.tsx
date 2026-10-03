@@ -58,6 +58,27 @@ describe('useSneakerGameTransaction', () => {
     expect(invalidateQueries).toHaveBeenCalled()
   })
 
+  it('sends a transfer as safeTransferFrom from the player’s wallet', async () => {
+    const recipientWalletAddress = '0x00000000000000000000000000000000000000bb'
+    const { result } = await renderTransaction()
+
+    await act(() =>
+      result.current.submit({
+        functionName: 'transfer',
+        sneakerTokenId: 4n,
+        recipientWalletAddress,
+      }),
+    )
+
+    expect(mockWriteContractAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        functionName: 'safeTransferFrom',
+        args: [WALLET_ADDRESS, recipientWalletAddress, 4n],
+      }),
+    )
+    expect(result.current.transactionState.phase).toBe('succeeded')
+  })
+
   it('reports a wallet cancel as WALLET_REJECTED', async () => {
     mockWriteContractAsync.mockRejectedValue(new UserRejectedRequestError(new Error('denied')))
     const { result } = await renderTransaction()

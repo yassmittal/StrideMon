@@ -149,3 +149,22 @@ Phase 5's check, within Wi-Fi range:
   matches MetaMask, and the Sneaker's explorer page (`tokenURI`) shows the same durability.
 - The **History** tab lists the run at the top with its reward and a "Settled" badge. Tapping it
   opens the same summary.
+
+Phase 7's check (no new build; Metro only). Wallet B is a second account in the same MetaMask
+(or a second phone with its own MetaMask, which works the same way):
+
+- **Sign B in first.** In MetaMask add Account 2, enable Monad Testnet (10143) on it, and copy its
+  address. In StrideMon, Profile → sign out, connect with Account 2 and sign in. B gets its own
+  starter Sneaker and gas drip, which it needs later to send #4 back.
+- **A sends.** Sign out, switch MetaMask back to Account 1 and sign in. On the Sneaker tab, note
+  #4's level, efficiency and durability and tap **Send Sneaker #4**. Check the field: a short
+  `0x1234` and your own address are refused. Paste B's address and check it shows checksummed.
+  Tap **Review transfer**, read "You will no longer own this Sneaker", confirm in MetaMask.
+  "Sneaker #4 sent" links to the transaction and to the Sneaker's explorer page, which shows B as
+  the owner. Done lands on Home.
+- **A after:** if #4 was A's only Sneaker, Home shows "No Sneakers in this wallet" (no new starter mint).
+- **B after:** sign in as B. Home shows a picker with two Sneakers. Pick #4: its stats match
+  what A had. START, repair and upgrade act on the picked one.
+- **Run block:** press START, then kill and reopen the app so Home shows Resume / Finish. Open the
+  Sneaker tab: Send is disabled with "Finish your run first". Finish the run afterwards.
+- **Back to A:** as B, send #4 back to A's address. A's Home shows #4 again by itself.

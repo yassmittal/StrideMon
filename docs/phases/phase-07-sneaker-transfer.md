@@ -23,13 +23,16 @@ with all its on-chain stats intact. This completes the MVP defined in `MVP.md` �
 
 ### `apps/api`
 - Start-session pre-checks already verify ownership (Phase 4), and settlement
-  already rejects a transferred Sneaker (Phase 5). Add a test for a transfer
-  mid-session → the session is rejected with `SNEAKER_TRANSFERRED_DURING_SESSION`.
+  already rejects a transferred Sneaker (Phase 5). The test for a transfer
+  mid-session → the session is rejected with `SNEAKER_TRANSFERRED_DURING_SESSION`
+  already exists from Phase 5 (`activity-sessions.test.ts`), so there's no API change.
+
+How the hook, the picker and the empty state fit together: D-027.
 
 ## Definition of done
-- [ ] Wallet A transfers Sneaker #1 to wallet B. A no longer sees it, and B sees it with identical stats.
-- [ ] The explorer shows the ownership change.
-- [ ] Every step of `MVP.md` §26 works end to end on a real device.
+- [x] Wallet A transfers Sneaker #1 to wallet B. A no longer sees it, and B sees it with identical stats.
+- [x] The explorer shows the ownership change.
+- [x] Every step of `MVP.md` §26 works end to end on a real device.
 
 ## Demo check
 `MVP.md` §21 Demo 7: Wallet A → Wallet B, before and after.

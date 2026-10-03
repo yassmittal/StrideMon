@@ -1,4 +1,5 @@
 import { router } from 'expo-router'
+import type { ReactNode } from 'react'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
 import { Card } from '../../src/components/ui/Card'
 import { ErrorState } from '../../src/components/ui/ErrorState'
@@ -19,9 +20,11 @@ import { StarterSneakerMinting } from '../../src/features/onboarding/components/
 import { useStarterSneakerOnboarding } from '../../src/features/onboarding/hooks/useStarterSneakerOnboarding'
 import { RewardBalanceCard } from '../../src/features/rewards/components/RewardBalanceCard'
 import { useRewardBalance } from '../../src/features/rewards/hooks/useRewardBalance'
+import { NoSneakersCard } from '../../src/features/sneaker/components/NoSneakersCard'
 import { SneakerCard } from '../../src/features/sneaker/components/SneakerCard'
+import { SneakerPicker } from '../../src/features/sneaker/components/SneakerPicker'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
-import { useOwnedSneaker } from '../../src/features/sneaker/hooks/useOwnedSneaker'
+import { useSelectedSneaker } from '../../src/features/sneaker/hooks/useSelectedSneaker'
 import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneakerAttributes'
 import {
   type SneakerEnergy,
@@ -30,11 +33,18 @@ import {
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
 import { colors, fontSizes, fontWeights } from '../../src/theme'
 
-/** Home: the player's Sneaker, or the starter mint while they don't have one yet. */
+/**
+ * Home: the selected Sneaker (with a picker when the wallet owns several), the starter
+ * mint while the player has never had one, or an empty state once they've sent it away.
+ */
 export default function HomeScreen() {
   const currentUserQuery = useCurrentUser()
   const walletAddress = currentUserQuery.data?.user.walletAddress
-  const { ownedSneaker, refetch: refetchOwnedSneaker } = useOwnedSneaker(walletAddress)
+  const {
+    selectedSneaker,
+    pickSneaker,
+    refetch: refetchSelectedSneaker,
+  } = useSelectedSneaker(walletAddress)
 
   if (currentUserQuery.isError) {
     return (
@@ -48,7 +58,7 @@ export default function HomeScreen() {
     )
   }
 
-  switch (ownedSneaker.status) {
+  switch (selectedSneaker.status) {
     case 'loading':
       return (
         <LoadingScreen
@@ -61,19 +71,37 @@ export default function HomeScreen() {
         <Screen>
           <ErrorState
             message="Couldn’t read your Sneaker from Monad. Check your connection and try again."
-            onRetryPress={refetchOwnedSneaker}
+            onRetryPress={refetchSelectedSneaker}
           />
         </Screen>
       )
     case 'none':
-      return <StarterSneakerOnboarding />
+      if (!selectedSneaker.hasClaimedStarterSneaker) return <StarterSneakerOnboarding />
+      return (
+        <Screen isScrollable>
+          <Text style={styles.title} accessibilityRole="header">
+            StrideMon
+          </Text>
+          {walletAddress !== undefined && <NoSneakersCard walletAddress={walletAddress} />}
+        </Screen>
+      )
     case 'owned':
       return (
-        <SneakerHome walletAddress={walletAddress} sneakerTokenId={ownedSneaker.sneakerTokenId} />
+        <SneakerHome
+          walletAddress={walletAddress}
+          sneakerTokenId={selectedSneaker.selectedSneakerTokenId}
+          sneakerPicker={
+            <SneakerPicker
+              sneakerTokenIds={selectedSneaker.sneakerTokenIds}
+              selectedSneakerTokenId={selectedSneaker.selectedSneakerTokenId}
+              onSneakerPress={pickSneaker}
+            />
+          }
+        />
       )
     default: {
-      const unhandledOwnedSneaker: never = ownedSneaker
-      throw new Error(`Unhandled Sneaker state: ${JSON.stringify(unhandledOwnedSneaker)}`)
+      const unhandledSelectedSneaker: never = selectedSneaker
+      throw new Error(`Unhandled Sneaker state: ${String(unhandledSelectedSneaker)}`)
     }
   }
 }
@@ -95,9 +123,10 @@ function StarterSneakerOnboarding() {
 type SneakerHomeProps = {
   walletAddress: string | undefined
   sneakerTokenId: bigint
+  sneakerPicker: ReactNode
 }
 
-function SneakerHome({ walletAddress, sneakerTokenId }: SneakerHomeProps) {
+function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHomeProps) {
   const attributesQuery = useSneakerAttributes(sneakerTokenId)
   const gameConfigQuery = useGameConfig()
   const sneakerEnergy = useSneakerEnergy({
@@ -123,6 +152,8 @@ function SneakerHome({ walletAddress, sneakerTokenId }: SneakerHomeProps) {
       <Text style={styles.title} accessibilityRole="header">
         StrideMon
       </Text>
+
+      {sneakerPicker}
 
       {isSneakerError ? (
         <Card>
