@@ -8,7 +8,6 @@ export const colors = {
   textPlaceholder: 'rgba(0, 0, 0, 0.3)',
   textOnPrimary: '#FFFFFF',
   primary: '#2B2E3A',
-  primaryPressed: '#0016EC',
   accent: '#1A2FFB',
   /** Lime. Only on dark, or as a fill behind black text. */
   highlight: '#C1FF00',

@@ -54,7 +54,7 @@ function isFreshLocation(location: LocationObject, deliveredAtMilliseconds: numb
   return deliveredAtMilliseconds - location.timestamp <= MAXIMUM_FIX_AGE_MILLISECONDS
 }
 
-export function toRecordedLocation(location: LocationObject): RecordedLocation {
+function toRecordedLocation(location: LocationObject): RecordedLocation {
   return {
     recordedAtMilliseconds: location.timestamp,
     latitude: location.coords.latitude,

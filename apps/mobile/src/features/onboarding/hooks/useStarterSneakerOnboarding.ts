@@ -7,7 +7,7 @@ import {
   toStarterSneakerMintingState,
 } from '../starter-sneaker-minting-state'
 
-export const ONBOARDING_STATUS_QUERY_KEY = ['onboarding-status'] as const
+const ONBOARDING_STATUS_QUERY_KEY = ['onboarding-status'] as const
 
 // A Monad transaction lands in about 2 s, so this sees each step soon after it happens.
 const STATUS_POLL_INTERVAL_MILLISECONDS = 2_000

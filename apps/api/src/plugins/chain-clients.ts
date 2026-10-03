@@ -12,7 +12,7 @@ import {
 import { privateKeyToAccount } from 'viem/accounts'
 
 /** The game server's signer: the account holding `GAME_SERVER_ROLE`. */
-export type GameServerWalletClient = WalletClient<Transport, Chain, Account>
+type GameServerWalletClient = WalletClient<Transport, Chain, Account>
 
 export type ChainClients = {
   publicClient: PublicClient

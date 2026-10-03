@@ -43,13 +43,6 @@ export function findUserById(database: Db, userId: ObjectId): Promise<UserDocume
   return getUsersCollection(database).findOne({ _id: userId })
 }
 
-export function findUserByWalletAddress(
-  database: Db,
-  walletAddress: string,
-): Promise<UserDocument | null> {
-  return getUsersCollection(database).findOne({ walletAddress: walletAddress.toLowerCase() })
-}
-
 /** Set by the outbox job once the starter mint is confirmed on-chain. */
 export async function markUserReceivedStarterSneaker(
   database: Db,

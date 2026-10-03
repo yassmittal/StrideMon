@@ -1,7 +1,7 @@
 import { pickSneaker, useSelectedSneakerStore } from '../selected-sneaker-store'
 import { type OwnedSneakers, useOwnedSneakers } from './useOwnedSneakers'
 
-export type SelectedSneaker =
+type SelectedSneaker =
   | Exclude<OwnedSneakers, { status: 'owned' }>
   | { status: 'owned'; sneakerTokenIds: readonly bigint[]; selectedSneakerTokenId: bigint }
 

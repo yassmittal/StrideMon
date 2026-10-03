@@ -1,10 +1,10 @@
 import type { ValidationSample } from './validation-sample'
 
 // security.md → Activity validation → Sample plausibility and Duration sanity.
-export const MAXIMUM_SAMPLE_ACCURACY_METERS = 50
+const MAXIMUM_SAMPLE_ACCURACY_METERS = 50
 // How far the phone's clock may differ from the server's (D-021).
-export const MAXIMUM_DEVICE_CLOCK_SKEW_SECONDS = 60
-export const MAXIMUM_SESSION_DURATION_SECONDS = 4 * 60 * 60
+const MAXIMUM_DEVICE_CLOCK_SKEW_SECONDS = 60
+const MAXIMUM_SESSION_DURATION_SECONDS = 4 * 60 * 60
 
 const MILLISECONDS_PER_SECOND = 1000
 const MAXIMUM_DEVICE_CLOCK_SKEW_MILLISECONDS =

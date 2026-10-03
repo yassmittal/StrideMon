@@ -1,7 +1,7 @@
 import { formatSoleAmount } from '../../lib/format/format-sole-amount'
 
 /** Why Repair or Upgrade is disabled. The contract enforces all three; the app explains them. */
-export type SneakerActionBlockedReason = 'fullDurability' | 'maxLevel' | 'notEnoughRewards'
+type SneakerActionBlockedReason = 'fullDurability' | 'maxLevel' | 'notEnoughRewards'
 
 export function findRepairBlockedReason({
   durability,

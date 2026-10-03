@@ -1,7 +1,7 @@
 import { formatDuration } from '../../lib/format/format-duration'
 
 /** Why START is disabled (game-rules.md → Starting a session). Ownership is checked by the API. */
-export type StartRunBlockedReason = 'outOfEnergy' | 'needsRepair'
+type StartRunBlockedReason = 'outOfEnergy' | 'needsRepair'
 
 export function findStartRunBlockedReason({
   currentEnergy,

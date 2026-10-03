@@ -1,7 +1,7 @@
 import type { OnboardingStatusResponse } from '@stridemon/shared/api-contracts'
 import { type ApiClientErrorCode, ApiError } from '../../lib/api-client'
 
-export type StarterSneakerRequestErrorCode = ApiClientErrorCode | 'UNKNOWN_ERROR'
+type StarterSneakerRequestErrorCode = ApiClientErrorCode | 'UNKNOWN_ERROR'
 
 /** What the "Minting your Sneaker…" screen shows. One phase per thing the player could be waiting on. */
 export type StarterSneakerMintingState =

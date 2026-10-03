@@ -1,6 +1,6 @@
 import { type Collection, type Db, ObjectId } from 'mongodb'
 
-export type AuthNonceDocument = {
+type AuthNonceDocument = {
   _id: ObjectId
   nonce: string
   /** Lowercase. The only wallet allowed to use this nonce. */

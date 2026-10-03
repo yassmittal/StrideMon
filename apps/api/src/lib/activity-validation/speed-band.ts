@@ -2,12 +2,12 @@ import { metersPerSecondToKilometersPerHour } from '@stridemon/shared/units'
 
 // security.md → Activity validation. Walking starts around 3 km/h and a fast runner
 // holds about 20 km/h; below 1 is standing still, above 20 is a bike or a car.
-export const MINIMUM_ACTIVE_SPEED_KILOMETERS_PER_HOUR = 1
-export const MAXIMUM_ACTIVE_SPEED_KILOMETERS_PER_HOUR = 20
+const MINIMUM_ACTIVE_SPEED_KILOMETERS_PER_HOUR = 1
+const MAXIMUM_ACTIVE_SPEED_KILOMETERS_PER_HOUR = 20
 // No one covers ground on foot at this speed between two fixes: it's a GPS jump.
-export const TELEPORT_SPEED_KILOMETERS_PER_HOUR = 40
+const TELEPORT_SPEED_KILOMETERS_PER_HOUR = 40
 
-export type MinuteSpeedClass = 'idle' | 'active' | 'vehicle'
+type MinuteSpeedClass = 'idle' | 'active' | 'vehicle'
 
 export function calculateSpeedKilometersPerHour({
   distanceMeters,

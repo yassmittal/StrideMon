@@ -596,3 +596,19 @@ Made at Phase 8.3 start (2026-10-03).
 - **Trade-off:** one more contract to deploy and verify. A `maxLevel` or `maxDurability` change
   needs a new renderer too, or the ticks and bar stop at full.
 - **Revisit when:** the game config's caps change, or the art moves to a richer format.
+
+## D-031 — Pressed buttons step one shade; no blue flood
+
+Made after the Phase 8.3 phone check (2026-10-03).
+
+- **Decision:** a pressed pill no longer turns electric blue. `primary` steps from `#2B2E3A` to
+  black, `callToAction` from white to `surfaceMuted`, and `secondary` keeps its step to white. The
+  label roll and the arrow nudge stay. Every press animation runs on the native driver (an
+  opacity fill over the pill, transforms for the label and arrow). The unused dark
+  `IconCircleButton` variant, the last thing that pressed to blue, is removed with the
+  `primaryPressed` token.
+- **Why:** on the phone a blue background sometimes stayed for seconds after a tap. The colour
+  animations ran on the JS thread, so they froze while it was busy opening the wallet or
+  changing screens. A one-shade step is calmer and can't stall.
+- **Trade-off:** another step away from Lusion (§7 interactions 2 and 3, after D-029).
+- **Revisit when:** a design review wants the flood back. It would need the native driver too.

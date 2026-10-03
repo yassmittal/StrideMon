@@ -13,7 +13,7 @@ import {
 } from './SneakerTransactionSheet'
 import { type StatChange, StatChangeRow } from './StatChangeRow'
 
-export type SneakerActionPanelProps = {
+type SneakerActionPanelProps = {
   title: string
   description: string
   actionLabel: string

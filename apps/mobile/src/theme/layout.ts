@@ -18,8 +18,6 @@ export const layout = {
   /** The arrow button at the end of a text field. */
   textFieldArrowSize: 21,
   iconCircleButtonSize: 45,
-  /** Lusion's black back-to-top circle. */
-  iconCircleButtonDarkSize: 53,
   /** Derived: the glyph inside an icon circle button, and its line width. */
   iconSize: 18,
   iconStrokeWidth: 1.5,

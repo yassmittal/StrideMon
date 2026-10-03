@@ -1,7 +1,7 @@
 import { sneakerGameAbi } from '@stridemon/chain'
 import { type Log, parseEventLogs } from 'viem'
 
-export type SessionSettledEvent = {
+type SessionSettledEvent = {
   rewardAmountWei: bigint
   durabilityLoss: number
   rewardedMinutes: number

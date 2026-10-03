@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 
-export type ActivitySessionCursor = { createdAt: Date; activitySessionId: ObjectId }
+type ActivitySessionCursor = { createdAt: Date; activitySessionId: ObjectId }
 
 const CURSOR_SEPARATOR = '.'
 

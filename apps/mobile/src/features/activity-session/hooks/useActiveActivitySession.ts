@@ -20,7 +20,7 @@ import {
 const CLOCK_TICK_MILLISECONDS = 1_000
 const BUFFER_READ_INTERVAL_MILLISECONDS = 2_000
 
-export type ActiveActivitySession = {
+type ActiveActivitySession = {
   /** `undefined` until the buffer has been read once. */
   liveRunStats: LiveRunStats | undefined
   unsentSampleCount: number

@@ -1,8 +1,8 @@
 import { type Collection, type Db, ObjectId } from 'mongodb'
 
-export type AuthSessionRevocationReason = 'rotated' | 'signedOut' | 'reuseDetected'
+type AuthSessionRevocationReason = 'rotated' | 'signedOut' | 'reuseDetected'
 
-export type AuthSessionDocument = {
+type AuthSessionDocument = {
   _id: ObjectId
   userId: ObjectId
   /** SHA-256 of the refresh token. The token itself is never stored. */

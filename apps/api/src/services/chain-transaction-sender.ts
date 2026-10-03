@@ -19,13 +19,13 @@ const RECEIPT_POLLING_INTERVAL_MILLISECONDS = 500
 // Short enough that the job moves on and renews its lease; a missed receipt is re-checked next run.
 const RECEIPT_WAIT_TIMEOUT_MILLISECONDS = 20_000
 
-export type SignedChainTransaction = {
+type SignedChainTransaction = {
   transactionHash: Hash
   senderNonce: number
   signedTransaction: Hex
 }
 
-export type ChainTransactionSigningResult =
+type ChainTransactionSigningResult =
   | { outcome: 'signed'; signedChainTransaction: SignedChainTransaction }
   | { outcome: 'reverted'; revertReason: string }
 

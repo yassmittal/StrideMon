@@ -2,7 +2,7 @@ import { type Collection, type Db, MongoServerError } from 'mongodb'
 
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
 
-export type JobLeaseDocument = {
+type JobLeaseDocument = {
   /** The job name, e.g. `processChainTransactions`. */
   _id: string
   /** `<hostname>:<apiPort>` of the process holding it (D-019). */
@@ -12,7 +12,7 @@ export type JobLeaseDocument = {
   updatedAt: Date
 }
 
-export function getJobLeasesCollection(database: Db): Collection<JobLeaseDocument> {
+function getJobLeasesCollection(database: Db): Collection<JobLeaseDocument> {
   return database.collection<JobLeaseDocument>('jobLeases')
 }
 

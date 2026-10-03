@@ -102,7 +102,6 @@ plus a few new tokens.
 | `textPlaceholder` *(new)* | `rgba(0, 0, 0, 0.3)` | Input placeholder opacity |
 | `textOnPrimary` | `#FFFFFF` | White on `#2B2E3A` |
 | `primary` | `#2B2E3A` | `--color-grey-blue` ("LET'S TALK" pill) |
-| `primaryPressed` | `#0016EC` | `--header-color` (that pill's hover) |
 | `accent` *(new)* | `#1A2FFB` | `--color-blue` |
 | `highlight` *(new)* | `#C1FF00` | `--color-green`. Use only on dark or as a fill behind black text |
 | `disabled` | `#E4E6EF` | **Derived.** Lusion has no disabled state. Pair it with text at `textPlaceholder` |
@@ -254,7 +253,7 @@ Every value is a Lusion value converted at a 16 pt root.
 The component sizes from §8 are `layout` tokens too (Phase 8.2): `pillHeight` 45,
 `callToActionPillHeight` 47, `callToActionDotSize` 7 (now the small status dot, e.g. the active run's recording dot), `progressTrackHeight` 4,
 `crossMarkSize` 14 with a `crossMarkStrokeWidth` of 1, `textFieldHeight` 61,
-`textFieldArrowSize` 21, `iconCircleButtonSize` 45, `iconCircleButtonDarkSize` 53, and
+`textFieldArrowSize` 21, `iconCircleButtonSize` 45, and
 `iconSize` 18 and `iconStrokeWidth` 1.5 (**derived**, the line glyph inside a circle button). Two app-only sizes are
 **derived**: `successBadgeSize` 64 (the lime check after a transaction) and
 `onboardingStepIndicatorWidth` 24. `opticalPullLeftRatio` is −0.05 (§3.3: display lines
@@ -346,6 +345,10 @@ In the app these become `Easing.bezier(0.4, 0, 0.1, 1)` and friends, from
 8. **Underline links.** A 0.1 em line scales from `scaleX(0)` to `1` from the
    left, over 300 ms, `easingEmphasized`.
 
+**What StrideMon keeps (D-031):** the text roll (1) and the arrow nudge. The blue press colours of
+2 and 3 are dropped: a pressed pill steps one shade instead (§8), and every press animation runs
+on the native driver.
+
 ---
 
 ## 8. Components (`src/components/ui/`, Phase 8)
@@ -358,10 +361,10 @@ becomes `Panel`. `MediaCard` and `MenuListItem` are built when a screen needs on
 
 | Component | Spec (from Lusion) | StrideMon use |
 |---|---|---|
-| **`PrimaryPillButton`** | `primary` background, white `button` text (14/500/UPPER), height **45**, padding `0 16 0 23` (`0 1.125em 0 1.625em` at 14), `pill` radius, trailing white **arrow** (`iconSize`, gap 10) where Lusion has a 4 pt dot (D-029). Press: interaction 3, with the arrow nudging right instead of the dot shrinking. | Sign in, START, Confirm transaction |
+| **`PrimaryPillButton`** | `primary` background, white `button` text (14/500/UPPER), height **45**, padding `0 16 0 23` (`0 1.125em 0 1.625em` at 14), `pill` radius, trailing white **arrow** (`iconSize`, gap 10) where Lusion has a 4 pt dot (D-029). Press: the background steps to `textPrimary` (black), the label rolls and the arrow nudges right (D-031). | Sign in, STOP, Confirm transaction |
 | **`SecondaryPillButton`** | `surfaceMuted` background, black text, same size. Press: background `surface`. A black arrow on the right, where Lusion has a two-dot icon (D-029). | Menu, Cancel, secondary actions |
-| **`CallToActionPill`** | `surface` background, black `button` text, height **47**, padding `14 21 14 23`, leading black **arrow** where Lusion has a 7 pt dot (D-029), gap 14, `floatingPill` shadow. Press: interaction 2, with a blue circle growing from behind the arrow to flood the pill, and the arrow turning white. | "See Sneaker", "Repair", "Upgrade" |
-| **`IconCircleButton`** | 45 × 45 circle on `surfaceMuted` (sound button). Dark variant: 53 × 53 black circle with a white icon (back-to-top). | Close, back, settings |
+| **`CallToActionPill`** | `surface` background, black `button` text, height **47**, padding `14 21 14 23`, leading black **arrow** where Lusion has a 7 pt dot (D-029), gap 14, `floatingPill` shadow. Press: the background steps to `surfaceMuted`, the label rolls and the arrow nudges right (D-031). | "See Sneaker", "Repair", "Upgrade" |
+| **`IconCircleButton`** | 45 × 45 circle on `surfaceMuted` (sound button). Press: background `surface`. | Close, back, settings |
 | **`Panel`** | `surface` background, radius `medium` (10), padding 30. Stack panels with gap 10. | Every card on light screens |
 | **`DarkPanel`** | `darkBackground` background, radius 10, padding `20 30`, white 26 UPPER text, arrow on the right (the "Labs" card). | Featured action on a light screen |
 | **`HeroPanel`** | Full width minus gutters, `darkPanel` background, radius 10, hosts the 3D/illustration. It fills the rest of the first screen. | The Sneaker on Home |

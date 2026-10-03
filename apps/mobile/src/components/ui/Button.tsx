@@ -1,12 +1,5 @@
-import { useRef, useState } from 'react'
-import {
-  ActivityIndicator,
-  Animated,
-  type LayoutChangeEvent,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { useRef } from 'react'
+import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, layout, motion, radii, shadows, spacing, textStyles } from '../../theme'
 import { Icon } from './Icon'
 
@@ -28,8 +21,9 @@ type ButtonProps = {
 const LABEL_LINE_HEIGHT = textStyles.button.lineHeight ?? 0
 
 /**
- * A pill with Lusion's press animations: the label rolls, and the call-to-action floods blue.
- * An arrow stands where Lusion has a dot (D-029).
+ * A pill with a quiet press: the background steps one shade, the label rolls and the arrow
+ * nudges right (D-029, D-031). Every press animation runs on the native driver, so it never
+ * stalls while the JS thread is busy opening the wallet or changing screens.
  */
 export function Button({
   label,
@@ -41,31 +35,19 @@ export function Button({
 }: ButtonProps) {
   const isInteractive = !isDisabled && !isLoading
   const pressProgress = useRef(new Animated.Value(0)).current
-  const [pillWidth, setPillWidth] = useState(0)
 
   function animatePress(toValue: 0 | 1) {
     Animated.timing(pressProgress, {
       toValue,
-      duration: variant === 'callToAction' ? motion.durationSlow : motion.durationMedium,
-      easing: variant === 'callToAction' ? motion.easingEmphasized : motion.easingStandard,
-      // Colors animate too, and the native driver only animates transforms and opacity.
-      useNativeDriver: false,
+      duration: motion.durationBase,
+      easing: motion.easingStandard,
+      useNativeDriver: true,
     }).start()
   }
 
   const variantColors = VARIANT_COLORS[variant]
-  const backgroundColor = isInteractive
-    ? pressProgress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [variantColors.background, variantColors.pressedBackground],
-      })
-    : colors.disabled
-  const labelColor = isInteractive
-    ? pressProgress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [variantColors.label, variantColors.pressedLabel],
-      })
-    : colors.textPlaceholder
+  const labelColor = isInteractive ? variantColors.label : colors.textPlaceholder
+  const arrow = isLoading ? null : <PressArrow pressProgress={pressProgress} color={labelColor} />
 
   return (
     <Pressable
@@ -76,69 +58,52 @@ export function Button({
       onPress={onPress}
       onPressIn={() => animatePress(1)}
       onPressOut={() => animatePress(0)}
-      onLayout={(event: LayoutChangeEvent) => setPillWidth(event.nativeEvent.layout.width)}
     >
-      <Animated.View
+      <View
         style={[
           styles.pill,
           variant === 'callToAction' && styles.pillCallToAction,
-          { backgroundColor },
+          { backgroundColor: isInteractive ? variantColors.background : colors.disabled },
         ]}
       >
-        {variant === 'callToAction' && (
-          <>
-            {isInteractive && (
-              <FloodingCircle pressProgress={pressProgress} pillWidth={pillWidth} />
-            )}
-            {!isLoading && (
-              <View style={styles.leadingArrow}>
-                <PressArrow
-                  pressProgress={pressProgress}
-                  color={isInteractive ? colors.textPrimary : colors.textPlaceholder}
-                  pressedColor={isInteractive ? colors.textOnPrimary : colors.textPlaceholder}
-                />
-              </View>
-            )}
-          </>
+        {isInteractive && (
+          <Animated.View
+            style={[
+              styles.pressedFill,
+              { backgroundColor: variantColors.pressedBackground, opacity: pressProgress },
+            ]}
+          />
         )}
+        {variant === 'callToAction' && <View style={styles.leadingArrow}>{arrow}</View>}
         {isLoading ? (
           <ActivityIndicator color={variantColors.label} />
         ) : (
           <RollingLabel label={label} color={labelColor} pressProgress={pressProgress} />
         )}
-        {variant !== 'callToAction' && !isLoading && (
-          <PressArrow
-            pressProgress={pressProgress}
-            color={isInteractive ? variantColors.label : colors.textPlaceholder}
-            pressedColor={isInteractive ? variantColors.pressedLabel : colors.textPlaceholder}
-          />
-        )}
-      </Animated.View>
+        {variant !== 'callToAction' && arrow}
+      </View>
     </Pressable>
   )
 }
 
 const VARIANT_COLORS: Record<
   ButtonVariant,
-  { background: string; pressedBackground: string; label: string; pressedLabel: string }
+  { background: string; pressedBackground: string; label: string }
 > = {
   primary: {
     background: colors.primary,
-    pressedBackground: colors.primaryPressed,
+    pressedBackground: colors.textPrimary,
     label: colors.textOnPrimary,
-    pressedLabel: colors.textOnPrimary,
   },
   secondary: {
     background: colors.surfaceMuted,
     pressedBackground: colors.surface,
     label: colors.textPrimary,
-    pressedLabel: colors.textPrimary,
   },
   callToAction: {
     background: colors.surface,
-    pressedBackground: colors.surface,
+    pressedBackground: colors.surfaceMuted,
     label: colors.textPrimary,
-    pressedLabel: colors.textOnPrimary,
   },
 }
 
@@ -149,7 +114,7 @@ function RollingLabel({
   pressProgress,
 }: {
   label: string
-  color: Animated.AnimatedInterpolation<string> | string
+  color: string
   pressProgress: Animated.Value
 }) {
   const translateY = pressProgress.interpolate({
@@ -159,62 +124,31 @@ function RollingLabel({
   return (
     <View style={styles.labelWindow}>
       <Animated.View style={{ transform: [{ translateY }] }}>
-        <Animated.Text style={[styles.label, { color }]} numberOfLines={1}>
+        <Text style={[styles.label, { color }]} numberOfLines={1}>
           {label}
-        </Animated.Text>
+        </Text>
         {/* The copy that rolls in. Hidden from screen readers and from tests' text queries. */}
         <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Animated.Text style={[styles.label, { color }]} numberOfLines={1}>
+          <Text style={[styles.label, { color }]} numberOfLines={1}>
             {label}
-          </Animated.Text>
+          </Text>
         </View>
       </Animated.View>
     </View>
   )
 }
 
-/**
- * The arrow that stands in for Lusion's dot. It nudges right while pressed and, on the
- * call-to-action, turns white as the blue flood reaches it (two arrows cross-fade).
- */
-function PressArrow({
-  pressProgress,
-  color,
-  pressedColor,
-}: {
-  pressProgress: Animated.Value
-  color: string
-  pressedColor: string
-}) {
+/** The arrow that stands in for Lusion's dot (D-029). It nudges right while pressed. */
+function PressArrow({ pressProgress, color }: { pressProgress: Animated.Value; color: string }) {
   const translateX = pressProgress.interpolate({
     inputRange: [0, 1],
     outputRange: [0, spacing.extraSmall],
   })
-  const pressedOpacity = pressProgress.interpolate({ inputRange: [0, 1], outputRange: [0, 1] })
   return (
     <Animated.View style={[styles.arrow, { transform: [{ translateX }] }]}>
       <Icon name="arrowRight" color={color} />
-      {pressedColor !== color && (
-        <Animated.View style={[styles.arrowPressed, { opacity: pressedOpacity }]}>
-          <Icon name="arrowRight" color={pressedColor} />
-        </Animated.View>
-      )}
     </Animated.View>
   )
-}
-
-/** Interaction 2 (fill): a blue circle grows from behind the arrow until it floods the pill. */
-function FloodingCircle({
-  pressProgress,
-  pillWidth,
-}: {
-  pressProgress: Animated.Value
-  pillWidth: number
-}) {
-  // Big enough that the circle, centered near the left edge, covers the far end of the pill.
-  const floodScale = Math.max((2 * pillWidth) / layout.iconSize, 1)
-  const scale = pressProgress.interpolate({ inputRange: [0, 1], outputRange: [0, floodScale] })
-  return <Animated.View style={[styles.floodingCircle, { transform: [{ scale }] }]} />
 }
 
 const styles = StyleSheet.create({
@@ -234,6 +168,9 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.large + layout.iconSize + spacing.medium,
     boxShadow: shadows.floatingPill,
   },
+  pressedFill: {
+    ...StyleSheet.absoluteFill,
+  },
   labelWindow: {
     height: LABEL_LINE_HEIGHT,
     overflow: 'hidden',
@@ -246,19 +183,8 @@ const styles = StyleSheet.create({
     width: layout.iconSize,
     height: layout.iconSize,
   },
-  arrowPressed: {
-    ...StyleSheet.absoluteFill,
-  },
   leadingArrow: {
     position: 'absolute',
     left: spacing.large,
-  },
-  floodingCircle: {
-    position: 'absolute',
-    left: spacing.large,
-    width: layout.iconSize,
-    height: layout.iconSize,
-    borderRadius: radii.pill,
-    backgroundColor: colors.accent,
   },
 })

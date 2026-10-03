@@ -6,8 +6,6 @@ type IconCircleButtonProps = {
   icon: IconName
   accessibilityLabel: string
   onPress: () => void
-  /** `dark` is Lusion's bigger black back-to-top circle. */
-  tone?: 'light' | 'dark'
   isDisabled?: boolean
 }
 
@@ -16,10 +14,8 @@ export function IconCircleButton({
   icon,
   accessibilityLabel,
   onPress,
-  tone = 'light',
   isDisabled = false,
 }: IconCircleButtonProps) {
-  const isDark = tone === 'dark'
   return (
     <Pressable
       accessibilityRole="button"
@@ -29,17 +25,11 @@ export function IconCircleButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.circle,
-        isDark && styles.circleDark,
-        pressed && (isDark ? styles.circleDarkPressed : styles.circlePressed),
+        pressed && styles.circlePressed,
         isDisabled && styles.circleDisabled,
       ]}
     >
-      <Icon
-        name={icon}
-        color={
-          isDisabled ? colors.textPlaceholder : isDark ? colors.textOnDark : colors.textPrimary
-        }
-      />
+      <Icon name={icon} color={isDisabled ? colors.textPlaceholder : colors.textPrimary} />
     </Pressable>
   )
 }
@@ -55,14 +45,6 @@ const styles = StyleSheet.create({
   },
   circlePressed: {
     backgroundColor: colors.surface,
-  },
-  circleDark: {
-    width: layout.iconCircleButtonDarkSize,
-    height: layout.iconCircleButtonDarkSize,
-    backgroundColor: colors.darkBackground,
-  },
-  circleDarkPressed: {
-    backgroundColor: colors.primaryPressed,
   },
   circleDisabled: {
     backgroundColor: colors.disabled,

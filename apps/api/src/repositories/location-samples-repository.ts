@@ -3,7 +3,7 @@ import { type Collection, type Db, MongoBulkWriteError, ObjectId } from 'mongodb
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
 
 /** Raw GPS. Kept out of `activitySessions`, and never logged or sent on-chain. */
-export type LocationSampleDocument = {
+type LocationSampleDocument = {
   _id: ObjectId
   activitySessionId: ObjectId
   /** Assigned on the device. Unique per session, so a re-sent batch is a no-op. */
@@ -19,10 +19,7 @@ export type LocationSampleDocument = {
   receivedAt: Date
 }
 
-export type NewLocationSample = Omit<
-  LocationSampleDocument,
-  '_id' | 'activitySessionId' | 'receivedAt'
->
+type NewLocationSample = Omit<LocationSampleDocument, '_id' | 'activitySessionId' | 'receivedAt'>
 
 export function getLocationSamplesCollection(database: Db): Collection<LocationSampleDocument> {
   return database.collection<LocationSampleDocument>('locationSamples')

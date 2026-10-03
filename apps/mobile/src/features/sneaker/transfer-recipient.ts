@@ -1,7 +1,7 @@
 import { type Address, getAddress, isAddress, isAddressEqual } from 'viem'
 
 /** What the recipient field holds. Only `valid` can be sent to. */
-export type TransferRecipient =
+type TransferRecipient =
   | { status: 'empty' }
   | { status: 'invalid' }
   | { status: 'ownWallet' }

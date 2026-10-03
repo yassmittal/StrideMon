@@ -3,7 +3,7 @@ import { calculateSpeedKilometersPerHour, isTeleportSpeed } from './speed-band'
 import type { ValidationSample } from './validation-sample'
 
 // security.md → Activity validation → Sampling gaps: a longer silence breaks a minute.
-export const MAXIMUM_SAMPLING_GAP_SECONDS = 60
+const MAXIMUM_SAMPLING_GAP_SECONDS = 60
 
 const MILLISECONDS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60

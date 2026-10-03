@@ -5,7 +5,7 @@ import { abandonActivitySessionsIdleSince } from '../repositories/activity-sessi
 export const ABANDON_STALE_ACTIVITY_SESSIONS_JOB_NAME = 'abandonStaleActivitySessions'
 
 // An active session with no sample upload for this long was never finished (Phase 4 spec).
-export const STALE_ACTIVITY_SESSION_MILLISECONDS = 30 * 60 * 1000
+const STALE_ACTIVITY_SESSION_MILLISECONDS = 30 * 60 * 1000
 
 /**
  * Closes sessions the app never finished, so they stop blocking a new start (one

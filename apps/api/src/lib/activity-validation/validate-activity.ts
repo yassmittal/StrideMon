@@ -14,7 +14,7 @@ import { calculateSpeedKilometersPerHour, classifyMinuteSpeed } from './speed-ba
 import type { ValidationSample } from './validation-sample'
 
 // security.md → Activity validation → Too little data.
-export const MINIMUM_VALID_SAMPLE_COUNT = 10
+const MINIMUM_VALID_SAMPLE_COUNT = 10
 
 // Two decimals of km/h: finer than GPS can measure, coarse enough to read.
 const AVERAGE_SPEED_DECIMAL_FACTOR = 100
