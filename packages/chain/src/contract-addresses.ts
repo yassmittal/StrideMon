@@ -15,8 +15,8 @@ export const CONTRACT_ADDRESSES_BY_CHAIN_ID: Partial<
   Record<SupportedChainId, StrideMonContractAddresses>
 > = {
   10143: {
-    sneakerNft: '0x082072B5831009e289FAdd27266e0b8E5B57BDec',
-    soleToken: '0xEd340b84E676a4De68a86a3B0d45a86fcE202bb3',
-    sneakerGame: '0xc4d59c0625C079332f4762ca0Fdc8e9FE439AEa7',
+    sneakerNft: '0xC116917b06BD9079C87334ED5499054b1B54Fa80',
+    soleToken: '0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0',
+    sneakerGame: '0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9',
   },
 }

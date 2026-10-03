@@ -32,6 +32,7 @@ import {
   type SneakerEnergy,
   useSneakerEnergy,
 } from '../../src/features/sneaker/hooks/useSneakerEnergy'
+import { useSneakerImageSvg } from '../../src/features/sneaker/hooks/useSneakerImageSvg'
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
 import { colors, fontFamilies, spacing, textStyles } from '../../src/theme'
 
@@ -140,6 +141,7 @@ type SneakerHomeProps = {
 
 function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHomeProps) {
   const attributesQuery = useSneakerAttributes(sneakerTokenId)
+  const imageSvgQuery = useSneakerImageSvg(sneakerTokenId)
   const gameConfigQuery = useGameConfig()
   const sneakerEnergy = useSneakerEnergy({
     sneakerTokenId,
@@ -179,6 +181,7 @@ function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHo
       ) : (
         <SneakerCard
           sneakerTokenId={sneakerTokenId}
+          imageSvg={imageSvgQuery.data}
           level={attributes.level}
           efficiency={attributes.efficiency}
           durability={attributes.durability}

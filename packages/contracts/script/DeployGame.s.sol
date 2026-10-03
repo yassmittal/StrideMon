@@ -4,11 +4,12 @@ pragma solidity 0.8.37;
 import {Script} from "forge-std/Script.sol";
 import {VmSafe} from "forge-std/Vm.sol";
 import {GameConfig} from "../src/libraries/GameMath.sol";
+import {SneakerArtRenderer} from "../src/SneakerArtRenderer.sol";
 import {SneakerGame} from "../src/SneakerGame.sol";
 import {SneakerNft} from "../src/SneakerNft.sol";
 import {SoleToken} from "../src/SoleToken.sol";
 
-/// @notice Deploys SneakerNft, SoleToken and SneakerGame, wires every role, and on a real
+/// @notice Deploys SneakerArtRenderer, SneakerNft, SoleToken and SneakerGame, wires every role, and on a real
 /// broadcast writes the addresses to `deployments/<chainId>.json`.
 /// @dev Reads `DEPLOYER_PRIVATE_KEY` and `GAME_SERVER_ADDRESS` from the environment
 /// (`packages/contracts/.env`). The deployer becomes admin and pauser.
@@ -21,6 +22,7 @@ contract DeployGame is Script {
     uint256 private constant ONE_SOLE_WEI = 1e18;
 
     struct GameDeployment {
+        SneakerArtRenderer sneakerArtRenderer;
         SneakerNft sneakerNft;
         SoleToken soleToken;
         SneakerGame sneakerGame;
@@ -66,7 +68,10 @@ contract DeployGame is Script {
         private
         returns (GameDeployment memory deployment)
     {
-        deployment.sneakerNft = new SneakerNft(SNEAKER_NFT_NAME, SNEAKER_NFT_SYMBOL, adminAddress);
+        deployment.sneakerArtRenderer = new SneakerArtRenderer();
+        deployment.sneakerNft = new SneakerNft(
+            SNEAKER_NFT_NAME, SNEAKER_NFT_SYMBOL, adminAddress, deployment.sneakerArtRenderer
+        );
         deployment.soleToken = new SoleToken(SOLE_TOKEN_NAME, SOLE_TOKEN_SYMBOL, adminAddress);
         deployment.sneakerGame = new SneakerGame(
             adminAddress, deployment.sneakerNft, deployment.soleToken, buildInitialGameConfig()
@@ -90,6 +95,7 @@ contract DeployGame is Script {
         vm.serializeUint(objectKey, "chainId", block.chainid);
         vm.serializeAddress(objectKey, "deployer", deployerAddress);
         vm.serializeAddress(objectKey, "gameServer", gameServerAddress);
+        vm.serializeAddress(objectKey, "sneakerArtRenderer", address(deployment.sneakerArtRenderer));
         vm.serializeAddress(objectKey, "sneakerNft", address(deployment.sneakerNft));
         vm.serializeAddress(objectKey, "soleToken", address(deployment.soleToken));
         string memory deploymentJson =

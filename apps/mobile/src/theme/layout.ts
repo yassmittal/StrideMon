@@ -29,6 +29,8 @@ export const layout = {
   onboardingStepIndicatorWidth: 24,
   /** §3.3: display lines are pulled left so the glyph edge meets the gutter. Times the font size. */
   opticalPullLeftRatio: -0.05,
+  /** Derived: the Sneaker glyph that holds the picture's place while it loads. */
+  sneakerArtPlaceholderIconSize: 64,
   /** The Sneaker's dark panel fills about half of the first screen. */
   heroPanelMinimumHeightRatio: 0.45,
 } as const

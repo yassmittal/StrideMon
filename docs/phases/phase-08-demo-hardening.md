@@ -61,7 +61,14 @@ feature components' styles.
 - The app shows the same picture on Home's `HeroPanel`, so the art exists in one place.
 - `SneakerNft` builds `tokenURI` itself and can't be changed in place, so this part redeploys the
   contracts on testnet and every wallet starts again from a new starter Sneaker. The local
-  database is reset with it. The approach is settled at the start of the part, as D-030.
+  database is reset with it.
+- **Approach (D-030):** a new `SneakerArtRenderer` contract draws the SVG, and `SneakerNft` calls
+  it (`imageSvg`, and `image` in `tokenURI`). The admin can swap the renderer later, so changing
+  the art never needs another redeploy or reset. `SneakerNft` emits ERC-4906 metadata events so
+  explorers refresh the picture.
+- In the app, `useSneakerImageSvg` reads `SneakerNft.imageSvg` and `SneakerArt` draws it with
+  `SvgXml` at the top of `SneakerCard` (Home and the Sneaker tab). The art shows the id, level
+  and durability, so the card below it keeps efficiency, energy and the explorer link.
 
 **On the phone:** Home's Sneaker and the MonadVision / MetaMask image agree, and change after a
 repair or upgrade.

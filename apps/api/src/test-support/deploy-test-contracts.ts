@@ -35,7 +35,7 @@ const SOLE_TOKEN_NAME = 'Sole'
 const SOLE_TOKEN_SYMBOL = 'SOLE'
 
 /**
- * Deploys SneakerNft, SoleToken and SneakerGame to a test Anvil and wires the same
+ * Deploys SneakerArtRenderer, SneakerNft, SoleToken and SneakerGame to a test Anvil and wires the same
  * roles as `DeployGame.s.sol`, with the game config from the shared fixtures
  * (which `DeployGame.t.sol` pins the real deploy to). Uses Foundry's `out/`, so run
  * `bun run contracts:build` first.
@@ -75,10 +75,13 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
   }
 
   const adminAddress = deployerAccount.address
+  // No constructor arguments, so no ABI is needed to deploy it.
+  const sneakerArtRenderer = await deploy('SneakerArtRenderer', [], [])
   const sneakerNft = await deploy('SneakerNft', sneakerNftAbi, [
     SNEAKER_NFT_NAME,
     SNEAKER_NFT_SYMBOL,
     adminAddress,
+    sneakerArtRenderer,
   ])
   const soleToken = await deploy('SoleToken', soleTokenAbi, [
     SOLE_TOKEN_NAME,

@@ -5,9 +5,12 @@ import { ProgressBar } from '../../../components/ui/ProgressBar'
 import { formatDuration } from '../../../lib/format/format-duration'
 import { colors, fontFamilies, spacing, textStyles } from '../../../theme'
 import type { SneakerEnergy } from '../hooks/useSneakerEnergy'
+import { SneakerArt } from './SneakerArt'
 
 type SneakerCardProps = {
   sneakerTokenId: bigint
+  /** `SneakerNft.imageSvg`, or `undefined` while it loads. */
+  imageSvg: string | undefined
   level: number
   efficiency: number
   durability: number
@@ -17,11 +20,13 @@ type SneakerCardProps = {
 }
 
 /**
- * The Sneaker on Home's dark hero panel: id, level, efficiency, durability and energy,
- * all read from chain. The Sneaker's picture takes the middle of the panel in Phase 8.3.
+ * The Sneaker on its dark hero panel, all read from chain. The on-chain picture (D-030) shows
+ * the id, level and durability, so below it the card adds what the picture can't: efficiency,
+ * live energy and the explorer link.
  */
 export function SneakerCard({
   sneakerTokenId,
+  imageSvg,
   level,
   efficiency,
   durability,
@@ -31,10 +36,18 @@ export function SneakerCard({
 }: SneakerCardProps) {
   return (
     <HeroPanel>
-      <View style={styles.header}>
-        <Text style={styles.title} accessibilityRole="header">
-          Sneaker #{sneakerTokenId.toString()}
-        </Text>
+      <View style={styles.artBleed}>
+        <SneakerArt
+          imageSvg={imageSvg}
+          accessibilityLabel={`Sneaker #${sneakerTokenId}: level ${level}, durability ${durability} of ${maxDurability}`}
+        />
+      </View>
+
+      <View style={styles.statRow}>
+        <View style={styles.stat} accessible accessibilityLabel={`Efficiency: ${efficiency}`}>
+          <Text style={styles.statLabel}>Efficiency</Text>
+          <Text style={styles.statValue}>{efficiency}</Text>
+        </View>
         <ExternalLink
           label="Explorer"
           accessibilityLabel={`View Sneaker ${sneakerTokenId} on the explorer`}
@@ -43,13 +56,7 @@ export function SneakerCard({
         />
       </View>
 
-      <View style={styles.stats}>
-        <HeroStat label="Level" value={String(level)} />
-        <HeroStat label="Efficiency" value={String(efficiency)} />
-      </View>
-
-      <View style={styles.bars}>
-        <ProgressBar label="Durability" value={durability} maximum={maxDurability} tone="dark" />
+      <View style={styles.energy}>
         <ProgressBar
           label="Energy"
           value={energy.currentEnergy}
@@ -62,15 +69,6 @@ export function SneakerCard({
   )
 }
 
-function HeroStat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.stat} accessible accessibilityLabel={`${label}: ${value}`}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  )
-}
-
 function describeEnergyRegeneration({ secondsUntilNextEnergyPoint }: SneakerEnergy): string {
   if (secondsUntilNextEnergyPoint === null)
     return 'Full energy. Every point is one rewarded minute.'
@@ -78,36 +76,33 @@ function describeEnergyRegeneration({ secondsUntilNextEnergyPoint }: SneakerEner
 }
 
 const styles = StyleSheet.create({
-  header: {
+  // The picture runs to the panel's edges: its background is the panel's own colour.
+  artBleed: {
+    marginTop: -spacing.large,
+    marginHorizontal: -spacing.large,
+  },
+  statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  title: {
-    ...textStyles.caption,
-    fontFamily: fontFamilies.medium,
-    color: colors.textOnDark,
-    textTransform: 'uppercase',
-  },
-  stats: {
-    flexDirection: 'row',
-    gap: spacing.sectionSmall,
+    alignItems: 'flex-end',
+    paddingTop: spacing.large,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.overlayOnDark,
   },
   stat: {
     gap: spacing.extraSmall,
-  },
-  statValue: {
-    ...textStyles.display,
-    fontFamily: fontFamilies.monoRegular,
-    letterSpacing: 0,
-    color: colors.textOnDark,
   },
   statLabel: {
     ...textStyles.caption,
     color: colors.textOnDarkMuted,
     textTransform: 'uppercase',
   },
-  bars: {
+  statValue: {
+    ...textStyles.title,
+    fontFamily: fontFamilies.monoRegular,
+    color: colors.textOnDark,
+  },
+  energy: {
     gap: spacing.medium,
   },
   caption: {

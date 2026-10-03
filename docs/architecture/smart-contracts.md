@@ -10,6 +10,8 @@ through Sourcify. The chain definition lives in `packages/chain/src/monad-chains
 
 ## Three contracts, three responsibilities
 
+(Plus `SneakerArtRenderer`, which draws the Sneaker's picture for `SneakerNft`, D-030.)
+
 ```text
                  ┌──────────────────────────┐
                  │       SneakerGame        │   the rules
@@ -61,14 +63,37 @@ struct SneakerAttributes {
 | `mint(address to, SneakerAttributes attributes) → tokenId` | `GAME_ROLE` | New Sneaker |
 | `setAttributes(uint256 tokenId, SneakerAttributes attributes)` | `GAME_ROLE` | The only way stats change |
 | `getAttributes(uint256 tokenId) → SneakerAttributes` | public view | Raw storage |
-| `tokenURI(uint256 tokenId)` | public view | Base64 JSON built on-chain from attributes: Level, Efficiency, Durability (SVG image in Phase 8) |
+| `tokenURI(uint256 tokenId)` | public view | Base64 JSON built on-chain from attributes: Level, Efficiency, Durability, and an SVG `image` |
+| `imageSvg(uint256 tokenId) → string` | public view | The raw SVG from `artRenderer` (the app draws this) |
+| `setArtRenderer(ISneakerArtRenderer artRenderer)` | `DEFAULT_ADMIN_ROLE` | Swap the picture without touching any Sneaker (D-030) |
 
-Events: `SneakerMinted(tokenId, owner, attributes)`, `SneakerAttributesUpdated(tokenId, attributes)`.
+Events: `SneakerMinted(tokenId, owner, attributes)`, `SneakerAttributesUpdated(tokenId, attributes)`,
+`ArtRendererUpdated(artRenderer)`, plus ERC-4906 `MetadataUpdate(tokenId)` on every stat change
+and `BatchMetadataUpdate` on a renderer change, so explorers and wallets refresh the picture.
+The constructor takes the renderer as a fourth argument and rejects the zero address
+(`InvalidArtRenderer()`).
 
 The NFT contract holds **no game logic**, not even energy regeneration. It
 stores what it's given, and `SneakerGame` interprets it. That is also why
 `tokenURI` doesn't show energy: the stored value is stale until `SneakerGame`
 applies regeneration, so marketplaces would show the wrong number.
+
+## `SneakerArtRenderer` (D-030)
+
+`renderImageSvg(uint256 tokenId, SneakerAttributes attributes) → string`, pure. It draws a
+400 × 400 SVG in the design-system look: the `darkPanel` background, "+" corner marks, a thin
+white line drawing of the Sneaker with a lime stripe, and lime speed lines behind the heel.
+
+| Reflects | How |
+|----------|-----|
+| Token id | `#0004` top right, under `STRIDEMON` top left |
+| Level | 30 ticks, the first `level` of them lime; one speed line per level, up to 5 |
+| Durability | A lime bar out of 100. The lime fades from full to 40% as durability drops, so a worn Sneaker looks dimmer |
+
+The 30 and 100 are the launch `maxLevel` and `maxDurability` (named constants; values above
+them are drawn full). Text uses a generic monospace stack (`'IBM Plex Mono', ui-monospace,
+monospace`) on the root `<svg>`, so no font is fetched. Everything is plain paths, rects and text,
+with no filters, gradients or CSS, so `react-native-svg` draws it exactly like a browser.
 
 ## `SoleToken`
 
@@ -178,6 +203,7 @@ packages/contracts/
 │   ├── SneakerNft.sol
 │   ├── SoleToken.sol
 │   ├── SneakerGame.sol
+│   ├── SneakerArtRenderer.sol    the on-chain SVG (D-030)
 │   └── libraries/
 │       └── GameMath.sol          pure functions: energy, reward, costs
 ├── deployments/
@@ -187,6 +213,7 @@ packages/contracts/
 │   └── UpdateGameConfig.s.sol    (added the first time the config is retuned)
 └── test/
     ├── SneakerNft.t.sol
+    ├── SneakerArtRenderer.t.sol
     ├── SoleToken.t.sol
     ├── SneakerGame.t.sol         starter mint, settlement, views, config, pause
     ├── SneakerGameRepairUpgrade.t.sol
@@ -219,7 +246,7 @@ code makes it trivially testable against the shared fixtures.
    variables).
 2. From `packages/contracts`:
    `forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast --verify --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/`.
-3. The script grants roles: `GAME_ROLE` on the NFT, `MINTER_ROLE`/`BURNER_ROLE`
+3. The script deploys `SneakerArtRenderer` first and passes it to `SneakerNft`, then grants roles: `GAME_ROLE` on the NFT, `MINTER_ROLE`/`BURNER_ROLE`
    on the token, and `GAME_SERVER_ROLE` to the API relayer address.
 4. The script writes `deployments/<chainId>.json`. `bun run chain:export-abis`
    copies the ABIs and addresses into `packages/chain`.

@@ -568,3 +568,31 @@ Made during Phase 8.2 (2026-10-03), after the phone check.
   such as "Not now" also get an arrow.
 - **Revisit when:** a design review wants the exact Lusion pills back. Only `Button.tsx` changes.
 
+
+## D-030 — The Sneaker's picture is an on-chain SVG drawn by a swappable `SneakerArtRenderer`
+
+Made at Phase 8.3 start (2026-10-03).
+
+- **Decision:**
+  1. A new contract, `SneakerArtRenderer`, draws the Sneaker as an SVG from its id, level and
+     durability (`renderImageSvg`). `SneakerNft` holds the renderer's address and calls it. The
+     admin can point it at a new renderer (`setArtRenderer`) without touching any Sneaker.
+  2. `tokenURI` gains `image` (`data:image/svg+xml;base64,…`). `SneakerNft.imageSvg(tokenId)`
+     returns the raw SVG, which the app reads with one wagmi call and draws with `SvgXml` from
+     `react-native-svg`. The art exists only in the renderer, and the app, MonadVision and
+     MetaMask all show the same picture.
+  3. `SneakerNft` emits ERC-4906 `MetadataUpdate(tokenId)` when stats change and
+     `BatchMetadataUpdate` when the renderer changes, so explorers and wallets know to refresh
+     the picture.
+  4. The art draws level on a 30-tick scale and durability on a 100-point bar: the launch
+     `maxLevel` and `maxDurability` from `game-rules.md`, as named constants in the renderer.
+     `SneakerNft` holds no game logic, so it can't read `GameConfig`.
+  5. Text in the SVG uses a generic monospace stack, since wallets can't load app fonts. The app
+     passes IBM Plex Mono into `SvgXml` instead.
+- **Why:** `SneakerNft` holds players' property and should never need redeploying
+  (`smart-contracts.md`). This part does redeploy it, once, because the deployed `tokenURI` has
+  no `image`. Splitting the art out means any later change to the picture is one small deploy
+  and one `setArtRenderer` call, with no database reset and no new starter Sneakers.
+- **Trade-off:** one more contract to deploy and verify. A `maxLevel` or `maxDurability` change
+  needs a new renderer too, or the ticks and bar stop at full.
+- **Revisit when:** the game config's caps change, or the art moves to a richer format.

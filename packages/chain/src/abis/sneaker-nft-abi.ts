@@ -17,6 +17,11 @@ export const sneakerNftAbi = [
         "name": "admin",
         "type": "address",
         "internalType": "address"
+      },
+      {
+        "name": "initialArtRenderer",
+        "type": "address",
+        "internalType": "contract ISneakerArtRenderer"
       }
     ],
     "stateMutability": "nonpayable"
@@ -64,6 +69,19 @@ export const sneakerNftAbi = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "artRenderer",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract ISneakerArtRenderer"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -206,6 +224,25 @@ export const sneakerNftAbi = [
         "name": "",
         "type": "bool",
         "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "imageSvg",
+    "inputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string",
+        "internalType": "string"
       }
     ],
     "stateMutability": "view"
@@ -417,6 +454,19 @@ export const sneakerNftAbi = [
         "name": "approved",
         "type": "bool",
         "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setArtRenderer",
+    "inputs": [
+      {
+        "name": "newArtRenderer",
+        "type": "address",
+        "internalType": "contract ISneakerArtRenderer"
       }
     ],
     "outputs": [],
@@ -643,6 +693,51 @@ export const sneakerNftAbi = [
         "type": "bool",
         "indexed": false,
         "internalType": "bool"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ArtRendererUpdated",
+    "inputs": [
+      {
+        "name": "artRenderer",
+        "type": "address",
+        "indexed": false,
+        "internalType": "contract ISneakerArtRenderer"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "BatchMetadataUpdate",
+    "inputs": [
+      {
+        "name": "_fromTokenId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_toTokenId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "MetadataUpdate",
+    "inputs": [
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
       }
     ],
     "anonymous": false
@@ -989,5 +1084,10 @@ export const sneakerNftAbi = [
         "internalType": "uint256"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidArtRenderer",
+    "inputs": []
   }
 ] as const

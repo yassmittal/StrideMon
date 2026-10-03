@@ -4,7 +4,8 @@ The three StrideMon contracts on Monad (Foundry, Solidity 0.8.37, OpenZeppelin 5
 
 | Contract | Is | Holds |
 |----------|----|-------|
-| `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` | every Sneaker's level, efficiency, durability and energy |
+| `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` with an SVG `image` | every Sneaker's level, efficiency, durability and energy |
+| `SneakerArtRenderer` | draws the Sneaker's SVG (D-030), swappable by the admin | nothing |
 | `SoleToken` | ERC-20 + Permit, 18 decimals (`Sole` / `SOLE`) | rewards |
 | `SneakerGame` | the rules: starter mint, settlement, repair, upgrade | `GAME_ROLE` on the NFT, `MINTER_ROLE` + `BURNER_ROLE` on the token |
 
@@ -62,17 +63,32 @@ forge verify-contract <address> <ContractName> --chain 10143 --watch \
 
 ### Deployed addresses (chain 10143)
 
-Deployed 2026-09-29 and verified (Sourcify `exact_match`). The source of truth is
-`deployments/10143.json`, mirrored into `@stridemon/chain`.
+Redeployed 2026-10-03 for Phase 8.3 (the Sneaker image, D-030) and verified (Sourcify
+`exact_match`). The source of truth is `deployments/10143.json`, mirrored into `@stridemon/chain`
+(the renderer's address stays in the JSON only: nothing off-chain calls it).
 
 | Contract | Address |
 |----------|---------|
-| `SneakerNft` | [`0x082072B5831009e289FAdd27266e0b8E5B57BDec`](https://testnet.monadvision.com/address/0x082072B5831009e289FAdd27266e0b8E5B57BDec) |
-| `SoleToken` | [`0xEd340b84E676a4De68a86a3B0d45a86fcE202bb3`](https://testnet.monadvision.com/address/0xEd340b84E676a4De68a86a3B0d45a86fcE202bb3) |
-| `SneakerGame` | [`0xc4d59c0625C079332f4762ca0Fdc8e9FE439AEa7`](https://testnet.monadvision.com/address/0xc4d59c0625C079332f4762ca0Fdc8e9FE439AEa7) |
+| `SneakerArtRenderer` | [`0x7e01732461C1879915C35E56e73Fd8569B289ADa`](https://testnet.monadvision.com/address/0x7e01732461C1879915C35E56e73Fd8569B289ADa) |
+| `SneakerNft` | [`0xC116917b06BD9079C87334ED5499054b1B54Fa80`](https://testnet.monadvision.com/address/0xC116917b06BD9079C87334ED5499054b1B54Fa80) |
+| `SoleToken` | [`0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0`](https://testnet.monadvision.com/address/0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0) |
+| `SneakerGame` | [`0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9`](https://testnet.monadvision.com/address/0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9) |
+
+The first deployment (2026-09-29, `SneakerNft` `0x082072B5…`, no image) is abandoned; its
+Sneakers stay on-chain but the app no longer reads them.
 
 Admin and pauser: deployer `0xFCe46e8CAFcf766003897e2aD6ab7a4d0E8befD6`. `GAME_SERVER_ROLE`:
-`0xa7a04224FEBE644C7d4d99Cfc8dd694270C7Cf1F`. The deploy cost about 0.77 MON.
+`0xa7a04224FEBE644C7d4d99Cfc8dd694270C7Cf1F`. The first deploy cost about 0.77 MON, the 8.3
+redeploy (four contracts) about 0.96 MON.
+
+To change the art later, deploy a new renderer and point `SneakerNft` at it (no redeploy, no reset):
+
+```bash
+forge create src/SneakerArtRenderer.sol:SneakerArtRenderer --rpc-url monad_testnet \
+  --private-key $DEPLOYER_PRIVATE_KEY --broadcast
+cast send $SNEAKER_NFT "setArtRenderer(address)" <new renderer> \
+  --private-key $DEPLOYER_PRIVATE_KEY --rpc-url monad_testnet
+```
 
 ## Manual loop
 
@@ -81,7 +97,7 @@ transfer. The deployer plays (it already has MON for gas), the game server settl
 and the Sneaker ends up in a fresh wallet. Run the blocks in order in one shell,
 from `packages/contracts`.
 
-Last run on testnet 2026-09-29 against the addresses above, with every number as
+Last run on testnet 2026-09-29 against the first deployment, with every number as
 commented below. Transactions: mint `0x13e004cd…`, settle `0xb25f066b…`, upgrade
 `0x7e4b320b…`, settle `0x19f2672e…`, repair `0x99fabcfa…`, transfer `0xb5bd2117…`
 (Sneaker #1, now owned by `0x7D1F6Cb4449F6BB40804647c94C65381d6f1C0D1`).
@@ -105,7 +121,7 @@ SETTLEMENT_SIGNATURE="settleSession((bytes32,uint256,address,uint32,uint32))"
 
 show_sneaker() {
   cast call $SNEAKER_NFT "tokenURI(uint256)(string)" $1 | tr -d '"' \
-    | sed 's|^data:application/json;base64,||' | base64 --decode | jq -c .
+    | sed 's|^data:application/json;base64,||' | base64 --decode | jq -c 'del(.image)'
 }
 show_sole_balance() {
   cast call $SOLE_TOKEN "balanceOf(address)(uint256)" $1 | cut -d' ' -f1 | xargs cast from-wei

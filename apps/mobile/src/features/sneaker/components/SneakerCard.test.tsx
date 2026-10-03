@@ -5,6 +5,8 @@ type SneakerCardProps = Parameters<typeof SneakerCard>[0]
 
 const STARTER_SNEAKER: SneakerCardProps = {
   sneakerTokenId: 7n,
+  imageSvg:
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#141515"/></svg>',
   level: 1,
   efficiency: 10,
   durability: 100,
@@ -14,18 +16,13 @@ const STARTER_SNEAKER: SneakerCardProps = {
 }
 
 describe('SneakerCard', () => {
-  it('shows a starter Sneaker: id, level 1, efficiency 10, durability 100/100, energy 10/10', async () => {
+  it('shows a starter Sneaker: its picture (id, level, durability), efficiency 10, energy 10/10', async () => {
     await render(<SneakerCard {...STARTER_SNEAKER} />)
 
-    expect(screen.getByText('Sneaker #7')).toBeTruthy()
-    expect(screen.getByLabelText('Level: 1')).toBeTruthy()
-    expect(screen.getByLabelText('Efficiency: 10')).toBeTruthy()
     expect(
-      screen.getByRole('progressbar', { name: 'Durability' }).props.accessibilityValue,
-    ).toMatchObject({
-      now: 100,
-      max: 100,
-    })
+      screen.getByRole('image', { name: 'Sneaker #7: level 1, durability 100 of 100' }),
+    ).toBeTruthy()
+    expect(screen.getByLabelText('Efficiency: 10')).toBeTruthy()
     expect(
       screen.getByRole('progressbar', { name: 'Energy' }).props.accessibilityValue,
     ).toMatchObject({
@@ -44,6 +41,14 @@ describe('SneakerCard', () => {
     )
 
     expect(screen.getByText('Next energy point in 12:34')).toBeTruthy()
+  })
+
+  it('holds the picture’s place while the on-chain SVG loads', async () => {
+    await render(<SneakerCard {...STARTER_SNEAKER} imageSvg={undefined} />)
+
+    expect(
+      screen.getByRole('image', { name: 'Sneaker #7: level 1, durability 100 of 100' }),
+    ).toBeTruthy()
   })
 
   it('links to the Sneaker on the explorer', async () => {

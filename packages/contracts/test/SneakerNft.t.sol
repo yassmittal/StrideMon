@@ -10,11 +10,14 @@ import {
 import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC4906} from "@openzeppelin/contracts/interfaces/IERC4906.sol";
 import {Test} from "forge-std/Test.sol";
-import {SneakerAttributes, SneakerNft} from "../src/SneakerNft.sol";
+import {SneakerArtRenderer} from "../src/SneakerArtRenderer.sol";
+import {ISneakerArtRenderer, SneakerAttributes, SneakerNft} from "../src/SneakerNft.sol";
 
 contract SneakerNftTest is Test {
     string private constant JSON_DATA_URI_PREFIX = "data:application/json;base64,";
+    string private constant SVG_DATA_URI_PREFIX = "data:image/svg+xml;base64,";
 
     address private admin = makeAddr("admin");
     address private game = makeAddr("game");
@@ -24,7 +27,7 @@ contract SneakerNftTest is Test {
     SneakerNft private sneakerNft;
 
     function setUp() public {
-        sneakerNft = new SneakerNft("StrideMon Sneaker", "SNEAKER", admin);
+        sneakerNft = new SneakerNft("StrideMon Sneaker", "SNEAKER", admin, new SneakerArtRenderer());
         bytes32 gameRole = sneakerNft.GAME_ROLE();
         vm.prank(admin);
         sneakerNft.grantRole(gameRole, game);
@@ -82,6 +85,8 @@ contract SneakerNftTest is Test {
 
         vm.expectEmit(address(sneakerNft));
         emit SneakerNft.SneakerAttributesUpdated(tokenId, newAttributes);
+        vm.expectEmit(address(sneakerNft));
+        emit IERC4906.MetadataUpdate(tokenId);
         vm.prank(game);
         sneakerNft.setAttributes(tokenId, newAttributes);
 
@@ -154,6 +159,53 @@ contract SneakerNftTest is Test {
         assertEq(vm.parseJsonUint(metadataJson, ".attributes[2].value"), 97);
     }
 
+    function test_TokenUriImageIsTheRenderedSvg() public {
+        uint256 tokenId = mintSneaker(player);
+
+        string memory metadataJson = decodeTokenUri(sneakerNft.tokenURI(tokenId));
+        string memory svg = sneakerNft.imageSvg(tokenId);
+
+        assertEq(
+            vm.parseJsonString(metadataJson, ".image"),
+            string.concat(SVG_DATA_URI_PREFIX, Base64.encode(bytes(svg)))
+        );
+        assertEq(vm.indexOf(svg, "<svg "), 0);
+    }
+
+    function test_SetArtRendererSwapsEveryPictureAndAsksForARefresh() public {
+        mintSneaker(player);
+        mintSneaker(otherPlayer);
+        ISneakerArtRenderer newArtRenderer = new FixedArtRenderer();
+
+        vm.expectEmit(address(sneakerNft));
+        emit SneakerNft.ArtRendererUpdated(newArtRenderer);
+        vm.expectEmit(address(sneakerNft));
+        emit IERC4906.BatchMetadataUpdate(1, 2);
+        vm.prank(admin);
+        sneakerNft.setArtRenderer(newArtRenderer);
+
+        assertEq(sneakerNft.imageSvg(2), "<svg/>");
+    }
+
+    function test_RevertWhen_SetArtRendererCalledWithoutAdminRole() public {
+        ISneakerArtRenderer newArtRenderer = new FixedArtRenderer();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                game,
+                sneakerNft.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        vm.prank(game);
+        sneakerNft.setArtRenderer(newArtRenderer);
+    }
+
+    function test_RevertWhen_ArtRendererIsTheZeroAddress() public {
+        vm.expectRevert(SneakerNft.InvalidArtRenderer.selector);
+        vm.prank(admin);
+        sneakerNft.setArtRenderer(ISneakerArtRenderer(address(0)));
+    }
+
     function test_RevertWhen_TokenUriOfNonexistentSneaker() public {
         vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 42));
         sneakerNft.tokenURI(42);
@@ -165,6 +217,7 @@ contract SneakerNftTest is Test {
         assertTrue(sneakerNft.supportsInterface(type(IERC721Enumerable).interfaceId));
         assertTrue(sneakerNft.supportsInterface(type(IERC721Metadata).interfaceId));
         assertTrue(sneakerNft.supportsInterface(type(IAccessControl).interfaceId));
+        assertTrue(sneakerNft.supportsInterface(bytes4(0x49064906))); // ERC-4906
         assertFalse(sneakerNft.supportsInterface(0xffffffff));
     }
 
@@ -195,5 +248,16 @@ contract SneakerNftTest is Test {
             encodedJson[i] = tokenUriBytes[prefixLength + i];
         }
         return string(Base64.decode(string(encodedJson)));
+    }
+}
+
+/// @dev A stand-in renderer, to tell a swapped picture apart from the real one.
+contract FixedArtRenderer is ISneakerArtRenderer {
+    function renderImageSvg(uint256, SneakerAttributes calldata)
+        external
+        pure
+        returns (string memory)
+    {
+        return "<svg/>";
     }
 }

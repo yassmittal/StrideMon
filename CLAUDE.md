@@ -117,4 +117,9 @@ with `CrossMarks`, the light summary, Sneaker tab, sheets, transfer, History and
 `TextField`, `CrossMarks`, `IconCircleButton` (`react-native-svg` icons), `ScreenTitle` and
 `readOpticalPullLeft`. No raw hex, pixel or font values remain outside `src/theme/`.
 Pills show an arrow, not Lusion's dot, and the tabs have line icons (D-029).
-**Next: 8.3** (Sneaker NFT image). The next decision number is D-030, reserved for 8.3's approach.
+**8.3 (Sneaker NFT image)** is built (2026-10-03): `SneakerArtRenderer` draws an on-chain SVG that
+`SneakerNft` serves as `imageSvg` and in `tokenURI` (D-030); the app draws it with `SvgXml` in
+`SneakerCard`. The contracts were redeployed and verified on testnet (new addresses in
+`packages/contracts/README.md`) and the local database was reset. Phone check pending.
+To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
+for it. The next decision number is D-031.

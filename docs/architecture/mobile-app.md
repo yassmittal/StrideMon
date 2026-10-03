@@ -70,14 +70,14 @@ apps/mobile/
     │   ├── onboarding/              useStarterSneakerOnboarding, StarterSneakerMinting ("Minting your Sneaker…")
     │   ├── sneaker/
     │   │   ├── hooks/               useOwnedSneakers, useSelectedSneaker (Phase 7), useSneakerAttributes,
-    │   │   │                        useSneakerEnergy, useGameConfig (Phase 3);
+    │   │   │                        useSneakerEnergy, useGameConfig (Phase 3); useSneakerImageSvg (8.3);
     │   │   │                        useSneakerGameTransaction, useRepairSneaker, useUpgradeSneaker (Phase 6);
     │   │   │                        useTransferSneaker (Phase 7)
     │   │   ├── sneaker-game-transaction-state.ts  the transaction state union and its error copy
     │   │   ├── sneaker-action-availability.ts     why Repair / Upgrade is disabled
     │   │   ├── selected-sneaker-store.ts          zustand: the Sneaker the player picked (D-027)
     │   │   ├── transfer-recipient.ts              checks the recipient address (valid, not yourself)
-    │   │   └── components/          SneakerCard, SneakerPicker, NoSneakersCard; RepairPanel and UpgradePanel
+    │   │   └── components/          SneakerCard, SneakerArt (the on-chain SVG, D-030), SneakerPicker, NoSneakersCard; RepairPanel and UpgradePanel
     │   │                            (thin configs of SneakerActionPanel), TransferPanel,
     │   │                            SneakerTransactionSheet (confirm → wallet → chain → done), StatChangeRow
     │   ├── activity-session/

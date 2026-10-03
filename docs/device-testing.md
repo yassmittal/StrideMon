@@ -168,3 +168,21 @@ Phase 7's check (no new build; Metro only). Wallet B is a second account in the 
 - **Run block:** press START, then kill and reopen the app so Home shows Resume / Finish. Open the
   Sneaker tab: Send is disabled with "Finish your run first". Finish the run afterwards.
 - **Back to A:** as B, send #4 back to A's address. A's Home shows #4 again by itself.
+
+Phase 8.3's check (no new build; restart the API and Metro, because the contract addresses changed
+and the local database was reset):
+
+- `bun run dev:api`, then `cd apps/mobile && bunx expo start --clear`. Open the app. The old
+  auth session is gone with the database, so it lands on sign-in. If it hangs instead, Profile →
+  sign out, or clear the app's storage.
+- **A:** sign in with Account 1. "Minting your Sneaker…" runs again (a new starter and gas drip).
+  Home's dark card shows the picture: `#0001`, `LEVEL 01 / 30` with one lime tick and one speed
+  line, `DURABILITY 100 / 100` with a full bar. The Sneaker tab shows the same picture.
+- **Explorer and wallet:** tap **Explorer**. MonadVision's NFT page shows the same picture (its
+  indexer can lag a few minutes). In MetaMask → NFTs → Import NFT, paste the new `SneakerNft`
+  address and id 1: the same picture appears.
+- **It changes:** walk a few minutes and STOP. Home redraws (it fades in again) with lower
+  durability, a shorter bar and slightly dimmer lime. Repair: back to `100 / 100`. With 50 SOLE
+  (a 10-minute walk), Upgrade: `LEVEL 02 / 30`, two ticks, two speed lines. Refresh the
+  MonadVision page and MetaMask: they follow.
+- **B:** sign in with Account 2. B gets starter `#0002`.

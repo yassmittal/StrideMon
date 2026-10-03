@@ -20,6 +20,7 @@ import { useRepairSneaker } from '../../src/features/sneaker/hooks/useRepairSnea
 import { useSelectedSneaker } from '../../src/features/sneaker/hooks/useSelectedSneaker'
 import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneakerAttributes'
 import { useSneakerEnergy } from '../../src/features/sneaker/hooks/useSneakerEnergy'
+import { useSneakerImageSvg } from '../../src/features/sneaker/hooks/useSneakerImageSvg'
 import { useUpgradeSneaker } from '../../src/features/sneaker/hooks/useUpgradeSneaker'
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
 import { colors, textStyles } from '../../src/theme'
@@ -91,6 +92,7 @@ type SneakerDetailProps = {
 
 function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerDetailProps) {
   const attributesQuery = useSneakerAttributes(sneakerTokenId)
+  const imageSvgQuery = useSneakerImageSvg(sneakerTokenId)
   const gameConfigQuery = useGameConfig()
   const sneakerEnergy = useSneakerEnergy({
     sneakerTokenId,
@@ -144,6 +146,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
         <>
           <SneakerCard
             sneakerTokenId={sneakerTokenId}
+            imageSvg={imageSvgQuery.data}
             level={attributes.level}
             efficiency={attributes.efficiency}
             durability={attributes.durability}
