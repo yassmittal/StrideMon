@@ -533,3 +533,23 @@ Made at Phase 7 start (2026-10-03).
   hook's name still says `SneakerGame` although transfer goes to `SneakerNft`.
 - **Revisit when:** a wallet commonly holds many Sneakers (Phase 9 marketplace), where the picker
   and the selection may need persisting.
+
+## D-028 — Phase 8 runs in seven parts with deployment last; the API is hosted like meAsAgent
+
+Made at Phase 8 start (2026-10-03).
+
+- **Decision:**
+  1. Phase 8 is split into parts 8.1 to 8.7 (`phases/phase-08-demo-hardening.md`). All product
+     work (design, the Sneaker NFT image, states, demo tooling) is finished on the development
+     build first. Deployment and the outdoor checks (D-025) come after it, then the iOS day.
+  2. The API is hosted the way `meAsAgent` hosts its API: Bun under PM2 on an EC2 instance Yash
+     already runs, one process, secrets in `apps/api/.env` on the instance.
+  3. The database is the MongoDB Atlas cluster `meAsAgent` already uses, with StrideMon in its own
+     `stridemon` database and its own database user.
+- **Why:** both are already paid for and working, so hosting costs nothing new. Deploying once,
+  on the finished app, means the demo build and the outdoor checks run against what will
+  actually be demoed.
+- **Trade-off:** the two projects share the free cluster's storage (512 MB) and the instance's
+  resources. The `locationSamples` TTL (8.4) keeps StrideMon's share small. Nothing is tested on
+  the hosted stack until 8.6, so hosting surprises surface late.
+- **Revisit when:** either project outgrows the shared cluster or instance.

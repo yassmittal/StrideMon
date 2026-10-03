@@ -102,5 +102,5 @@ player's own wallet with one shared hook (`useSneakerGameTransaction`), verified
 Phase 7 (Sneaker transfer) is done (2026-10-03): transfer reuses `useSneakerGameTransaction`, Home
 has a Sneaker picker and an empty state (D-027). Verified on the Android phone with two MetaMask
 accounts (#4 sent A → B and back, stats intact). **The MVP is complete.**
-**Next: Phase 8: Demo hardening** (`docs/phases/phase-08-demo-hardening.md`). The next decision
-number is D-028.
+**Now: Phase 8: Demo hardening** (`docs/phases/phase-08-demo-hardening.md`), built in seven parts
+with deployment last (D-028). Next up: 8.1, design foundation. The next decision number is D-029.

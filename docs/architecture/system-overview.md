@@ -130,7 +130,7 @@ App                                              Monad
 | Environment | Chain | Database | API |
 |-------------|-------|----------|-----|
 | Local | Monad testnet (or local Anvil for contract tests) | Project-local `mongod` | Laptop, reached over LAN |
-| Hackathon demo | Monad testnet | MongoDB Atlas (free tier) | Hosted (chosen in Phase 8) |
+| Hackathon demo | Monad testnet | MongoDB Atlas (free tier, the cluster shared with `meAsAgent`, database `stridemon`) | EC2, Bun under PM2 (D-028) |
 | Production (post-hackathon) | Monad mainnet | Atlas (paid tier) | Hosted, multiple instances |
 
 **Everything targets Monad testnet until Phase 10.** No real money is involved,
