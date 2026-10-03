@@ -118,6 +118,7 @@ plus a few new tokens.
 | `overlayOnLight` *(new)* | `rgba(0, 0, 0, 0.1)` | Scroll track, hairlines |
 | `overlayOnDark` *(new)* | `rgba(255, 255, 255, 0.1)` | |
 | `scrim` *(new)* | `rgba(0, 0, 0, 0.9)` | Full-screen overlays |
+| `backdrop` *(new)* | `rgba(0, 0, 0, 0.5)` | **Derived.** Dims the screen behind a bottom sheet without hiding it (Lusion has no sheets) |
 | `crossMark` *(new)* | `#999999` | "+" corner marks |
 
 Three Phase 0–7 tokens have no Lusion counterpart. They keep their names with
@@ -249,6 +250,15 @@ Every value is a Lusion value converted at a 16 pt root.
 | `gridGap` | **4% of window width** (≈ 16 at 390) | `--grid-gap: 4vw` |
 | `headerHeight` | **76** (15 + 45 + 15 + 1) | measured `#header` at 390 pt |
 | `minimumTouchTarget` | **44** | Unchanged (`MINIMUM_TOUCH_TARGET_SIZE`). Lusion's pills are 45, so they meet it. |
+
+The component sizes from §8 are `layout` tokens too (Phase 8.2): `pillHeight` 45,
+`callToActionPillHeight` 47, `pillDotSize` 4, `callToActionDotSize` 7, `progressTrackHeight` 4,
+`crossMarkSize` 14 with a `crossMarkStrokeWidth` of 1, `textFieldHeight` 61,
+`textFieldArrowSize` 21, `iconCircleButtonSize` 45, `iconCircleButtonDarkSize` 53, and
+`iconSize` 18 and `iconStrokeWidth` 1.5 (**derived**, the line glyph inside a circle button). Two app-only sizes are
+**derived**: `successBadgeSize` 64 (the lime check after a transaction) and
+`onboardingStepIndicatorWidth` 24. `opticalPullLeftRatio` is −0.05 (§3.3: display lines
+are pulled left by 0.05 × font size).
 
 ---
 

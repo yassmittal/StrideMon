@@ -1,5 +1,6 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { formatDateTime } from '../../../lib/format/format-date-time'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
@@ -54,7 +55,7 @@ export function ActivitySessionHistoryItem({
     >
       <View style={styles.main}>
         <Text style={styles.date}>{startedAtDisplay}</Text>
-        {details.length > 0 && <Text style={styles.details}>{details.join(' · ')}</Text>}
+        {details.length > 0 && <MetaLabel items={details} />}
       </View>
       <View style={styles.side}>
         {rewardAmountDisplay !== null && <Text style={styles.reward}>{rewardAmountDisplay}</Text>}
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.medium,
-    padding: spacing.medium,
+    padding: spacing.large,
     borderRadius: radii.medium,
     backgroundColor: colors.surface,
   },
@@ -79,25 +80,19 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
-    gap: spacing.extraSmall,
+    gap: spacing.small,
   },
   date: {
     ...textStyles.body,
-    fontFamily: fontFamilies.medium,
     color: colors.textPrimary,
-  },
-  details: {
-    ...textStyles.caption,
-    color: colors.textSecondary,
-    fontFamily: fontFamilies.monoRegular,
   },
   side: {
     alignItems: 'flex-end',
-    gap: spacing.extraSmall,
+    gap: spacing.small,
   },
   reward: {
     ...textStyles.body,
     color: colors.textPrimary,
-    fontFamily: fontFamilies.monoMedium,
+    fontFamily: fontFamilies.monoRegular,
   },
 })

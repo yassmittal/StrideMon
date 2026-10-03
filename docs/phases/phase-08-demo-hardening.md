@@ -44,6 +44,10 @@ feature components' styles.
 - Active run, run summary, the Sneaker tab (repair, upgrade, transfer sheets), History and
   Profile get their full design-system §9 layout.
 - No raw hex, pixel or font values remain outside `src/theme/`.
+- The last three §8 components arrive: `TextField` (transfer address), `CrossMarks` (the active
+  run's estimated reward) and `IconCircleButton` (sheet close, transfer back). Their icons are
+  drawn with `react-native-svg`, which is already in the development build. The component sizes
+  are `layout` tokens (design-system §4.2), and the sheet backdrop is `colors.backdrop` (§2.2).
 
 **On the phone:** every screen matches §9.
 

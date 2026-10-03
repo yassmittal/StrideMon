@@ -43,9 +43,9 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   arrow: {
-    color: colors.textSecondary,
+    color: colors.accent,
   },
   valueAfter: {
-    color: colors.primary,
+    color: colors.textPrimary,
   },
 })

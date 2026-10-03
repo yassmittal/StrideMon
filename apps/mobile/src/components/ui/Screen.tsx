@@ -22,7 +22,11 @@ export function Screen({ children, isScrollable = false, tone = 'light' }: Scree
     <SafeAreaView style={[styles.safeArea, isDark && styles.safeAreaDark]}>
       {isDark && <StatusBar style="light" />}
       {isScrollable ? (
-        <ScrollView contentContainerStyle={[styles.content, pageGutterStyle]}>
+        // `handled`: a tap on a button works while the keyboard is open, e.g. a text field's arrow.
+        <ScrollView
+          contentContainerStyle={[styles.content, pageGutterStyle]}
+          keyboardShouldPersistTaps="handled"
+        >
           {children}
         </ScrollView>
       ) : (

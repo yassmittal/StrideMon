@@ -4,9 +4,7 @@ import { Screen } from '../../src/components/ui/Screen'
 import { SignInPanel } from '../../src/features/auth/components/SignInPanel'
 import { useSignIn } from '../../src/features/auth/hooks/useSignIn'
 import { useWalletConnection } from '../../src/features/wallet/hooks/useWalletConnection'
-import { colors, spacing, textStyles } from '../../src/theme'
-
-const OPTICAL_PULL_LEFT = -0.05 * (textStyles.heading.fontSize ?? 0)
+import { colors, readOpticalPullLeft, spacing, textStyles } from '../../src/theme'
 
 export default function ConnectWalletScreen() {
   const { walletAddress, openWalletPicker, disconnectWallet } = useWalletConnection()
@@ -37,7 +35,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...textStyles.heading,
-    marginLeft: OPTICAL_PULL_LEFT,
+    marginLeft: readOpticalPullLeft(textStyles.heading.fontSize),
     color: colors.textPrimary,
   },
 })

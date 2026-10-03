@@ -30,5 +30,7 @@ export const colors = {
   overlayOnLight: 'rgba(0, 0, 0, 0.1)',
   overlayOnDark: 'rgba(255, 255, 255, 0.1)',
   scrim: 'rgba(0, 0, 0, 0.9)',
+  /** Derived: dims the screen behind a bottom sheet without hiding it. */
+  backdrop: 'rgba(0, 0, 0, 0.5)',
   crossMark: '#999999',
 } as const

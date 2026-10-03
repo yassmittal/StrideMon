@@ -4,7 +4,7 @@ import { colors, fontFamilies, motion, textStyles } from '../../theme'
 
 const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const
 
-type CounterTextSize = 'title' | 'heading' | 'counter' | 'display' | 'displayHuge'
+type CounterTextSize = 'title' | 'heading' | 'counter' | 'display' | 'displayLarge' | 'displayHuge'
 
 type CounterTextProps = {
   /** Already formatted, e.g. "12.5 SOLE" or "50%". Only the digits roll. */
@@ -94,6 +94,7 @@ const sizeStyles = StyleSheet.create({
   heading: textStyles.heading,
   counter: textStyles.counter,
   display: textStyles.display,
+  displayLarge: textStyles.displayLarge,
   displayHuge: textStyles.displayHuge,
 })
 

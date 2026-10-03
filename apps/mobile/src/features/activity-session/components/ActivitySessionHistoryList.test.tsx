@@ -46,7 +46,7 @@ describe('ActivitySessionHistoryList', () => {
   it('shows a settled run with its duration, distance, reward and status', async () => {
     await renderHistoryList([SETTLED_ACTIVITY_SESSION])
 
-    expect(screen.getByText('11:00 · 842 m')).toBeTruthy()
+    expect(screen.getByText('11:00  •  842 m')).toBeTruthy()
     expect(screen.getByText('+50 SOLE')).toBeTruthy()
     expect(screen.getByText('Settled')).toBeTruthy()
   })

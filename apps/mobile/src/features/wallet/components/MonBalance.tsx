@@ -1,4 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { CounterText } from '../../../components/ui/CounterText'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { formatTokenAmount } from '../../../lib/format/format-token-amount'
 import { colors, spacing, textStyles } from '../../../theme'
 
@@ -8,38 +10,32 @@ type MonBalanceProps = {
   isError: boolean
 }
 
+/** The wallet's testnet MON, which pays the fee for repair, upgrade and transfer. */
 export function MonBalance({ balance, isLoading, isError }: MonBalanceProps) {
   return (
-    <View style={styles.row}>
-      <Text style={styles.caption}>Testnet MON balance</Text>
+    <View style={styles.container}>
+      <MetaLabel items={['Testnet MON balance']} />
       {isLoading ? (
-        <ActivityIndicator color={colors.primary} accessibilityLabel="Loading balance" />
+        <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading balance" />
       ) : isError || balance === undefined ? (
         <Text style={styles.error}>Couldn’t read the balance from Monad.</Text>
       ) : (
-        <Text style={styles.amount}>
-          {formatTokenAmount({
+        <CounterText
+          value={formatTokenAmount({
             amountWei: balance.value,
             decimals: balance.decimals,
             symbol: balance.symbol,
           })}
-        </Text>
+          size="title"
+        />
       )}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  row: {
-    gap: spacing.extraSmall,
-  },
-  caption: {
-    ...textStyles.caption,
-    color: colors.textSecondary,
-  },
-  amount: {
-    ...textStyles.title,
-    color: colors.textPrimary,
+  container: {
+    gap: spacing.small,
   },
   error: {
     ...textStyles.body,

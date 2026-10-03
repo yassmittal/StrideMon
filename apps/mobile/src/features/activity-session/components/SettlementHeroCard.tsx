@@ -1,149 +1,111 @@
 import type { ActivitySessionSettlement } from '@stridemon/shared/api-contracts'
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
+import { CounterText } from '../../../components/ui/CounterText'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
+import { Panel } from '../../../components/ui/Panel'
+import { StatValue } from '../../../components/ui/StatValue'
 import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
-import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
-import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
+import { formatSoleAmountNumber } from '../../../lib/format/format-sole-amount'
+import { colors, readOpticalPullLeft, spacing, textStyles } from '../../../theme'
+import { SummaryHeadline } from './SummaryHeadline'
 
 type SettlementHeroCardProps =
   | { phase: 'settling' }
   | { phase: 'settled'; settlement: ActivitySessionSettlement; activeMinutes: number }
 
-/** The top of the summary: "Settling on Monad…", then what the run earned. */
+/**
+ * The top of the summary (design-system.md §9): "Settling on Monad…", then the SOLE
+ * the run earned in huge digits, with what it cost the Sneaker in a panel below.
+ */
 export function SettlementHeroCard(props: SettlementHeroCardProps) {
   if (props.phase === 'settling') {
     return (
-      <View style={styles.hero} accessibilityLiveRegion="polite">
-        <ActivityIndicator color={colors.textOnPrimary} size="large" />
-        <Text style={styles.heroTitle} accessibilityRole="header">
-          Settling on Monad…
-        </Text>
-        <Text style={styles.heroCaption}>
-          Minting your SOLE and updating your Sneaker. This takes a few seconds.
-        </Text>
-      </View>
+      <SummaryHeadline
+        metaItems={['Run finished', 'Settling']}
+        title="Settling on Monad…"
+        message="Minting your SOLE and updating your Sneaker. This takes a few seconds."
+        isLoading
+      />
     )
   }
 
   const { settlement, activeMinutes } = props
   if (settlement.rewardedMinutes === 0) {
-    return <NoRewardHero activeMinutes={activeMinutes} />
+    return (
+      <SummaryHeadline
+        metaItems={['Run settled']}
+        title="No SOLE this time"
+        message={
+          activeMinutes === 0
+            ? 'SOLE is earned per full minute of walking: 60 seconds of moving with good GPS. This run didn’t complete one. Walk for 3–4 minutes outdoors next time.'
+            : 'Your Sneaker had no energy left, so these minutes couldn’t earn. Energy refills over time.'
+        }
+      />
+    )
   }
-  const rewardAmountDisplay = `+${formatSoleAmount(BigInt(settlement.rewardAmountWei))}`
+  const rewardAmountNumber = `+${formatSoleAmountNumber(BigInt(settlement.rewardAmountWei))}`
   return (
-    <View style={styles.hero} accessibilityLiveRegion="polite">
-      <Text style={styles.heroLabel}>You earned</Text>
-      <Text
-        style={styles.rewardAmount}
+    <>
+      <View
+        style={styles.hero}
+        accessible
         accessibilityRole="header"
-        accessibilityLabel={`You earned ${rewardAmountDisplay}`}
+        accessibilityLabel={`You earned ${rewardAmountNumber} SOLE`}
+        accessibilityLiveRegion="polite"
       >
-        {rewardAmountDisplay}
-      </Text>
-      <View style={styles.chipRow}>
-        <HeroChip label={`${settlement.rewardedMinutes} rewarded min`} />
-        <HeroChip label={`Durability −${settlement.durabilityLoss}`} />
+        <MetaLabel items={['You earned', 'Run settled']} />
+        <View style={styles.amountRow}>
+          <View style={styles.amount}>
+            <CounterText value={rewardAmountNumber} size="displayLarge" />
+          </View>
+          <Text style={styles.symbol}>SOLE</Text>
+        </View>
       </View>
-      {settlement.transactionHash !== null && (
-        <View style={styles.linkOnPrimary}>
+      <Panel>
+        <View style={styles.statRow}>
+          <View style={styles.statCell}>
+            <StatValue label="Rewarded minutes" value={String(settlement.rewardedMinutes)} />
+          </View>
+          <View style={styles.statCell}>
+            <StatValue label="Durability lost" value={`−${settlement.durabilityLoss}`} />
+          </View>
+        </View>
+        {settlement.transactionHash !== null && (
           <ExternalLink
             label="View transaction"
             url={buildTransactionExplorerUrl(settlement.transactionHash)}
             accessibilityLabel="View the settlement transaction on the explorer"
-            tone="onDark"
           />
-        </View>
-      )}
-    </View>
-  )
-}
-
-/**
- * A run that earned nothing says so in words, instead of "+0 SOLE" next to stats
- * that contradict what the run screen just showed.
- */
-function NoRewardHero({ activeMinutes }: { activeMinutes: number }) {
-  return (
-    <View style={[styles.hero, styles.heroNeutral]} accessibilityLiveRegion="polite">
-      <Text style={styles.noRewardTitle} accessibilityRole="header">
-        No SOLE this time
-      </Text>
-      <Text style={styles.noRewardCaption}>
-        {activeMinutes === 0
-          ? 'SOLE is earned per full minute of walking: 60 seconds of moving with good GPS. This run didn’t complete one. Walk for 3–4 minutes outdoors next time.'
-          : 'Your Sneaker had no energy left, so these minutes couldn’t earn. Energy refills over time.'}
-      </Text>
-    </View>
-  )
-}
-
-function HeroChip({ label }: { label: string }) {
-  return (
-    <View style={styles.chip}>
-      <Text style={styles.chipLabel}>{label}</Text>
-    </View>
+        )}
+      </Panel>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
   hero: {
-    alignItems: 'center',
-    gap: spacing.small,
+    gap: spacing.medium,
     paddingVertical: spacing.extraLarge,
-    paddingHorizontal: spacing.large,
-    borderRadius: radii.medium,
-    backgroundColor: colors.primary,
   },
-  heroNeutral: {
-    backgroundColor: colors.surface,
+  amountRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    columnGap: spacing.small,
   },
-  noRewardTitle: {
+  amount: {
+    marginLeft: readOpticalPullLeft(textStyles.displayLarge.fontSize),
+  },
+  symbol: {
     ...textStyles.title,
     color: colors.textPrimary,
   },
-  noRewardCaption: {
-    ...textStyles.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  heroTitle: {
-    ...textStyles.title,
-    color: colors.textOnPrimary,
-  },
-  heroLabel: {
-    ...textStyles.body,
-    color: colors.textOnPrimary,
-    opacity: 0.8,
-  },
-  heroCaption: {
-    ...textStyles.body,
-    color: colors.textOnPrimary,
-    opacity: 0.8,
-    textAlign: 'center',
-  },
-  rewardAmount: {
-    ...textStyles.hero,
-    color: colors.textOnPrimary,
-    fontFamily: fontFamilies.monoRegular,
-  },
-  chipRow: {
+  statRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.small,
+    gap: spacing.medium,
   },
-  chip: {
-    paddingVertical: spacing.extraSmall,
-    paddingHorizontal: spacing.medium,
-    borderRadius: radii.pill,
-    backgroundColor: colors.primaryPressed,
-  },
-  chipLabel: {
-    ...textStyles.caption,
-    fontFamily: fontFamilies.medium,
-    color: colors.textOnPrimary,
-  },
-  linkOnPrimary: {
-    alignItems: 'center',
+  statCell: {
+    flex: 1,
   },
 })

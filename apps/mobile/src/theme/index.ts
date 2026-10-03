@@ -1,6 +1,6 @@
 export { colors } from './colors'
 export { fontFamilies, fontFiles } from './fonts'
-export { layout, readPageGutter } from './layout'
+export { layout, readOpticalPullLeft, readPageGutter } from './layout'
 export { motion } from './motion'
 export { MINIMUM_TOUCH_TARGET_SIZE, radii } from './radii'
 export { shadows } from './shadows'

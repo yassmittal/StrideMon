@@ -112,4 +112,8 @@ with deployment last (D-028). 8.1 (design foundation) is done (2026-10-03): Lusi
 `expo-font`, the `components/ui` set (`Button` variants, `Panel`, `DarkPanel`, `HeroPanel`,
 `MetaLabel`, `CounterText`, dark `ProgressBar`), haptics in `lib/haptics`, and the new
 welcome, sign-in, minting and Home screens. Checked on the Android phone.
-**Next: 8.2** (design across the rest of the app). The next decision number is D-029.
+8.2 (design across the app) is built (2026-10-03), waiting for the phone check: dark active run
+with `CrossMarks`, the light summary, Sneaker tab, sheets, transfer, History and Profile, plus
+`TextField`, `CrossMarks`, `IconCircleButton` (`react-native-svg` icons), `ScreenTitle` and
+`readOpticalPullLeft`. No raw hex, pixel or font values remain outside `src/theme/`.
+**Next: 8.3** (Sneaker NFT image). The next decision number is D-029, reserved for 8.3's approach.

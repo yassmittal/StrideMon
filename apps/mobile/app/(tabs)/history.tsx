@@ -1,11 +1,10 @@
 import { router } from 'expo-router'
-import { StyleSheet, Text } from 'react-native'
 import { ErrorState } from '../../src/components/ui/ErrorState'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
 import { Screen } from '../../src/components/ui/Screen'
+import { ScreenTitle } from '../../src/components/ui/ScreenTitle'
 import { ActivitySessionHistoryList } from '../../src/features/activity-session/components/ActivitySessionHistoryList'
 import { useActivitySessionHistory } from '../../src/features/activity-session/hooks/useActivitySessionHistory'
-import { colors, textStyles } from '../../src/theme'
 
 /** Past runs, newest first. Tapping one opens its summary. */
 export default function HistoryScreen() {
@@ -28,9 +27,7 @@ export default function HistoryScreen() {
   }
   return (
     <Screen>
-      <Text style={styles.title} accessibilityRole="header">
-        History
-      </Text>
+      <ScreenTitle title="History" metaItems={['Past runs', 'Newest first']} />
       <ActivitySessionHistoryList
         activitySessions={activitySessions}
         onActivitySessionPress={(activitySessionId) =>
@@ -48,10 +45,3 @@ export default function HistoryScreen() {
     </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  title: {
-    ...textStyles.title,
-    color: colors.textPrimary,
-  },
-})

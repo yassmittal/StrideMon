@@ -5,14 +5,22 @@ type LoadingScreenProps = {
   accessibilityLabel: string
   /** Says what it's waiting on, when that takes long enough to wonder. */
   message?: string
+  /** `dark` while a dark screen loads, so it doesn't flash light first. */
+  tone?: 'light' | 'dark'
 }
 
 /** A whole screen that is waiting on something, such as restoring the auth session at launch. */
-export function LoadingScreen({ accessibilityLabel, message }: LoadingScreenProps) {
+export function LoadingScreen({ accessibilityLabel, message, tone = 'light' }: LoadingScreenProps) {
+  const isDark = tone === 'dark'
   return (
-    <View style={styles.container} accessibilityLabel={accessibilityLabel}>
-      <ActivityIndicator size="large" color={colors.textPrimary} />
-      {message !== undefined && <Text style={styles.message}>{message}</Text>}
+    <View
+      style={[styles.container, isDark && styles.containerDark]}
+      accessibilityLabel={accessibilityLabel}
+    >
+      <ActivityIndicator size="large" color={isDark ? colors.textOnDark : colors.textPrimary} />
+      {message !== undefined && (
+        <Text style={[styles.message, isDark && styles.messageOnDark]}>{message}</Text>
+      )}
     </View>
   )
 }
@@ -25,9 +33,15 @@ const styles = StyleSheet.create({
     gap: spacing.medium,
     backgroundColor: colors.background,
   },
+  containerDark: {
+    backgroundColor: colors.darkBackground,
+  },
   message: {
     ...textStyles.caption,
     color: colors.textSecondary,
     textTransform: 'uppercase',
+  },
+  messageOnDark: {
+    color: colors.textOnDarkMuted,
   },
 })

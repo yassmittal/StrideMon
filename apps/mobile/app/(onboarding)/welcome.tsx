@@ -5,10 +5,7 @@ import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Screen } from '../../src/components/ui/Screen'
 import { ApiHealthStatus } from '../../src/features/health/components/ApiHealthStatus'
 import { useApiHealth } from '../../src/features/health/hooks/useApiHealth'
-import { colors, spacing, textStyles } from '../../src/theme'
-
-// Lusion pulls display lines left so the glyph edge meets the gutter (design-system.md §3.3).
-const OPTICAL_PULL_LEFT = -0.05 * (textStyles.displayLarge.fontSize ?? 0)
+import { colors, readOpticalPullLeft, spacing, textStyles } from '../../src/theme'
 
 export default function WelcomeScreen() {
   const apiHealthQuery = useApiHealth()
@@ -46,7 +43,7 @@ const styles = StyleSheet.create({
   },
   headline: {
     ...textStyles.displayLarge,
-    marginLeft: OPTICAL_PULL_LEFT,
+    marginLeft: readOpticalPullLeft(textStyles.displayLarge.fontSize),
     color: colors.textPrimary,
   },
   intro: {

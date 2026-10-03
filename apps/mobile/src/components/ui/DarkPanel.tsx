@@ -9,20 +9,34 @@ type DarkPanelProps = {
   description?: string
   onPress: () => void
   accessibilityLabel?: string
+  /** Greys the panel out and hides the arrow, e.g. while a run blocks the action. */
+  isDisabled?: boolean
 }
 
 /** design-system.md §8: the one featured action on a light screen, black with an arrow. */
-export function DarkPanel({ title, description, onPress, accessibilityLabel }: DarkPanelProps) {
+export function DarkPanel({
+  title,
+  description,
+  onPress,
+  accessibilityLabel,
+  isDisabled = false,
+}: DarkPanelProps) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityState={{ disabled: isDisabled }}
+      disabled={isDisabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.panel, pressed && styles.panelPressed]}
+      style={({ pressed }) => [
+        styles.panel,
+        pressed && styles.panelPressed,
+        isDisabled && styles.panelDisabled,
+      ]}
     >
       <View style={styles.titleRow}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.arrow}>→</Text>
+        <Text style={[styles.title, isDisabled && styles.titleDisabled]}>{title}</Text>
+        {!isDisabled && <Text style={styles.arrow}>→</Text>}
       </View>
       {description !== undefined && <Text style={styles.description}>{description}</Text>}
     </Pressable>
@@ -41,6 +55,9 @@ const styles = StyleSheet.create({
   panelPressed: {
     opacity: PRESSED_OPACITY,
   },
+  panelDisabled: {
+    backgroundColor: colors.darkTrack,
+  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -52,6 +69,9 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     color: colors.textOnDark,
     textTransform: 'uppercase',
+  },
+  titleDisabled: {
+    color: colors.textOnDarkMuted,
   },
   arrow: {
     ...textStyles.menuItem,

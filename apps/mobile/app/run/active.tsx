@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../src/components/ui/Button'
 import { ErrorState } from '../../src/components/ui/ErrorState'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
+import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Screen } from '../../src/components/ui/Screen'
 import { LiveRunStats } from '../../src/features/activity-session/components/LiveRunStats'
 import { useActiveActivitySession } from '../../src/features/activity-session/hooks/useActiveActivitySession'
@@ -12,22 +13,23 @@ import { useLocalActiveActivitySession } from '../../src/features/activity-sessi
 import type { LocalActiveActivitySession } from '../../src/features/activity-session/location-tracking/local-active-activity-session'
 import { describeRunError } from '../../src/features/activity-session/run-error-messages'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
-import { colors, spacing, textStyles } from '../../src/theme'
+import { colors, layout, radii, spacing, textStyles } from '../../src/theme'
 
-/** The live run: stats while GPS records, and STOP. */
+/** The live run on a black screen (design-system.md §9): stats while GPS records, and STOP. */
 export default function ActiveRunScreen() {
   const localActiveActivitySessionQuery = useLocalActiveActivitySession()
   const gameConfigQuery = useGameConfig()
 
   if (localActiveActivitySessionQuery.isError || gameConfigQuery.isError) {
     return (
-      <Screen>
+      <Screen tone="dark">
         <ErrorState
           message="Couldn’t load your run. Check your connection and try again."
           onRetryPress={() => {
             void localActiveActivitySessionQuery.refetch()
             void gameConfigQuery.refetch()
           }}
+          tone="dark"
         />
       </Screen>
     )
@@ -35,15 +37,16 @@ export default function ActiveRunScreen() {
   const localActiveActivitySession = localActiveActivitySessionQuery.data
   const gameConfig = gameConfigQuery.data
   if (localActiveActivitySession === undefined || gameConfig === undefined) {
-    return <LoadingScreen accessibilityLabel="Loading your run" />
+    return <LoadingScreen accessibilityLabel="Loading your run" tone="dark" />
   }
   if (localActiveActivitySession === null) {
     return (
-      <Screen>
+      <Screen tone="dark">
         <ErrorState
           message="There’s no run in progress on this phone."
           retryLabel="Back to Home"
           onRetryPress={() => router.dismissTo('/')}
+          tone="dark"
         />
       </Screen>
     )
@@ -63,7 +66,7 @@ function ActiveRun({
   const { liveRunStats, unsentSampleCount, uploadErrorCode, trackingError, retryTracking } =
     useActiveActivitySession({ localActiveActivitySession, gameConfig })
   const finishMutation = useFinishActivitySession()
-  const { activitySessionId } = localActiveActivitySession
+  const { activitySessionId, sneakerTokenId } = localActiveActivitySession
 
   function finishRun() {
     finishMutation.mutate(activitySessionId, {
@@ -80,19 +83,21 @@ function ActiveRun({
   }
 
   return (
-    <Screen isScrollable>
-      <Text style={styles.title} accessibilityRole="header">
-        Run in progress
-      </Text>
+    <Screen isScrollable tone="dark">
+      <View style={styles.header} accessibilityRole="header">
+        <View style={styles.recordingDot} />
+        <MetaLabel items={['Run in progress', `Sneaker #${sneakerTokenId}`]} tone="dark" />
+      </View>
       {trackingError !== null && (
         <ErrorState
           message={describeRunError(trackingError)}
           retryLabel="Restart GPS"
           onRetryPress={retryTracking}
+          tone="dark"
         />
       )}
       {liveRunStats === undefined ? (
-        <ActivityIndicator color={colors.primary} accessibilityLabel="Loading live stats" />
+        <ActivityIndicator color={colors.textOnDark} accessibilityLabel="Loading live stats" />
       ) : (
         <LiveRunStats
           liveRunStats={liveRunStats}
@@ -119,15 +124,25 @@ function ActiveRun({
 }
 
 const styles = StyleSheet.create({
-  title: {
-    ...textStyles.title,
-    color: colors.textPrimary,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.small,
+    paddingBottom: spacing.large,
+  },
+  // Lime on black: GPS is recording.
+  recordingDot: {
+    width: layout.callToActionDotSize,
+    height: layout.callToActionDotSize,
+    borderRadius: radii.pill,
+    backgroundColor: colors.highlight,
   },
   stopSection: {
     gap: spacing.small,
+    paddingTop: spacing.section,
   },
   error: {
     ...textStyles.body,
-    color: colors.danger,
+    color: colors.dangerAccent,
   },
 })

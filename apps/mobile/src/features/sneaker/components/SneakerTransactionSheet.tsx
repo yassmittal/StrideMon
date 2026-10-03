@@ -1,15 +1,14 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, radii, spacing } from '../../../theme'
+import { IconCircleButton } from '../../../components/ui/IconCircleButton'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
+import { colors, layout, radii, spacing } from '../../../theme'
 import {
   isSneakerGameTransactionPending,
   type SneakerGameTransactionState,
 } from '../sneaker-game-transaction-state'
 import { ConfirmationStep, FailedStep, PendingStep, SucceededStep } from './SneakerTransactionSteps'
 import type { StatChange } from './StatChangeRow'
-
-// Dims the screen behind the sheet without hiding it.
-const BACKDROP_COLOR = 'rgba(17, 20, 24, 0.5)'
 
 /** What the player is about to do, snapshotted when they tapped the action. */
 export type SneakerTransactionConfirmation =
@@ -69,7 +68,7 @@ export function SneakerTransactionSheet({
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={handleRequestClose}
-          accessibilityLabel="Close"
+          accessibilityLabel="Dismiss"
           accessibilityRole="button"
           disabled={isPending}
         />
@@ -78,6 +77,12 @@ export function SneakerTransactionSheet({
           accessibilityViewIsModal
         >
           <View style={styles.handle} />
+          <View style={styles.header}>
+            <MetaLabel items={describeTransactionPhase(transactionState)} />
+            {!isPending && (
+              <IconCircleButton icon="close" accessibilityLabel="Close" onPress={onClosePress} />
+            )}
+          </View>
           {confirmation !== null && (
             <SheetStep
               confirmation={confirmation}
@@ -151,17 +156,37 @@ function SheetStep({
   }
 }
 
+/** design-system.md §9: the transaction's state as tiny metadata, `STEP 1 OF 2 • AWAITING SIGNATURE`. */
+function describeTransactionPhase(transactionState: SneakerGameTransactionState): string[] {
+  switch (transactionState.phase) {
+    case 'idle':
+      return ['Review']
+    case 'awaitingSignature':
+      return ['Step 1 of 2', 'Awaiting signature']
+    case 'confirming':
+      return ['Step 2 of 2', 'Confirming']
+    case 'succeeded':
+      return ['Confirmed on Monad']
+    case 'failed':
+      return ['Not sent']
+    default: {
+      const unhandledState: never = transactionState
+      throw new Error(`Unhandled transaction state: ${JSON.stringify(unhandledState)}`)
+    }
+  }
+}
+
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: BACKDROP_COLOR,
+    backgroundColor: colors.backdrop,
   },
   sheet: {
     paddingTop: spacing.small,
     paddingHorizontal: spacing.large,
-    borderTopLeftRadius: radii.medium * 2,
-    borderTopRightRadius: radii.medium * 2,
+    borderTopLeftRadius: radii.card,
+    borderTopRightRadius: radii.card,
     backgroundColor: colors.background,
     gap: spacing.medium,
   },
@@ -170,6 +195,13 @@ const styles = StyleSheet.create({
     width: spacing.extraLarge + spacing.small,
     height: spacing.extraSmall,
     borderRadius: radii.pill,
-    backgroundColor: colors.disabled,
+    backgroundColor: colors.overlayOnLight,
+  },
+  // Keeps its height when the close button hides, so the content doesn't jump.
+  header: {
+    minHeight: layout.iconCircleButtonSize,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 })

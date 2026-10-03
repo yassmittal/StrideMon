@@ -47,7 +47,7 @@ describe('ActivitySessionSummaryCard', () => {
     await render(<ActivitySessionSummaryCard activitySession={SETTLED_ACTIVITY_SESSION} />)
 
     expect(screen.getByLabelText('You earned +50 SOLE')).toBeTruthy()
-    expect(screen.getByText('Durability −3')).toBeTruthy()
+    expect(screen.getByLabelText('Durability lost: −3')).toBeTruthy()
     expect(screen.getByRole('link', { name: /settlement transaction/ })).toBeTruthy()
   })
 

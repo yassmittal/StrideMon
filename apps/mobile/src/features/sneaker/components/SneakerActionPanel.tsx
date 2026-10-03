@@ -78,7 +78,11 @@ export function SneakerActionPanel({
           {title}
         </Text>
         {costWei !== undefined && (
-          <View style={styles.costChip}>
+          <View
+            style={styles.costChip}
+            accessible
+            accessibilityLabel={`Costs ${formatSoleAmount(costWei)}`}
+          >
             <Text style={styles.costChipLabel}>{formatSoleAmount(costWei)}</Text>
           </View>
         )}
@@ -88,7 +92,7 @@ export function SneakerActionPanel({
       {cost.status === 'error' ? (
         <ErrorState message="Couldn’t read the cost from Monad." onRetryPress={cost.onRetryPress} />
       ) : cost.status === 'loading' ? (
-        <ActivityIndicator color={colors.primary} accessibilityLabel="Reading the cost" />
+        <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Reading the cost" />
       ) : (
         <>
           {statChanges.length > 0 && (
@@ -133,12 +137,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.extraSmall,
     paddingHorizontal: spacing.medium,
     borderRadius: radii.pill,
-    backgroundColor: colors.primarySurface,
+    backgroundColor: colors.surfaceMuted,
   },
   costChipLabel: {
     ...textStyles.caption,
-    color: colors.primary,
-    fontFamily: fontFamilies.monoMedium,
+    color: colors.textPrimary,
+    fontFamily: fontFamilies.monoRegular,
+    textTransform: 'uppercase',
   },
   description: {
     ...textStyles.body,
@@ -153,6 +158,5 @@ const styles = StyleSheet.create({
   caption: {
     ...textStyles.caption,
     color: colors.textSecondary,
-    textAlign: 'center',
   },
 })

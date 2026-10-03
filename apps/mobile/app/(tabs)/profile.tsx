@@ -1,12 +1,16 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { Button } from '../../src/components/ui/Button'
+import { ErrorState } from '../../src/components/ui/ErrorState'
+import { MetaLabel } from '../../src/components/ui/MetaLabel'
+import { Panel } from '../../src/components/ui/Panel'
 import { Screen } from '../../src/components/ui/Screen'
+import { ScreenTitle } from '../../src/components/ui/ScreenTitle'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { useSignOut } from '../../src/features/auth/hooks/useSignOut'
 import { MonBalance } from '../../src/features/wallet/components/MonBalance'
 import { WalletAddress } from '../../src/features/wallet/components/WalletAddress'
 import { useMonBalance } from '../../src/features/wallet/hooks/useMonBalance'
-import { colors, radii, spacing, textStyles } from '../../src/theme'
+import { colors, spacing } from '../../src/theme'
 
 export default function ProfileScreen() {
   const currentUserQuery = useCurrentUser()
@@ -15,58 +19,45 @@ export default function ProfileScreen() {
   const { signOut, isSigningOut } = useSignOut()
 
   return (
-    <Screen>
-      <Text style={styles.title}>Profile</Text>
-      <View style={styles.card}>
+    <Screen isScrollable>
+      <ScreenTitle title="Profile" metaItems={['Monad testnet']} />
+      <Panel>
         {currentUserQuery.isLoading ? (
-          <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your profile" />
+          <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading your profile" />
         ) : walletAddress === undefined ? (
-          <View style={styles.errorState}>
-            <Text style={styles.error}>Couldn’t load your profile.</Text>
-            <Button
-              label="Try again"
-              variant="secondary"
-              onPress={() => currentUserQuery.refetch()}
-              isLoading={currentUserQuery.isRefetching}
-            />
-          </View>
+          <ErrorState
+            message="Couldn’t load your profile."
+            onRetryPress={() => currentUserQuery.refetch()}
+            isRetrying={currentUserQuery.isRefetching}
+          />
         ) : (
-          <>
-            <Text style={styles.caption}>Signed in as</Text>
+          <View style={styles.walletSection}>
+            <MetaLabel items={['Signed in as']} />
             <WalletAddress walletAddress={walletAddress} />
-            <MonBalance
-              balance={monBalanceQuery.data}
-              isLoading={monBalanceQuery.isLoading}
-              isError={monBalanceQuery.isError}
-            />
-          </>
+          </View>
         )}
+      </Panel>
+      {walletAddress !== undefined && (
+        <Panel>
+          <MonBalance
+            balance={monBalanceQuery.data}
+            isLoading={monBalanceQuery.isLoading}
+            isError={monBalanceQuery.isError}
+          />
+        </Panel>
+      )}
+      <View style={styles.signOut}>
+        <Button label="Sign out" variant="secondary" onPress={signOut} isLoading={isSigningOut} />
       </View>
-      <Button label="Sign out" variant="secondary" onPress={signOut} isLoading={isSigningOut} />
     </Screen>
   )
 }
 
 const styles = StyleSheet.create({
-  title: {
-    ...textStyles.title,
-    color: colors.textPrimary,
-  },
-  card: {
-    padding: spacing.large,
-    borderRadius: radii.medium,
-    backgroundColor: colors.surface,
+  walletSection: {
     gap: spacing.small,
   },
-  caption: {
-    ...textStyles.caption,
-    color: colors.textSecondary,
-  },
-  errorState: {
-    gap: spacing.medium,
-  },
-  error: {
-    ...textStyles.body,
-    color: colors.danger,
+  signOut: {
+    paddingTop: spacing.large,
   },
 })

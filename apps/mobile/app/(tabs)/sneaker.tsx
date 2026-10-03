@@ -5,6 +5,7 @@ import { ErrorState } from '../../src/components/ui/ErrorState'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
 import { Panel } from '../../src/components/ui/Panel'
 import { Screen } from '../../src/components/ui/Screen'
+import { ScreenTitle } from '../../src/components/ui/ScreenTitle'
 import { useLocalActiveActivitySession } from '../../src/features/activity-session/hooks/useLocalActiveActivitySession'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { useRewardBalance } from '../../src/features/rewards/hooks/useRewardBalance'
@@ -53,7 +54,7 @@ export default function SneakerScreen() {
     case 'none':
       return (
         <Screen>
-          <Text style={styles.title}>Sneaker</Text>
+          <ScreenTitle title="Sneaker" />
           {selectedSneaker.hasClaimedStarterSneaker && walletAddress !== undefined ? (
             <NoSneakersCard walletAddress={walletAddress} />
           ) : (
@@ -121,9 +122,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
 
   return (
     <Screen isScrollable>
-      <Text style={styles.title} accessibilityRole="header">
-        Sneaker
-      </Text>
+      <ScreenTitle title="Sneaker" metaItems={['Repair', 'Upgrade', 'Send']} />
 
       {sneakerPicker}
 
@@ -139,7 +138,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
         energy === undefined ||
         rewardBalanceWei === undefined ? (
         <Panel>
-          <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your Sneaker" />
+          <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading your Sneaker" />
         </Panel>
       ) : (
         <>
@@ -190,10 +189,6 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
 }
 
 const styles = StyleSheet.create({
-  title: {
-    ...textStyles.title,
-    color: colors.textPrimary,
-  },
   caption: {
     ...textStyles.body,
     color: colors.textSecondary,

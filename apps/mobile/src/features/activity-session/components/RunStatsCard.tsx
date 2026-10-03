@@ -3,6 +3,7 @@ import type {
   ActivityValidationResult,
 } from '@stridemon/shared/api-contracts'
 import { StyleSheet, Text, View } from 'react-native'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { Panel } from '../../../components/ui/Panel'
 import { StatValue } from '../../../components/ui/StatValue'
 import { formatDistance } from '../../../lib/format/format-distance'
@@ -26,9 +27,9 @@ export function RunStatsCard({ validationResult, durationSeconds, settlement }: 
 
   return (
     <Panel>
-      <Text style={styles.title} accessibilityRole="header">
-        Your run
-      </Text>
+      <View accessibilityRole="header">
+        <MetaLabel items={['Your run']} />
+      </View>
       <View style={styles.grid}>
         <View style={styles.cell}>
           <StatValue
@@ -74,10 +75,6 @@ export function RunStatsCard({ validationResult, durationSeconds, settlement }: 
 }
 
 const styles = StyleSheet.create({
-  title: {
-    ...textStyles.body,
-    color: colors.textPrimary,
-  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

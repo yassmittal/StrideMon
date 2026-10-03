@@ -1,5 +1,6 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native'
+import { Panel } from '../../../components/ui/Panel'
 import { colors, spacing, textStyles } from '../../../theme'
 import { ActivitySessionHistoryItem } from './ActivitySessionHistoryItem'
 
@@ -39,7 +40,7 @@ export function ActivitySessionHistoryList({
       ListFooterComponent={
         isLoadingMore ? (
           <ActivityIndicator
-            color={colors.primary}
+            color={colors.textPrimary}
             style={styles.footer}
             accessibilityLabel="Loading more runs"
           />
@@ -59,13 +60,13 @@ function ItemSeparator() {
 
 function HistoryEmptyState() {
   return (
-    <View style={styles.empty}>
+    <Panel>
       <Text style={styles.emptyTitle}>No runs yet</Text>
       <Text style={styles.emptyMessage}>
         Press START on Home and go for a walk. Each run you finish shows up here with the SOLE it
         earned.
       </Text>
-    </View>
+    </Panel>
   )
 }
 
@@ -75,18 +76,12 @@ const styles = StyleSheet.create({
   },
   emptyContent: {
     flexGrow: 1,
-    justifyContent: 'center',
   },
   separator: {
     height: spacing.small,
   },
   footer: {
     paddingVertical: spacing.medium,
-  },
-  empty: {
-    alignItems: 'center',
-    gap: spacing.small,
-    paddingHorizontal: spacing.large,
   },
   emptyTitle: {
     ...textStyles.title,
@@ -95,6 +90,5 @@ const styles = StyleSheet.create({
   emptyMessage: {
     ...textStyles.body,
     color: colors.textSecondary,
-    textAlign: 'center',
   },
 })

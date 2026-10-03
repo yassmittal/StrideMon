@@ -53,20 +53,21 @@ const styles = StyleSheet.create({
   rowLabel: {
     ...textStyles.caption,
     color: colors.textSecondary,
+    textTransform: 'uppercase',
   },
   rowValue: {
     ...textStyles.body,
-    fontFamily: fontFamilies.medium,
+    fontFamily: fontFamilies.monoRegular,
     color: colors.textPrimary,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.disabled,
+    backgroundColor: colors.overlayOnLight,
   },
   walletAddress: {
     ...textStyles.body,
     color: colors.textPrimary,
-    fontFamily: fontFamilies.monoMedium,
+    fontFamily: fontFamilies.monoRegular,
   },
   warning: {
     padding: spacing.medium,

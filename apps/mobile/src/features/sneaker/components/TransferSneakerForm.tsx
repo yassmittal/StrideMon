@@ -1,17 +1,13 @@
 import { useState } from 'react'
-import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import type { Address } from 'viem'
 import { Button } from '../../../components/ui/Button'
+import { IconCircleButton } from '../../../components/ui/IconCircleButton'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { Panel } from '../../../components/ui/Panel'
-import { StatValue } from '../../../components/ui/StatValue'
-import {
-  colors,
-  fontFamilies,
-  MINIMUM_TOUCH_TARGET_SIZE,
-  radii,
-  spacing,
-  textStyles,
-} from '../../../theme'
+import { ScreenTitle } from '../../../components/ui/ScreenTitle'
+import { TextField } from '../../../components/ui/TextField'
+import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
 import type { SneakerGameTransactionState } from '../sneaker-game-transaction-state'
 import { describeTransferRecipientProblem, toTransferRecipient } from '../transfer-recipient'
 import {
@@ -80,53 +76,52 @@ export function TransferSneakerForm({
     onTransactionReset()
   }
 
+  const isReviewDisabled = recipientWalletAddress === undefined || isRunInProgress
+
   return (
     <>
-      <Text style={styles.title} accessibilityRole="header">
-        Send Sneaker #{sneakerTokenId.toString()}
-      </Text>
+      <View style={styles.header}>
+        <IconCircleButton icon="back" accessibilityLabel="Back" onPress={onCancelPress} />
+      </View>
+      <ScreenTitle
+        title={`Send Sneaker #${sneakerTokenId}`}
+        metaItems={['Transfer', 'No SOLE cost']}
+      />
 
       <Panel>
         {sneakerStats === undefined ? (
-          <ActivityIndicator color={colors.primary} accessibilityLabel="Loading your Sneaker" />
+          <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading your Sneaker" />
         ) : (
-          <View style={styles.stats}>
-            <StatValue label="Level" value={String(sneakerStats.level)} />
-            <StatValue label="Efficiency" value={String(sneakerStats.efficiency)} />
-            <StatValue
-              label="Durability"
-              value={`${sneakerStats.durability}/${sneakerStats.maxDurability}`}
-            />
-          </View>
+          <MetaLabel
+            items={[
+              `Level ${sneakerStats.level}`,
+              `Efficiency ${sneakerStats.efficiency}`,
+              `Durability ${sneakerStats.durability}/${sneakerStats.maxDurability}`,
+            ]}
+          />
         )}
         <Text style={styles.caption}>These stats live on the Sneaker and go with it.</Text>
       </Panel>
 
       <Panel>
-        <Text style={styles.fieldLabel} nativeID="recipient-label">
-          Recipient wallet address
-        </Text>
-        <TextInput
+        <TextField
+          label="Recipient wallet address"
           value={recipientInput}
           onChangeText={setRecipientInput}
           placeholder="0x…"
-          placeholderTextColor={colors.textSecondary}
+          errorMessage={recipientProblemMessage}
+          valueFont="mono"
           autoCapitalize="none"
           autoCorrect={false}
           spellCheck={false}
           keyboardType="ascii-capable"
-          accessibilityLabel="Recipient wallet address"
-          accessibilityLabelledBy="recipient-label"
-          style={[styles.input, recipientProblemMessage !== null && styles.inputInvalid]}
+          onSubmitPress={handleReviewPress}
+          isSubmitDisabled={isReviewDisabled}
+          submitAccessibilityLabel="Review"
         />
-        {recipientProblemMessage !== null && (
-          <Text style={styles.problem} accessibilityLiveRegion="polite">
-            {recipientProblemMessage}
-          </Text>
-        )}
         {recipientWalletAddress !== undefined && (
           <View style={styles.recipient} accessibilityLiveRegion="polite">
-            <Text style={styles.recipientLabel}>✓ Sending to</Text>
+            <MetaLabel items={['Sending to']} />
             <Text style={styles.recipientAddress} selectable>
               {recipientWalletAddress}
             </Text>
@@ -134,13 +129,8 @@ export function TransferSneakerForm({
         )}
       </Panel>
 
-      <Button
-        label="Review transfer"
-        onPress={handleReviewPress}
-        isDisabled={recipientWalletAddress === undefined || isRunInProgress}
-      />
-      {isRunInProgress && <Text style={styles.blocked}>{TRANSFER_BLOCKED_DURING_RUN_MESSAGE}</Text>}
-      <Button label="Cancel" variant="secondary" onPress={onCancelPress} />
+      <Button label="Review transfer" onPress={handleReviewPress} isDisabled={isReviewDisabled} />
+      {isRunInProgress && <Text style={styles.caption}>{TRANSFER_BLOCKED_DURING_RUN_MESSAGE}</Text>}
 
       <SneakerTransactionSheet
         confirmation={confirmation}
@@ -153,61 +143,24 @@ export function TransferSneakerForm({
 }
 
 const styles = StyleSheet.create({
-  title: {
-    ...textStyles.title,
-    color: colors.textPrimary,
-  },
-  stats: {
+  header: {
     flexDirection: 'row',
-    gap: spacing.extraLarge,
+    paddingBottom: spacing.small,
   },
   caption: {
     ...textStyles.caption,
     color: colors.textSecondary,
   },
-  fieldLabel: {
-    ...textStyles.body,
-    fontFamily: fontFamilies.medium,
-    color: colors.textPrimary,
-  },
-  input: {
-    minHeight: MINIMUM_TOUCH_TARGET_SIZE,
-    paddingHorizontal: spacing.medium,
-    paddingVertical: spacing.small,
-    borderRadius: radii.medium,
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: colors.disabled,
-    backgroundColor: colors.background,
-    ...textStyles.body,
-    color: colors.textPrimary,
-    fontFamily: fontFamilies.monoRegular,
-  },
-  inputInvalid: {
-    borderColor: colors.danger,
-  },
-  problem: {
-    ...textStyles.caption,
-    color: colors.danger,
-  },
+  // Lime with black text: the address checked out (design-system.md §2.2).
   recipient: {
     padding: spacing.medium,
     borderRadius: radii.medium,
     backgroundColor: colors.successSurface,
     gap: spacing.extraSmall,
   },
-  recipientLabel: {
-    ...textStyles.caption,
-    fontFamily: fontFamilies.medium,
-    color: colors.textPrimary,
-  },
   recipientAddress: {
     ...textStyles.body,
     color: colors.textPrimary,
-    fontFamily: fontFamilies.monoMedium,
-  },
-  blocked: {
-    ...textStyles.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
+    fontFamily: fontFamilies.monoRegular,
   },
 })

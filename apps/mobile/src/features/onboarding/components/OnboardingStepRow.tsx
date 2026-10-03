@@ -2,10 +2,7 @@ import type { OnboardingStep } from '@stridemon/shared/api-contracts'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
 import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
-import { colors, spacing, textStyles } from '../../../theme'
-
-// Wide enough for the spinner, so the step labels line up whatever the indicator is.
-const INDICATOR_WIDTH = 24
+import { colors, layout, spacing, textStyles } from '../../../theme'
 
 type OnboardingStepRowProps = {
   label: string
@@ -100,11 +97,11 @@ const styles = StyleSheet.create({
     color: colors.dangerAccent,
   },
   indicatorBox: {
-    width: INDICATOR_WIDTH,
+    width: layout.onboardingStepIndicatorWidth,
   },
   indicator: {
     ...textStyles.title,
-    width: INDICATOR_WIDTH,
+    width: layout.onboardingStepIndicatorWidth,
     textAlign: 'center',
   },
   indicatorConfirmed: {

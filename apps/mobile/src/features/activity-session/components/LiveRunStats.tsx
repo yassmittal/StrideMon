@@ -1,12 +1,13 @@
-import { SOLE_TOKEN_DECIMALS, SOLE_TOKEN_SYMBOL } from '@stridemon/chain'
 import { StyleSheet, Text, View } from 'react-native'
-import { Panel } from '../../../components/ui/Panel'
-import { StatValue } from '../../../components/ui/StatValue'
+import { CounterText } from '../../../components/ui/CounterText'
+import { CrossMarks } from '../../../components/ui/CrossMarks'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
+import { ProgressBar } from '../../../components/ui/ProgressBar'
 import type { ApiClientErrorCode } from '../../../lib/api-client'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
+import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
 import { formatSpeed } from '../../../lib/format/format-speed'
-import { formatTokenAmount } from '../../../lib/format/format-token-amount'
 import { colors, spacing, textStyles } from '../../../theme'
 import type { LiveRunStats as LiveRunStatsValues } from '../live-run-stats'
 
@@ -17,54 +18,46 @@ type LiveRunStatsProps = {
   uploadErrorCode: ApiClientErrorCode | null
 }
 
-/** The live run: time, distance, speed, energy and reward, the last two estimated. */
+/**
+ * The live run on the black run screen (design-system.md §9): time and distance huge,
+ * energy as a lime bar, and the estimated reward framed by "+" marks.
+ */
 export function LiveRunStats({
   liveRunStats,
   energyAtStart,
   unsentSampleCount,
   uploadErrorCode,
 }: LiveRunStatsProps) {
+  const speedDisplay =
+    liveRunStats.currentSpeedKilometersPerHour === null
+      ? '—'
+      : formatSpeed(liveRunStats.currentSpeedKilometersPerHour)
+  const rewardDisplay = `+${formatSoleAmount(liveRunStats.estimatedRewardWei)}`
+
   return (
     <View style={styles.container}>
-      <StatValue label="Time" size="large" value={formatDuration(liveRunStats.elapsedSeconds)} />
-      <Panel>
-        <View style={styles.row}>
-          <View style={styles.cell}>
-            <StatValue label="Distance" value={formatDistance(liveRunStats.distanceMeters)} />
-          </View>
-          <View style={styles.cell}>
-            <StatValue
-              label="Speed"
-              value={
-                liveRunStats.currentSpeedKilometersPerHour === null
-                  ? '—'
-                  : formatSpeed(liveRunStats.currentSpeedKilometersPerHour)
-              }
-            />
-          </View>
+      <LiveStat label="Time" value={formatDuration(liveRunStats.elapsedSeconds)} />
+      <LiveStat label="Distance" value={formatDistance(liveRunStats.distanceMeters)} />
+      <View accessible accessibilityLabel={`Speed: ${speedDisplay}`}>
+        <MetaLabel items={['Speed', speedDisplay]} tone="dark" />
+      </View>
+
+      <ProgressBar
+        label="Energy left (estimated)"
+        value={liveRunStats.estimatedEnergyLeft}
+        maximum={energyAtStart}
+        tone="dark"
+      />
+
+      <CrossMarks caption="Estimated reward" tone="dark">
+        <View accessible accessibilityLabel={`Reward (estimated): ${rewardDisplay}`}>
+          <CounterText value={rewardDisplay} size="title" tone="dark" />
         </View>
-        <View style={styles.row}>
-          <View style={styles.cell}>
-            <StatValue
-              label="Energy left (estimated)"
-              value={`${liveRunStats.estimatedEnergyLeft} / ${energyAtStart}`}
-            />
-          </View>
-          <View style={styles.cell}>
-            <StatValue
-              label="Reward (estimated)"
-              value={`+${formatTokenAmount({
-                amountWei: liveRunStats.estimatedRewardWei,
-                decimals: SOLE_TOKEN_DECIMALS,
-                symbol: SOLE_TOKEN_SYMBOL,
-              })}`}
-            />
-          </View>
-        </View>
-        <Text style={styles.caption}>
-          Estimates assume every minute counts. The server checks your GPS when you stop.
-        </Text>
-      </Panel>
+      </CrossMarks>
+      <Text style={styles.caption}>
+        Estimates assume every minute counts. The server checks your GPS when you stop.
+      </Text>
+
       <Text style={styles.caption} accessibilityLiveRegion="polite">
         {describeRecordingStatus({
           recordedSampleCount: liveRunStats.recordedSampleCount,
@@ -72,6 +65,16 @@ export function LiveRunStats({
           uploadErrorCode,
         })}
       </Text>
+    </View>
+  )
+}
+
+/** One huge live number with its label above, like Lusion's preloader digits. */
+function LiveStat({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.liveStat} accessible accessibilityLabel={`${label}: ${value}`}>
+      <MetaLabel items={[label]} tone="dark" />
+      <CounterText value={value} size="displayHuge" tone="dark" />
     </View>
   )
 }
@@ -96,17 +99,13 @@ function describeRecordingStatus({
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.medium,
+    gap: spacing.large,
   },
-  row: {
-    flexDirection: 'row',
-    gap: spacing.medium,
-  },
-  cell: {
-    flex: 1,
+  liveStat: {
+    gap: spacing.small,
   },
   caption: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: colors.textOnDarkMuted,
   },
 })

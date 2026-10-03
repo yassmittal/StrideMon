@@ -7,7 +7,7 @@ import {
 } from '../../../lib/chain/explorer-urls'
 import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
 import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
-import { colors, radii, spacing, textStyles } from '../../../theme'
+import { colors, layout, radii, spacing, textStyles } from '../../../theme'
 import {
   describeSneakerGameTransactionError,
   type SneakerGameTransactionErrorCode,
@@ -15,8 +15,6 @@ import {
 import type { SneakerTransactionConfirmation } from './SneakerTransactionSheet'
 import { StatChangeRow } from './StatChangeRow'
 import { TransferConfirmationDetails } from './TransferConfirmationDetails'
-
-const SUCCESS_BADGE_SIZE = 64
 
 export function ConfirmationStep({
   title,
@@ -42,7 +40,7 @@ export function ConfirmationStep({
           recipientWalletAddress={confirmation.recipientWalletAddress}
         />
       )}
-      <Button label="Confirm in wallet" onPress={onConfirmPress} />
+      <Button label="Confirm in wallet" variant="callToAction" onPress={onConfirmPress} />
       <Button label="Not now" variant="secondary" onPress={onCancelPress} />
     </>
   )
@@ -84,12 +82,12 @@ export function PendingStep({
   transactionHash?: string
 }) {
   return (
-    <View style={styles.centered} accessibilityLiveRegion="polite">
-      <ActivityIndicator color={colors.primary} size="large" />
+    <View style={styles.block} accessibilityLiveRegion="polite">
+      <ActivityIndicator color={colors.textPrimary} size="large" style={styles.spinner} />
       <Text style={styles.title} accessibilityRole="header">
         {title}
       </Text>
-      <Text style={[styles.caption, styles.centeredText]}>{caption}</Text>
+      <Text style={styles.caption}>{caption}</Text>
       {transactionHash !== undefined && (
         <ExternalLink
           label="View transaction"
@@ -114,7 +112,7 @@ export function SucceededStep({
 }) {
   return (
     <>
-      <View style={styles.centered} accessibilityLiveRegion="polite">
+      <View style={styles.block} accessibilityLiveRegion="polite">
         <View style={styles.successBadge}>
           <Text style={styles.successMark}>✓</Text>
         </View>
@@ -124,7 +122,7 @@ export function SucceededStep({
         {confirmation.kind === 'spend' ? (
           <Text style={styles.caption}>Spent {formatSoleAmount(confirmation.costWei)}</Text>
         ) : (
-          <Text style={[styles.caption, styles.centeredText]}>
+          <Text style={styles.caption}>
             Now owned by {formatWalletAddress(confirmation.recipientWalletAddress)}
           </Text>
         )}
@@ -136,7 +134,7 @@ export function SucceededStep({
           ))}
         </View>
       )}
-      <View style={styles.centered}>
+      <View>
         <ExternalLink
           label="View transaction"
           url={buildTransactionExplorerUrl(transactionHash)}
@@ -168,16 +166,14 @@ export function FailedStep({
   const isWalletCancel = errorCode === 'WALLET_REJECTED'
   return (
     <>
-      <View style={styles.centered} accessibilityLiveRegion="polite">
+      <View style={styles.block} accessibilityLiveRegion="polite">
         <Text
           style={[styles.title, !isWalletCancel && styles.titleDanger]}
           accessibilityRole="header"
         >
           {isWalletCancel ? 'You cancelled in your wallet' : 'That didn’t go through'}
         </Text>
-        <Text style={[styles.caption, styles.centeredText]}>
-          {describeSneakerGameTransactionError(errorCode)}
-        </Text>
+        <Text style={styles.caption}>{describeSneakerGameTransactionError(errorCode)}</Text>
       </View>
       <Button label="Try again" onPress={onRetryPress} />
       <Button label="Close" variant="secondary" onPress={onClosePress} />
@@ -189,7 +185,6 @@ const styles = StyleSheet.create({
   title: {
     ...textStyles.title,
     color: colors.textPrimary,
-    textAlign: 'center',
   },
   titleDanger: {
     color: colors.danger,
@@ -202,29 +197,28 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.disabled,
+    backgroundColor: colors.overlayOnLight,
   },
   caption: {
     ...textStyles.caption,
     color: colors.textSecondary,
   },
-  centered: {
-    alignItems: 'center',
+  block: {
     gap: spacing.small,
   },
-  centeredText: {
-    textAlign: 'center',
+  spinner: {
+    alignSelf: 'flex-start',
   },
   successBadge: {
-    width: SUCCESS_BADGE_SIZE,
-    height: SUCCESS_BADGE_SIZE,
+    width: layout.successBadgeSize,
+    height: layout.successBadgeSize,
     borderRadius: radii.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.successSurface,
   },
   successMark: {
-    ...textStyles.display,
+    ...textStyles.heading,
     color: colors.textPrimary,
   },
 })
