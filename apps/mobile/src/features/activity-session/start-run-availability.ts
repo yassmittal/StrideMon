@@ -1,15 +1,19 @@
 import { formatDuration } from '../../lib/format/format-duration'
 
 /** Why START is disabled (game-rules.md → Starting a session). Ownership is checked by the API. */
-type StartRunBlockedReason = 'outOfEnergy' | 'needsRepair'
+type StartRunBlockedReason = 'gamePaused' | 'outOfEnergy' | 'needsRepair'
 
 export function findStartRunBlockedReason({
+  isGamePaused,
   currentEnergy,
   durability,
 }: {
+  /** A run couldn't settle while `SneakerGame` is paused (D-032). */
+  isGamePaused: boolean
   currentEnergy: number
   durability: number
 }): StartRunBlockedReason | null {
+  if (isGamePaused) return 'gamePaused'
   if (currentEnergy < 1) return 'outOfEnergy'
   if (durability < 1) return 'needsRepair'
   return null
@@ -23,6 +27,8 @@ export function describeStartRunBlockedReason({
   secondsUntilNextEnergyPoint: number | null
 }): string {
   switch (blockedReason) {
+    case 'gamePaused':
+      return 'Runs are back when maintenance ends.'
     case 'outOfEnergy':
       return secondsUntilNextEnergyPoint === null
         ? 'Your Sneaker is out of energy. It regenerates over time.'

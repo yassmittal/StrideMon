@@ -22,10 +22,12 @@ import { StarterSneakerMinting } from '../../src/features/onboarding/components/
 import { useStarterSneakerOnboarding } from '../../src/features/onboarding/hooks/useStarterSneakerOnboarding'
 import { RewardBalanceCard } from '../../src/features/rewards/components/RewardBalanceCard'
 import { useRewardBalance } from '../../src/features/rewards/hooks/useRewardBalance'
+import { MaintenanceNotice } from '../../src/features/sneaker/components/MaintenanceNotice'
 import { NoSneakersCard } from '../../src/features/sneaker/components/NoSneakersCard'
 import { SneakerCard } from '../../src/features/sneaker/components/SneakerCard'
 import { SneakerPicker } from '../../src/features/sneaker/components/SneakerPicker'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
+import { useIsGamePaused } from '../../src/features/sneaker/hooks/useIsGamePaused'
 import { useSelectedSneaker } from '../../src/features/sneaker/hooks/useSelectedSneaker'
 import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneakerAttributes'
 import {
@@ -122,10 +124,12 @@ function HomeHeader() {
 /** Shown until the chain says the wallet owns a Sneaker; Home then switches by itself. */
 function StarterSneakerOnboarding() {
   const { mintingState, retry, isRetrying } = useStarterSneakerOnboarding()
+  const isGamePaused = useIsGamePaused()
   return (
     <Screen tone="dark">
       <StarterSneakerMinting
         mintingState={mintingState}
+        isGamePaused={isGamePaused}
         onRetryPress={retry}
         isRetrying={isRetrying}
       />
@@ -149,6 +153,7 @@ function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHo
     gameConfig: gameConfigQuery.data,
   })
   const rewardBalanceQuery = useRewardBalance(walletAddress)
+  const isGamePaused = useIsGamePaused()
 
   const attributes = attributesQuery.data
   const gameConfig = gameConfigQuery.data
@@ -166,6 +171,8 @@ function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHo
       <HomeHeader />
 
       {sneakerPicker}
+
+      {isGamePaused && <MaintenanceNotice />}
 
       {isSneakerError ? (
         <Panel>
@@ -200,6 +207,7 @@ function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHo
 
       <RunSection
         sneakerTokenId={sneakerTokenId}
+        isGamePaused={isGamePaused}
         sneakerStats={
           attributes === undefined || energy === undefined
             ? undefined
@@ -212,12 +220,13 @@ function SneakerHome({ walletAddress, sneakerTokenId, sneakerPicker }: SneakerHo
 
 type RunSectionProps = {
   sneakerTokenId: bigint
+  isGamePaused: boolean
   /** `undefined` while the Sneaker's stats load: START waits for them. */
   sneakerStats: { efficiency: number; durability: number; energy: SneakerEnergy } | undefined
 }
 
 /** START, or Resume / Finish when a run is still in progress on this phone. */
-function RunSection({ sneakerTokenId, sneakerStats }: RunSectionProps) {
+function RunSection({ sneakerTokenId, isGamePaused, sneakerStats }: RunSectionProps) {
   const localActiveActivitySessionQuery = useLocalActiveActivitySession()
   const { startRun, isStarting, errorMessage: startErrorMessage } = useStartRunFlow()
   const finishMutation = useFinishActivitySession()
@@ -253,6 +262,7 @@ function RunSection({ sneakerTokenId, sneakerStats }: RunSectionProps) {
   }
 
   const blockedReason = findStartRunBlockedReason({
+    isGamePaused,
     currentEnergy: sneakerStats.energy.currentEnergy,
     durability: sneakerStats.durability,
   })

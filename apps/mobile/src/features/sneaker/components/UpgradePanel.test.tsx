@@ -18,6 +18,7 @@ function renderUpgradePanel({
 } = {}) {
   return render(
     <UpgradePanel
+      isGamePaused={false}
       level={level}
       maxLevel={30}
       efficiency={10}

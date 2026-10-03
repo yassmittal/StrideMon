@@ -9,13 +9,17 @@ import { SummaryHeadline } from './SummaryHeadline'
 
 type ActivitySessionSummaryCardProps = {
   activitySession: ActivitySession
+  isGamePaused: boolean
 }
 
 /**
  * A finished run: "Settling on Monad…" and then the SOLE it earned, with the
  * validated numbers below. Or why it didn't count.
  */
-export function ActivitySessionSummaryCard({ activitySession }: ActivitySessionSummaryCardProps) {
+export function ActivitySessionSummaryCard({
+  activitySession,
+  isGamePaused,
+}: ActivitySessionSummaryCardProps) {
   const { validationResult, settlement } = activitySession
   const runStats =
     validationResult === null ? null : (
@@ -30,7 +34,7 @@ export function ActivitySessionSummaryCard({ activitySession }: ActivitySessionS
     case 'settling':
       return (
         <View style={styles.stack}>
-          <SettlementHeroCard phase="settling" />
+          <SettlementHeroCard phase="settling" isGamePaused={isGamePaused} />
           {runStats}
         </View>
       )

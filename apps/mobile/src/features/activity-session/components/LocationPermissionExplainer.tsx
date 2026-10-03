@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
+import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { colors, spacing, textStyles } from '../../../theme'
 import type { LocationPermissionState } from '../location-tracking/request-location-permission'
 
@@ -35,10 +36,14 @@ export function LocationPermissionExplainer({
         progress. Recording keeps going with the screen locked, and a notification shows while it
         does.
       </Text>
-      <Text style={styles.body}>
-        Choose “While using the app” when your phone asks. Your route stays private: only your
-        active minutes and distance are ever recorded on Monad.
-      </Text>
+      <Text style={styles.body}>Choose “While using the app” when your phone asks.</Text>
+      <View style={styles.privacyNote}>
+        <MetaLabel items={['Privacy']} />
+        <Text style={styles.caption}>
+          Your route stays private. Only your active minutes and distance go on Monad, and the raw
+          GPS points are deleted from our server after 30 days.
+        </Text>
+      </View>
       {permissionState === 'denied' && (
         <Text style={styles.error} accessibilityRole="alert">
           Without location access StrideMon can’t record a run.
@@ -77,6 +82,13 @@ const styles = StyleSheet.create({
   body: {
     ...textStyles.body,
     color: colors.textPrimary,
+  },
+  privacyNote: {
+    gap: spacing.extraSmall,
+  },
+  caption: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
   },
   error: {
     ...textStyles.body,

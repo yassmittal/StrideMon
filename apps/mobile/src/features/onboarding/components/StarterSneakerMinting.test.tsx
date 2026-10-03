@@ -9,6 +9,7 @@ function renderMinting(mintingState: StarterSneakerMintingState, onRetryPress = 
   return render(
     <StarterSneakerMinting
       mintingState={mintingState}
+      isGamePaused={false}
       onRetryPress={onRetryPress}
       isRetrying={false}
     />,

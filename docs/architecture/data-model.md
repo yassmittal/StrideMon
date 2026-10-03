@@ -180,12 +180,13 @@ type LocationSampleDocument = {
 }
 ```
 
-Index: `{ activitySessionId: 1, sequenceNumber: 1 }` unique, so re-uploading a
-batch after a network error is a no-op.
+Indexes: `{ activitySessionId: 1, sequenceNumber: 1 }` unique, so re-uploading a
+batch after a network error is a no-op, and `{ receivedAt: 1 }` TTL
+(`expireAfterSeconds`: 30 days).
 
 **Retention:** samples are needed for validation and dispute review, not
-forever. A TTL of 30 days (via `receivedAt`) is set in Phase 8, and the
-privacy note goes in the app.
+forever. The TTL index deletes each one 30 days after it arrived (Phase 8.4),
+and the location permission explainer tells the player so.
 
 ## `chainTransactions` (outbox)
 

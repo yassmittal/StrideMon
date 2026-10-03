@@ -28,6 +28,8 @@ export const PROCESS_CHAIN_TRANSACTIONS_JOB_NAME = 'processChainTransactions'
 
 // Bounds one run, so the runner renews its lease and a shutdown never waits long.
 const MAX_QUEUED_TRANSACTIONS_PER_RUN = 20
+// OpenZeppelin Pausable's revert while `SneakerGame` is paused, as `findRevertReason` formats it.
+const GAME_PAUSED_REVERT_REASON = 'EnforcedPause()'
 
 export type ProcessChainTransactionsOptions = {
   database: Db
@@ -142,6 +144,10 @@ async function sendQueuedChainTransaction(
   const signingResult = await simulateAndSignChainTransaction(options.chainClients, call)
 
   if (signingResult.outcome === 'reverted') {
+    // A paused game is maintenance (D-032): stay queued, and go through after `unpause`.
+    if (signingResult.revertReason === GAME_PAUSED_REVERT_REASON) {
+      throw new Error('SneakerGame is paused; waiting for unpause')
+    }
     options.log.warn(
       {
         chainTransactionId: chainTransaction._id.toHexString(),

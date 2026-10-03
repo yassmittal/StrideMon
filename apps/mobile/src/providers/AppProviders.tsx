@@ -4,7 +4,11 @@ import { type ReactNode, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { WagmiProvider } from 'wagmi'
+import { OfflineNotice } from '../components/ui/OfflineNotice'
 import { appKit, wagmiAdapter } from '../lib/chain/app-kit'
+import { syncOnlineStatusWithNetInfo } from '../lib/network/online-status'
+
+syncOnlineStatusWithNetInfo()
 
 type AppProvidersProps = {
   children: ReactNode
@@ -21,6 +25,7 @@ export function AppProviders({ children }: AppProvidersProps) {
         <QueryClientProvider client={queryClient}>
           <AppKitProvider instance={appKit}>
             {children}
+            <OfflineNotice />
             {/* A full-screen layer above navigation, so the wallet modal opens on Android
                 (expo/expo#32991). box-none lets touches through while it's closed. */}
             <View style={StyleSheet.absoluteFill} pointerEvents="box-none">

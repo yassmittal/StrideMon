@@ -6,6 +6,9 @@ import { getChainTransactionsCollection } from '../repositories/chain-transactio
 import { getLocationSamplesCollection } from '../repositories/location-samples-repository'
 import { getUsersCollection } from '../repositories/users-repository'
 
+const SECONDS_PER_DAY = 86_400
+const LOCATION_SAMPLE_RETENTION_SECONDS = 30 * SECONDS_PER_DAY
+
 /**
  * Every index from docs/architecture/data-model.md, created at boot.
  * `createIndexes` is a no-op for an index that already exists with the same spec.
@@ -47,6 +50,8 @@ export const mongoIndexesPlugin = fastifyPlugin(
     ])
     await getLocationSamplesCollection(database).createIndexes([
       { key: { activitySessionId: 1, sequenceNumber: 1 }, unique: true },
+      // Raw GPS is kept for validation and dispute review, not forever (data-model.md).
+      { key: { receivedAt: 1 }, expireAfterSeconds: LOCATION_SAMPLE_RETENTION_SECONDS },
     ])
   },
   { name: 'mongo-indexes', dependencies: ['mongo'] },

@@ -210,8 +210,9 @@ handler                        Mongo chainTransactions            job (holds the
   re-signed. No receipt, and its nonce is still unused → the saved bytes are
   broadcast again. No receipt, and another transaction used its nonce → it goes
   back to `queued`.
-- **Transient failures** (RPC down, not enough MON) leave the record where it is,
-  with `lastError`, and the next run retries.
+- **Transient failures** (RPC down, not enough MON, `SneakerGame` paused) leave the
+  record where it is, with `lastError`, and the next run retries. A paused game holds
+  the whole queue until `unpause` (D-032).
 - **Side effects on success** are written by the job: a confirmed
   `mintStarterSneaker` sets `users.hasReceivedStarterSneaker`, and a confirmed
   `sendGasDrip` sets `users.hasReceivedGasDrip`.

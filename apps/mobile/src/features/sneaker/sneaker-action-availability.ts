@@ -1,36 +1,42 @@
 import { formatSoleAmount } from '../../lib/format/format-sole-amount'
 
-/** Why Repair or Upgrade is disabled. The contract enforces all three; the app explains them. */
-type SneakerActionBlockedReason = 'fullDurability' | 'maxLevel' | 'notEnoughRewards'
+/** Why Repair or Upgrade is disabled. The contract enforces all of them; the app explains them. */
+type SneakerActionBlockedReason = 'gamePaused' | 'fullDurability' | 'maxLevel' | 'notEnoughRewards'
 
 export function findRepairBlockedReason({
+  isGamePaused,
   durability,
   maxDurability,
   repairCostWei,
   rewardBalanceWei,
 }: {
+  isGamePaused: boolean
   durability: number
   maxDurability: number
   repairCostWei: bigint
   rewardBalanceWei: bigint
 }): SneakerActionBlockedReason | null {
+  if (isGamePaused) return 'gamePaused'
   if (durability >= maxDurability) return 'fullDurability'
   if (rewardBalanceWei < repairCostWei) return 'notEnoughRewards'
   return null
 }
 
 export function findUpgradeBlockedReason({
+  isGamePaused,
   level,
   maxLevel,
   upgradeCostWei,
   rewardBalanceWei,
 }: {
+  isGamePaused: boolean
   level: number
   maxLevel: number
   /** `undefined` at max level, where there is no quote. */
   upgradeCostWei: bigint | undefined
   rewardBalanceWei: bigint
 }): SneakerActionBlockedReason | null {
+  if (isGamePaused) return 'gamePaused'
   if (level >= maxLevel || upgradeCostWei === undefined) return 'maxLevel'
   if (rewardBalanceWei < upgradeCostWei) return 'notEnoughRewards'
   return null
@@ -46,6 +52,8 @@ export function describeSneakerActionBlockedReason({
   rewardBalanceWei: bigint
 }): string {
   switch (blockedReason) {
+    case 'gamePaused':
+      return 'Back when maintenance ends.'
     case 'fullDurability':
       return 'Already at full durability.'
     case 'maxLevel':

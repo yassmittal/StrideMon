@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
-import { type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
+import { monadTestnet, type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
 import type { FastifyInstance } from 'fastify'
-import type { Hash } from 'viem'
+import { createWalletClient, type Hash, http } from 'viem'
 import { generatePrivateKey, type PrivateKeyAccount, privateKeyToAccount } from 'viem/accounts'
 import { buildStarterSneakerIdempotencyKey } from '../lib/chain-transactions/chain-transaction-payloads'
 import {
@@ -15,7 +15,10 @@ import { buildChainTransactionCall } from '../services/chain-transaction-calls'
 import { simulateAndSignChainTransaction } from '../services/chain-transaction-sender'
 import { listSneakerTokenIdsOwnedBy } from '../services/sneaker-chain-reader'
 import { buildTestServer } from '../test-support/build-test-server'
-import { deployTestContracts } from '../test-support/deploy-test-contracts'
+import {
+  ANVIL_DEPLOYER_PRIVATE_KEY,
+  deployTestContracts,
+} from '../test-support/deploy-test-contracts'
 import { runOutboxJob } from '../test-support/run-outbox-job'
 import { startTestChain, type TestChain } from '../test-support/start-test-chain'
 
@@ -113,6 +116,25 @@ describe('processChainTransactions', () => {
     expect(chainTransaction.status).toBe('failed')
     expect(chainTransaction.lastError).toContain('StarterSneakerAlreadyClaimed')
     expect(await readGameServerNonce()).toBe(nonceBeforeRun)
+  })
+
+  it('holds a transaction queued while the game is paused, and sends it after unpause', async () => {
+    await enqueueStarterMint()
+    await setGamePaused(true)
+    try {
+      await runOutboxJob(server)
+
+      const pausedChainTransaction = await readStarterMint()
+      expect(pausedChainTransaction.status).toBe('queued')
+      expect(pausedChainTransaction.lastError).toContain('paused')
+    } finally {
+      await setGamePaused(false)
+    }
+
+    await runOutboxJob(server)
+
+    expect((await readStarterMint()).status).toBe('confirmed')
+    expect(await readOwnedSneakerCount()).toBe(1)
   })
 
   it('fails, without minting twice, a transaction whose call began to revert while it was queued', async () => {
@@ -226,6 +248,22 @@ async function mintStarterSneakerOutsideTheOutbox(): Promise<void> {
       abi: sneakerGameAbi,
       functionName: 'mintStarterSneaker',
       args: [playerAccount.address],
+    }),
+  )
+}
+
+/** The deployer holds `PAUSER_ROLE` on the test contracts, as on testnet. */
+async function setGamePaused(isPaused: boolean): Promise<void> {
+  const deployerWalletClient = createWalletClient({
+    account: privateKeyToAccount(ANVIL_DEPLOYER_PRIVATE_KEY),
+    chain: monadTestnet,
+    transport: http(testChain.rpcUrl),
+  })
+  await waitForMined(
+    await deployerWalletClient.writeContract({
+      address: contractAddresses.sneakerGame,
+      abi: sneakerGameAbi,
+      functionName: isPaused ? 'pause' : 'unpause',
     }),
   )
 }

@@ -7,6 +7,7 @@ import type { SneakerGameTransactionState } from '../sneaker-game-transaction-st
 import { SneakerActionPanel } from './SneakerActionPanel'
 
 type RepairPanelProps = {
+  isGamePaused: boolean
   durability: number
   maxDurability: number
   repairCost: SneakerActionCost
@@ -18,6 +19,7 @@ type RepairPanelProps = {
 
 /** Spend SOLE to restore durability to full. */
 export function RepairPanel({
+  isGamePaused,
   durability,
   maxDurability,
   repairCost,
@@ -28,7 +30,13 @@ export function RepairPanel({
   const blockedReason =
     repairCostWei === undefined
       ? null
-      : findRepairBlockedReason({ durability, maxDurability, repairCostWei, rewardBalanceWei })
+      : findRepairBlockedReason({
+          isGamePaused,
+          durability,
+          maxDurability,
+          repairCostWei,
+          rewardBalanceWei,
+        })
   const isWornDown = durability < maxDurability
 
   return (

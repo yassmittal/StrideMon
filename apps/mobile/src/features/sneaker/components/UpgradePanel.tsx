@@ -7,6 +7,7 @@ import type { SneakerGameTransactionState } from '../sneaker-game-transaction-st
 import { SneakerActionPanel } from './SneakerActionPanel'
 
 type UpgradePanelProps = {
+  isGamePaused: boolean
   level: number
   maxLevel: number
   efficiency: number
@@ -20,6 +21,7 @@ type UpgradePanelProps = {
 
 /** Spend SOLE to go up a level: more efficiency, so every rewarded minute earns more. */
 export function UpgradePanel({
+  isGamePaused,
   level,
   maxLevel,
   efficiency,
@@ -32,7 +34,13 @@ export function UpgradePanel({
   const isAtMaxLevel = level >= maxLevel
   const blockedReason =
     upgradeCost.status === 'ready'
-      ? findUpgradeBlockedReason({ level, maxLevel, upgradeCostWei, rewardBalanceWei })
+      ? findUpgradeBlockedReason({
+          isGamePaused,
+          level,
+          maxLevel,
+          upgradeCostWei,
+          rewardBalanceWei,
+        })
       : null
   const nextLevel = level + 1
 

@@ -34,7 +34,12 @@ const SETTLED_ACTIVITY_SESSION: ActivitySession = {
 
 describe('ActivitySessionSummaryCard', () => {
   it('says it’s settling on Monad, above the validated numbers', async () => {
-    await render(<ActivitySessionSummaryCard activitySession={SETTLING_ACTIVITY_SESSION} />)
+    await render(
+      <ActivitySessionSummaryCard
+        isGamePaused={false}
+        activitySession={SETTLING_ACTIVITY_SESSION}
+      />,
+    )
 
     expect(screen.getByText('Settling on Monad…')).toBeTruthy()
     expect(screen.getByLabelText('Duration: 11:00')).toBeTruthy()
@@ -44,7 +49,12 @@ describe('ActivitySessionSummaryCard', () => {
   })
 
   it('shows the SOLE earned, the durability lost and a link to the transaction', async () => {
-    await render(<ActivitySessionSummaryCard activitySession={SETTLED_ACTIVITY_SESSION} />)
+    await render(
+      <ActivitySessionSummaryCard
+        isGamePaused={false}
+        activitySession={SETTLED_ACTIVITY_SESSION}
+      />,
+    )
 
     expect(screen.getByLabelText('You earned +50 SOLE')).toBeTruthy()
     expect(screen.getByLabelText('Durability lost: −3')).toBeTruthy()
@@ -54,6 +64,7 @@ describe('ActivitySessionSummaryCard', () => {
   it('explains when energy capped the rewarded minutes', async () => {
     await render(
       <ActivitySessionSummaryCard
+        isGamePaused={false}
         activitySession={{
           ...SETTLED_ACTIVITY_SESSION,
           settlement: {
@@ -72,6 +83,7 @@ describe('ActivitySessionSummaryCard', () => {
   it('says a run whose Sneaker changed owner didn’t count', async () => {
     await render(
       <ActivitySessionSummaryCard
+        isGamePaused={false}
         activitySession={{
           ...SETTLING_ACTIVITY_SESSION,
           status: 'rejected',
@@ -86,6 +98,7 @@ describe('ActivitySessionSummaryCard', () => {
   it('explains each warning the validator raised', async () => {
     await render(
       <ActivitySessionSummaryCard
+        isGamePaused={false}
         activitySession={{
           ...SETTLING_ACTIVITY_SESSION,
           validationResult: {
@@ -103,6 +116,7 @@ describe('ActivitySessionSummaryCard', () => {
   it('says a run with no full minute earned nothing, without showing 0 m and 0 km/h', async () => {
     await render(
       <ActivitySessionSummaryCard
+        isGamePaused={false}
         activitySession={{
           ...SETTLED_ACTIVITY_SESSION,
           finishedAt: '2026-09-29T06:01:03.000Z',
@@ -133,6 +147,7 @@ describe('ActivitySessionSummaryCard', () => {
   it('says a run with a simulated location didn’t count', async () => {
     await render(
       <ActivitySessionSummaryCard
+        isGamePaused={false}
         activitySession={{
           ...SETTLING_ACTIVITY_SESSION,
           status: 'rejected',
@@ -149,6 +164,7 @@ describe('ActivitySessionSummaryCard', () => {
   it('says an abandoned run was closed', async () => {
     await render(
       <ActivitySessionSummaryCard
+        isGamePaused={false}
         activitySession={{
           ...SETTLING_ACTIVITY_SESSION,
           status: 'abandoned',

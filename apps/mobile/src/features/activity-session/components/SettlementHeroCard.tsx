@@ -11,7 +11,8 @@ import { colors, readOpticalPullLeft, spacing, textStyles } from '../../../theme
 import { SummaryHeadline } from './SummaryHeadline'
 
 type SettlementHeroCardProps =
-  | { phase: 'settling' }
+  /** While `SneakerGame` is paused, the settlement waits in the queue (D-032). */
+  | { phase: 'settling'; isGamePaused: boolean }
   | { phase: 'settled'; settlement: ActivitySessionSettlement; activeMinutes: number }
 
 /**
@@ -20,6 +21,16 @@ type SettlementHeroCardProps =
  */
 export function SettlementHeroCard(props: SettlementHeroCardProps) {
   if (props.phase === 'settling') {
+    if (props.isGamePaused) {
+      return (
+        <SummaryHeadline
+          metaItems={['Run finished', 'Maintenance']}
+          title="Saved. Settling soon"
+          message="StrideMon is paused for maintenance. Your run is saved and settles on Monad by itself when the game is back."
+          isLoading
+        />
+      )
+    }
     return (
       <SummaryHeadline
         metaItems={['Run finished', 'Settling']}

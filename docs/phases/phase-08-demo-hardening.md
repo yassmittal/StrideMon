@@ -79,6 +79,11 @@ repair or upgrade.
 - Pausing `SneakerGame` shows a friendly "maintenance" state instead of a failure.
 - The explorer links in the app open the right pages.
 - `locationSamples` get a 30-day TTL index, and a privacy note goes on the permission explainer.
+- **Approach (D-032):** offline comes from NetInfo through React Query's `onlineManager`, with a
+  thin "offline" strip; requests wait and run on reconnect. The app reads `SneakerGame.paused()`
+  and shows a maintenance notice on Home and the Sneaker tab, with START, repair and upgrade
+  disabled. The outbox keeps an `EnforcedPause` revert queued, so a run that ends during a pause
+  settles after `unpause`.
 
 **On the phone:** airplane mode, a paused contract and each explorer link.
 

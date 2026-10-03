@@ -8,6 +8,7 @@ describe('RepairPanel', () => {
   it('shows the quoted cost and durability back to full', async () => {
     await render(
       <RepairPanel
+        isGamePaused={false}
         durability={72}
         maxDurability={100}
         repairCost={{ status: 'ready', costWei: 196n * 10n ** 17n }}
@@ -26,6 +27,7 @@ describe('RepairPanel', () => {
   it('is disabled at full durability', async () => {
     await render(
       <RepairPanel
+        isGamePaused={false}
         durability={100}
         maxDurability={100}
         repairCost={{ status: 'ready', costWei: 0n }}

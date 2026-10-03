@@ -504,6 +504,7 @@ Made at Phase 5 start (2026-09-30).
      settled at finish without a transaction.
   4. Only `NotSneakerOwner` maps to a session rejection. Any other revert leaves the outbox record
      `failed` (with the reason) and the session `settling`, for a human to look at.
+     (A paused game is the exception: D-032 keeps the record queued until `unpause`.)
 - **Why:** it's a hackathon build. The happy path and the cases the phase names are covered, and
   nothing more.
 - **Trade-off:** a settlement that fails for another reason (the contract paused, a config change)
@@ -612,3 +613,26 @@ Made after the Phase 8.3 phone check (2026-10-03).
   changing screens. A one-shade step is calmer and can't stall.
 - **Trade-off:** another step away from Lusion (§7 interactions 2 and 3, after D-029).
 - **Revisit when:** a design review wants the flood back. It would need the native driver too.
+
+## D-032 — A paused game is maintenance, not a failure
+
+Made at Phase 8.4 start (2026-10-04).
+
+- **Decision:**
+  1. The outbox treats a simulated `EnforcedPause()` revert as a transient failure: the record
+     stays `queued` with `lastError`, and the next run tries again. A run that ends while
+     `SneakerGame` is paused (or a starter mint) therefore settles by itself after `unpause`.
+     Every other revert still follows D-026.
+  2. The app reads `SneakerGame.paused()` and shows one quiet maintenance notice on Home and the
+     Sneaker tab. START, repair and upgrade are disabled while it shows. The summary's
+     "Settling…" and the minting screen say the run or mint is saved and goes through once the
+     game is back.
+  3. Offline is detected with `@react-native-community/netinfo` (already installed as an AppKit
+     peer, D-018) wired to React Query's `onlineManager`, on `isConnected` only: a LAN API has no
+     internet, so `isInternetReachable` would read as offline. Requests wait while offline and
+     run on reconnect, and a thin strip says so.
+- **Why:** pausing is the emergency switch, so it must not leave the app on "Settling…" for good
+  (D-026's trade-off) or show raw revert text during a demo.
+- **Trade-off:** while paused, the outbox holds its whole queue, gas drips included, because it
+  sends one nonce at a time. The API doesn't refuse a new run while paused; the app does.
+- **Revisit when:** the outbox needs to send around a stuck record.

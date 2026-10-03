@@ -2,15 +2,27 @@ import { describeStartRunBlockedReason, findStartRunBlockedReason } from './star
 
 describe('findStartRunBlockedReason', () => {
   it('lets a Sneaker with energy and durability start', () => {
-    expect(findStartRunBlockedReason({ currentEnergy: 1, durability: 1 })).toBeNull()
+    expect(
+      findStartRunBlockedReason({ isGamePaused: false, currentEnergy: 1, durability: 1 }),
+    ).toBeNull()
   })
 
   it('blocks a Sneaker with no energy', () => {
-    expect(findStartRunBlockedReason({ currentEnergy: 0, durability: 100 })).toBe('outOfEnergy')
+    expect(
+      findStartRunBlockedReason({ isGamePaused: false, currentEnergy: 0, durability: 100 }),
+    ).toBe('outOfEnergy')
   })
 
   it('blocks a worn-out Sneaker', () => {
-    expect(findStartRunBlockedReason({ currentEnergy: 10, durability: 0 })).toBe('needsRepair')
+    expect(
+      findStartRunBlockedReason({ isGamePaused: false, currentEnergy: 10, durability: 0 }),
+    ).toBe('needsRepair')
+  })
+
+  it('blocks every Sneaker while the game is paused for maintenance', () => {
+    expect(
+      findStartRunBlockedReason({ isGamePaused: true, currentEnergy: 10, durability: 100 }),
+    ).toBe('gamePaused')
   })
 })
 

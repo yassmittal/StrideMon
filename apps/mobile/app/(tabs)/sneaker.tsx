@@ -9,6 +9,7 @@ import { ScreenTitle } from '../../src/components/ui/ScreenTitle'
 import { useLocalActiveActivitySession } from '../../src/features/activity-session/hooks/useLocalActiveActivitySession'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { useRewardBalance } from '../../src/features/rewards/hooks/useRewardBalance'
+import { MaintenanceNotice } from '../../src/features/sneaker/components/MaintenanceNotice'
 import { NoSneakersCard } from '../../src/features/sneaker/components/NoSneakersCard'
 import { RepairPanel } from '../../src/features/sneaker/components/RepairPanel'
 import { SneakerCard } from '../../src/features/sneaker/components/SneakerCard'
@@ -16,6 +17,7 @@ import { SneakerPicker } from '../../src/features/sneaker/components/SneakerPick
 import { TransferPanel } from '../../src/features/sneaker/components/TransferPanel'
 import { UpgradePanel } from '../../src/features/sneaker/components/UpgradePanel'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
+import { useIsGamePaused } from '../../src/features/sneaker/hooks/useIsGamePaused'
 import { useRepairSneaker } from '../../src/features/sneaker/hooks/useRepairSneaker'
 import { useSelectedSneaker } from '../../src/features/sneaker/hooks/useSelectedSneaker'
 import { useSneakerAttributes } from '../../src/features/sneaker/hooks/useSneakerAttributes'
@@ -103,6 +105,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
   const repair = useRepairSneaker(sneakerTokenId)
   const upgrade = useUpgradeSneaker(sneakerTokenId)
   const localActiveActivitySessionQuery = useLocalActiveActivitySession()
+  const isGamePaused = useIsGamePaused()
 
   const attributes = attributesQuery.data
   const gameConfig = gameConfigQuery.data
@@ -127,6 +130,8 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
       <ScreenTitle title="Sneaker" metaItems={['Repair', 'Upgrade', 'Send']} />
 
       {sneakerPicker}
+
+      {isGamePaused && <MaintenanceNotice />}
 
       {isError ? (
         <Panel>
@@ -155,6 +160,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
             explorerUrl={buildSneakerExplorerUrl(sneakerTokenId)}
           />
           <RepairPanel
+            isGamePaused={isGamePaused}
             durability={attributes.durability}
             maxDurability={gameConfig.maxDurability}
             repairCost={repair.repairCost}
@@ -164,6 +170,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
             onTransactionReset={repair.resetRepair}
           />
           <UpgradePanel
+            isGamePaused={isGamePaused}
             level={attributes.level}
             maxLevel={gameConfig.maxLevel}
             efficiency={attributes.efficiency}

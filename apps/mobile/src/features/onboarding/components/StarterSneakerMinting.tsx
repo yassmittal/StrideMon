@@ -12,6 +12,8 @@ import { OnboardingStepRow } from './OnboardingStepRow'
 
 type StarterSneakerMintingProps = {
   mintingState: StarterSneakerMintingState
+  /** The mint waits in the queue while `SneakerGame` is paused (D-032). */
+  isGamePaused: boolean
   onRetryPress: () => void
   isRetrying: boolean
 }
@@ -27,6 +29,7 @@ const ONBOARDING_STEP_COUNT = 2
  */
 export function StarterSneakerMinting({
   mintingState,
+  isGamePaused,
   onRetryPress,
   isRetrying,
 }: StarterSneakerMintingProps) {
@@ -64,6 +67,7 @@ export function StarterSneakerMinting({
 
       <MintingFeedback
         mintingState={mintingState}
+        isGamePaused={isGamePaused}
         onRetryPress={onRetryPress}
         isRetrying={isRetrying}
       />
@@ -77,11 +81,22 @@ export function StarterSneakerMinting({
   )
 }
 
-function MintingFeedback({ mintingState, onRetryPress, isRetrying }: StarterSneakerMintingProps) {
+function MintingFeedback({
+  mintingState,
+  isGamePaused,
+  onRetryPress,
+  isRetrying,
+}: StarterSneakerMintingProps) {
   switch (mintingState.phase) {
     case 'requesting':
-    case 'minting':
       return null
+    case 'minting':
+      return isGamePaused ? (
+        <Text style={styles.progress} accessibilityRole="alert">
+          StrideMon is paused for maintenance. Your Sneaker is saved in the queue and mints by
+          itself when the game is back.
+        </Text>
+      ) : null
     case 'arriving':
       return <Text style={styles.progress}>Loading your Sneaker from Monad…</Text>
     case 'requestFailed':
@@ -96,7 +111,7 @@ function MintingFeedback({ mintingState, onRetryPress, isRetrying }: StarterSnea
     case 'mintFailed':
       return (
         <ErrorState
-          message="Minting your Sneaker didn’t go through, and nothing was charged to you. The game may be paused for maintenance. Check again in a few minutes."
+          message="Minting your Sneaker didn’t go through, and nothing was charged to you. Check again in a few minutes."
           onRetryPress={onRetryPress}
           isRetrying={isRetrying}
           retryLabel="Check again"
