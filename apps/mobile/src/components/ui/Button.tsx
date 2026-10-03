@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native'
 import { colors, layout, motion, radii, shadows, spacing, textStyles } from '../../theme'
+import { Icon } from './Icon'
 
 type ButtonVariant = 'primary' | 'secondary' | 'callToAction'
 
@@ -26,7 +27,10 @@ type ButtonProps = {
 
 const LABEL_LINE_HEIGHT = textStyles.button.lineHeight ?? 0
 
-/** A pill with Lusion's press animations: the label rolls, and the dot fades or floods. */
+/**
+ * A pill with Lusion's press animations: the label rolls, and the call-to-action floods blue.
+ * An arrow stands where Lusion has a dot (D-029).
+ */
 export function Button({
   label,
   onPress,
@@ -81,18 +85,34 @@ export function Button({
           { backgroundColor },
         ]}
       >
-        {variant === 'callToAction' && isInteractive && (
-          <FloodingDot pressProgress={pressProgress} pillWidth={pillWidth} />
+        {variant === 'callToAction' && (
+          <>
+            {isInteractive && (
+              <FloodingCircle pressProgress={pressProgress} pillWidth={pillWidth} />
+            )}
+            {!isLoading && (
+              <View style={styles.leadingArrow}>
+                <PressArrow
+                  pressProgress={pressProgress}
+                  color={isInteractive ? colors.textPrimary : colors.textPlaceholder}
+                  pressedColor={isInteractive ? colors.textOnPrimary : colors.textPlaceholder}
+                />
+              </View>
+            )}
+          </>
         )}
         {isLoading ? (
           <ActivityIndicator color={variantColors.label} />
         ) : (
           <RollingLabel label={label} color={labelColor} pressProgress={pressProgress} />
         )}
-        {variant === 'primary' && isInteractive && !isLoading && (
-          <FadingDot pressProgress={pressProgress} />
+        {variant !== 'callToAction' && !isLoading && (
+          <PressArrow
+            pressProgress={pressProgress}
+            color={isInteractive ? variantColors.label : colors.textPlaceholder}
+            pressedColor={isInteractive ? variantColors.pressedLabel : colors.textPlaceholder}
+          />
         )}
-        {variant === 'secondary' && isInteractive && !isLoading && <TwoDots />}
       </Animated.View>
     </Pressable>
   )
@@ -153,37 +173,48 @@ function RollingLabel({
   )
 }
 
-/** Interaction 3: the primary pill's white dot shrinks away as it's pressed. */
-function FadingDot({ pressProgress }: { pressProgress: Animated.Value }) {
-  const scale = pressProgress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] })
-  return <Animated.View style={[styles.dot, styles.dotOnPrimary, { transform: [{ scale }] }]} />
-}
-
-function TwoDots() {
+/**
+ * The arrow that stands in for Lusion's dot. It nudges right while pressed and, on the
+ * call-to-action, turns white as the blue flood reaches it (two arrows cross-fade).
+ */
+function PressArrow({
+  pressProgress,
+  color,
+  pressedColor,
+}: {
+  pressProgress: Animated.Value
+  color: string
+  pressedColor: string
+}) {
+  const translateX = pressProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, spacing.extraSmall],
+  })
+  const pressedOpacity = pressProgress.interpolate({ inputRange: [0, 1], outputRange: [0, 1] })
   return (
-    <View style={styles.twoDots}>
-      <View style={[styles.dot, styles.dotOnSecondary]} />
-      <View style={[styles.dot, styles.dotOnSecondary]} />
-    </View>
+    <Animated.View style={[styles.arrow, { transform: [{ translateX }] }]}>
+      <Icon name="arrowRight" color={color} />
+      {pressedColor !== color && (
+        <Animated.View style={[styles.arrowPressed, { opacity: pressedOpacity }]}>
+          <Icon name="arrowRight" color={pressedColor} />
+        </Animated.View>
+      )}
+    </Animated.View>
   )
 }
 
-/** Interaction 2 (dot fill): the black dot grows and turns blue until it floods the pill. */
-function FloodingDot({
+/** Interaction 2 (fill): a blue circle grows from behind the arrow until it floods the pill. */
+function FloodingCircle({
   pressProgress,
   pillWidth,
 }: {
   pressProgress: Animated.Value
   pillWidth: number
 }) {
-  // Big enough that the dot, centered near the left edge, covers the far end of the pill.
-  const floodScale = Math.max((2 * pillWidth) / layout.callToActionDotSize, 1)
-  const scale = pressProgress.interpolate({ inputRange: [0, 1], outputRange: [1, floodScale] })
-  const backgroundColor = pressProgress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [colors.textPrimary, colors.accent],
-  })
-  return <Animated.View style={[styles.floodingDot, { backgroundColor, transform: [{ scale }] }]} />
+  // Big enough that the circle, centered near the left edge, covers the far end of the pill.
+  const floodScale = Math.max((2 * pillWidth) / layout.iconSize, 1)
+  const scale = pressProgress.interpolate({ inputRange: [0, 1], outputRange: [0, floodScale] })
+  return <Animated.View style={[styles.floodingCircle, { transform: [{ scale }] }]} />
 }
 
 const styles = StyleSheet.create({
@@ -200,7 +231,7 @@ const styles = StyleSheet.create({
   },
   pillCallToAction: {
     minHeight: layout.callToActionPillHeight,
-    paddingLeft: spacing.large + layout.callToActionDotSize + spacing.medium,
+    paddingLeft: spacing.large + layout.iconSize + spacing.medium,
     boxShadow: shadows.floatingPill,
   },
   labelWindow: {
@@ -211,26 +242,23 @@ const styles = StyleSheet.create({
     ...textStyles.button,
     textTransform: 'uppercase',
   },
-  dot: {
-    width: layout.pillDotSize,
-    height: layout.pillDotSize,
-    borderRadius: radii.pill,
+  arrow: {
+    width: layout.iconSize,
+    height: layout.iconSize,
   },
-  dotOnPrimary: {
-    backgroundColor: colors.textOnPrimary,
+  arrowPressed: {
+    ...StyleSheet.absoluteFill,
   },
-  dotOnSecondary: {
-    backgroundColor: colors.textPrimary,
-  },
-  twoDots: {
-    flexDirection: 'row',
-    gap: layout.pillDotSize,
-  },
-  floodingDot: {
+  leadingArrow: {
     position: 'absolute',
     left: spacing.large,
-    width: layout.callToActionDotSize,
-    height: layout.callToActionDotSize,
+  },
+  floodingCircle: {
+    position: 'absolute',
+    left: spacing.large,
+    width: layout.iconSize,
+    height: layout.iconSize,
     borderRadius: radii.pill,
+    backgroundColor: colors.accent,
   },
 })

@@ -8,9 +8,7 @@ export const layout = {
   gridColumns: 6,
   pillHeight: 45,
   callToActionPillHeight: 47,
-  /** The white dot after a primary pill's label, and each of a secondary pill's two dots. */
-  pillDotSize: 4,
-  /** The black dot before a call-to-action pill's label; it floods the pill when pressed. */
+  /** A small status dot, such as the active run's lime recording dot. */
   callToActionDotSize: 7,
   progressTrackHeight: 4,
   /** "+" corner marks (`--cross-size`), drawn with hairline strokes. */

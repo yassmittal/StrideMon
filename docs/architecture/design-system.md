@@ -252,7 +252,7 @@ Every value is a Lusion value converted at a 16 pt root.
 | `minimumTouchTarget` | **44** | Unchanged (`MINIMUM_TOUCH_TARGET_SIZE`). Lusion's pills are 45, so they meet it. |
 
 The component sizes from §8 are `layout` tokens too (Phase 8.2): `pillHeight` 45,
-`callToActionPillHeight` 47, `pillDotSize` 4, `callToActionDotSize` 7, `progressTrackHeight` 4,
+`callToActionPillHeight` 47, `callToActionDotSize` 7 (now the small status dot, e.g. the active run's recording dot), `progressTrackHeight` 4,
 `crossMarkSize` 14 with a `crossMarkStrokeWidth` of 1, `textFieldHeight` 61,
 `textFieldArrowSize` 21, `iconCircleButtonSize` 45, `iconCircleButtonDarkSize` 53, and
 `iconSize` 18 and `iconStrokeWidth` 1.5 (**derived**, the line glyph inside a circle button). Two app-only sizes are
@@ -358,9 +358,9 @@ becomes `Panel`. `MediaCard` and `MenuListItem` are built when a screen needs on
 
 | Component | Spec (from Lusion) | StrideMon use |
 |---|---|---|
-| **`PrimaryPillButton`** | `primary` background, white `button` text (14/500/UPPER), height **45**, padding `0 16 0 23` (`0 1.125em 0 1.625em` at 14), `pill` radius, trailing white **4 pt dot** (gap 9, `0.625em` at 14). Press: interaction 3. | Sign in, START, Confirm transaction |
-| **`SecondaryPillButton`** | `surfaceMuted` background, black text, same size. Press: background `surface`. Two-dot icon on the right. | Menu, Cancel, secondary actions |
-| **`CallToActionPill`** | `surface` background, black `button` text, height **47**, padding `14 21 14 23`, leading **7 pt black dot**, gap 14, `floatingPill` shadow. Press: interaction 2. | "See Sneaker", "Repair", "Upgrade" |
+| **`PrimaryPillButton`** | `primary` background, white `button` text (14/500/UPPER), height **45**, padding `0 16 0 23` (`0 1.125em 0 1.625em` at 14), `pill` radius, trailing white **arrow** (`iconSize`, gap 10) where Lusion has a 4 pt dot (D-029). Press: interaction 3, with the arrow nudging right instead of the dot shrinking. | Sign in, START, Confirm transaction |
+| **`SecondaryPillButton`** | `surfaceMuted` background, black text, same size. Press: background `surface`. A black arrow on the right, where Lusion has a two-dot icon (D-029). | Menu, Cancel, secondary actions |
+| **`CallToActionPill`** | `surface` background, black `button` text, height **47**, padding `14 21 14 23`, leading black **arrow** where Lusion has a 7 pt dot (D-029), gap 14, `floatingPill` shadow. Press: interaction 2, with a blue circle growing from behind the arrow to flood the pill, and the arrow turning white. | "See Sneaker", "Repair", "Upgrade" |
 | **`IconCircleButton`** | 45 × 45 circle on `surfaceMuted` (sound button). Dark variant: 53 × 53 black circle with a white icon (back-to-top). | Close, back, settings |
 | **`Panel`** | `surface` background, radius `medium` (10), padding 30. Stack panels with gap 10. | Every card on light screens |
 | **`DarkPanel`** | `darkBackground` background, radius 10, padding `20 30`, white 26 UPPER text, arrow on the right (the "Labs" card). | Featured action on a light screen |
@@ -388,6 +388,7 @@ This maps each existing phase's screens onto the system. It is applied in Phase 
 | Run summary (4, 5) | Back to light. `displayLarge` "+12.40 SOLE". `Panel` stack with rewarded minutes and durability lost. |
 | Repair and upgrade (6) | `Panel`s with quotes. `CallToActionPill` for confirm. Transaction states as `MetaLabel` (`AWAITING SIGNATURE • CONFIRMING`). |
 | Transfer (7) | `TextField` for the address, `PrimaryPillButton` send. |
+| Tab bar (8.2) | White `surface` bar with a hairline top. Each tab has a line icon (the `Icon` set, same stroke as the arrows) above a `label` UPPER title; active `textPrimary`, inactive `textSecondary`. |
 | Marketplace (9) | `MediaCard` grid (1 column on phone, gap `sectionSmall`). |
 
 ---

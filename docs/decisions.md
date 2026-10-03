@@ -553,3 +553,18 @@ Made at Phase 8 start (2026-10-03).
   resources. The `locationSamples` TTL (8.4) keeps StrideMon's share small. Nothing is tested on
   the hosted stack until 8.6, so hosting surprises surface late.
 - **Revisit when:** either project outgrows the shared cluster or instance.
+
+## D-029 — Pill buttons show an arrow, not Lusion's dot
+
+Made during Phase 8.2 (2026-10-03), after the phone check.
+
+- **Decision:** the three `Button` variants show an always-visible line arrow where Lusion has a
+  dot: trailing on `primary` and `secondary`, leading on `callToAction`. The press animations stay
+  (label roll, colour change, the call-to-action flood), with the arrow nudging right instead of
+  the dot shrinking. The tab bar gets line icons from the same `Icon` set.
+- **Why:** on the phone, the dots read as "the icons didn't load", and Yash chose a visible arrow.
+  An arrow also says "this goes somewhere" on a small screen, where there is no hover to reveal it.
+- **Trade-off:** a step away from the Lusion look (design-system §1 point 5). Secondary actions
+  such as "Not now" also get an arrow.
+- **Revisit when:** a design review wants the exact Lusion pills back. Only `Button.tsx` changes.
+

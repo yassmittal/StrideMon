@@ -48,6 +48,9 @@ feature components' styles.
   run's estimated reward) and `IconCircleButton` (sheet close, transfer back). Their icons are
   drawn with `react-native-svg`, which is already in the development build. The component sizes
   are `layout` tokens (design-system §4.2), and the sheet backdrop is `colors.backdrop` (§2.2).
+- After the first phone check: the pills show an arrow instead of Lusion's dot, and the tab bar
+  gets line icons (D-029). Before this, the tabs showed React Navigation's placeholder glyph,
+  which the phone's font can't draw.
 
 **On the phone:** every screen matches §9.
 
@@ -58,7 +61,7 @@ feature components' styles.
 - The app shows the same picture on Home's `HeroPanel`, so the art exists in one place.
 - `SneakerNft` builds `tokenURI` itself and can't be changed in place, so this part redeploys the
   contracts on testnet and every wallet starts again from a new starter Sneaker. The local
-  database is reset with it. The approach is settled at the start of the part, as D-029.
+  database is reset with it. The approach is settled at the start of the part, as D-030.
 
 **On the phone:** Home's Sneaker and the MonadVision / MetaMask image agree, and change after a
 repair or upgrade.

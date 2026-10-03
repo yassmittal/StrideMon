@@ -1,6 +1,5 @@
 import type { ActivitySession } from '@stridemon/shared/api-contracts'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { formatDateTime } from '../../../lib/format/format-date-time'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
@@ -55,7 +54,7 @@ export function ActivitySessionHistoryItem({
     >
       <View style={styles.main}>
         <Text style={styles.date}>{startedAtDisplay}</Text>
-        {details.length > 0 && <MetaLabel items={details} />}
+        {details.length > 0 && <Text style={styles.details}>{details.join('  •  ')}</Text>}
       </View>
       <View style={styles.side}>
         {rewardAmountDisplay !== null && <Text style={styles.reward}>{rewardAmountDisplay}</Text>}
@@ -85,6 +84,11 @@ const styles = StyleSheet.create({
   date: {
     ...textStyles.body,
     color: colors.textPrimary,
+  },
+  // Not a MetaLabel: uppercase would turn "22 m" into "22 M".
+  details: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
   },
   side: {
     alignItems: 'flex-end',
