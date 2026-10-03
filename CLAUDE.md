@@ -123,9 +123,12 @@ Pills show an arrow, not Lusion's dot, and the tabs have line icons (D-029).
 `packages/contracts/README.md`) and the local database was reset. Checked end to end on the
 Android phone. After that check, pressed buttons step one shade instead of flooding blue, on the
 native driver (D-031), and unused code was removed.
-**8.4 (states and data hygiene)** is built (2026-10-04), phone check pending: NetInfo drives
+**8.4 (states and data hygiene)** is done (2026-10-04), checked on the Android phone: NetInfo drives
 React Query's `onlineManager` with an `OfflineNotice` pill, `useIsGamePaused` reads
 `SneakerGame.paused()` for a `MaintenanceNotice` (START, repair and upgrade off), the outbox holds
 `EnforcedPause` reverts queued (D-032), and `locationSamples` has a 30-day TTL on `receivedAt`.
+Pause or unpause with `cast send <SneakerGame> "pause()"` / `"unpause()"` and the deployer key
+from `packages/contracts/.env` (it holds `PAUSER_ROLE`); ask Yash before sending either.
+**Next: 8.5** (demo tooling).
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
 for it. The next decision number is D-033.
