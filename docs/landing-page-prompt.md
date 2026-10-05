@@ -137,6 +137,10 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
       with it.
 4. **Demo (optional):** if `public/screenshots/demo-walk.mp4` exists, a muted inline video with a
    poster frame, `preload="none"`, played only on click.
+   *As built (2026-10-05):* the demo is `public/videos/stridemon-demo.mp4` (78 s, cut from two
+   screen recordings with [`landing-page-video-prompt.md`](landing-page-video-prompt.md)), with a
+   chapter list beside it that seeks the video. How it works' Move step plays a 5 s loop of the run
+   screen in place of its screenshot while on screen, unless motion is reduced.
 5. **The rules are on-chain:** a dark section. The numbers in mono, each with one line of
    explanation. All from `SneakerGame`'s launch config (`docs/architecture/game-rules.md`):
 
@@ -244,7 +248,10 @@ Crop the Android status bar off if it shows notifications or a low battery.
 size stays 1080 × 2340). `04` had a black border, trimmed. `02` and `05` were long scrolling
 captures: `02` is cut to the header, Sneaker card and balance, and `05` keeps the title, the
 repair and upgrade panels and the tab bar. With every screenshot in place, the placeholders were
-removed: a missing file listed in `src/content/screenshots.ts` now fails the build.
+removed: a missing file listed in `src/content/screenshots.ts` now fails the build. The demo
+video isn't a screenshot any more: it, its poster and the walk loop live in `public/videos/`
+(see `website/README.md` → Demo video), and the raw recordings in the gitignored
+`website/media-source/`.
 
 ### 9. Don't
 

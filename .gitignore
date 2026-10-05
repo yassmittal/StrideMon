@@ -44,3 +44,5 @@ website/.next/
 website/out/
 website/.vercel/
 website/next-env.d.ts
+# Raw screen recordings the demo video is cut from (far too large to commit or deploy)
+website/media-source/

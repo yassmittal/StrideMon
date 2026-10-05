@@ -29,6 +29,7 @@ these documents, and when a decision changes, the doc changes first.
 | 16 | [`rehearsal-checklist.md`](rehearsal-checklist.md) | Running Phase 8.5's phone check: one full rehearsal, then Maestro. |
 | 17 | [`deployment.md`](deployment.md) | Hosting the API and building the demo app (Phase 8.6). |
 | 18 | [`landing-page-prompt.md`](landing-page-prompt.md) | Building the landing page in `website/` (Phase 8.8). |
+| 19 | [`landing-page-video-prompt.md`](landing-page-video-prompt.md) | Cutting the screen recordings into the landing page's demo video. |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else

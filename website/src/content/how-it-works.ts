@@ -1,9 +1,12 @@
+import { walkLoopVideoPath } from './demo-video'
 import { type Screenshot, screenshots } from './screenshots'
 
 export type HowItWorksStep = {
   title: string
   description: string
   screenshots: readonly Screenshot[]
+  // A silent loop that replaces the (single) screenshot while on screen, when motion is allowed.
+  loopVideoPath?: string
 }
 
 export const howItWorksContent = {
@@ -30,6 +33,7 @@ export const howItWorksSteps: readonly HowItWorksStep[] = [
     description:
       'Press START and walk or run. Time, distance, speed and your estimated reward are live on screen.',
     screenshots: [screenshots.activeRun],
+    loopVideoPath: walkLoopVideoPath,
   },
   {
     title: 'Earn',

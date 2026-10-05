@@ -43,10 +43,3 @@ export const screenshots = {
     alt: 'MonadVision explorer page for a StrideMon Sneaker NFT (ERC-721), showing the same on-chain picture as the app.',
   },
 } as const satisfies Record<string, Screenshot>
-
-export const demoVideo = {
-  fileName: 'demo-walk.mp4',
-  posterFileName: 'demo-walk-poster.png',
-  heading: 'A real walk, start to finish',
-  description: 'Recorded on the Android demo build: START, a short walk, STOP, and SOLE on-chain.',
-} as const

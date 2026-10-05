@@ -1,5 +1,6 @@
 import { howItWorksContent, howItWorksSteps } from '@/content/how-it-works'
 import { sectionIds } from '@/content/site'
+import { InViewLoopVideo } from '../ui/in-view-loop-video'
 import { PhoneFrame } from '../ui/phone-frame'
 import { SectionHeading } from '../ui/section-heading'
 
@@ -52,20 +53,34 @@ export function HowItWorksSection() {
               data-reveal
               className="flex justify-center gap-3 md:col-span-6 md:col-start-7 md:justify-end"
             >
-              {step.screenshots.map((screenshot) => (
-                <PhoneFrame
-                  key={screenshot.fileName}
-                  screenshot={screenshot}
-                  sizes={
-                    step.screenshots.length > 1
-                      ? '(min-width: 768px) 260px, 42vw'
-                      : '(min-width: 768px) 277px, 56vw'
-                  }
-                  className={
-                    step.screenshots.length > 1 ? 'w-[44%] max-w-[260px]' : 'w-[56%] max-w-[277px]'
-                  }
-                />
-              ))}
+              {step.screenshots.map((screenshot) => {
+                const hasSeveralScreenshots = step.screenshots.length > 1
+                const sizes = hasSeveralScreenshots
+                  ? '(min-width: 768px) 260px, 42vw'
+                  : '(min-width: 768px) 277px, 56vw'
+                const frameClassName = hasSeveralScreenshots
+                  ? 'w-[44%] max-w-[260px]'
+                  : 'w-[56%] max-w-[277px]'
+                if (step.loopVideoPath) {
+                  return (
+                    <InViewLoopVideo
+                      key={screenshot.fileName}
+                      videoPath={step.loopVideoPath}
+                      className={frameClassName}
+                    >
+                      <PhoneFrame screenshot={screenshot} sizes={sizes} />
+                    </InViewLoopVideo>
+                  )
+                }
+                return (
+                  <PhoneFrame
+                    key={screenshot.fileName}
+                    screenshot={screenshot}
+                    sizes={sizes}
+                    className={frameClassName}
+                  />
+                )
+              })}
             </div>
           </li>
         ))}

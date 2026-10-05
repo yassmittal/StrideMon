@@ -158,6 +158,9 @@ checks and a full rehearsal on Android.
 - SEO: metadata, Open Graph image, JSON-LD, sitemap and robots, Lighthouse 95+ on every category.
 - The brief, sections, copy facts and screenshot list are in
   [`../landing-page-prompt.md`](../landing-page-prompt.md).
+- The demo video is cut from Yash's screen recordings with
+  [`../landing-page-video-prompt.md`](../landing-page-video-prompt.md). The raw files stay in
+  `website/media-source/` (gitignored); only the encoded video ships.
 
 **Check:** the live URL on a phone and a laptop, a link preview in a chat app, and Lighthouse.
 

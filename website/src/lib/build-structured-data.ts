@@ -1,8 +1,34 @@
+import { demoVideo } from '@/content/demo-video'
 import { frequentlyAskedQuestions } from '@/content/faq'
 import { siteDescription, siteName, siteUrl } from '@/content/site'
 
-// JSON-LD for the page: the game itself, and the FAQ built from the same data as the section.
-export function buildStructuredData() {
+type StructuredDataOptions = {
+  hasDemoVideo: boolean
+}
+
+// ISO 8601, as schema.org's `duration` wants it: 78 seconds is `PT1M18S`.
+export function formatIsoDuration(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `PT${minutes}M${seconds}S`
+}
+
+function buildDemoVideoObject() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: demoVideo.structuredDataName,
+    description: demoVideo.description,
+    thumbnailUrl: `${siteUrl}${demoVideo.posterPath}`,
+    contentUrl: `${siteUrl}${demoVideo.filePath}`,
+    uploadDate: demoVideo.uploadDate,
+    duration: formatIsoDuration(demoVideo.durationSeconds),
+  }
+}
+
+// JSON-LD for the page: the game itself, the FAQ built from the same data as the section, and the
+// demo video when it's on the page.
+export function buildStructuredData({ hasDemoVideo }: StructuredDataOptions) {
   return [
     {
       '@context': 'https://schema.org',
@@ -26,6 +52,7 @@ export function buildStructuredData() {
         acceptedAnswer: { '@type': 'Answer', text: item.answer },
       })),
     },
+    ...(hasDemoVideo ? [buildDemoVideoObject()] : []),
   ]
 }
 

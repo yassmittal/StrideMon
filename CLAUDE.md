@@ -144,6 +144,8 @@ Developer account. **Now: 8.8 (landing page, D-035):** `website/` at the repo ro
 its own install (**not** a Bun workspace: never add it to the root `package.json` or import
 `@stridemon/*` there), for `https://stridemon.yashmittal.xyz` on Vercel. The brief is
 `docs/landing-page-prompt.md`; screenshots go in `website/public/screenshots/`. Built 2026-10-05
-(static export, `website/README.md`); screenshots are in; it waits on the GitHub URL and the Vercel deploy.
+(static export, `website/README.md`); screenshots are in, and the demo video (`public/videos/`, cut by
+`website/scripts/cut-demo-video.sh` from the gitignored `website/media-source/`) is on the page;
+it waits on the GitHub URL and the Vercel deploy.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
 for it. The next decision number is D-036.
