@@ -108,7 +108,7 @@ cd stridemon
 ```bash
 cd ~/projects/stridemon/apps/api
 cp .env.example .env
-nano .env
+vim .env
 ```
 
 Set these values. Every other line stays as in `.env.example`:
@@ -133,7 +133,7 @@ chmod 600 .env
 Like the other domains on the instance, the file is named after the domain:
 
 ```bash
-sudo nano /etc/nginx/sites-available/stridemon-api.yashmittal.xyz
+sudo vim /etc/nginx/sites-available/stridemon-api.yashmittal.xyz
 ```
 
 ```nginx
@@ -178,11 +178,11 @@ pm2 logs stridemon-api --lines 30
 
 PM2 starts it with `~/.bun-1.4.2/bin/bun` (set in `ecosystem.config.cjs`), not the shared Bun.
 
-- [ ] `pm2 list` shows `stridemon-api` **online**, and its ↺ count stays at 0 over a minute.
-- [ ] `pm2 describe stridemon-api | grep "script path"` shows `.bun-1.4.2/bin/bun`.
-- [ ] The logs show JSON lines with `"msg":"Server listening at http://127.0.0.1:3020"` and no error.
-- [ ] `curl -s http://127.0.0.1:3020/health` on the server prints `{"status":"ok","mongo":"connected"}`.
-- [ ] From your Mac: `curl -s https://stridemon-api.yashmittal.xyz/health` gives the same answer,
+- [X] `pm2 list` shows `stridemon-api` **online**, and its ↺ count stays at 0 over a minute.
+- [X] `pm2 describe stridemon-api | grep "script path"` shows `.bun-1.4.2/bin/bun`.
+- [X] The logs show JSON lines with `"msg":"Server listening at http://127.0.0.1:3020"` and no error.
+- [X] `curl -s http://127.0.0.1:3020/health` on the server prints `{"status":"ok","mongo":"connected"}`.
+- [X] From your Mac: `curl -s https://stridemon-api.yashmittal.xyz/health` gives the same answer,
       over HTTPS.
 
 If it shows `errored`, the first log lines name the missing or wrong `.env` variable.
@@ -192,6 +192,11 @@ If it shows `errored`, the first log lines name the missing or wrong `.env` vari
 1. On the Mac, stop the local API (Ctrl+C in its terminal) and don't start it again.
 2. From now on the hosted API sends every game-server transaction (starter mints, gas drips,
    settlements).
+3. To use the development build with the hosted API, set
+   `EXPO_PUBLIC_API_BASE_URL=https://stridemon-api.yashmittal.xyz` in `apps/mobile/.env` and restart
+   Metro with `bunx expo start --clear` (the value is compiled into the bundle). Metro still serves
+   the JavaScript, so the phone and the Mac still share Wi-Fi; only the API calls go to the
+   instance. The demo build in step 8 needs none of this.
 
 What carries over: everything on-chain. Wallets A and B keep their Sneakers, levels and SOLE, and
 they aren't minted a new starter Sneaker (the app reads that from the chain). What doesn't: the
@@ -211,8 +216,8 @@ The `demo` profile in `eas.json` bundles the JavaScript and points at
 
 - It waits in the free EAS queue for 10 to 80 minutes, like the development build
   (`device-testing.md` §2). If EAS asks you to commit first, commit, then run it again.
-- [ ] It finishes with an APK link and a QR code.
-- [ ] Install it on the phone from that link. It uses the same package as the development build,
+- [X] It finishes with an APK link and a QR code.
+- [X] Install it on the phone from that link. It uses the same package as the development build,
       so it **replaces** it. To go back to developing, reinstall the development build from its
       own EAS link. No rebuild is needed.
 
@@ -220,20 +225,20 @@ The `demo` profile in `eas.json` bundles the JavaScript and points at
 
 Turn the laptop off (or close it) and turn the phone's Wi-Fi off, so it uses mobile data.
 
-- [ ] Open StrideMon. The welcome screen shows the API as healthy. No development launcher, no
+- [X] Open StrideMon. The welcome screen shows the API as healthy. No development launcher, no
       Metro.
-- [ ] Sign in with Account 1 (A): Home shows #2 at level 2. No "Minting your Sneaker…".
-- [ ] Walk 3 minutes and STOP: the summary settles with a reward, and History lists the run.
-- [ ] On the server, `pm2 logs stridemon-api` shows the requests and the settlement.
+- [X] Sign in with Account 1 (A): Home shows #2 at level 2. No "Minting your Sneaker…".
+- [X] Walk 3 minutes and STOP: the summary settles with a reward, and History lists the run.
+- [X] On the server, `pm2 logs stridemon-api` shows the requests and the settlement.
 
 ## 10. The outdoor checks (Phase 4, D-025)
 
 All on the demo build and the hosted API. Details are in `device-testing.md` §9.
 
-- [ ] **Locked-phone walk:** about 10 minutes of laps on a 400 m track, phone locked in a
+- [X] **Locked-phone walk:** about 10 minutes of laps on a 400 m track, phone locked in a
       pocket. The distance is within 10% of laps × 400 m.
 - [ ] **Car:** as a passenger, run for at least 3 minutes. The summary shows 0 active minutes.
-- [ ] **Kill and reopen:** start a walk, swipe the app away, keep walking a minute, reopen it,
+- [X] **Kill and reopen:** start a walk, swipe the app away, keep walking a minute, reopen it,
       walk a bit more, STOP. No samples are lost: the distance covers the whole walk.
 
 Then one full rehearsal of [`demo-script.md`](demo-script.md) on this build. Send me the ticked
