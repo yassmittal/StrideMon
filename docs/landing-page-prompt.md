@@ -75,6 +75,11 @@ Match the app: `docs/architecture/design-system.md`, a Lusion-style look. In sho
   (`https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap`). Its licence doesn't allow
   self-hosting the files. **IBM Plex Mono** (400, 500) via `next/font/google` for every number,
   address and stat.
+  *As built (2026-10-05):* that CSS is fetched at build time and inlined, with the two font files
+  preloaded from Fontshare's CDN (a `<link>` to it blocked first paint for about 800 ms on mobile;
+  the files are still never self-hosted). A metric-matched Arial fallback keeps the swap at CLS 0.
+  Plex Mono loads 400 only, since nothing uses 500. Small secondary text uses black at 0.6, because
+  0.5 is 3.9:1 on the page, under WCAG AA. 0.5 stays for large text.
 - **Huge headlines** with tight tracking (line height 0.9–1.0, letter spacing −0.01 to −0.02 em),
   tiny uppercase metadata separated by bullets (`STRIDEMON • MOVE TO EARN • MONAD`), "+" cross
   marks on section corners, dark panels (radius 10) set into the light page, and whole sections

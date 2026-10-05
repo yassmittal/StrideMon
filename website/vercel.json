@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/(opengraph-image|twitter-image|apple-icon)",
+      "headers": [{ "key": "Content-Type", "value": "image/png" }]
+    }
+  ]
+}

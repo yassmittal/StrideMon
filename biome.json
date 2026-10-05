@@ -32,6 +32,11 @@
       }
     }
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
@@ -44,6 +49,7 @@
         "apps/mobile/app/**",
         "apps/mobile/app.config.ts",
         "website/src/app/**",
+        "website/src/lib/screenshot-image-loader.ts",
         "**/*.config.*"
       ],
       "linter": { "rules": { "style": { "noDefaultExport": "off" } } }

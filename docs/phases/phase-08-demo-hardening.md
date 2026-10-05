@@ -161,6 +161,11 @@ checks and a full rehearsal on Android.
 
 **Check:** the live URL on a phone and a laptop, a link preview in a chat app, and Lighthouse.
 
+**Status (2026-10-05):** built in `website/` (`website/README.md` covers running it, adding
+screenshots and deploying). Lighthouse mobile on the local static build: Performance 97–99,
+Accessibility, Best Practices and SEO 100, CLS 0. Waiting on Yash: the screenshots, confirming
+`githubRepositoryUrl`, and the Vercel project. The live-URL check above still needs the deploy.
+
 ## Definition of done
 - [ ] Two full rehearsals on the hosted stack, on both iOS and Android, without touching a laptop.
 - [ ] The explorer links in the app open the right pages.

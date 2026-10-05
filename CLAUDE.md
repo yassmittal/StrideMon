@@ -143,6 +143,7 @@ now**: it shares the game-server key with the hosted one. `apps/mobile/.env` poi
 Developer account. **Now: 8.8 (landing page, D-035):** `website/` at the repo root, Next.js 16 on Bun with
 its own install (**not** a Bun workspace: never add it to the root `package.json` or import
 `@stridemon/*` there), for `https://stridemon.yashmittal.xyz` on Vercel. The brief is
-`docs/landing-page-prompt.md`; screenshots go in `website/public/screenshots/`.
+`docs/landing-page-prompt.md`; screenshots go in `website/public/screenshots/`. Built 2026-10-05
+(static export, `website/README.md`); it waits on the screenshots, the GitHub URL and the Vercel deploy.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
 for it. The next decision number is D-036.

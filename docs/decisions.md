@@ -709,7 +709,8 @@ Made 2026-10-05, after Phase 8.6.
      `*.yashmittal.xyz` wildcard already points at Vercel, so no DNS change is needed.
      `stridemon.com` is unregistered (2026-10-05); buying it later changes one constant.
   4. It follows `architecture/design-system.md` (the app's Lusion look): the same color tokens,
-     Satoshi through Fontshare's hosted CSS (its licence allows that, not self-hosting the files),
+     Satoshi through Fontshare's hosted CSS (its licence allows that, not self-hosting the files;
+     the page inlines that CSS at build time and the files stay on Fontshare's CDN),
      IBM Plex Mono from Google Fonts, and the same easing curves. The hero is the real on-chain
      Sneaker art (`website/public/sneaker-art/`, exported from `SneakerNft.imageSvg`).
   5. The brief for building it is [`landing-page-prompt.md`](landing-page-prompt.md). Yash's

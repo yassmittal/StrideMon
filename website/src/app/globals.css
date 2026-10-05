@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+/* Tokens from docs/architecture/design-system.md (the app's Lusion look). Light theme only. */
+@theme {
+  --color-page: #f0f1fa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #e4e6ef;
+  --color-ink: #000000;
+  /* 0.5 black is 3.9:1 on the page: large text only (WCAG AA). Small text uses the 0.6 step. */
+  --color-ink-secondary: rgba(0, 0, 0, 0.5);
+  --color-ink-secondary-small: rgba(0, 0, 0, 0.6);
+  --color-primary: #2b2e3a;
+  --color-accent: #1a2ffb;
+  --color-dark: #000000;
+  --color-dark-panel: #141515;
+  --color-dark-track: #34393f;
+  --color-on-dark: #ffffff;
+  --color-on-dark-secondary: rgba(255, 255, 255, 0.6);
+  --color-hairline: rgba(0, 0, 0, 0.1);
+  --color-hairline-on-dark: rgba(255, 255, 255, 0.15);
+  --color-cross-mark: #999999;
+  /* Lime: only on dark backgrounds, never as text on light. */
+  --color-lime: #c1ff00;
+
+  --font-sans: "Satoshi", "Satoshi Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-panel: 10px;
+  --radius-media: 15px;
+  --radius-card: 20px;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.1, 1);
+  --ease-emphasized: cubic-bezier(0.35, 0, 0, 1);
+
+  --shadow-floating-pill: 0 6px 10px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.04);
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.15;
+  --text-display: clamp(3.5rem, 14.5vw, 8rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.02em;
+  --text-heading: clamp(2.5rem, 9vw, 5.5rem);
+  --text-heading--line-height: 0.95;
+  --text-heading--letter-spacing: -0.01em;
+  --text-intro: clamp(1.375rem, 2.4vw, 2.125rem);
+  --text-intro--line-height: 1.15;
+
+  --spacing-gutter: 16px;
+}
+
+/* Arial resized to Satoshi's metrics, so the swap to Satoshi moves nothing (CLS 0). */
+@font-face {
+  font-family: "Satoshi Fallback";
+  src: local("Arial");
+  size-adjust: 96.73%;
+  ascent-override: 104.41%;
+  descent-override: 24.81%;
+  line-gap-override: 10.34%;
+}
+
+@utility page-gutter {
+  padding-inline: 16px;
+  @media (width >= 48rem) {
+    padding-inline: max(5vw, 40px);
+  }
+}
+
+@utility page-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1440px;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-page);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    overflow-x: clip;
+  }
+
+  /* No bold anywhere: 400 for reading, 500 only on uppercase labels and buttons. */
+  h1,
+  h2,
+  h3,
+  strong,
+  b,
+  summary {
+    font-weight: 400;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  [id] {
+    scroll-margin-top: 24px;
+  }
+}
+
+/* ---------- Reveal on scroll: fade and rise 16px, once ---------- */
+
+/* `reveal-ready` is set by an inline script before paint, so content without JS is simply there. */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 500ms var(--ease-standard),
+    transform 500ms var(--ease-standard);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-ready [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Pill button: label roll and arrow nudge ---------- */
+
+.pill-label-window {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.pill-label,
+.pill-label-clone {
+  display: block;
+  transition: transform 400ms var(--ease-standard);
+}
+
+.pill-label-clone {
+  position: absolute;
+  inset: 0;
+  transform: translateY(100%);
+}
+
+.pill-arrow {
+  transition: transform 300ms var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .pill:hover .pill-label {
+    transform: translateY(-100%);
+  }
+  .pill:hover .pill-label-clone {
+    transform: translateY(0);
+  }
+  .pill:hover .pill-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* ---------- Hero Sneaker art: lines draw in once, then the ticks and the bar fill ---------- */
+
+.sneaker-art svg {
+  display: block;
+  /* The SVG names 'IBM Plex Mono'; next/font serves it under a generated family name. */
+  font-family: var(--font-mono);
+  width: 100%;
+  height: auto;
+}
+
+.sneaker-art path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sneaker-draw 1400ms var(--ease-emphasized) 150ms forwards;
+}
+
+/* The lime stripe and speed lines draw after the outline. */
+.sneaker-art path[stroke="#C1FF00"] {
+  animation-delay: 900ms;
+  animation-duration: 900ms;
+}
+
+/* Level ticks: the lime ones (the Sneaker's level) rise in one after another. */
+.sneaker-art g[fill="#C1FF00"] rect {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  transform: scaleY(0);
+  animation: sneaker-tick 300ms var(--ease-standard) forwards;
+}
+
+.sneaker-art g[fill="#C1FF00"] rect:nth-child(1) {
+  animation-delay: 1500ms;
+}
+
+.sneaker-art g[fill="#C1FF00"] rect:nth-child(2) {
+  animation-delay: 1620ms;
+}
+
+/* Durability: the last rect is the lime fill over the dark track. */
+.sneaker-art svg > rect:last-child {
+  transform-box: fill-box;
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: sneaker-fill 900ms var(--ease-emphasized) 1750ms forwards;
+}
+
+@keyframes sneaker-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes sneaker-tick {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes sneaker-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- FAQ disclosure ---------- */
+
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-plus {
+  transition: transform 300ms var(--ease-standard);
+}
+
+.faq-item[open] .faq-plus {
+  transform: rotate(45deg);
+}
+
+/* ---------- Reduced motion: everything is simply there ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: reduced motion must beat every component's own animation. */
+    animation: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: same, for transitions. */
+    transition: none !important;
+  }
+
+  .reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sneaker-art path {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  .sneaker-art g[fill="#C1FF00"] rect,
+  .sneaker-art svg > rect:last-child {
+    transform: none;
+  }
+}
