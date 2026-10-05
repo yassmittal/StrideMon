@@ -10,10 +10,20 @@ solc_version = "0.8.37"
 evm_version = "cancun"
 optimizer = true
 optimizer_runs = 200
-fs_permissions = [{ access = "read", path = "../shared/src/game-rules" }]
+# Local tests and script simulation use Monad's gas model and limits (needs Foundry >= 1.8, D-016).
+network = "monad"
+fs_permissions = [
+    { access = "read", path = "../shared/src/game-rules" },
+    { access = "write", path = "deployments" },
+]
 
 [profile.default.fuzz]
 runs = 512
+
+[profile.default.invariant]
+# Handlers catch the reverts they expect and assert inside, so any other revert is a bug.
+fail_on_revert = true
+show_metrics = true
 
 [rpc_endpoints]
 monad_testnet = "${MONAD_RPC_URL}"

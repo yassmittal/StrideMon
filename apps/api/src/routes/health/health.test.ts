@@ -1,22 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { apiErrorResponseSchema, healthResponseSchema } from '@stridemon/shared/api-contracts'
 import type { FastifyInstance } from 'fastify'
-import { buildServer } from '../../build-server'
-
-// Requires the project-local mongod: `bun run db:start`.
-const TEST_MONGODB_SERVER_URI = 'mongodb://127.0.0.1:27019'
+import { buildTestServer } from '../../test-support/build-test-server'
 
 describe('GET /health', () => {
   let server: FastifyInstance
 
   beforeEach(async () => {
-    server = await buildServer({
-      environmentVariables: {
-        NODE_ENV: 'test',
-        API_PORT: '3000',
-        MONGODB_URI: `${TEST_MONGODB_SERVER_URI}/stridemon_test_${crypto.randomUUID()}`,
-      },
-    })
+    server = await buildTestServer()
   })
 
   afterEach(async () => {

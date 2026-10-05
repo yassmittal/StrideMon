@@ -8,9 +8,9 @@ and spend it to repair and upgrade the Sneaker. `MVP.md` is the product brief;
 
 | Tool | Version | Used for |
 |------|---------|----------|
-| Bun | 1.3+ | package manager, API runtime, tests |
+| Bun | **1.4.2** (the same version `apps/mobile/eas.json` pins) | package manager, API runtime, tests |
 | Node.js | **22.13+** (24 recommended) | Expo CLI, Metro, Jest |
-| Foundry | 1.5+ (`forge`, `cast`, `anvil`) | contracts |
+| Foundry | **1.8+** (`foundryup -i v1.8.3`; `forge`, `cast`, `anvil`) | contracts, API tests (Anvil) |
 | MongoDB | 8.x (`mongod` on your PATH) | local database |
 | A phone | iOS 16.4+ or Android 7+ | the development build |
 | Xcode | 26.4+ | only for local iOS builds (EAS builds don't need it) |
@@ -34,7 +34,7 @@ cp apps/mobile/.env.example apps/mobile/.env   # then set your laptop's LAN IP
 ```sh
 bun run db:start       # project-local mongod on 127.0.0.1:27019 (data in .mongo/)
 bun run dev:api        # API on :3000 (logs its LAN URL on boot). Docs at /docs
-bun run dev:mobile     # Metro dev server for the development build
+cd apps/mobile && bunx expo start --clear   # Metro for the development build (prints the QR code)
 ```
 
 `GET /health` answers `{ "status": "ok", "mongo": "connected" }`.
@@ -42,20 +42,17 @@ bun run dev:mobile     # Metro dev server for the development build
 ### The app on a phone
 
 The app uses a **development build**, not Expo Go. Build it once, and again
-whenever a native dependency changes:
+whenever a native dependency changes. Run every EAS command from `apps/mobile`:
 
 ```sh
 cd apps/mobile
 bunx eas-cli login
-bunx eas-cli init                              # links the project to your Expo account
-bunx eas-cli build --profile development --platform ios   # or android
+bunx eas-cli build --profile development --platform android
 ```
 
-Install the build on the phone, run `bun run dev:mobile`, then open StrideMon
-on the phone, tap **Scan QR code** and scan the QR code Metro prints in the
-terminal. The phone reaches the API through
-`EXPO_PUBLIC_API_BASE_URL`, which must be your laptop's LAN IP (`localhost` on
-the phone is the phone). Both devices have to be on the same Wi-Fi.
+**[`docs/device-testing.md`](docs/device-testing.md)** has the whole loop: when a
+new build is needed, finding its download link, installing it, running it against
+your laptop, and fixing the errors you'll meet (including crash logs with `adb`).
 
 ## Checks
 

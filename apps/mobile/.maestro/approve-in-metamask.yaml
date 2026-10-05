@@ -1,0 +1,10 @@
+# Taps MetaMask's approve button (APPROVE_LABEL), then brings StrideMon back to the front.
+appId: io.metamask
+---
+- extendedWaitUntil:
+    visible: ${APPROVE_LABEL}
+    timeout: 30000
+- tapOn: ${APPROVE_LABEL}
+- launchApp:
+    appId: com.stridemon.app
+    stopApp: false

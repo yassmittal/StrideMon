@@ -14,6 +14,11 @@ works through `cast`, before a single screen exists.
 support), and which explorer and verification method Monad testnet uses (viem's
 chain definition points at `testnet.monadexplorer.com`).
 
+> Confirmed 2026-09-29, recorded in D-016: `cancun` stays. Monad needs Foundry ≥ 1.8
+> with `network = "monad"`. The explorer is MonadVision (the old
+> `testnet.monadexplorer.com` redirects there), and verification goes through
+> Sourcify with no API key.
+
 ## Deliverables
 
 ### `packages/contracts`
@@ -44,11 +49,15 @@ chain definition points at `testnet.monadexplorer.com`).
 Marketplace contract (Phase 9), SVG art (Phase 8), upgradeable proxies (not planned; the contracts are split instead).
 
 ## Definition of done
-- [ ] `forge test` passes, and `forge coverage` shows all branches of `SneakerGame` and `GameMath` covered.
-- [ ] The shared fixtures pass in both Solidity and TypeScript.
-- [ ] The contracts are verified and readable on the Monad testnet explorer.
-- [ ] A scripted `cast` walkthrough (saved as `packages/contracts/README.md` → "Manual loop") mints, settles, repairs, upgrades and transfers on testnet.
-- [ ] `@stridemon/chain` exports typed ABIs and addresses, and a typo in a function name fails `tsc`.
+- [x] `forge test` passes, and `forge coverage` shows all branches of `SneakerGame` and `GameMath` covered.
+- [x] The shared fixtures pass in both Solidity and TypeScript.
+- [x] The contracts are verified and readable on the Monad testnet explorer.
+- [x] A scripted `cast` walkthrough (saved as `packages/contracts/README.md` → "Manual loop") mints, settles, repairs, upgrades and transfers on testnet.
+- [x] `@stridemon/chain` exports typed ABIs and addresses, and a typo in a function name fails `tsc`.
 
 ## Demo check
 Open the explorer and show a Sneaker's `tokenURI` attributes before and after an upgrade.
+
+> Done 2026-09-29: deployed and verified on Monad testnet (addresses in
+> `packages/contracts/README.md` and `@stridemon/chain`). The Manual loop ran on testnet,
+> and Sneaker #1's `tokenURI` went from Level 1 / Efficiency 10 to Level 2 / Efficiency 12.

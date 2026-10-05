@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Energy regeneration for the demo (D-033): `apply` sets one point a minute, `revert`
+# restores the launch pace (30 minutes). Run `revert` after every demo.
+#
+#   scripts/demo-energy-config apply|revert [--dry-run]
+
+set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/demo-env.sh"
+
+case "${1:-}" in
+  apply) SIGNATURE="applyDemoEnergyConfig()" ;;
+  revert) SIGNATURE="restoreLaunchEnergyConfig()" ;;
+  *)
+    echo "Usage: scripts/demo-energy-config apply|revert [--dry-run]" >&2
+    exit 1
+    ;;
+esac
+
+forge script script/DemoEnergyConfig.s.sol --sig "$SIGNATURE" "${FORGE_SCRIPT_FLAGS[@]}"

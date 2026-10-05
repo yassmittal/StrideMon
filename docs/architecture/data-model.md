@@ -73,13 +73,22 @@ type AuthSessionDocument = {
   deviceLabel: string | null     // e.g. "iPhone 15", for a future "your devices" screen
   expiresAt: Date
   revokedAt: Date | null
+  revocationReason: AuthSessionRevocationReason | null   // set together with revokedAt
   createdAt: Date
   updatedAt: Date
 }
+
+type AuthSessionRevocationReason =
+  | 'rotated'        // its refresh token was exchanged for a new auth session
+  | 'signedOut'      // the player signed out on this device
+  | 'reuseDetected'  // another of the user's rotated tokens was replayed
 ```
 
 Indexes: `{ refreshTokenHash: 1 }` unique, `{ userId: 1 }`, and `{ expiresAt: 1 }` TTL.
-Refresh tokens rotate: each refresh revokes the old hash and stores a new one.
+Refresh tokens rotate: each refresh revokes the old auth session (`rotated`) and
+inserts a new one. Only a replayed **`rotated`** token means a copy exists, so only
+that revokes every auth session of the user. A signed-out token is just refused, so
+a stale request from one device can't sign the player out everywhere.
 
 ## `activitySessions`
 
@@ -114,20 +123,34 @@ type ActivitySessionDocument = {
     warnings: ActivityValidationWarning[]
   } | null
 
-  settlement: {
-    chainTransactionId: ObjectId
-    transactionHash: string | null
-    rewardAmountWei: string | null        // from the SessionSettled event, not our estimate
-    durabilityLoss: number | null
-    rewardedMinutes: number | null
-    settledAt: Date | null
+  settlement: {                          // written once, when settled (D-026)
+    chainTransactionId: ObjectId | null  // null only for a 0-minute run (no transaction sent)
+    transactionHash: string | null       // null only for a 0-minute run
+    rewardAmountWei: string              // from the SessionSettled event, not our estimate
+    durabilityLoss: number
+    rewardedMinutes: number
+    settledAt: Date
   } | null
 
   rejectionReason: ActivitySessionRejectionReason | null
   createdAt: Date
-  updatedAt: Date
+  updatedAt: Date                        // also bumped by every sample upload (see the cleanup job)
 }
+
+type ActivitySessionRejectionReason =    // each is also an ApiErrorCode
+  | 'MOCK_LOCATION_DETECTED'             // Phase 4
+  | 'INSUFFICIENT_ACTIVITY_DATA'         // Phase 4
+  | 'SNEAKER_TRANSFERRED_DURING_SESSION' // Phase 5
+
+type ActivityValidationWarning =         // security.md → Activity validation
+  | 'lowGpsAccuracy' | 'deviceClockMismatch' | 'sessionTooLong'
+  | 'teleportDetected' | 'samplingGap' | 'vehicleSpeedDetected'
 ```
+
+`validationResult` is set when validation accepts the run, and `rejectionReason` when
+it rejects it. Only one of them is non-null, except for `SNEAKER_TRANSFERRED_DURING_SESSION`:
+that run passed validation, so it keeps its `validationResult`. An active session whose `updatedAt`
+is 30 minutes old (no sample upload since) is `abandoned` by the cleanup job.
 
 Indexes:
 
@@ -152,17 +175,18 @@ type LocationSampleDocument = {
   longitude: number
   accuracyMeters: number | null
   speedMetersPerSecond: number | null
-  isMockedLocation: boolean     // Android reports this, and iOS 15+ partially
+  isMockedLocation: boolean     // Android only (expo-location `mocked`); always false from iOS (D-020)
   receivedAt: Date              // server time, used to detect clock tampering
 }
 ```
 
-Index: `{ activitySessionId: 1, sequenceNumber: 1 }` unique, so re-uploading a
-batch after a network error is a no-op.
+Indexes: `{ activitySessionId: 1, sequenceNumber: 1 }` unique, so re-uploading a
+batch after a network error is a no-op, and `{ receivedAt: 1 }` TTL
+(`expireAfterSeconds`: 30 days).
 
 **Retention:** samples are needed for validation and dispute review, not
-forever. A TTL of 30 days (via `receivedAt`) is set in Phase 8, and the
-privacy note goes in the app.
+forever. The TTL index deletes each one 30 days after it arrived (Phase 8.4),
+and the location permission explainer tells the player so.
 
 ## `chainTransactions` (outbox)
 
@@ -173,10 +197,10 @@ Every transaction the **game server** sends. Player-signed transactions
 type ChainTransactionKind = 'mintStarterSneaker' | 'settleSession' | 'sendGasDrip'
 
 type ChainTransactionStatus =
-  | 'queued'      // written, not yet sent
-  | 'submitted'   // broadcast, we have a hash
+  | 'queued'      // written, not yet signed
+  | 'submitted'   // signed and saved (D-019), then broadcast. Has a hash
   | 'confirmed'   // receipt status success
-  | 'failed'      // reverted or exhausted retries — see lastError
+  | 'failed'      // simulation or the transaction reverted — see lastError
 
 type ChainTransactionDocument = {
   _id: ObjectId
@@ -186,9 +210,9 @@ type ChainTransactionDocument = {
   status: ChainTransactionStatus
   transactionHash: string | null
   senderNonce: number | null
-  attemptCount: number
+  signedTransaction: string | null  // the signed bytes, saved before broadcast (D-019)
+  attemptCount: number          // broadcasts so far
   lastError: string | null
-  lease: { holderId: string; expiresAt: Date } | null
   createdAt: Date
   updatedAt: Date
 }
@@ -197,4 +221,26 @@ type ChainTransactionDocument = {
 Indexes: `{ idempotencyKey: 1 }` unique, `{ status: 1, createdAt: 1 }`.
 
 The unique `idempotencyKey` is what makes "enqueue a settlement" safe to call
-twice.
+twice. Phase 3 keys: `mintStarterSneaker:<walletAddress>` and
+`sendGasDrip:<walletAddress>` (lowercase), so each wallet gets at most one of each.
+
+A transient failure (the RPC is down, the game server is out of MON) leaves the
+record where it was, with `lastError` set, and the next run retries it. Only a
+revert is `failed`.
+
+## `jobLeases`
+
+Which API process may run a background job right now (D-019). The outbox sender
+holds `processChainTransactions`, so only one process ever signs with the
+game-server key.
+
+```ts
+type JobLeaseDocument = {
+  _id: string          // the job name, e.g. "processChainTransactions"
+  holderId: string     // "<hostname>:<apiPort>", so a restarted process reclaims its own lease
+  expiresAt: Date      // renewed while the job runs; anyone may take it after this
+  updatedAt: Date
+}
+```
+
+No extra indexes: every lookup is by `_id`.

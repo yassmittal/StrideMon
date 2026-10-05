@@ -5,6 +5,8 @@ SOLE lands in the player's wallet, energy is spent, and durability
 drops. The summary screen shows the **real** on-chain numbers with a
 transaction link.
 
+Decisions made at the start of this phase: D-026 (settlement details, kept small).
+
 **Read first:** `architecture/system-overview.md` → A run, end to end, `architecture/smart-contracts.md` → `settleSession`, `architecture/backend-api.md` → The transaction outbox.
 
 ## Deliverables
@@ -12,7 +14,7 @@ transaction link.
 ### `apps/api`
 - The finish handler, after validation, calls `enqueueSessionSettlement`, which
   creates a `chainTransactions` record with kind `settleSession`, idempotency key
-  `settleSession:<activitySessionId>`, and payload `{ onChainSessionId, tokenId, player, activeMinutes, distanceMeters }`.
+  `settleSession:<activitySessionId>`, and payload `{ activitySessionId, onChainSessionId, sneakerTokenId, walletAddress, activeMinutes, distanceMeters }` (D-026).
 - `jobs/process-chain-transactions.ts` handles `settleSession`:
   - Simulate first. If `NotSneakerOwner` reverts, mark the session `rejected` (`SNEAKER_TRANSFERRED_DURING_SESSION`) and don't send.
   - On receipt: decode `SessionSettled` and write `settlement` (`transactionHash`, `rewardAmountWei`, `durabilityLoss`, `rewardedMinutes`, `settledAt`), then set status `settled`.
@@ -31,11 +33,17 @@ transaction link.
 Spending rewards (Phase 6).
 
 ## Definition of done
-- [ ] The `MVP.md` example reproduces on testnet: 10 active minutes at efficiency 10 → **+50 SOLE**, durability **100 → 97**, energy **10 → 0**.
-- [ ] The token balance matches the explorer, and the Sneaker attributes match `tokenURI`.
-- [ ] Killing the API between "submitted" and "confirmed" still ends with a settled session and exactly one on-chain settlement.
-- [ ] A settlement with 0 energy left mints 0 and spends nothing (the contract caps it).
-- [ ] History lists sessions newest first and paginates.
+
+Closed on 2026-10-02. On the Android phone, a 5-minute walk settled on testnet as +25 SOLE,
+durability −2 and energy −5, matching `balanceOf`, `getAttributes` and `tokenURI`. The exact
+10-minute example is pinned by the API test against Anvil, because a 10-minute walk needs the
+hosted API (D-025).
+
+- [x] The `MVP.md` example: 10 active minutes at efficiency 10 → **+50 SOLE**, durability **100 → 97**, energy **10 → 0** (API test on Anvil; a shorter walk on testnet).
+- [x] The token balance matches the explorer, and the Sneaker attributes match `tokenURI`.
+- [x] Killing the API between "submitted" and "confirmed" still ends with a settled session and exactly one on-chain settlement (API test).
+- [x] A settlement with 0 energy left mints 0 and spends nothing (the contract caps it; `forge test`).
+- [x] History lists sessions newest first and paginates.
 
 ## Demo check
 Walk, press STOP, watch "Settling…" become +50 with a transaction link, then see the new balance on home.

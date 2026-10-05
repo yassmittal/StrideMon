@@ -187,3 +187,507 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
     Monad doesn't support.
 - **Revisit when:** an Expo SDK upgrade (TypeScript version), a Bun release fixes
   `bson@7`, or Monad documents support for a newer EVM version.
+
+## D-016 — Monad testnet tooling, confirmed at Phase 1 start
+
+- **Decision:**
+  - **Foundry 1.8.3** (≥ 1.8 is what Monad requires), with `network = "monad"` in
+    `foundry.toml`. Local tests, scripts and Anvil then use Monad's gas model,
+    opcode pricing and 128 KB contract size limit.
+  - `evm_version` **stays `cancun`** (D-015).
+  - Contracts are verified on **MonadVision** (`testnet.monadvision.com`) through
+    its **Sourcify** endpoint, `https://sourcify-api-monad.blockvision.org/`. It
+    needs no API key. Monadscan (`testnet.monadscan.com`, Etherscan API with a
+    key) is the fallback.
+  - `packages/chain` overrides viem's block explorer for Monad testnet with
+    MonadVision.
+- **Why:**
+  - Monad's docs (checked 2026-09-29) say releases before Foundry 1.8 don't
+    model Monad execution. Monad charges the full **gas limit**, not the gas used,
+    and it reprices storage (MIP-8, `MONAD_TEN`). A script simulated with
+    Ethereum pricing would pick the wrong gas limits.
+  - Monad documents Prague-era precompiles (EIP-2537, EIP-2935, EIP-7702) and
+    Osaka's CLZ opcode (MIP-5). So a newer `evm_version` would work, but these
+    contracts gain nothing from it, and `cancun` needs no retesting.
+  - viem's `testnet.monadexplorer.com` now 308-redirects to MonadVision.
+    Linking to it directly skips the redirect.
+- **Trade-off:** everyone who builds the contracts needs Foundry ≥ 1.8
+  (`foundryup -i v1.8.3`).
+- **Revisit when:** Monad publishes a revision that changes gas or opcode
+  behavior (bump Foundry), or a contract wants CLZ or other post-Cancun opcodes.
+
+## D-017 — Visual design modeled on lusion.co
+
+- **Decision:** StrideMon's visual language (color, type, spacing, radii, motion
+  and components) follows **lusion.co**. The exact values were read from
+  Lusion's production CSS, its WebGL bundle and computed styles on 2026-09-29.
+  They are recorded in `architecture/design-system.md` and applied in Phase 8.
+- **Why:** The owner picked it from a shortlist of Awwwards Site-of-the-Year-level
+  references. Its "one 3D hero object on a calm off-white page" structure fits
+  a single Sneaker NFT. Its dark sections with a lime progress fill map directly
+  onto an active run and the energy bar.
+- **Trade-off:** We copy the system (values, layout rules, interaction patterns),
+  never Lusion's assets or code. **Aeonik is a paid font** (CoType Foundry), so an
+  app licence is needed before a public build. LusionMono is proprietary and is
+  replaced by IBM Plex Mono. A few states Lusion doesn't have (disabled,
+  success) are derived and marked as such in the doc.
+- **Revisit when:** the Aeonik licence isn't obtainable in time (fall back to
+  Satoshi), or user testing shows the 10 pt uppercase labels are too small.
+
+## D-018 — Reown AppKit v2 on Expo SDK 57, checked at Phase 2 start
+
+- **Decision:** D-010 stands. The app uses **`@reown/appkit-react-native` 2.0.6** (the
+  AppKit core, which owns the modal) plus **`@reown/appkit-wagmi-react-native` 2.0.6** (the
+  wagmi adapter), with **wagmi 2.x** and viem. Pins that come with it:
+  - `wagmi` stays on **2.19.x**. wagmi 3 exists, but the adapter's peer range is `wagmi <3`.
+  - `@walletconnect/react-native-compat` and `@walletconnect/utils` are **2.21.10**, the
+    WalletConnect version AppKit 2.0.6 pins through `@walletconnect/universal-provider`.
+    Root `overrides` hold `universal-provider`, `ethereum-provider` (pulled in by
+    `@wagmi/connectors`) and `valtio` (2.1.8) to one version each, so only one
+    WalletConnect stack gets bundled.
+  - AppKit's native peers (`@react-native-async-storage/async-storage`,
+    `@react-native-community/netinfo`, `react-native-get-random-values`, `react-native-svg`,
+    `expo-application`) are declared directly, at the versions `expo install` maps for SDK 57
+    (D-015: Bun doesn't install peers here).
+  - Monad testnet is passed to AppKit as our own viem chain from `@stridemon/chain`, with
+    its RPC URL taken from `EXPO_PUBLIC_MONAD_RPC_URL`.
+  - The API verifies SIWE signatures with viem's `verifySiweMessage`, which needs a public
+    client. Its `eth_call` makes smart-contract wallets (ERC-1271/6492) work as well as EOAs.
+    So the `publicClient` half of `plugins/chain-clients.ts` arrives in Phase 2, and the
+    game-server wallet client stays in Phase 3. API tests run that call against a local
+    **Anvil** started by the test helper, so they don't depend on the testnet RPC.
+- **Why (checked 2026-09-29 against npm, docs.reown.com and Reown's GitHub):**
+  - AppKit 2.0.6 (released 2026-07-14) declares `react-native >=0.72` and `react >=18`, so
+    RN 0.86 and React 19.2 are inside its ranges. It is plain JS on top of standard native
+    modules, and every one of those modules has an Expo SDK 57 mapping.
+  - Reown's own Expo example (`reown-com/react-native-examples` → `appkit-expo-wagmi`,
+    updated 2026-09-15) runs AppKit 2.0.5 on **Expo SDK 55 / RN 0.83 / React 19.2**. Nothing
+    Reown publishes has been tested on SDK 57 yet, and there's no open issue against 56 or 57.
+  - Reown's install guide asks for `babel-preset-expo` with `unstable_transformImportMeta`,
+    because `valtio` reads `import.meta`. On SDK 57 that option is renamed
+    `transformImportMeta` and **defaults to on**, so no `babel.config.js` is needed. This
+    was issue #506, a build failure on RN 0.82.
+  - `createAppKit` requires a `storage` implementation in v2. We back it with AsyncStorage,
+    the store WalletConnect already uses. Refresh tokens still go in `expo-secure-store`.
+  - Chain 10143 isn't in Reown's hosted-RPC list, so the wagmi adapter falls back to the
+    chain's own `rpcUrls.default`. The adapter builds its own transports and ignores any we
+    pass, so the RPC URL has to be set on the chain object.
+- **Trade-off:** we run two Expo SDKs ahead of anything Reown has tested. If the modal or
+  the relay breaks on the device, the fallback is `@walletconnect/universal-provider`
+  directly with our own connect screen. Wallet deep linking and session storage would then
+  be ours to maintain.
+- **Revisit when:** Reown publishes an SDK 57 example or an AppKit release that supports
+  wagmi 3, or the device test in Phase 2 fails.
+
+## D-019 — The outbox signs before it broadcasts; outbox tests deploy from Foundry artifacts
+
+Checked at Phase 3 start (2026-09-29). Refines D-012.
+
+- **Decision:**
+  1. **Sign, save, then broadcast.** For each queued transaction, the sender signs it locally,
+     saves `submitted` with the hash, nonce and **signed transaction** in one Mongo write, and
+     only then broadcasts. Recovery never builds a second transaction while the first could still
+     land. If the chain has no receipt yet, the sender re-broadcasts the saved bytes. If the
+     nonce was used by some other transaction (for example a manual `cast send` with the same
+     key), the saved transaction can never be mined, so the record goes back to `queued` and
+     is signed again.
+  2. **The lease belongs to the job, not to each record.** `plugins/background-jobs.ts` takes a
+     lease per job name in a `jobLeases` collection before each run, and renews it between
+     transactions. Only the leaseholder sends, so two API processes can never race on one
+     nonce. `chainTransactions.lease` is dropped, because a per-record lease can't stop two
+     processes from each sending a different record with the same nonce.
+     The holder is `<hostname>:<apiPort>`, not a random id. A process killed without a clean
+     shutdown (a crash, or `bun --watch` reloading) never releases its lease. Measured on
+     2026-09-29, a random id made the restarted API wait out the whole 60 s lease before it
+     sent anything. The lease keeps nonces in order but isn't what prevents double-sends: the
+     `queued → submitted` save is conditional, so only one signer of a record can ever
+     broadcast it.
+  3. **Outbox tests deploy the contracts to the test Anvil with viem, from Foundry's
+     `packages/contracts/out/` artifacts** (`test-support/deploy-test-contracts.ts`). They
+     don't use `forge script`. The test Anvil runs with chain id 10143, and a broadcast of
+     `DeployGame.s.sol` there would overwrite `deployments/10143.json` and the live
+     `broadcast/…/10143/` log. `buildServer` takes an optional `contractAddresses` override
+     for these tests; normal runs take the addresses from `@stridemon/chain`.
+- **Why:** with "broadcast, then save the hash", a crash between the two steps leaves a
+  `queued` record whose transaction may already be mined. Sending it again could double-send
+  a gas drip or a settlement. The contract guards the mint and the settlement, but not the gas
+  drip. Saving the signed bytes first closes that gap.
+- **Trade-off:** the test helper repeats `DeployGame.s.sol`'s role wiring (five `grantRole`
+  calls). The game config comes from `game-rule-fixtures.json`, which `DeployGame.t.sol`
+  already pins the real deploy to. If the wiring drifts, the outbox tests fail with a revert,
+  not silently. API tests need `bun run contracts:build` to have produced `out/`.
+- **Revisit when:** there's more than one game-server key, or a fee spike leaves saved
+  transactions under-priced for long (re-signing at the same nonce with a higher fee would then
+  be needed).
+
+## D-020 — Location tracking stack on Expo SDK 57: expo-sqlite, foreground permission only
+
+Checked at Phase 4 start (2026-09-29), against npm, the SDK 57 docs and the installed native
+sources. Supersedes the `react-native-mmkv` row in `architecture/mobile-app.md` and the
+"foreground, then background" permission step in the Phase 4 spec.
+
+- **Decision:**
+  1. **`expo-location` `~57.0.20` and `expo-task-manager` `~57.0.21`**, both at the version
+     `expo install` maps for SDK 57. Their peers are `expo`, `react` and `react-native`, which the
+     app already declares. `expo-task-manager` brings **`unimodules-app-loader` 57.0.2**, a native
+     package (Android `HeadlessAppLoader`), so it gets compiled in. That's expected, not a stray peer.
+  2. **The sample buffer is `expo-sqlite` `~57.0.3`, not `react-native-mmkv`.** Its peers are
+     already declared, and its one dependency is `await-lock` (plain JS). Its config plugin only
+     writes build flags when it gets options, so it isn't listed in `app.config.ts`.
+  3. **Foreground ("while using the app") location permission only.** There's one explainer
+     screen before the one OS prompt. The app never asks for "Always" / "Allow all the time".
+     `app.config.ts` sets `isIosBackgroundLocationEnabled: true` (`UIBackgroundModes: location`),
+     `isAndroidForegroundServiceEnabled: true` (`FOREGROUND_SERVICE` +
+     `FOREGROUND_SERVICE_LOCATION`), `isAndroidBackgroundLocationEnabled: false`, and removes the
+     unused `NSLocationAlways…` strings.
+  4. **The location task is defined from a custom entry file** (`apps/mobile/index.ts`, which then
+     imports `expo-router/entry`), and the entry also registers the API client's access-token
+     source. Routes are loaded lazily, so a task defined in a route file wouldn't exist when the
+     task runs headless.
+  5. **The location task uploads samples too** (throttled, single-flight), not only the run screen.
+     So a walk with the phone locked keeps the server's session fresh for the 30-minute abandon job.
+- **Why:**
+  - `react-native-mmkv` has no SDK 57 mapping. Version 4 is a Nitro module with the peer
+    `react-native-nitro-modules: "*"`, which would be a second native C++ package. 4.3.2 was generated
+    and tested against nitro **0.35.9**, while npm's latest nitro is **0.37.1** (with core
+    template changes in 0.37.0). Nitro 0.35.9 predates RN 0.86, so neither pairing has been shown
+    to work on RN 0.86. An unpinned nitro version is what crashed Android at startup in mmkv issue #980.
+    MMKV's advantage is synchronous speed, and the buffer writes one sample every few seconds.
+    `expo-sqlite` is first-party, and append / read-unsent / mark-sent maps onto one indexed table.
+  - Both platforms start location updates with foreground permission alone (read in the SDK 57
+    source). Android's `startLocationUpdatesAsync` skips its background-permission check when
+    `foregroundService` is set. iOS only calls `ensureForegroundLocationPermissions`, and with
+    `UIBackgroundModes: location` it keeps delivering in the background, showing the blue
+    indicator. Asking for background access would add a second prompt, extra copy and a Google
+    Play background-location declaration, and tracking works without it.
+  - On Android, the location service outlives a swipe-away (`killServiceOnDestroy` defaults to
+    false), and `TaskService` then starts the app's `reactHost` headless. Under the New
+    Architecture that's the same single React host the UI uses, so there's only ever one JS
+    runtime. Refresh-token rotation stays single-flight. `TaskService` also registers a
+    `HeadlessJsTaskContext`, so JS timers and promises keep running in the background.
+  - `expo-location`'s `mocked` flag is **Android-only** (`Location.isFromMockProvider`). On iOS it's
+    absent, and the app sends `isMockedLocation: false`.
+  - `expo-task-manager`'s config plugin is applied automatically and **always** adds `fetch` to
+    iOS `UIBackgroundModes` (read in `plugin/build/withTaskManager.js`). We don't use background
+    fetch. It's harmless, but App Review may ask about it, so it's noted here. Checked with
+    `bunx expo config --type introspect`: Android gets `FOREGROUND_SERVICE` and
+    `FOREGROUND_SERVICE_LOCATION`, with no `ACCESS_BACKGROUND_LOCATION`, and iOS gets only the
+    when-in-use string.
+- **Trade-off:** there's no mock-location signal on iOS until Phase 10's device attestation.
+  Without "Always", tracking can't be *started* from the background, only continued, which is
+  all a run needs. On iOS the refresh token uses secure-store's default `WHEN_UNLOCKED` keychain
+  class, so a locked phone can't refresh an expired access token. Its uploads wait until the phone
+  is unlocked, and the samples stay safe in SQLite in the meantime.
+- **Revisit when:** the iOS device pass (D-022) shows uploads stalling long enough to hit the
+  abandon job (then move the refresh token to `AFTER_FIRST_UNLOCK`), or a feature needs to start
+  tracking from the background (geofenced auto-start).
+
+## D-021 — Activity validation rules, made precise for Phase 4
+
+`architecture/security.md` sets the rules. This entry records the choices Phase 4 had to make
+where the rules were loose, and the test case that contradicted them.
+
+- **Decision:**
+  1. **A minute is a whole 60 s window from the first valid sample.** Segments that cross a
+     minute boundary are split across the minutes in proportion to time. A trailing partial
+     minute never counts.
+  2. **Average-speed rule, as written.** A minute counts when its average speed (distance ÷ time
+     over its non-teleport segments) is 1–20 km/h and no sampling gap longer than 60 s touches
+     it. So 30 s of standing inside a walking minute (average about 2.5 km/h) **still counts**, and
+     `testing.md`'s case becomes "a full minute standing still doesn't count". A player who stops
+     at a crossing doesn't lose the minute.
+  3. **Clock tolerance of 60 s on the session window.** A sample counts if it's within
+     `[startedAt − 60 s, finishedAt + 60 s]` and at most `startedAt + 4 h + 60 s`: the same 60 s
+     the "future of `receivedAt`" rule already allows. `startedAt` and `finishedAt` are server
+     time, and `recordedAt` is the phone's.
+  4. **A sample without an accuracy is dropped**, the same as one worse than 50 m.
+  5. **A rejected run is a result, not an error.** `POST …/finish` answers 200 with
+     `status: 'rejected'` and a `rejectionReason` (`MOCK_LOCATION_DETECTED` or
+     `INSUFFICIENT_ACTIVITY_DATA`, both `ApiErrorCode`s). Finish is idempotent: calling it again on
+     a finished session returns the session as it is. A crash mid-validation leaves `validating`,
+     and the next finish call validates again. Only `abandoned` answers `ACTIVITY_SESSION_NOT_ACTIVE`.
+  6. `calculateHaversineDistanceMeters` lives in `packages/shared/src/geo/`, because the live run
+     screen needs it too. `estimateLiveReward` takes `gameConfig`, like the other reward functions.
+- **Why:** each point is either unspecified in `security.md` or would otherwise punish honest
+  players for a phone clock a few seconds off, or for a finish response lost on a bad connection.
+- **Trade-off:** GPS jitter while standing still can look like slow movement. The device-side
+  `distanceInterval` (5 m) is the first defence. If a real walk shows inflated distance, a
+  server-side anchor filter comes next, with the doc updated first.
+- **Revisit when:** a device walk measures more than 10% off a known route.
+
+## D-022 — iOS device testing is deferred to one day at the end of the MVP
+
+- **Decision:** Phases 4–7 are verified on the Android phone only. iOS gets a single device day
+  (an iPhone borrowed from a mentor) at the end of the MVP, in Phase 8. That day re-runs each
+  phase's device checks, including Phase 4's locked-phone walk.
+- **Why:** there's no iPhone or paid Apple Developer account available now. An EAS iOS
+  development build needs both (internal distribution registers the device's UDID).
+- **Trade-off:** iOS-only problems (the location indicator, background delivery, keychain
+  access while locked, D-020) surface late, all at once. The code keeps iOS options set
+  (`UIBackgroundModes`, `showsBackgroundLocationIndicator`, `activityType`) so that day is a
+  test, not a port.
+- **Revisit when:** an iPhone is available earlier.
+
+## D-023 — The app declares `RECEIVE_BOOT_COMPLETED` for expo-task-manager (Android)
+
+Found on the Android phone at the first Phase 4 run (2026-09-30). Adds to D-020.
+
+- **Decision:** `app.config.ts` lists `android.permission.RECEIVE_BOOT_COMPLETED` in
+  `android.permissions`. It's a normal permission: granted at install, with no prompt.
+- **Why:** the app crashed at the first GPS fix after START with
+  `IllegalArgumentException: requested job be persisted without holding RECEIVE_BOOT_COMPLETED
+  permission`. Read in the installed source (`expo-task-manager` 57.0.21,
+  `TaskManagerUtils.createJobInfo`), every task event is scheduled as a JobScheduler job with
+  `.setPersisted(true)`, and Android refuses persisted jobs without that permission. Neither
+  `expo-task-manager` nor `expo-location` declares it. The surrounding `try` catches
+  `IllegalStateException`, but Android throws `IllegalArgumentException`, so the process dies.
+  `startLocationUpdatesAsync` itself succeeds, so the crash looks unrelated to START. This is the
+  open upstream bug expo/expo#48935, reported against SDK 56. It also affects 57.
+- **Trade-off:** one more line in the manifest that the app doesn't otherwise need. The app never
+  starts tracking at boot: the permission only lets expo-task-manager's persisted jobs be scheduled.
+- **Revisit when:** expo/expo#48935 is fixed in an SDK 57 patch (the library then declares the
+  permission itself), and the line can go.
+
+## D-024 — The location task drops stale fixes (Android's cached last location)
+
+Found on the Android phone in Phase 4 (2026-09-30), by replaying two real runs through the
+validator.
+
+- **Decision:** the location task drops a fix whose timestamp is more than **60 s** older than the
+  moment it's delivered (both from the phone's clock), before it reaches the buffer. The server's
+  validation rules don't change.
+- **Why:** in both runs, the first fix arrived timestamped 550–660 s *before* START: Android hands
+  out its cached last-known location first, and the next fix came ~10 minutes of timestamps later.
+  The server dropped the oldest one (outside the session window) and reported a misleading
+  `deviceClockMismatch`. When a cached fix falls within the 60 s clock tolerance (one did, at −57 s),
+  it's kept and sets where the minute windows start, so a stretch of standing still before START
+  fills up the first minute. Comparing a fix with the phone's own clock at delivery is immune to
+  the phone's clock differing from the server's.
+- **Trade-off:** a fix delivered more than a minute late would be lost. The foreground service
+  delivers fixes within seconds (no deferred updates are configured), so this never happens in a run.
+- **Revisit when:** deferred or batched updates are turned on to save battery. A batch can
+  legitimately be older than 60 s.
+
+## D-025 — Phase 4 closes with its outdoor device checks moved to Phase 8
+
+- **Decision:** Phase 4 is done. Three of its Definition-of-done checks move to Phase 8, where
+  the hosted API and a bundled-JS build exist:
+  - the 10-minute locked-phone walk on a 400 m track (distance within ~10%)
+  - the car ride that validates to 0 active minutes
+  - kill-and-reopen losing no samples
+- **Why:** in development the app gets its JS from Metro on the laptop and talks to the API on the
+  laptop, both over the home Wi-Fi. A 400 m track or a car ride is out of Wi-Fi range. What *was*
+  verified on the Android phone (2026-09-30): START, the location permission, live stats, samples
+  uploaded, STOP, and server validation of real runs (1 active minute, 103 m, 6.2 km/h on one; a
+  correctly-0 slow run on another). Replaying those runs found D-023 and D-024, both fixed. The
+  validation rules themselves are covered by the synthetic-trace suite, including a 1 km route
+  within 1% and a 50 km/h drive giving 0 minutes.
+- **Trade-off:** real-world distance accuracy and the car case are unproven until Phase 8. If they
+  fail there, the rules in `security.md` get tuned then, with a decision entry. That's later
+  than planned, but Phase 5's settlement only consumes `activeMinutes` and `distanceMeters`.
+- **Revisit when:** the API is hosted (Phase 8), or a walk can be done in Wi-Fi range. The app
+  buffers samples offline and uploads them later, but START and STOP need the API.
+
+## D-026 — Settlement details, kept small for the hackathon
+
+Made at Phase 5 start (2026-09-30).
+
+- **Decision:**
+  1. The `settleSession` outbox payload uses the TypeScript vocabulary:
+     `{ activitySessionId, onChainSessionId, sneakerTokenId, walletAddress, activeMinutes, distanceMeters }`.
+     `activitySessionId` lets the job find the session by `_id` when the receipt arrives.
+  2. Finish marks the session `settling`, then enqueues the settlement. A finish call that finds
+     the session already `settling` enqueues again, which the idempotency key makes a no-op, so
+     a crash between the two writes is recovered the same way D-021 recovers `validating`.
+  3. `activitySessions.settlement` is written once, when the session becomes `settled`. Its
+     `chainTransactionId` and `transactionHash` are `null` only for a 0-minute run, which is
+     settled at finish without a transaction.
+  4. Only `NotSneakerOwner` maps to a session rejection. Any other revert leaves the outbox record
+     `failed` (with the reason) and the session `settling`, for a human to look at.
+     (A paused game is the exception: D-032 keeps the record queued until `unpause`.)
+- **Why:** it's a hackathon build. The happy path and the cases the phase names are covered, and
+  nothing more.
+- **Trade-off:** a settlement that fails for another reason (the contract paused, a config change)
+  leaves the app on "Settling on Monad…" until someone fixes it by hand.
+- **Revisit when:** Phase 8 hardening, or a settlement actually fails that way.
+
+## D-027 — Sneaker transfer reuses the Phase 6 flow; Home follows a selected Sneaker
+
+Made at Phase 7 start (2026-10-03).
+
+- **Decision:**
+  1. `useSneakerGameTransaction` also sends `SneakerNft.safeTransferFrom(player, recipient, tokenId)`.
+     Its call type gains a `transfer` variant. The gas check, wallet step, receipt wait, chain
+     re-read and error copy are shared with repair and upgrade. `SneakerTransactionSheet` gets a
+     transfer confirmation (no SOLE cost, "You will no longer own this Sneaker") next to the
+     existing spend confirmation.
+  2. The Sneaker the player picked is kept in a small zustand store, so Home (START) and the
+     Sneaker tab (repair, upgrade, transfer) act on the same one. When the picked Sneaker is no
+     longer in the wallet, the first owned one is used.
+  3. A wallet with zero Sneakers shows the starter onboarding only while
+     `SneakerGame.hasClaimedStarterSneaker` is false. Once it's true, Home shows an empty state
+     ("No Sneakers in this wallet"), since the starter is never minted twice.
+- **Why:** one transaction flow for every player action, as `mobile-app.md` asks. The selection is
+  UI state that two screens share, which is what zustand is for here. Reading the claim flag from
+  the chain keeps the chain the source of truth, with no new API field.
+- **Trade-off:** the selection isn't persisted, so a relaunch starts on the first Sneaker. The
+  hook's name still says `SneakerGame` although transfer goes to `SneakerNft`.
+- **Revisit when:** a wallet commonly holds many Sneakers (Phase 9 marketplace), where the picker
+  and the selection may need persisting.
+
+## D-028 — Phase 8 runs in seven parts with deployment last; the API is hosted like meAsAgent
+
+Made at Phase 8 start (2026-10-03).
+
+- **Decision:**
+  1. Phase 8 is split into parts 8.1 to 8.7 (`phases/phase-08-demo-hardening.md`). All product
+     work (design, the Sneaker NFT image, states, demo tooling) is finished on the development
+     build first. Deployment and the outdoor checks (D-025) come after it, then the iOS day.
+  2. The API is hosted the way `meAsAgent` hosts its API: Bun under PM2 on an EC2 instance Yash
+     already runs, one process, secrets in `apps/api/.env` on the instance.
+  3. The database is the MongoDB Atlas cluster `meAsAgent` already uses, with StrideMon in its own
+     `stridemon` database and its own database user.
+- **Why:** both are already paid for and working, so hosting costs nothing new. Deploying once,
+  on the finished app, means the demo build and the outdoor checks run against what will
+  actually be demoed.
+- **Trade-off:** the two projects share the free cluster's storage (512 MB) and the instance's
+  resources. The `locationSamples` TTL (8.4) keeps StrideMon's share small. Nothing is tested on
+  the hosted stack until 8.6, so hosting surprises surface late.
+- **Revisit when:** either project outgrows the shared cluster or instance.
+
+## D-029 — Pill buttons show an arrow, not Lusion's dot
+
+Made during Phase 8.2 (2026-10-03), after the phone check.
+
+- **Decision:** the three `Button` variants show an always-visible line arrow where Lusion has a
+  dot: trailing on `primary` and `secondary`, leading on `callToAction`. The press animations stay
+  (label roll, colour change, the call-to-action flood), with the arrow nudging right instead of
+  the dot shrinking. The tab bar gets line icons from the same `Icon` set.
+- **Why:** on the phone, the dots read as "the icons didn't load", and Yash chose a visible arrow.
+  An arrow also says "this goes somewhere" on a small screen, where there is no hover to reveal it.
+- **Trade-off:** a step away from the Lusion look (design-system §1 point 5). Secondary actions
+  such as "Not now" also get an arrow.
+- **Revisit when:** a design review wants the exact Lusion pills back. Only `Button.tsx` changes.
+
+
+## D-030 — The Sneaker's picture is an on-chain SVG drawn by a swappable `SneakerArtRenderer`
+
+Made at Phase 8.3 start (2026-10-03).
+
+- **Decision:**
+  1. A new contract, `SneakerArtRenderer`, draws the Sneaker as an SVG from its id, level and
+     durability (`renderImageSvg`). `SneakerNft` holds the renderer's address and calls it. The
+     admin can point it at a new renderer (`setArtRenderer`) without touching any Sneaker.
+  2. `tokenURI` gains `image` (`data:image/svg+xml;base64,…`). `SneakerNft.imageSvg(tokenId)`
+     returns the raw SVG, which the app reads with one wagmi call and draws with `SvgXml` from
+     `react-native-svg`. The art exists only in the renderer, and the app, MonadVision and
+     MetaMask all show the same picture.
+  3. `SneakerNft` emits ERC-4906 `MetadataUpdate(tokenId)` when stats change and
+     `BatchMetadataUpdate` when the renderer changes, so explorers and wallets know to refresh
+     the picture.
+  4. The art draws level on a 30-tick scale and durability on a 100-point bar: the launch
+     `maxLevel` and `maxDurability` from `game-rules.md`, as named constants in the renderer.
+     `SneakerNft` holds no game logic, so it can't read `GameConfig`.
+  5. Text in the SVG uses a generic monospace stack, since wallets can't load app fonts. The app
+     passes IBM Plex Mono into `SvgXml` instead.
+- **Why:** `SneakerNft` holds players' property and should never need redeploying
+  (`smart-contracts.md`). This part does redeploy it, once, because the deployed `tokenURI` has
+  no `image`. Splitting the art out means any later change to the picture is one small deploy
+  and one `setArtRenderer` call, with no database reset and no new starter Sneakers.
+- **Trade-off:** one more contract to deploy and verify. A `maxLevel` or `maxDurability` change
+  needs a new renderer too, or the ticks and bar stop at full.
+- **Revisit when:** the game config's caps change, or the art moves to a richer format.
+
+## D-031 — Pressed buttons step one shade; no blue flood
+
+Made after the Phase 8.3 phone check (2026-10-03).
+
+- **Decision:** a pressed pill no longer turns electric blue. `primary` steps from `#2B2E3A` to
+  black, `callToAction` from white to `surfaceMuted`, and `secondary` keeps its step to white. The
+  label roll and the arrow nudge stay. Every press animation runs on the native driver (an
+  opacity fill over the pill, transforms for the label and arrow). The unused dark
+  `IconCircleButton` variant, the last thing that pressed to blue, is removed with the
+  `primaryPressed` token.
+- **Why:** on the phone a blue background sometimes stayed for seconds after a tap. The colour
+  animations ran on the JS thread, so they froze while it was busy opening the wallet or
+  changing screens. A one-shade step is calmer and can't stall.
+- **Trade-off:** another step away from Lusion (§7 interactions 2 and 3, after D-029).
+- **Revisit when:** a design review wants the flood back. It would need the native driver too.
+
+## D-032 — A paused game is maintenance, not a failure
+
+Made at Phase 8.4 start (2026-10-04).
+
+- **Decision:**
+  1. The outbox treats a simulated `EnforcedPause()` revert as a transient failure: the record
+     stays `queued` with `lastError`, and the next run tries again. A run that ends while
+     `SneakerGame` is paused (or a starter mint) therefore settles by itself after `unpause`.
+     Every other revert still follows D-026.
+  2. The app reads `SneakerGame.paused()` and shows one quiet maintenance notice on Home and the
+     Sneaker tab. START, repair and upgrade are disabled while it shows. The summary's
+     "Settling…" and the minting screen say the run or mint is saved and goes through once the
+     game is back.
+  3. Offline is detected with `@react-native-community/netinfo` (already installed as an AppKit
+     peer, D-018) wired to React Query's `onlineManager`, on `isConnected` only: a LAN API has no
+     internet, so `isInternetReachable` would read as offline. Requests wait while offline and
+     run on reconnect, and a thin strip says so.
+- **Why:** pausing is the emergency switch, so it must not leave the app on "Settling…" for good
+  (D-026's trade-off) or show raw revert text during a demo.
+- **Trade-off:** while paused, the outbox holds its whole queue, gas drips included, because it
+  sends one nonce at a time. The API doesn't refuse a new run while paused; the app does.
+- **Revisit when:** the outbox needs to send around a stuck record.
+
+## D-033 — Demo tooling runs as Foundry scripts from the deployer key
+
+Made at Phase 8.5 start (2026-10-04).
+
+- **Decision:**
+  1. `scripts/prepare-demo-wallets` and `scripts/demo-energy-config` are thin shell wrappers
+     around two Foundry scripts (`PrepareDemoWallets.s.sol`, `DemoEnergyConfig.s.sol`). They
+     sign with the **deployer** key from `packages/contracts/.env`, never the game-server key,
+     so they can't take a nonce the API's outbox expects (D-019). They always target
+     `monad_testnet`, and `--dry-run` simulates without sending.
+  2. Wallet A's SOLE comes from real runs. If A is still short of its upgrade (plus 10 SOLE for a
+     repair) on demo day, the deployer grants itself `MINTER_ROLE` on `SoleToken`, mints the
+     difference to A and revokes the role, all in one run. The script also tops either wallet up
+     to 1 MON if it drops below 0.5 MON. It only reports wallet B: emptying B needs B's key.
+  3. The demo energy config sets `energyRegenerationSeconds` to 60 s (empty to full in 10
+     minutes) and leaves every other field alone. Reverting restores the launch value from
+     `DeployGame.buildInitialGameConfig()`. The app already reads the config from the chain.
+- **Why:** the deployer already holds every admin role, so this needs no contract change and no
+  redeploy. Foundry keeps the `uint256` maths and the `GameConfig` struct in Solidity, and
+  `forge test` covers the scripts with the rest of the contracts.
+- **Trade-off:** a top-up mint is SOLE no run earned, so testnet's supply no longer equals the
+  settled rewards minus burns. Because energy is computed lazily, a Sneaker that looks full under
+  the demo config can show less after the revert, until it regenerates again.
+- **Revisit when:** mainnet (Phase 10): the admin key moves to a multisig and demo tooling stays
+  on testnet.
+
+## D-034 — The hosted API is `stridemon-api.yashmittal.xyz`, behind the instance's nginx
+
+Made at Phase 8.6 start (2026-10-05). Adds the details D-028 left open.
+
+- **Decision:**
+  1. The API lives at `https://stridemon-api.yashmittal.xyz`, a subdomain of the domain that already
+     serves `meAsAgent`, pointed at the same EC2 instance.
+  2. The instance's existing nginx terminates HTTPS with a free Let's Encrypt certificate
+     (certbot) and proxies to the API on `127.0.0.1:3020`. In production the API listens on
+     loopback only, like `meAsAgent`'s API on 3010; in development it keeps `0.0.0.0` for the
+     phone on the LAN.
+  3. Fastify trusts `X-Forwarded-For` from loopback only (`trustProxy: 'loopback'`), so the rate
+     limit sees each player's IP instead of nginx's.
+  4. PM2 runs it as `stridemon-api` from `apps/api/ecosystem.config.cjs`. The demo build is the
+     `demo` profile in `eas.json`, with its `EXPO_PUBLIC_*` values on the profile.
+  5. StrideMon runs on its own Bun binary, `~/.bun-1.4.2/bin/bun` (the version `bun.lock` and
+     EAS are pinned to), unpacked from the release zip. The instance's shared `~/.bun` stays on
+     the version the other projects use (1.3.14 on 2026-10-05), so upgrading StrideMon's Bun never
+     changes theirs.
+  6. DNS for `yashmittal.xyz` is on Vercel, which has a wildcard record. An explicit `A` record for
+     `stridemon-api` points that one name at the instance (`100.55.119.114`).
+  7. The step-by-step setup is [`deployment.md`](deployment.md).
+- **Why:** a subdomain keeps the API's routes unprefixed and gives it its own nginx server block
+  and certificate, so nothing about `meAsAgent`'s setup changes. Port 3020 is free on the instance.
+- **Trade-off:** StrideMon's uptime now depends on an instance shared with five other projects.
+  The `demo` build uses the same Android package as the development build, so installing it
+  replaces the development build on the phone until that is reinstalled from its EAS link.
+- **Revisit when:** StrideMon gets its own domain (`stridemon.com`) or its own instance.

@@ -66,5 +66,5 @@ API + demo wallets + demo script". The optional durability-below-50 penalty
 | Question | Needed by | Default if unanswered |
 |----------|-----------|-----------------------|
 | Energy regeneration speed for the demo | Phase 1 (config, changeable later) | 1 point / 30 min |
-| API hosting provider | Phase 8 | Decide then; needs long-running processes (background jobs), so not serverless |
+| API hosting provider | Phase 8 | **Answered (D-028):** Bun under PM2 on Yash's EC2 instance, Atlas cluster shared with `meAsAgent` |
 | Apple / Google developer accounts for store builds | Phase 8 | Demo uses dev builds / internal distribution |

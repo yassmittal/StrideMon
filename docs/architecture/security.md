@@ -52,15 +52,21 @@ check, all in pure functions in `apps/api/src/lib/activity-validation/`:
 
 | Check | Rule (initial) | On failure |
 |-------|----------------|------------|
-| Sample plausibility | Drop a sample if accuracy is worse than 50 m, the timestamp goes backwards, or it's more than 60 s in the future of `receivedAt` | Sample ignored, counted |
-| Mock location | `isMockedLocation === true` | **Session rejected** (`MOCK_LOCATION_DETECTED`) |
-| Teleport | Implied speed between consecutive fixes > 40 km/h | That segment ignored |
-| Minute speed band | A minute counts as active only if its average speed is 1–20 km/h | Minute not counted |
-| Sampling gaps | A gap longer than 60 s breaks a minute | Minute not counted |
-| Duration sanity | Session length ≤ 4 hours; samples inside `[startedAt, finishedAt]` | Samples outside ignored |
+| Mock location | Any sample with `isMockedLocation === true` (Android only, D-020) | **Session rejected** (`MOCK_LOCATION_DETECTED`) |
+| Sample plausibility | Drop a sample if its accuracy is missing or worse than 50 m, its timestamp isn't after the previous kept sample (in `sequenceNumber` order), or it's more than 60 s in the future of `receivedAt` | Sample ignored, counted |
+| Duration sanity | Samples inside `[startedAt − 60 s, finishedAt + 60 s]` and no later than `startedAt + 4 h + 60 s`. The 60 s allows for the phone's clock differing from the server's (D-021) | Samples outside ignored |
 | Too little data | Fewer than 10 valid samples | Session rejected (`INSUFFICIENT_ACTIVITY_DATA`) |
+| Teleport | Implied speed between consecutive fixes > 40 km/h | That segment ignored (its distance and time) |
+| Sampling gaps | A gap longer than 60 s breaks every minute it touches | Minute not counted |
+| Minute speed band | Minutes are whole 60 s windows from the first valid sample; segments crossing a boundary are split by time. A minute counts only if its average speed is 1–20 km/h. A trailing partial minute never counts | Minute not counted |
 
 Output: `{ activeMinutes, distanceMeters, averageSpeedKilometersPerHour, rejectedSampleCount, warnings }`.
+`distanceMeters` is the distance inside active minutes, in whole meters. `warnings` names each
+rule that dropped something: `lowGpsAccuracy`, `deviceClockMismatch`, `sessionTooLong`,
+`teleportDetected`, `samplingGap`, `vehicleSpeedDetected`.
+
+The checks run in the table's order. A rejected run isn't an error: `POST …/finish`
+answers 200 with `status: 'rejected'` and the code as `rejectionReason` (D-021).
 
 **Why this is enough for the MVP:** the contract caps any single settlement at
 the Sneaker's current energy (at most 10 minutes' worth), and energy regenerates
@@ -106,7 +112,7 @@ Phase 10.
 ## Mobile
 
 - No secrets in the bundle, because every `EXPO_PUBLIC_*` value is public.
-- Refresh tokens go in `expo-secure-store`, never in AsyncStorage or MMKV.
+- Refresh tokens go in `expo-secure-store`, never in AsyncStorage or SQLite.
 - HTTPS only outside local development.
 - The app never asks the wallet to sign anything except the SIWE message and
   the explicit player transactions, and each has a screen that explains it first.

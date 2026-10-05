@@ -1,0 +1,9 @@
+{
+  "chainId": 10143,
+  "deployer": "0xFCe46e8CAFcf766003897e2aD6ab7a4d0E8befD6",
+  "gameServer": "0xa7a04224FEBE644C7d4d99Cfc8dd694270C7Cf1F",
+  "sneakerArtRenderer": "0x7e01732461C1879915C35E56e73Fd8569B289ADa",
+  "sneakerGame": "0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9",
+  "sneakerNft": "0xC116917b06BD9079C87334ED5499054b1B54Fa80",
+  "soleToken": "0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0"
+}

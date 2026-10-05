@@ -31,7 +31,7 @@ apps/api/src/
 │   ├── rate-limit.ts
 │   ├── error-handler.ts           maps errors to the ApiError response shape
 │   ├── api-docs.ts                OpenAPI + Swagger UI (dev only)
-│   └── background-jobs.ts         runs jobs/ on intervals with Mongo leases
+│   └── background-jobs.ts         runs jobs/ on intervals, one process per job (jobLeases lease)
 │
 ├── routes/<resource>/
 │   ├── index.ts                 THIN: method + url + schema + preHandler + delegate to a handler
@@ -42,11 +42,14 @@ apps/api/src/
 │
 ├── lib/<domain>/                PURE domain logic. No fastify, no mongo, no viem clients, no I/O
 │   ├── activity-validation/
-│   │   ├── validate-activity.ts
-│   │   ├── haversine-distance.ts
-│   │   └── speed-band.ts
+│   │   ├── validate-activity.ts       composes the rest; security.md → Activity validation
+│   │   ├── filter-plausible-samples.ts
+│   │   ├── bucket-samples-into-minutes.ts
+│   │   └── speed-band.ts              (haversine distance is in @stridemon/shared/geo, D-021)
 │   └── auth/
-│       └── build-siwe-message.ts
+│       ├── build-siwe-message.ts
+│       ├── access-token.ts          sign / verify the access JWT (jose)
+│       └── generate-refresh-token.ts, hash-refresh-token.ts, generate-siwe-nonce.ts
 │
 ├── repositories/                ALL MongoDB access, one file per collection
 │   ├── users-repository.ts
@@ -54,6 +57,7 @@ apps/api/src/
 │   └── …
 │
 ├── services/                    external I/O other than Mongo
+│   ├── siwe-signature-verifier.ts viem verifySiweMessage (EOA + ERC-1271/6492 wallets)
 │   ├── sneaker-chain-reader.ts    reads SneakerNft / SneakerGame / SoleToken
 │   └── chain-transaction-sender.ts signs and broadcasts outbox transactions
 │
@@ -63,6 +67,9 @@ apps/api/src/
 │
 ├── common/                      small cross-cutting helpers (errors, time, ids)
 │   └── api-error.ts
+│
+├── test-support/                test-only helpers: buildTestServer (throwaway DB), startTestChain (Anvil),
+│                                deployTestContracts (D-019), runOutboxJob, signInTestPlayer
 │
 └── types/
     └── fastify.d.ts             declaration merging for decorators — never cast instead
@@ -98,10 +105,10 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | Method | Path | Phase | Purpose |
 |--------|------|-------|---------|
 | GET | `/health` | 0 | liveness (no prefix) |
-| POST | `/v1/auth/nonce` | 2 | `{ walletAddress }` → SIWE message to sign |
+| POST | `/v1/auth/nonce` | 2 | `{ walletAddress }` → `{ message }`, the SIWE message to sign |
 | POST | `/v1/auth/verify` | 2 | `{ message, signature }` → `{ accessToken, refreshToken, user }` |
-| POST | `/v1/auth/refresh` | 2 | rotate refresh token |
-| POST | `/v1/auth/sign-out` | 2 | 🔒 revoke current auth session |
+| POST | `/v1/auth/refresh` | 2 | `{ refreshToken }` → the same shape as verify, with a rotated refresh token |
+| POST | `/v1/auth/sign-out` | 2 | 🔒 `{ refreshToken }` → 204. Revokes that auth session. The access token only carries the user, so the body names the auth session |
 | GET | `/v1/me` | 2 | 🔒 current user + onboarding state |
 | POST | `/v1/onboarding/starter-sneaker` | 3 | 🔒 enqueue starter mint + gas drip (idempotent) |
 | GET | `/v1/onboarding/status` | 3 | 🔒 state of those transactions |
@@ -164,18 +171,23 @@ upgrade: the app reads and writes those on-chain directly.
 | `GAME_SERVER_PRIVATE_KEY` | `0x…` | **testnet only**; KMS in Phase 10 |
 | `GAS_DRIP_AMOUNT_WEI` | `"100000000000000000"` | 0.1 testnet MON |
 
+Contract addresses come from `@stridemon/chain` for `MONAD_CHAIN_ID`, and boot fails if
+that chain has none. API tests pass `buildServer({ contractAddresses })` instead, with the
+addresses of the contracts they deployed to their Anvil (D-019).
+
 Code reads `fastify.config.mongodbUri`, never `process.env.MONGODB_URI`.
 
 ## The transaction outbox (from Phase 3)
 
 ```text
-handler                        Mongo chainTransactions            job (single leaseholder)
+handler                        Mongo chainTransactions            job (holds the jobLeases lease)
   │ insert {kind, idempotencyKey,  │                                 │
   │         payload, status:queued}│                                 │
   │──────────────────────────────→│                                 │
-  │ (duplicate key? → return the   │   claim oldest queued (lease) ←─│
-  │  existing one)                 │                                 │ simulate → sign → broadcast
-  │                                │←─ status: submitted, hash ──────│
+  │ (duplicate key? → return the   │  1. re-check every submitted ←──│
+  │  existing one)                 │  2. oldest queued ←─────────────│ simulate → sign
+  │                                │←─ submitted: hash, nonce, ──────│
+  │                                │   signedTransaction             │ broadcast
   │                                │                                 │ wait for receipt
   │                                │←─ confirmed / failed ───────────│
   │                                │                                 │ on settleSession: parse
@@ -183,13 +195,96 @@ handler                        Mongo chainTransactions            job (single le
   │                                │                                 │ activitySessions.settlement
 ```
 
-- **One sender at a time** per game-server key, enforced by a Mongo lease, so
-  nonces never collide.
+- **One sender at a time** per game-server key. Each run first takes the
+  `processChainTransactions` lease in `jobLeases`, and renews it between
+  transactions (D-019).
+- **One nonce at a time.** Outstanding `submitted` records are settled before a
+  new transaction is signed, so the next nonce is always the chain's `pending`
+  count.
 - **Simulate before sending** (`simulateContract`). A predictable revert (such
   as `NotSneakerOwner`) becomes a `failed` record with a clear reason, and no gas
   is wasted.
-- **Crash recovery:** a `submitted` record that has a hash is re-checked by
-  receipt before anything is re-sent.
+- **Sign, save, then broadcast (D-019).** The signed bytes, hash and nonce are in
+  Mongo before anything leaves the process.
+- **Crash recovery:** a `submitted` record is re-checked by receipt, never
+  re-signed. No receipt, and its nonce is still unused → the saved bytes are
+  broadcast again. No receipt, and another transaction used its nonce → it goes
+  back to `queued`.
+- **Transient failures** (RPC down, not enough MON, `SneakerGame` paused) leave the
+  record where it is, with `lastError`, and the next run retries. A paused game holds
+  the whole queue until `unpause` (D-032).
+- **Side effects on success** are written by the job: a confirmed
+  `mintStarterSneaker` sets `users.hasReceivedStarterSneaker`, and a confirmed
+  `sendGasDrip` sets `users.hasReceivedGasDrip`.
+- In `NODE_ENV=test` the interval runner doesn't start. Tests call
+  `processChainTransactions` directly, so they are deterministic.
+
+### Onboarding responses (Phase 3)
+
+`POST /v1/onboarding/starter-sneaker` enqueues the starter mint and the gas drip
+(in that order) and returns the same body as `GET /v1/onboarding/status`:
+
+```json
+{
+  "starterSneaker": { "status": "pending", "transactionHash": null },
+  "gasDrip": { "status": "notStarted", "transactionHash": null }
+}
+```
+
+Each step is `notStarted` (no outbox record), `pending` (`queued` or
+`submitted`), `confirmed` or `failed`. `transactionHash` is set once the
+transaction is signed, so the app can link to the explorer while it waits. The
+Sneaker itself (its id and stats) is read from the chain by the app, never from
+this response.
+
+### Activity session responses (Phase 4)
+
+Every activity-session route answers with `{ activitySession }`:
+
+```json
+{
+  "activitySession": {
+    "activitySessionId": "66f9…",
+    "sneakerTokenId": "7",
+    "status": "settling",
+    "startedAt": "2026-09-29T10:00:00.000Z",
+    "finishedAt": "2026-09-29T10:11:05.000Z",
+    "energyAtStart": 10,
+    "validationResult": { "activeMinutes": 10, "distanceMeters": 842, "averageSpeedKilometersPerHour": 5.05,
+                          "rejectedSampleCount": 2, "warnings": ["lowGpsAccuracy"] },
+    "rejectionReason": null
+  }
+}
+```
+
+Except the sample upload, which answers `{ newSampleCount, duplicateSampleCount }`.
+
+| Route | Errors |
+|-------|--------|
+| `POST /activity-sessions` (201) | `SNEAKER_NOT_OWNED` 403, `SNEAKER_OUT_OF_ENERGY` 409, `SNEAKER_NEEDS_REPAIR` 409, `ACTIVITY_SESSION_ALREADY_ACTIVE` 409 (details name the active `activitySessionId`, so the app can resume it) |
+| `POST …/location-samples` | `NOT_FOUND` 404, `ACTIVITY_SESSION_NOT_ACTIVE` 409, `VALIDATION_FAILED` 400 (over 500 samples) |
+| `POST …/finish` | `NOT_FOUND` 404, `ACTIVITY_SESSION_NOT_ACTIVE` 409 (only when `abandoned`) |
+| `GET …/:activitySessionId` | `NOT_FOUND` 404 (also for someone else's session) |
+
+- **Start** reads the chain (`sneaker-chain-reader`): ownership first, then energy and
+  durability. The "one active session per wallet and per Sneaker" rule is the partial unique
+  indexes. Two concurrent starts can't both insert, because a duplicate key becomes
+  `ACTIVITY_SESSION_ALREADY_ACTIVE`.
+- **Upload** inserts unordered. A duplicate `(activitySessionId, sequenceNumber)` is counted and
+  skipped, so re-sending a batch is harmless. Each upload bumps the session's `updatedAt`.
+- **Finish** moves `active → validating` in one conditional write, validates, then stores
+  `settling` (with `validationResult`) or `rejected` (with `rejectionReason`). It's idempotent:
+  a finished session is returned unchanged, and one left in `validating` by a crash is validated
+  again (D-021). A valid run is then queued for settlement (`settleSession:<activitySessionId>`),
+  also on a retried finish, and a 0-minute run is `settled` at once with no transaction (D-026).
+- **Settlement** (Phase 5): on the receipt, the outbox job reads `SessionSettled` and writes
+  `settlement` + `settled`. A simulated `NotSneakerOwner` revert rejects the session with
+  `SNEAKER_TRANSFERRED_DURING_SESSION`.
+- **History** `GET /activity-sessions?cursor=…&limit=20` (max 50) returns `{ items, nextCursor }`,
+  newest first. The cursor is opaque; one the API didn't issue is `VALIDATION_FAILED`.
+- **`jobs/abandon-stale-activity-sessions.ts`** runs every minute through `plugins/background-jobs.ts`
+  under its own lease. It marks every `active` session whose `updatedAt` is 30 minutes old as `abandoned`.
+- Sample uploads have their own rate-limit budget (security.md → API hardening).
 
 ## Logging
 

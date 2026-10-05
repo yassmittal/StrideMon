@@ -2,7 +2,7 @@ import type { HealthResponse } from '@stridemon/shared/api-contracts'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
 import { ApiError } from '../../../lib/api-client'
-import { colors, fontSizes, fontWeights, radii, spacing } from '../../../theme'
+import { colors, layout, radii, spacing, textStyles } from '../../../theme'
 
 type ApiHealthStatusProps = {
   health: HealthResponse | undefined
@@ -12,6 +12,7 @@ type ApiHealthStatusProps = {
   onRetryPress: () => void
 }
 
+/** One quiet status line on the welcome screen, or the reason the API can't be reached. */
 export function ApiHealthStatus({
   health,
   error,
@@ -21,28 +22,37 @@ export function ApiHealthStatus({
 }: ApiHealthStatusProps) {
   if (isLoading) {
     return (
-      <View style={styles.card} accessibilityLabel="Checking the API">
-        <ActivityIndicator color={colors.primary} />
-        <Text style={styles.detail}>Checking the API…</Text>
+      <View style={styles.row} accessibilityLabel="Checking the API">
+        <ActivityIndicator size="small" color={colors.textPrimary} />
+        <Text style={styles.status}>Checking the API…</Text>
       </View>
     )
   }
 
   if (error !== null || health === undefined) {
     return (
-      <View style={styles.card}>
-        <Text style={[styles.headline, styles.headlineDanger]}>API: unreachable</Text>
+      <View style={styles.errorPanel}>
+        <View style={styles.row}>
+          <View style={[styles.statusDot, styles.statusDotDown]} />
+          <Text style={[styles.status, styles.statusDown]}>API: unreachable</Text>
+        </View>
         <Text style={styles.detail}>{describeHealthError(error)}</Text>
-        <Button label="Try again" onPress={onRetryPress} isLoading={isRefetching} />
+        <Button
+          label="Try again"
+          variant="secondary"
+          onPress={onRetryPress}
+          isLoading={isRefetching}
+        />
       </View>
     )
   }
 
   return (
-    <View style={styles.card}>
-      <Text style={[styles.headline, styles.headlineSuccess]}>API: {health.status}</Text>
-      <Text style={styles.detail}>MongoDB: {health.mongo}</Text>
-      <Button label="Check again" onPress={onRetryPress} isLoading={isRefetching} />
+    <View style={styles.row}>
+      <View style={[styles.statusDot, styles.statusDotUp]} />
+      <Text style={styles.status}>API: {health.status}</Text>
+      <Text style={styles.status}>•</Text>
+      <Text style={styles.status}>MongoDB: {health.mongo}</Text>
     </View>
   )
 }
@@ -58,24 +68,41 @@ function describeHealthError(error: Error | null): string {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.large,
-    borderRadius: radii.medium,
-    backgroundColor: colors.surface,
-    gap: spacing.medium,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.small,
   },
-  headline: {
-    fontSize: fontSizes.title,
-    fontWeight: fontWeights.bold,
+  statusDot: {
+    width: layout.callToActionDotSize,
+    height: layout.callToActionDotSize,
+    borderRadius: radii.pill,
   },
-  headlineSuccess: {
-    color: colors.success,
+  // Lime only as a fill, ringed in black so it reads on the off-white page.
+  statusDotUp: {
+    backgroundColor: colors.highlight,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.textPrimary,
   },
-  headlineDanger: {
+  statusDotDown: {
+    backgroundColor: colors.danger,
+  },
+  status: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+  },
+  statusDown: {
     color: colors.danger,
   },
+  errorPanel: {
+    padding: spacing.large,
+    borderRadius: radii.medium,
+    backgroundColor: colors.dangerSurface,
+    gap: spacing.medium,
+  },
   detail: {
-    fontSize: fontSizes.body,
-    color: colors.textSecondary,
+    ...textStyles.body,
+    color: colors.textPrimary,
   },
 })

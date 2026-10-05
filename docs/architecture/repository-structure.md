@@ -12,7 +12,7 @@ monad/                         repo folder (the product is StrideMon)
 ├── bunfig.toml                hoisted node_modules (React Native needs one copy of each native package)
 ├── biome.json                 lint + format for every TS workspace
 ├── tsconfig.base.json         strict compiler options every workspace extends
-├── scripts/                   repo-level dev scripts (local mongod, ABI export)
+├── scripts/                   repo-level dev scripts (local mongod, demo tooling)
 │
 ├── apps/
 │   ├── mobile/                Expo + React Native app            → mobile-app.md
@@ -37,9 +37,11 @@ packages/shared/src/
 │   ├── auth.ts                  e.g. requestAuthNonceBodySchema, authTokensResponseSchema
 │   ├── activity-sessions.ts
 │   └── index.ts
-├── game-rules/                TypeScript mirror of SneakerGame formulas (estimates only)
-│   ├── reward-estimate.ts
-│   ├── energy.ts
+├── game-rules/                TypeScript mirror of GameMath formulas (estimates only)
+│   ├── game-config.ts           GameConfig, shaped like viem's read of getGameConfig()
+│   ├── energy.ts                current energy, energy after spending
+│   ├── reward-estimate.ts       rewarded minutes, reward, durability loss
+│   ├── sneaker-costs.ts         repair and upgrade cost
 │   └── game-rule-fixtures.json  shared test vectors (also read by Foundry tests)
 ├── domain/                    plain domain types: ActivitySessionStatus, ApiErrorCode, …
 ├── errors/                    getErrorMessage (turns a caught `unknown` into a message)
@@ -58,14 +60,17 @@ packages/shared/src/
 Everything needed to talk to our contracts from TypeScript.
 
 ```text
-packages/chain/src/
-├── monad-chains.ts            viem chain definitions (testnet now, mainnet later)
-├── contract-addresses.ts      deployed addresses per chain id, written by the deploy script
-├── abis/                      GENERATED from Foundry output, never hand-edited
-│   ├── sneaker-nft-abi.ts
-│   ├── sole-token-abi.ts
-│   └── sneaker-game-abi.ts
-└── index.ts
+packages/chain/
+├── scripts/export-abis.ts     `bun run chain:export-abis`: Foundry out/ + deployments/ → src/
+├── type-tests/                compile-only checks (a misspelled contract function fails tsc)
+└── src/
+    ├── monad-chains.ts        viem chain definitions (testnet now, mainnet later)
+    ├── contract-addresses.ts  GENERATED: deployed addresses per chain id
+    ├── abis/                  GENERATED from Foundry output, never hand-edited
+    │   ├── sneaker-nft-abi.ts
+    │   ├── sole-token-abi.ts
+    │   └── sneaker-game-abi.ts
+    └── index.ts
 ```
 
 - ABIs are exported `as const` so viem/wagmi infer function names, argument
@@ -113,7 +118,9 @@ apps/api ─────┤
 | `bun run lint` / `bun run format` | Biome check / Biome check with safe fixes applied |
 | `bun run test` | every workspace's tests |
 | `bun run contracts:build` / `contracts:test` | `forge build` / `forge test` |
-| `bun run chain:export-abis` | Foundry `out/` → `packages/chain/src/abis/` (added in Phase 1) |
+| `bun run chain:export-abis` | `forge build`, then Foundry `out/` → `packages/chain/src/abis/` and `deployments/` → `contract-addresses.ts` |
+| `bun run demo:prepare-wallets` (add `--dry-run` to simulate) | `scripts/prepare-demo-wallets`: SOLE and MON top-ups for the demo wallets on testnet (D-033, `docs/demo-script.md`) |
+| `bun run demo:energy apply` / `revert` (add `--dry-run` to simulate) | `scripts/demo-energy-config`: demo energy regeneration on testnet, and back (D-033) |
 
 ## File and folder naming
 
