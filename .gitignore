@@ -39,3 +39,8 @@ coverage/
 .DS_Store
 *.log
 private.md
+# Landing page (website/, D-035): Next.js build output and the Vercel link
+website/.next/
+website/out/
+website/.vercel/
+website/next-env.d.ts

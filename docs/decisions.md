@@ -691,3 +691,33 @@ Made at Phase 8.6 start (2026-10-05). Adds the details D-028 left open.
   The `demo` build uses the same Android package as the development build, so installing it
   replaces the development build on the phone until that is reinstalled from its EAS link.
 - **Revisit when:** StrideMon gets its own domain (`stridemon.com`) or its own instance.
+
+## D-035 — A landing page in `website/` (Phase 8.8); the iOS day moves after it
+
+Made 2026-10-05, after Phase 8.6.
+
+- **Decision:**
+  1. Phase 8 gains part **8.8, a landing page**, built now. **8.7 (the iOS day, D-022) is deferred**
+     until a borrowed iPhone and a paid Apple Developer account are available, so Phase 8's iOS
+     items in its definition of done wait with it.
+  2. The page lives in **`website/`** at the repo root: Next.js 16 + React 19 + Tailwind v4 +
+     Biome on Bun, statically generated. It is **not a Bun workspace**: it has its own
+     `package.json` and `bun.lock`, so Next's packages never enter the hoisted `node_modules` the
+     mobile app (React 19.2.3 pinned by Expo SDK 57) resolves from. Root `bun run lint` still
+     checks it.
+  3. It's hosted on **Vercel's free plan** at **`https://stridemon.yashmittal.xyz`**. The existing
+     `*.yashmittal.xyz` wildcard already points at Vercel, so no DNS change is needed.
+     `stridemon.com` is unregistered (2026-10-05); buying it later changes one constant.
+  4. It follows `architecture/design-system.md` (the app's Lusion look): the same color tokens,
+     Satoshi through Fontshare's hosted CSS (its licence allows that, not self-hosting the files),
+     IBM Plex Mono from Google Fonts, and the same easing curves. The hero is the real on-chain
+     Sneaker art (`website/public/sneaker-art/`, exported from `SneakerNft.imageSvg`).
+  5. The brief for building it is [`landing-page-prompt.md`](landing-page-prompt.md). Yash's
+     screenshots go in `website/public/screenshots/` under the names listed there.
+- **Why:** judges and the Monad community need a link that explains StrideMon without installing
+  anything. A separate install keeps the app's dependency tree, which took several pins to
+  stabilise (D-015, D-018), untouched.
+- **Trade-off:** two lockfiles and two installs. The page copies its few facts (contract addresses,
+  game numbers) instead of importing `@stridemon/chain` and `@stridemon/shared`, so a redeploy or
+  a rule change must update `website/src/content/` too.
+- **Revisit when:** StrideMon gets `stridemon.com`, or the page needs live chain data.

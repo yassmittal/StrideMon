@@ -3,7 +3,7 @@
 **Goal:** the product survives a live demo in front of judges: a hosted API, a
 clean visual design, no dead ends, and a rehearsed script.
 
-Phase 8 is built in **seven parts, in this order** (D-028). Each part ends with a check on the
+Phase 8 is built in **eight parts** (seven by D-028, plus the landing page, 8.8, by D-035; 8.7 is deferred). Each part ends with a check on the
 phone, and work stops for a report after each one. All the product work (8.1 to 8.5) is finished
 on the development build against the laptop API. **Deployment comes last (8.6):** the hosted
 API, the bundled-JS demo build and the outdoor checks are done once, on the finished app.
@@ -16,7 +16,8 @@ API, the bundled-JS demo build and the outdoor checks are done once, on the fini
 | 8.4 | Loading, empty, error, offline and paused states; data hygiene | No |
 | 8.5 | Demo tooling and a first rehearsal on the development build | No |
 | 8.6 | Deployment: EC2, Atlas, the demo build, the outdoor checks | Demo build (bundled JS) |
-| 8.7 | iOS device day | iOS development build |
+| 8.7 | iOS device day (**deferred**, D-035) | iOS development build |
+| 8.8 | Landing page at `stridemon.yashmittal.xyz` (D-035), built before 8.7 | No |
 
 ## 8.1 — Design foundation
 
@@ -139,11 +140,26 @@ checks and a full rehearsal on Android.
 
 ## 8.7 — iOS device day (D-022)
 
+**Deferred (D-035)** until a borrowed iPhone and a paid Apple Developer account are available.
+
 - One day with a borrowed iPhone and an EAS iOS development build (needs a paid Apple
   Developer account and the device's UDID registered first).
 - Re-run the device checks of Phases 2–7 on it, starting with Phase 4's locked-phone walk:
   the blue location indicator, background delivery, uploads while locked (D-020's keychain
   note), and "kill the app and reopen" losing no samples. The outdoor checks run again here.
+
+## 8.8 — Landing page (D-035)
+
+- A one-page site in `website/` (Next.js 16, static, not a Bun workspace) at
+  `https://stridemon.yashmittal.xyz`, on Vercel's free plan.
+- It explains the loop (own, move, earn, upgrade, transfer), the on-chain rules, fair play and
+  privacy, and links the verified contracts. Its hero is the real on-chain Sneaker art.
+- The design system's look, with subtle motion that respects reduced-motion settings.
+- SEO: metadata, Open Graph image, JSON-LD, sitemap and robots, Lighthouse 95+ on every category.
+- The brief, sections, copy facts and screenshot list are in
+  [`../landing-page-prompt.md`](../landing-page-prompt.md).
+
+**Check:** the live URL on a phone and a laptop, a link preview in a chat app, and Lighthouse.
 
 ## Definition of done
 - [ ] Two full rehearsals on the hosted stack, on both iOS and Android, without touching a laptop.

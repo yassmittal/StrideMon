@@ -28,6 +28,7 @@ these documents, and when a decision changes, the doc changes first.
 | 15 | [`demo-script.md`](demo-script.md) | Preparing for, rehearsing or giving the live demo. |
 | 16 | [`rehearsal-checklist.md`](rehearsal-checklist.md) | Running Phase 8.5's phone check: one full rehearsal, then Maestro. |
 | 17 | [`deployment.md`](deployment.md) | Hosting the API and building the demo app (Phase 8.6). |
+| 18 | [`landing-page-prompt.md`](landing-page-prompt.md) | Building the landing page in `website/` (Phase 8.8). |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else
@@ -53,7 +54,7 @@ these documents, and when a decision changes, the doc changes first.
 | 5 — Settlement & rewards | Done (a 5-minute walk settled +25 SOLE, durability −2 on an Android phone, matching the chain and `tokenURI`, 2026-10-02) |
 | 6 — Repair & upgrade | Done (repair 96 → 100 for 2.8 SOLE, upgrade 1 → 2 for 50 SOLE, wallet cancel, and the next run paying 6 SOLE/min verified on an Android phone, 2026-10-03). The durability-below-50 penalty was skipped |
 | 7 — Sneaker transfer (**MVP complete**) | Done (#4 sent A → B and back with level 2, efficiency 12 intact; picker, empty state and run block verified on an Android phone with two MetaMask accounts, 2026-10-03). **MVP complete** |
-| 8 — Demo hardening | In progress (seven parts, deployment last, D-028). 8.1 design foundation: done (Home checked on the Android phone, 2026-10-03). 8.2 design across the app: done (every screen, sheets, transfer and tab icons checked on the Android phone, 2026-10-03). 8.3 Sneaker NFT image: done (on-chain SVG via `SneakerArtRenderer`, contracts redeployed and verified, flow checked end to end on the Android phone, 2026-10-03; quiet button presses, D-031). 8.4 states and data hygiene: done (airplane mode, a testnet pause and unpause, explorer links and the privacy note checked on the Android phone, 2026-10-04; D-032). 8.5 demo tooling: done (demo wallet and energy scripts, `demo-script.md`, Maestro flow; D-033; full rehearsal by hand on the Android phone, A → B and back, 2026-10-05). Next: 8.6 |
+| 8 — Demo hardening | In progress (seven parts, deployment last, D-028). 8.1 design foundation: done (Home checked on the Android phone, 2026-10-03). 8.2 design across the app: done (every screen, sheets, transfer and tab icons checked on the Android phone, 2026-10-03). 8.3 Sneaker NFT image: done (on-chain SVG via `SneakerArtRenderer`, contracts redeployed and verified, flow checked end to end on the Android phone, 2026-10-03; quiet button presses, D-031). 8.4 states and data hygiene: done (airplane mode, a testnet pause and unpause, explorer links and the privacy note checked on the Android phone, 2026-10-04; D-032). 8.5 demo tooling: done (demo wallet and energy scripts, `demo-script.md`, Maestro flow; D-033; full rehearsal by hand on the Android phone, A → B and back, 2026-10-05). 8.6 deployment: done (API at `https://stridemon-api.yashmittal.xyz` under PM2 on the EC2 instance, Atlas `stridemon` database, `demo` EAS build; every `deployment.md` step passed on the Android phone, 2026-10-05; D-034). 8.7 iOS: deferred (D-035). Now: 8.8 landing page (`website/`, brief in `landing-page-prompt.md`) |
 | 9 — Marketplace (optional) | Not started |
 | 10 — Beyond the hackathon | Not started |
 

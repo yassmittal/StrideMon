@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!packages/contracts", "!packages/chain/src/abis"]
+    "includes": ["**", "!packages/contracts", "!packages/chain/src/abis", "!website/public"]
   },
   "formatter": {
     "enabled": true,
@@ -40,7 +40,12 @@
   },
   "overrides": [
     {
-      "includes": ["apps/mobile/app/**", "apps/mobile/app.config.ts", "**/*.config.*"],
+      "includes": [
+        "apps/mobile/app/**",
+        "apps/mobile/app.config.ts",
+        "website/src/app/**",
+        "**/*.config.*"
+      ],
       "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
     },
     {
