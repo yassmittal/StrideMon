@@ -636,3 +636,29 @@ Made at Phase 8.4 start (2026-10-04).
 - **Trade-off:** while paused, the outbox holds its whole queue, gas drips included, because it
   sends one nonce at a time. The API doesn't refuse a new run while paused; the app does.
 - **Revisit when:** the outbox needs to send around a stuck record.
+
+## D-033 — Demo tooling runs as Foundry scripts from the deployer key
+
+Made at Phase 8.5 start (2026-10-04).
+
+- **Decision:**
+  1. `scripts/prepare-demo-wallets` and `scripts/demo-energy-config` are thin shell wrappers
+     around two Foundry scripts (`PrepareDemoWallets.s.sol`, `DemoEnergyConfig.s.sol`). They
+     sign with the **deployer** key from `packages/contracts/.env`, never the game-server key,
+     so they can't take a nonce the API's outbox expects (D-019). They always target
+     `monad_testnet`, and `--dry-run` simulates without sending.
+  2. Wallet A's SOLE comes from real runs. If A is still short of its upgrade (plus 10 SOLE for a
+     repair) on demo day, the deployer grants itself `MINTER_ROLE` on `SoleToken`, mints the
+     difference to A and revokes the role, all in one run. The script also tops either wallet up
+     to 1 MON if it drops below 0.5 MON. It only reports wallet B: emptying B needs B's key.
+  3. The demo energy config sets `energyRegenerationSeconds` to 60 s (empty to full in 10
+     minutes) and leaves every other field alone. Reverting restores the launch value from
+     `DeployGame.buildInitialGameConfig()`. The app already reads the config from the chain.
+- **Why:** the deployer already holds every admin role, so this needs no contract change and no
+  redeploy. Foundry keeps the `uint256` maths and the `GameConfig` struct in Solidity, and
+  `forge test` covers the scripts with the rest of the contracts.
+- **Trade-off:** a top-up mint is SOLE no run earned, so testnet's supply no longer equals the
+  settled rewards minus burns. Because energy is computed lazily, a Sneaker that looks full under
+  the demo config can show less after the revert, until it regenerates again.
+- **Revisit when:** mainnet (Phase 10): the admin key moves to a multisig and demo tooling stays
+  on testnet.

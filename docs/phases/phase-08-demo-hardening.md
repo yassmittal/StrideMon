@@ -96,6 +96,12 @@ repair or upgrade.
 - A written demo script (`docs/demo-script.md`) that follows `MVP.md` §21, with a fallback for
   each step (e.g. a pre-recorded walk if the venue has no GPS signal).
 - Maestro flow for the non-GPS parts (sign-in → home → repair → upgrade → transfer).
+- **Approach (D-033):** both scripts are shell wrappers around Foundry scripts that sign with the
+  deployer key, never the game server's. Wallet A earns its SOLE by walking; the script mints
+  only a shortfall (through a `MINTER_ROLE` it grants and revokes in the same run) and tops MON
+  up below 0.5. The demo config sets energy regeneration to 60 s. The Maestro flow lives in
+  `apps/mobile/.maestro/` and drives MetaMask's sheets too; running it is in
+  `device-testing.md` §10.
 
 **On the phone:** one full rehearsal of the script on the development build.
 

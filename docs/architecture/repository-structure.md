@@ -12,7 +12,7 @@ monad/                         repo folder (the product is StrideMon)
 ├── bunfig.toml                hoisted node_modules (React Native needs one copy of each native package)
 ├── biome.json                 lint + format for every TS workspace
 ├── tsconfig.base.json         strict compiler options every workspace extends
-├── scripts/                   repo-level dev scripts (local mongod, ABI export)
+├── scripts/                   repo-level dev scripts (local mongod, demo tooling)
 │
 ├── apps/
 │   ├── mobile/                Expo + React Native app            → mobile-app.md
@@ -119,6 +119,8 @@ apps/api ─────┤
 | `bun run test` | every workspace's tests |
 | `bun run contracts:build` / `contracts:test` | `forge build` / `forge test` |
 | `bun run chain:export-abis` | `forge build`, then Foundry `out/` → `packages/chain/src/abis/` and `deployments/` → `contract-addresses.ts` |
+| `bun run demo:prepare-wallets` (add `--dry-run` to simulate) | `scripts/prepare-demo-wallets`: SOLE and MON top-ups for the demo wallets on testnet (D-033, `docs/demo-script.md`) |
+| `bun run demo:energy apply` / `revert` (add `--dry-run` to simulate) | `scripts/demo-energy-config`: demo energy regeneration on testnet, and back (D-033) |
 
 ## File and folder naming
 

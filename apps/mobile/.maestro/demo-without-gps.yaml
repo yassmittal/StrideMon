@@ -1,0 +1,65 @@
+# Phase 8.5: the demo's non-GPS steps as wallet A (docs/demo-script.md): sign in, Home,
+# repair, upgrade, then send the Sneaker to wallet B. Before running: Metro is up, the app is
+# open on the development build, MetaMask is unlocked on Account 1, and A has the SOLE.
+# Run it as in docs/device-testing.md §10:
+#   maestro test -e WALLET_B_ADDRESS=0x… .maestro/demo-without-gps.yaml
+appId: com.stridemon.app
+---
+- launchApp:
+    stopApp: false
+
+# Sign-in only runs when the app is signed out.
+- runFlow:
+    when:
+      visible: "Connect wallet"
+    commands:
+      - tapOn: "Connect wallet"
+      - tapOn: "Connect wallet"
+      - tapOn: "MetaMask"
+      - runFlow:
+          file: approve-in-metamask.yaml
+          env:
+            APPROVE_LABEL: "Connect"
+      - tapOn: "Sign to verify it’s you"
+      - runFlow:
+          file: approve-in-metamask.yaml
+          env:
+            APPROVE_LABEL: "Confirm"
+
+- extendedWaitUntil:
+    visible: "Sneaker #.*"
+    timeout: 60000
+- tapOn: "SNEAKER"
+
+# Repair only when the Sneaker is worn and A can pay for it.
+- runFlow:
+    when:
+      visible:
+        text: "Repair to .*"
+        enabled: true
+    commands:
+      - tapOn: "Repair to .*"
+      - runFlow:
+          file: confirm-sneaker-transaction.yaml
+          env:
+            SUCCESS_TITLE: "Sneaker repaired"
+
+- scrollUntilVisible:
+    element: "Upgrade to level .*"
+- tapOn: "Upgrade to level .*"
+- runFlow:
+    file: confirm-sneaker-transaction.yaml
+    env:
+      SUCCESS_TITLE: "Level .* reached"
+
+- scrollUntilVisible:
+    element: "Send Sneaker #.*"
+- tapOn: "Send Sneaker #.*"
+- tapOn: "Recipient wallet address"
+- inputText: ${WALLET_B_ADDRESS}
+- hideKeyboard
+- tapOn: "Review transfer"
+- runFlow:
+    file: confirm-sneaker-transaction.yaml
+    env:
+      SUCCESS_TITLE: "Sneaker #.* sent"

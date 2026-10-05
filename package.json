@@ -21,7 +21,9 @@
     "test": "bun --filter '*' test",
     "contracts:build": "cd packages/contracts && forge build",
     "contracts:test": "cd packages/contracts && forge test",
-    "chain:export-abis": "bun run contracts:build && bun packages/chain/scripts/export-abis.ts"
+    "chain:export-abis": "bun run contracts:build && bun packages/chain/scripts/export-abis.ts",
+    "demo:prepare-wallets": "./scripts/prepare-demo-wallets",
+    "demo:energy": "./scripts/demo-energy-config"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14"

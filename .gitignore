@@ -15,6 +15,9 @@ packages/contracts/cache/
 packages/contracts/dependencies/
 packages/contracts/broadcast/*/31337/
 packages/contracts/deployments/31337.json
+# Demo tooling runs (D-033) are routine admin calls, not deployments worth keeping.
+packages/contracts/broadcast/PrepareDemoWallets.s.sol/
+packages/contracts/broadcast/DemoEnergyConfig.s.sol/
 
 # Expo / React Native
 .expo/

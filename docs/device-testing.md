@@ -169,6 +169,9 @@ Phase 7's check (no new build; Metro only). Wallet B is a second account in the 
   Sneaker tab: Send is disabled with "Finish your run first". Finish the run afterwards.
 - **Back to A:** as B, send #4 back to A's address. A's Home shows #4 again by itself.
 
+Phase 8.5's check is one full demo rehearsal, step by step in
+[`rehearsal-checklist.md`](rehearsal-checklist.md).
+
 Phase 8.3's check (no new build; restart the API and Metro, because the contract addresses changed
 and the local database was reset):
 
@@ -186,3 +189,32 @@ and the local database was reset):
   (a 10-minute walk), Upgrade: `LEVEL 02 / 30`, two ticks, two speed lines. Refresh the
   MonadVision page and MetaMask: they follow.
 - **B:** sign in with Account 2. B gets starter `#0002`.
+
+## 10. Maestro (the demo's non-GPS steps)
+
+`apps/mobile/.maestro/demo-without-gps.yaml` drives the development build and MetaMask through
+sign-in, Home, repair, upgrade and the transfer to wallet B (Phase 8.5). It needs the phone on
+USB with adb (§7), plus Java 17 and the Maestro CLI, all free:
+
+```bash
+brew install openjdk@17
+curl -fsSL "https://get.maestro.mobile.dev" | bash      # installs to ~/.maestro/bin
+export JAVA_HOME=/opt/homebrew/opt/openjdk@17 PATH="$PATH:$HOME/.maestro/bin"
+```
+
+On a Xiaomi or POCO phone, also turn on **Developer options → Install via USB** and **USB debugging
+(Security settings)** (both may ask you to sign in to a Mi account). Without the first, Maestro's
+driver app fails with `INSTALL_FAILED_USER_RESTRICTED`; without the second, Android refuses its
+taps. Keep the phone unlocked on the first run: MIUI asks once to allow the driver install. With USB
+tethering on, the phone hides adb, so leave it off. Then, with Metro running and the app open:
+
+```bash
+cd apps/mobile
+adb devices                                              # the phone is listed as "device"
+maestro test -e WALLET_B_ADDRESS=<B's address> .maestro/demo-without-gps.yaml
+```
+
+- Unlock MetaMask on Account 1 first. Maestro can't type its password or pass a fingerprint.
+- Sign-in runs only if the app is signed out, and repair only if the Sneaker is worn and A can pay.
+- Wallet A needs SOLE for the upgrade (`bun run demo:prepare-wallets --dry-run` shows it).
+- It ends with the Sneaker in wallet B. Send it back from B before the demo.

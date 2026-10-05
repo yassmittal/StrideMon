@@ -90,6 +90,17 @@ cast send $SNEAKER_NFT "setArtRenderer(address)" <new renderer> \
   --private-key $DEPLOYER_PRIVATE_KEY --rpc-url monad_testnet
 ```
 
+## Demo tooling (D-033)
+
+Two Foundry scripts for the live demo, run from the repo root through their wrappers. They sign
+with `DEPLOYER_PRIVATE_KEY`, always target `monad_testnet`, and simulate only with `--dry-run`.
+The steps around them are in [`docs/demo-script.md`](../../docs/demo-script.md).
+
+| Wrapper | Script | Does |
+|---------|--------|------|
+| `scripts/prepare-demo-wallets` | `PrepareDemoWallets.s.sol` | Mints wallet A any SOLE it lacks for its next upgrade plus 10 (granting and revoking `MINTER_ROLE` in the same run), tops A and B up to 1 MON below 0.5, prints both |
+| `scripts/demo-energy-config apply\|revert` | `DemoEnergyConfig.s.sol` | Sets `energyRegenerationSeconds` to 60, or back to the launch 30 minutes |
+
 ## Manual loop
 
 The whole game loop through `cast`: mint → settle → upgrade → settle → repair →

@@ -129,6 +129,11 @@ React Query's `onlineManager` with an `OfflineNotice` pill, `useIsGamePaused` re
 `EnforcedPause` reverts queued (D-032), and `locationSamples` has a 30-day TTL on `receivedAt`.
 Pause or unpause with `cast send <SneakerGame> "pause()"` / `"unpause()"` and the deployer key
 from `packages/contracts/.env` (it holds `PAUSER_ROLE`); ask Yash before sending either.
-**Next: 8.5** (demo tooling).
+**8.5 (demo tooling)** is done (2026-10-05, D-033), rehearsed by hand on the Android phone:
+`bun run demo:prepare-wallets` and `bun run demo:energy apply|revert` (Foundry scripts that
+sign with the deployer key; `--dry-run` simulates), `docs/demo-script.md`, and the Maestro flow in
+`apps/mobile/.maestro/` (`device-testing.md` §10). Ask Yash before running either script without
+`--dry-run`: both send testnet transactions. The Maestro flow's MetaMask taps are still unrun
+(the phone ran out of storage). **Next: 8.6** (deployment).
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next decision number is D-033.
+for it. The next decision number is D-034.

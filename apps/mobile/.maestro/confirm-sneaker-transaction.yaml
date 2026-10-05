@@ -1,0 +1,12 @@
+# The open sheet's "Confirm in wallet", MetaMask's confirmation, then the success title and Done.
+appId: com.stridemon.app
+---
+- tapOn: "Confirm in wallet"
+- runFlow:
+    file: approve-in-metamask.yaml
+    env:
+      APPROVE_LABEL: "Confirm"
+- extendedWaitUntil:
+    visible: ${SUCCESS_TITLE}
+    timeout: 60000
+- tapOn: "Done"
