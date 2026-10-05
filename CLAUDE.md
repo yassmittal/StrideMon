@@ -134,8 +134,11 @@ from `packages/contracts/.env` (it holds `PAUSER_ROLE`); ask Yash before sending
 sign with the deployer key; `--dry-run` simulates), `docs/demo-script.md`, and the Maestro flow in
 `apps/mobile/.maestro/` (`device-testing.md` §10). Ask Yash before running either script without
 `--dry-run`: both send testnet transactions. The Maestro flow's MetaMask taps are still unrun
-(the phone ran out of storage). **Now: 8.6** (deployment, D-034): the repo side is written
-(`docs/deployment.md`, `apps/api/ecosystem.config.cjs`, the `demo` EAS profile, loopback listen in
-production, `trustProxy: 'loopback'`); Yash runs the server steps from `deployment.md`.
+(the phone ran out of storage). **8.6 (deployment)** is done (2026-10-05, D-034): the API runs at
+`https://stridemon-api.yashmittal.xyz` (nginx + certbot → `127.0.0.1:3020`, PM2 `stridemon-api`, its own
+Bun at `~/.bun-1.4.2`), on the Atlas `stridemon` database, and the `demo` EAS build points at it. Every
+`docs/deployment.md` step passed on the Android phone. **Never run the local API against testnet
+now**: it shares the game-server key with the hosted one. `apps/mobile/.env` points at the hosted API.
+**Next: 8.7** (iOS device day, D-022), which needs a paid Apple Developer account: ask Yash first.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
 for it. The next decision number is D-035.
