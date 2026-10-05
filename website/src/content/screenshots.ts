@@ -1,64 +1,47 @@
-// Android screenshots, 1080 × 2340, from the demo build. Yash drops the PNGs into
-// public/screenshots/; a missing one shows a labelled placeholder of the same size.
+// Android screenshots from the demo build, 1080 × 2340, in public/screenshots/. Status bars are
+// painted out, and the two long scrolling captures (Home, Sneaker tab) are cut to one screen.
+// The build fails if a file listed here is missing.
 export const screenshotWidthPixels = 1080
 export const screenshotHeightPixels = 2340
 
 export type Screenshot = {
   fileName: string
-  screenName: string
   alt: string
 }
 
-function defineScreenshot(fileName: string, screenName: string, alt: string): Screenshot {
-  return { fileName, screenName, alt }
-}
-
 export const screenshots = {
-  welcome: defineScreenshot(
-    '01-welcome.png',
-    'Welcome',
-    'StrideMon welcome screen with the headline “Walk. Earn. Upgrade.” and a button to connect a wallet.',
-  ),
-  home: defineScreenshot(
-    '02-home.png',
-    'Home',
-    'StrideMon Home screen: the Sneaker card with its on-chain picture, energy left, and the SOLE balance.',
-  ),
-  activeRun: defineScreenshot(
-    '03-active-run.png',
-    'Active run',
-    'Dark active run screen showing elapsed time, distance, speed and the estimated SOLE reward, with a STOP button.',
-  ),
-  runSummary: defineScreenshot(
-    '04-run-summary.png',
-    'Run summary',
-    'Run summary screen showing the SOLE earned, the rewarded minutes and the durability lost.',
-  ),
-  sneakerTab: defineScreenshot(
-    '05-sneaker-tab.png',
-    'Sneaker tab',
-    'Sneaker tab with the Sneaker’s stats and the repair and upgrade panels with their SOLE costs.',
-  ),
-  levelUp: defineScreenshot(
-    '06-level-up.png',
-    'Level up',
-    'Sheet confirming “Level 2 reached” after an upgrade, with the Sneaker’s new efficiency.',
-  ),
-  transfer: defineScreenshot(
-    '07-transfer.png',
-    'Send Sneaker',
-    'Send Sneaker screen with a recipient wallet address entered and a review of the transfer.',
-  ),
-  history: defineScreenshot(
-    '08-history.png',
-    'History',
-    'History list of past runs, each with its date, rewarded minutes and SOLE earned.',
-  ),
-  explorerNft: defineScreenshot(
-    '09-explorer-nft.png',
-    'MonadVision NFT page',
-    'MonadVision explorer page for a StrideMon Sneaker NFT, showing the same on-chain picture as the app.',
-  ),
+  welcome: {
+    fileName: '01-welcome.png',
+    alt: 'StrideMon welcome screen: the headline “Walk. Earn. Upgrade.”, a line on how the game works, and a Connect wallet button.',
+  },
+  home: {
+    fileName: '02-home.png',
+    alt: 'StrideMon Home screen: Sneaker #0002’s on-chain picture at level 2, efficiency 12, energy 1 of 10 with the next point in 26 minutes, and a balance of 84.6 SOLE.',
+  },
+  activeRun: {
+    fileName: '03-active-run.png',
+    alt: 'Active run screen on black: 2:52 elapsed, 132 m walked at 3.6 km/h, 8 of 10 energy left, an estimated reward of 10 SOLE, and a STOP button.',
+  },
+  runSummary: {
+    fileName: '04-run-summary.png',
+    alt: 'Run summary: 10 SOLE earned and settled, 2 rewarded minutes, 1 durability lost, a link to the transaction, and the run’s duration, distance and average speed.',
+  },
+  sneakerTab: {
+    fileName: '05-sneaker-tab.png',
+    alt: 'Sneaker tab: repair from durability 96 to 100 for 3.2 SOLE, and upgrade from level 2 to 3, efficiency 12 to 14, for 100 SOLE.',
+  },
+  repairReview: {
+    fileName: '06-repair-review.png',
+    alt: 'Review sheet before a repair: durability 94 to 100 for 4.8 SOLE, with Confirm in wallet and Not now buttons.',
+  },
+  transfer: {
+    fileName: '07-transfer.png',
+    alt: 'Send Sneaker #2 screen: the Sneaker’s level, efficiency and durability, the recipient wallet address, and a Review transfer button.',
+  },
+  explorerNft: {
+    fileName: '09-explorer-nft.png',
+    alt: 'MonadVision explorer page for a StrideMon Sneaker NFT (ERC-721), showing the same on-chain picture as the app.',
+  },
 } as const satisfies Record<string, Screenshot>
 
 export const demoVideo = {

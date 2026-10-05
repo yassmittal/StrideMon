@@ -232,13 +232,19 @@ placeholder of the same size for any that are missing.
 | `03-active-run.png` | Dark active run: time, distance, speed, estimated reward | How it works 3 |
 | `04-run-summary.png` | Summary: +SOLE, rewarded minutes, durability lost | How it works 4 |
 | `05-sneaker-tab.png` | Sneaker tab: repair and upgrade panels | How it works 5 |
-| `06-level-up.png` | "Level 2 reached" sheet | How it works 5 |
+| `06-repair-review.png` | Repair review sheet (replaced "Level 2 reached", 2026-10-05) | How it works 5 |
 | `07-transfer.png` | Send Sneaker: recipient address and review | How it works 6 |
-| `08-history.png` | History list of settled runs | (spare) |
+| `08-history.png` | History list of settled runs | (spare, not on the page) |
 | `09-explorer-nft.png` | MonadVision's NFT page with the same art (optional) | On-chain |
 | `demo-walk.mp4` + `demo-walk-poster.png` | The recorded walk (optional, under 15 MB) | Demo |
 
 Crop the Android status bar off if it shows notifications or a low battery.
+
+*As built (2026-10-05):* every status bar is painted over with the screen's background (the
+size stays 1080 × 2340). `04` had a black border, trimmed. `02` and `05` were long scrolling
+captures: `02` is cut to the header, Sneaker card and balance, and `05` keeps the title, the
+repair and upgrade panels and the tab bar. With every screenshot in place, the placeholders were
+removed: a missing file listed in `src/content/screenshots.ts` now fails the build.
 
 ### 9. Don't
 

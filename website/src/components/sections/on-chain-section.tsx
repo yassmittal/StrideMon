@@ -7,8 +7,6 @@ import {
 } from '@/content/contracts'
 import { screenshots } from '@/content/screenshots'
 import { sectionIds } from '@/content/site'
-import { hasPublicFile } from '@/lib/read-public-file'
-import { sneakerArtPath, sneakerArtSizePixels } from '@/lib/read-sneaker-art'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { CopyAddressButton } from '../ui/copy-address-button'
 import { CrossMarks } from '../ui/cross-marks'
@@ -18,7 +16,6 @@ import { SectionHeading } from '../ui/section-heading'
 const headingId = `${sectionIds.onChain}-heading`
 
 export function OnChainSection() {
-  const hasExplorerScreenshot = hasPublicFile(`/screenshots/${screenshots.explorerNft.fileName}`)
   return (
     <section
       id={sectionIds.onChain}
@@ -80,24 +77,11 @@ export function OnChainSection() {
           <p className="max-w-[25em] text-lg leading-[1.4]">{onChainContent.artText}</p>
         </div>
         <div className="flex justify-center md:col-span-5 md:col-start-8 md:justify-end">
-          {hasExplorerScreenshot ? (
-            <PhoneFrame
-              screenshot={screenshots.explorerNft}
-              sizes="(min-width: 768px) 277px, 62vw"
-              className="w-[66%] max-w-[277px]"
-            />
-          ) : (
-            // biome-ignore lint/performance/noImgElement: a vector file; next/image adds nothing in a static export.
-            <img
-              src={sneakerArtPath}
-              alt={onChainContent.artAlt}
-              width={sneakerArtSizePixels}
-              height={sneakerArtSizePixels}
-              loading="lazy"
-              decoding="async"
-              className="h-auto w-full max-w-[360px] rounded-panel"
-            />
-          )}
+          <PhoneFrame
+            screenshot={screenshots.explorerNft}
+            sizes="(min-width: 768px) 277px, 56vw"
+            className="w-[56%] max-w-[277px]"
+          />
         </div>
       </div>
     </section>

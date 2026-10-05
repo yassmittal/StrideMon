@@ -14,8 +14,8 @@ type PhoneFrameProps = {
   className?: string
 }
 
-// A plain phone frame around a screenshot. A missing PNG shows a labelled placeholder of the same
-// size, so dropping the file in later changes nothing around it.
+// A plain phone frame around a screenshot. A missing file fails the build rather than shipping a
+// broken image.
 export function PhoneFrame({
   screenshot,
   sizes,
@@ -23,18 +23,17 @@ export function PhoneFrame({
   className = '',
 }: PhoneFrameProps) {
   const sourcePath = `/screenshots/${screenshot.fileName}`
+  if (!hasPublicFile(sourcePath)) {
+    throw new Error(`Missing screenshot: public${sourcePath}`)
+  }
   return (
     <div className={`rounded-[28px] bg-ink p-[5px] ${className}`}>
-      {hasPublicFile(sourcePath) ? (
-        <ScreenshotPicture
-          sourcePath={sourcePath}
-          alt={screenshot.alt}
-          sizes={sizes}
-          isPriority={isPriority}
-        />
-      ) : (
-        <ScreenshotPlaceholder screenshot={screenshot} />
-      )}
+      <ScreenshotPicture
+        sourcePath={sourcePath}
+        alt={screenshot.alt}
+        sizes={sizes}
+        isPriority={isPriority}
+      />
     </div>
   )
 }
@@ -67,23 +66,5 @@ function ScreenshotPicture({ sourcePath, alt, sizes, isPriority }: ScreenshotPic
       {/* biome-ignore lint/a11y/useAltText: `alt` is inside imageProps from getImageProps. */}
       <img {...imageProps} className="block h-auto w-full rounded-[23px]" />
     </picture>
-  )
-}
-
-function ScreenshotPlaceholder({ screenshot }: { screenshot: Screenshot }) {
-  return (
-    <div
-      role="img"
-      aria-label={`Placeholder for the ${screenshot.screenName} screen`}
-      className="flex aspect-[1080/2340] w-full flex-col items-center justify-center gap-2 rounded-[23px] bg-surface-muted p-4 text-center"
-    >
-      <span className="text-label font-medium uppercase tracking-[0.08em] text-ink-secondary-small">
-        Screenshot
-      </span>
-      <span className="text-base text-ink">{screenshot.screenName}</span>
-      <span className="font-mono text-[0.625rem] break-all text-ink-secondary-small">
-        {screenshot.fileName}
-      </span>
-    </div>
   )
 }

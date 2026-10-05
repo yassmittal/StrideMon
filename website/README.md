@@ -34,18 +34,17 @@ A contract redeploy or a rule change must update `src/content/` too (D-035).
 
 ## Screenshots
 
-Drop the Android PNGs (1080 × 2340) into `public/screenshots/` under the names in
-`src/content/screenshots.ts`. Until a file exists, its frame shows a labelled placeholder of the
-same size. `bun run build` first runs `bun run images`, which writes WebP and AVIF copies at
-240–1080 px into `public/screenshots/optimized/` (gitignored). A static export has no image
-optimizer, so `next/image` points at those files through `src/lib/screenshot-image-loader.ts`.
+The Android PNGs (1080 × 2340, status bar painted out) live in `public/screenshots/` under the
+names in `src/content/screenshots.ts`. A missing file listed there fails the build. `bun run build`
+first runs `bun run images`, which writes WebP and AVIF copies at 240–1080 px into
+`public/screenshots/optimized/` (gitignored). A static export has no image optimizer, so
+`next/image` points at those files through `src/lib/screenshot-image-loader.ts`.
 
 The demo section appears only when `public/screenshots/demo-walk.mp4` exists (with
-`demo-walk-poster.png` as its poster). The on-chain section shows `09-explorer-nft.png` if it
-exists, and the Sneaker art otherwise.
+`demo-walk-poster.png` as its poster).
 
-After adding screenshots, check each `alt` text in `src/content/screenshots.ts` against what the
-screen really shows.
+When you replace a screenshot, update its `alt` text in `src/content/screenshots.ts` to match
+what the screen shows.
 
 ## Fonts
 

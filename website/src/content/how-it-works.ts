@@ -41,7 +41,7 @@ export const howItWorksSteps: readonly HowItWorksStep[] = [
     title: 'Upgrade',
     description:
       'Spend SOLE to repair durability or to level the Sneaker up. Each level adds efficiency, so the next run pays more.',
-    screenshots: [screenshots.sneakerTab, screenshots.levelUp],
+    screenshots: [screenshots.sneakerTab, screenshots.repairReview],
   },
   {
     title: 'Own it, really',

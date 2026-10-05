@@ -56,6 +56,4 @@ export const onChainContent = {
   artHeading: 'The picture is on-chain too',
   artText:
     'The Sneaker’s picture is an SVG drawn by a contract, so the app, MonadVision and MetaMask all show the same image, and it changes when you repair or upgrade.',
-  artAlt:
-    'The on-chain picture of Sneaker #0002: a white line drawing of a running shoe with a lime stripe, level 2 of 30, durability 96 of 100.',
 } as const
