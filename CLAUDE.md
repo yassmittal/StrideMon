@@ -134,6 +134,8 @@ from `packages/contracts/.env` (it holds `PAUSER_ROLE`); ask Yash before sending
 sign with the deployer key; `--dry-run` simulates), `docs/demo-script.md`, and the Maestro flow in
 `apps/mobile/.maestro/` (`device-testing.md` §10). Ask Yash before running either script without
 `--dry-run`: both send testnet transactions. The Maestro flow's MetaMask taps are still unrun
-(the phone ran out of storage). **Next: 8.6** (deployment).
+(the phone ran out of storage). **Now: 8.6** (deployment, D-034): the repo side is written
+(`docs/deployment.md`, `apps/api/ecosystem.config.cjs`, the `demo` EAS profile, loopback listen in
+production, `trustProxy: 'loopback'`); Yash runs the server steps from `deployment.md`.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next decision number is D-034.
+for it. The next decision number is D-035.

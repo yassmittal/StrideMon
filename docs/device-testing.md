@@ -121,8 +121,8 @@ works in a build with its JS bundled in:
   Locking the phone is fine: the app keeps running.
 
 A build with bundled JS needs the `EXPO_PUBLIC_*` values set on its `eas.json` profile,
-because `.env` files are gitignored and never uploaded to EAS (Phase 8.6). It
-isn't set up yet.
+because `.env` files are gitignored and never uploaded to EAS. That's the `demo` profile in
+`eas.json` (Phase 8.6, [`deployment.md`](deployment.md) step 8).
 
 ## 9. Per-phase device checks
 

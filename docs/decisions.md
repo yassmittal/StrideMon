@@ -662,3 +662,32 @@ Made at Phase 8.5 start (2026-10-04).
   the demo config can show less after the revert, until it regenerates again.
 - **Revisit when:** mainnet (Phase 10): the admin key moves to a multisig and demo tooling stays
   on testnet.
+
+## D-034 — The hosted API is `stridemon-api.yashmittal.xyz`, behind the instance's nginx
+
+Made at Phase 8.6 start (2026-10-05). Adds the details D-028 left open.
+
+- **Decision:**
+  1. The API lives at `https://stridemon-api.yashmittal.xyz`, a subdomain of the domain that already
+     serves `meAsAgent`, pointed at the same EC2 instance.
+  2. The instance's existing nginx terminates HTTPS with a free Let's Encrypt certificate
+     (certbot) and proxies to the API on `127.0.0.1:3020`. In production the API listens on
+     loopback only, like `meAsAgent`'s API on 3010; in development it keeps `0.0.0.0` for the
+     phone on the LAN.
+  3. Fastify trusts `X-Forwarded-For` from loopback only (`trustProxy: 'loopback'`), so the rate
+     limit sees each player's IP instead of nginx's.
+  4. PM2 runs it as `stridemon-api` from `apps/api/ecosystem.config.cjs`. The demo build is the
+     `demo` profile in `eas.json`, with its `EXPO_PUBLIC_*` values on the profile.
+  5. StrideMon runs on its own Bun binary, `~/.bun-1.4.2/bin/bun` (the version `bun.lock` and
+     EAS are pinned to), unpacked from the release zip. The instance's shared `~/.bun` stays on
+     the version the other projects use (1.3.14 on 2026-10-05), so upgrading StrideMon's Bun never
+     changes theirs.
+  6. DNS for `yashmittal.xyz` is on Vercel, which has a wildcard record. An explicit `A` record for
+     `stridemon-api` points that one name at the instance (`100.55.119.114`).
+  7. The step-by-step setup is [`deployment.md`](deployment.md).
+- **Why:** a subdomain keeps the API's routes unprefixed and gives it its own nginx server block
+  and certificate, so nothing about `meAsAgent`'s setup changes. Port 3020 is free on the instance.
+- **Trade-off:** StrideMon's uptime now depends on an instance shared with five other projects.
+  The `demo` build uses the same Android package as the development build, so installing it
+  replaces the development build on the phone until that is reinstalled from its EAS link.
+- **Revisit when:** StrideMon gets its own domain (`stridemon.com`) or its own instance.

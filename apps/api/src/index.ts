@@ -2,8 +2,6 @@ import { getErrorMessage } from '@stridemon/shared/errors'
 import closeWithGrace from 'close-with-grace'
 import { buildServer } from './build-server'
 
-// All interfaces, so a phone on the same Wi-Fi can reach the dev API by LAN IP.
-const LISTEN_HOST = '0.0.0.0'
 const SHUTDOWN_GRACE_PERIOD_MILLISECONDS = 10_000
 
 const server = await buildServer({ environmentVariables: process.env }).catch((error: unknown) => {
@@ -17,4 +15,7 @@ closeWithGrace({ delay: SHUTDOWN_GRACE_PERIOD_MILLISECONDS }, async ({ err: shut
   await server.close()
 })
 
-await server.listen({ port: server.config.apiPort, host: LISTEN_HOST })
+// Production sits behind nginx on the same instance (D-034), so it listens on loopback only.
+// Development listens on every interface, so a phone on the same Wi-Fi reaches it by LAN IP.
+const listenHost = server.config.nodeEnvironment === 'production' ? '127.0.0.1' : '0.0.0.0'
+await server.listen({ port: server.config.apiPort, host: listenHost })

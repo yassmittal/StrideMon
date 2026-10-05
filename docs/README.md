@@ -27,6 +27,7 @@ these documents, and when a decision changes, the doc changes first.
 | 14 | [`device-testing.md`](device-testing.md) | Building, installing and debugging the app on a phone. |
 | 15 | [`demo-script.md`](demo-script.md) | Preparing for, rehearsing or giving the live demo. |
 | 16 | [`rehearsal-checklist.md`](rehearsal-checklist.md) | Running Phase 8.5's phone check: one full rehearsal, then Maestro. |
+| 17 | [`deployment.md`](deployment.md) | Hosting the API and building the demo app (Phase 8.6). |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else

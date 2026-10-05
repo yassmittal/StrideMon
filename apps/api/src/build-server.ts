@@ -38,6 +38,9 @@ export async function buildServer({
 
   const fastify = Fastify({
     logger: buildLoggerOptions(apiConfig),
+    // nginx on the same instance forwards each player's IP (D-034). Only loopback is trusted,
+    // so a client can't pick its own rate-limit key with a forged header.
+    trustProxy: 'loopback',
   }).withTypeProvider<ZodTypeProvider>()
   fastify.setValidatorCompiler(validatorCompiler)
   fastify.setSerializerCompiler(serializerCompiler)

@@ -122,6 +122,10 @@ Hosting follows `meAsAgent`'s setup (D-028):
   the development build, this one bundles its JavaScript, and `.env` files are never uploaded to
   EAS (they're gitignored). The `EXPO_PUBLIC_*` values must therefore be set on the profile
   (`eas.json` → `env`) or as EAS environment variables.
+- **Approach (D-034):** `https://stridemon-api.yashmittal.xyz`, through the instance's nginx and a
+  certbot certificate, to the API on `127.0.0.1:3020` (PM2 name `stridemon-api`). Fastify trusts
+  the forwarded IP from loopback only. The demo build is `eas.json`'s `demo` profile. Every step
+  is in [`../deployment.md`](../deployment.md).
 - **Never run the local API against testnet while the hosted one is live.** Both send with the
   same game-server key from different databases, so their transaction nonces would collide.
 
