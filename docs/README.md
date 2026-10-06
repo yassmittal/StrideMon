@@ -32,6 +32,7 @@ these documents, and when a decision changes, the doc changes first.
 | 19 | [`landing-page-video-prompt.md`](landing-page-video-prompt.md) | Cutting the screen recordings into the landing page's demo video. |
 | 20 | [`waitlist-prompt.md`](waitlist-prompt.md) | The brief the landing page's waitlist was built from (D-037). |
 | 21 | [`social-plan.md`](social-plan.md) | Posting on X: the research, the two accounts, the calendar. The posts themselves live in `../social/` (D-036). |
+| 22 | [`hackathon-submission.md`](hackathon-submission.md) | Submitting to Metropolis: the track, and the final TODO before the 2026-10-14 09:29 IST deadline. |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else
