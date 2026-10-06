@@ -35,6 +35,11 @@ deadline.
   `packages/contracts/README.md`.
 - The hosted API answers `GET /health` with `ok` and Mongo connected.
 - The live site (`https://stridemon.yashmittal.xyz`) shows the new STRIDE contract addresses.
+- The `demo` APK is current: built 2026-10-06 from `d1fbcc3` (the STRIDE rename), with the new
+  contract addresses. Link:
+  `https://expo.dev/artifacts/eas/Aa0J7FXKPHyaKSGL-74nW66qSugLVcvhOMLyRrGL2iY.apk`
+- The hosted API is on the new contracts: the 2026-10-06 recording shows a new Sneaker and a
+  STRIDE reward, which the app reads from the new contracts.
 - No secrets in the repo. The only private keys are Anvil's public test keys, and `private.md`
   and the `.env` files are gitignored.
 
@@ -44,14 +49,10 @@ The submission is incomplete without these.
 
 - [ ] **Add a `LICENSE` file (MIT).** The repo has none, and GitHub shows `license: null`. The rules
   require an OSI-approved licence (§4.1.1, §7.2).
-- [ ] **Rebuild the `demo` APK on the new contracts.** The demo build was made on 2026-10-05, but the
-  contracts were redeployed for STRIDE on 2026-10-06 (D-038). The addresses are compiled into the
-  app from `@stridemon/chain`, so the current APK most likely still points at the old contracts.
-- [ ] **Check that the hosted API runs the post-rename code.** `social-plan.md` §12 still lists this
-  as open. If the server wasn't updated, it mints and settles on the old contracts.
-- [ ] **Record a fresh run on the new contracts and save its transaction hashes:** starter mint,
-  settlement, repair, upgrade and transfer. The rules ask for contract addresses or transaction
-  hashes (§9.2), and every hash we have now is from abandoned deployments.
+- [ ] **Save the transaction hashes from the run recorded on 2026-10-06:** starter mint, settlement,
+  repair, upgrade and transfer (from MonadVision or the app's explorer links). The rules ask for
+  contract addresses or transaction hashes (§9.2), and every hash in the repo today is from
+  abandoned deployments.
 - [ ] **Make the demo video (3 minutes or less) and upload it publicly** to YouTube, Loom or Vimeo
   (§4.1.2, §9.4). The current videos don't meet the rules:
   - The 45 s launch film (`launch-video/out/`) is mostly motion graphics, and its run screen is a
