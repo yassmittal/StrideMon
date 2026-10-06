@@ -3,7 +3,14 @@ import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 import { preload } from 'react-dom'
-import { siteDescription, siteName, siteTitle, siteUrl } from '@/content/site'
+import {
+  siteDescription,
+  siteName,
+  siteTitle,
+  siteUrl,
+  xAccountHandle,
+  xCreatorHandle,
+} from '@/content/site'
 import { fontshareCssUrl, loadFontshareCss } from '@/lib/load-fontshare-css'
 import './globals.css'
 
@@ -30,6 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: xAccountHandle,
+    creator: xCreatorHandle,
     title: siteTitle,
     description: siteDescription,
   },

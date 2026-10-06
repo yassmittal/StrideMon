@@ -6,6 +6,7 @@ export const waitlistContent = {
   heading: 'Get notified when StrideMon opens.',
   intro:
     'StrideMon runs on Monad testnet as an Android demo build today. Leave your email and we’ll write once when you can play.',
+  followPrompt: 'Or follow along on X:',
   emailLabel: 'Email',
   emailPlaceholder: 'you@example.com',
   phonePlatformLabel: 'Your phone (optional)',

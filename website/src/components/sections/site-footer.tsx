@@ -3,7 +3,13 @@ import {
   deployedContracts,
   monadTestnetChainId,
 } from '@/content/contracts'
-import { footerContent, githubRepositoryUrl, siteName } from '@/content/site'
+import {
+  footerContent,
+  githubRepositoryUrl,
+  siteName,
+  xAccountHandle,
+  xAccountUrl,
+} from '@/content/site'
 import { ArrowIcon } from '../ui/arrow-icon'
 
 const footerLinkClass =
@@ -33,6 +39,17 @@ export function SiteFooter() {
                   className={footerLinkClass}
                 >
                   {footerContent.githubLabel}
+                  <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href={xAccountUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={footerLinkClass}
+                >
+                  {footerContent.xLabel} {xAccountHandle}
                   <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
                 </a>
               </li>

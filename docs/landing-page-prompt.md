@@ -196,8 +196,10 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    - *What happens to my location data?* Only active minutes and distance reach the chain. Raw
      samples are deleted after 30 days.
    - *Can I sell my Sneaker?* You can send it to any wallet today. A marketplace is planned.
-10. **Footer:** the wordmark, "Built on Monad testnet for a hackathon.", the GitHub link,
-    the contract links, and "STRIDE has no monetary value."
+10. **Footer:** the wordmark, "Built on Monad testnet for a hackathon.", the GitHub link, the
+    X link ([@stridemon](https://x.com/stridemon), D-036), the contract links, and "STRIDE has no
+    monetary value." The waitlist section also points to @stridemon under its intro, for people
+    who'd rather follow along than leave an email.
 
 ### 6. SEO
 
@@ -206,14 +208,14 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
   - description (≤ 155 characters): "A move-to-earn game on Monad. Own a Sneaker NFT, walk or run to
     earn STRIDE, and spend it to repair and level up your Sneaker."
   - canonical, Open Graph (`type: website`, `siteName`, `locale: en_US`), Twitter
-    `summary_large_image`.
+    `summary_large_image` with `site: @stridemon` and `creator: @yash_mittal_dev`.
 - `app/opengraph-image.tsx` (1200×630, `next/og`): the off-white page, the headline, and the
   dark Sneaker panel. Use it for Twitter too.
 - `app/icon.svg` (a simple mark from the Sneaker art) and `app/apple-icon.png`.
 - `app/sitemap.ts` and `app/robots.ts`, both from `siteUrl`.
 - JSON-LD in the page: `VideoGame` (name, description, url, `gamePlatform: "Android"`,
   `applicationCategory: "GameApplication"`, `operatingSystem: "Android"`, `genre: "Move to
-  earn"`, offers at price 0), plus a `FAQPage` built from the same FAQ data as section 9.
+  earn"`, offers at price 0, `sameAs` the X account and the GitHub repo), plus a `FAQPage` built from the same FAQ data as section 9.
 - One `<h1>` (the hero headline), then `<h2>` per section, semantic landmarks
   (`header`, `main`, `section` with `aria-labelledby`, `footer`), `lang="en"`.
 - Every screenshot has descriptive `alt` text (what the screen shows, not "screenshot").

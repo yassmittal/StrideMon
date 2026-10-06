@@ -1,5 +1,6 @@
-import { sectionIds } from '@/content/site'
+import { sectionIds, xAccountHandle, xAccountUrl } from '@/content/site'
 import { waitlistContent } from '@/content/waitlist'
+import { ArrowIcon } from '../ui/arrow-icon'
 import { SectionHeading } from '../ui/section-heading'
 import { WaitlistForm } from '../ui/waitlist-form'
 
@@ -20,6 +21,18 @@ export function WaitlistSection() {
         />
         <p data-reveal className="max-w-[29em] text-lg leading-[1.4] text-ink-secondary-small">
           {waitlistContent.intro}
+        </p>
+        <p data-reveal className="flex flex-wrap items-center gap-x-3 text-lg leading-[1.4]">
+          <span className="text-ink-secondary-small">{waitlistContent.followPrompt}</span>
+          <a
+            href={xAccountUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-h-11 items-center gap-2 font-mono"
+          >
+            {xAccountHandle}
+            <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+          </a>
         </p>
       </div>
       <div

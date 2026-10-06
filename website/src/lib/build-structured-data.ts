@@ -1,6 +1,12 @@
 import { demoVideo } from '@/content/demo-video'
 import { frequentlyAskedQuestions } from '@/content/faq'
-import { siteDescription, siteName, siteUrl } from '@/content/site'
+import {
+  githubRepositoryUrl,
+  siteDescription,
+  siteName,
+  siteUrl,
+  xAccountUrl,
+} from '@/content/site'
 
 type StructuredDataOptions = {
   hasDemoVideo: boolean
@@ -42,6 +48,7 @@ export function buildStructuredData({ hasDemoVideo }: StructuredDataOptions) {
       operatingSystem: 'Android',
       genre: 'Move to earn',
       offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' },
+      sameAs: [xAccountUrl, githubRepositoryUrl],
     },
     {
       '@context': 'https://schema.org',

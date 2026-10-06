@@ -13,6 +13,11 @@ export const siteName = 'StrideMon'
 
 export const githubRepositoryUrl = 'https://github.com/yassmittal/StrideMon'
 
+// The product's X account and the builder's (D-036). Handles keep their `@`.
+export const xAccountHandle = '@stridemon'
+export const xAccountUrl = 'https://x.com/stridemon'
+export const xCreatorHandle = '@yash_mittal_dev'
+
 export const siteTitle = 'StrideMon: walk, earn and upgrade a Sneaker NFT on Monad'
 
 export const siteDescription =
@@ -48,4 +53,5 @@ export const footerContent = {
   builtOnLine: 'Built on Monad testnet for a hackathon.',
   noValueLine: 'STRIDE has no monetary value.',
   githubLabel: 'GitHub',
+  xLabel: 'X',
 } as const
