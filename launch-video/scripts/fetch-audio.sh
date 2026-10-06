@@ -14,9 +14,9 @@ SAMPLE_RATE=48000
 MUSIC_PAGE_URL=https://pixabay.com/music/techno-trance-i-am-techno-539800/
 MUSIC_URL='https://cdn.pixabay.com/download/audio/2026/05/23/audio_14fb5a2082.mp3?filename=deltax-music-i-am-techno-539800.mp3'
 MUSIC_FILE_NAME=deltax-music-i-am-techno-539800.mp3
-# A downbeat: the start of the last four bars of the breakdown. The kick comes back four bars
-# later (56.045 s in the track), which lands on film frame 480, the earn scene's first beat.
-MUSIC_START_SECONDS=48.045
+# A downbeat in the breakdown, five bars before the kick comes back (56.045 s in the track), so
+# the kick lands on film frame 600: beat 20, the walk scene's first beat.
+MUSIC_START_SECONDS=46.045
 # The film is 45 s; keep a little extra so the fade, not the file, ends the music.
 MUSIC_DURATION_SECONDS=46
 

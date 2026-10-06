@@ -39,14 +39,15 @@ STOP 4 and STOP 5. Gates 1–3 are done and approved.
   `out/styleframes/`.
 - **Preview:** `cd launch-video && bunx remotion studio`.
 
-## Status (2026-10-06, at STOP 4)
+## Status (2026-10-06, at STOP 5)
 
-Items 1–3 below are done, and the 4:5 is rendered and waiting on Yash's notes. Music: "I Am Techno"
-by DeltaX-Music, 120 BPM, so `beats.ts` is unchanged (why: `CREDITS.md`). Audio is rebuilt with
-`bash scripts/fetch-audio.sh`; cues are in `src/sound-cues.ts`, levels in `src/soundtrack.ts`.
-Motion blur is `src/components/MotionBlur.tsx` (works headless). Render any format with
-`bash scripts/render.sh <format>`, and make sheets with `bash scripts/contact-sheet.sh`. STOP 4
-material is in `out/stop4/`. Next: Yash's notes, then item 4's re-lay of 16:9 and 9:16.
+Everything below is done and delivered. After STOP 4 Yash asked for two changes: make the film
+as simple as possible (nobody knows StrideMon yet), and rename the token SOLE → STRIDE. The film
+is now an intro, four numbered steps, "It's really yours." and the end card (`SCRIPT.md`,
+revision 2; `FACTS.md` §1 and §9). Footage that shows the old name is out; the walk uses the
+vector run-screen rebuild. Music: "I Am Techno", 120 BPM, trimmed from 46.045 s so the kick lands
+on the walk (`CREDITS.md`). Render with `bash scripts/render.sh <format>`; see `README.md`.
+The list below is the original plan, kept for reference.
 
 ## What's left
 

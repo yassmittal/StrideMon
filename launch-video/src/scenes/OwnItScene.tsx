@@ -1,220 +1,111 @@
-import { AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig } from 'remotion'
+import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion'
 import { readSceneDurationInFrames, toSceneBeatFrame } from '../beats'
 import { ClipRise } from '../components/ClipRise'
-import { CrossMarks } from '../components/CrossMarks'
 import { Drift } from '../components/Drift'
-import { CroppedFootage } from '../components/Footage'
 import { LABEL_ROLL_DURATION_FRAMES, LabelRoll } from '../components/LabelRoll'
 import { MaskedRise } from '../components/MaskedRise'
 import { SneakerArt, toSneakerArtFileName, useSneakerArtMarkups } from '../components/SneakerArt'
+import { StepText } from '../components/StepText'
 import { ownItContent, walletAddresses } from '../content'
-import { type FootageCrop, filmLayouts } from '../layouts'
-import { colors, fontFamilies } from '../theme'
+import { filmLayouts } from '../layouts'
+import { colors, easings, fontFamilies } from '../theme'
 import type { SceneProps } from './scene-props'
 
-const TRANSFER_ART_FILE_NAMES = [toSneakerArtFileName({ level: 2, durability: 100 })]
-const FRAME_RADIUS_PIXELS = 16
-const TRANSFER_BEAT = 7
-/** Beats after the transfer starts when the owner rolls from wallet A to wallet B. */
-const OWNER_ROLL_BEATS_AFTER_TRANSFER = 2
+const ART_FILE_NAMES = [toSneakerArtFileName({ level: 2, durability: 100 })]
+const ART_RADIUS_PIXELS = 16
+const OWNER_IN_BEAT = 1
+const OWNER_ROLL_BEAT = 5
+/** The end card is off-white too, so the scene dips out instead of flipping. */
+const EXIT_DIP_FRAMES = 12
 
 /** The scene frame where the owner's address lands on wallet B. */
 export function readOwnerRollLandingFrame(): number {
-  return (
-    toSceneBeatFrame('ownIt', TRANSFER_BEAT) +
-    toSceneBeatFrame('ownIt', OWNER_ROLL_BEATS_AFTER_TRANSFER) +
-    LABEL_ROLL_DURATION_FRAMES
-  )
+  return toSceneBeatFrame('ownIt', OWNER_ROLL_BEAT) + LABEL_ROLL_DURATION_FRAMES
 }
 
 /**
- * Scene 5 (0:24–0:31), off-white. "Not points in an app. An NFT in your wallet." The same
- * Sneaker in the app and on MonadVision, then the transfer: the owner rolls from wallet A to
- * wallet B while the stats stay put.
+ * Scene 6 (0:31–0:38), off-white. The Sneaker is an NFT in the player's wallet: the owner rolls
+ * from wallet A to wallet B (the real transfer, FACTS.md §6) and the art doesn't change.
  */
 export function OwnItScene({ format }: SceneProps) {
-  const { fps } = useVideoConfig()
+  const frame = useCurrentFrame()
+  const layout = filmLayouts[format]
+  const { art, owner, ownerFontSize } = layout.ownIt
+  const markups = useSneakerArtMarkups(ART_FILE_NAMES)
+  const markup = markups?.get(ART_FILE_NAMES[0] ?? '')
   const durationInFrames = readSceneDurationInFrames('ownIt')
-  const transferStartFrame = toSceneBeatFrame('ownIt', TRANSFER_BEAT)
+  const exitFrame = durationInFrames - EXIT_DIP_FRAMES
+  const ownerStartFrame = toSceneBeatFrame('ownIt', OWNER_IN_BEAT)
+  const opacity = interpolate(frame, [exitFrame, durationInFrames], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easings.standard,
+  })
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.background }}>
       <Drift durationInFrames={durationInFrames}>
-        <Sequence name="Same picture" durationInFrames={transferStartFrame} premountFor={fps}>
-          <SamePicture format={format} exitFrame={transferStartFrame - 12} />
-        </Sequence>
-        <Sequence name="Transfer" from={transferStartFrame} premountFor={fps}>
-          <Transfer format={format} />
-        </Sequence>
+        <AbsoluteFill style={{ opacity }}>
+          {markup !== undefined && (
+            <ClipRise
+              startFrame={0}
+              style={{
+                left: art.left,
+                top: art.top,
+                width: art.width,
+                height: art.height,
+                borderRadius: ART_RADIUS_PIXELS,
+              }}
+            >
+              <SneakerArt markup={markup} size={art.width} />
+            </ClipRise>
+          )}
+          <MaskedRise
+            lines={[ownItContent.ownerLabel.toUpperCase()]}
+            startFrame={ownerStartFrame}
+            fontSize={layout.metaFontSize}
+            fontWeight={500}
+            color={colors.textSecondarySmall}
+            style={{ left: owner.left, top: owner.top }}
+          />
+          <ClipRise
+            startFrame={ownerStartFrame + 4}
+            style={{
+              left: owner.left,
+              top: owner.top + 48,
+              width: ownerFontSize * 0.6 * 12,
+              height: ownerFontSize * 1.2,
+            }}
+          >
+            <LabelRoll
+              steps={[
+                { startFrame: 0, text: walletAddresses.playerA.short },
+                {
+                  startFrame: toSceneBeatFrame('ownIt', OWNER_ROLL_BEAT),
+                  text: walletAddresses.playerB.short,
+                },
+              ]}
+              lineHeightPixels={ownerFontSize * 1.2}
+              style={{
+                fontFamily: fontFamilies.mono,
+                fontSize: ownerFontSize,
+                lineHeight: 1.2,
+                color: colors.textPrimary,
+              }}
+            />
+          </ClipRise>
+          <StepText
+            copy={ownItContent}
+            layout={layout.stepText}
+            metaFontSize={layout.metaFontSize}
+            color={colors.textPrimary}
+            labelColor={colors.textSecondarySmall}
+            labelStartFrame={0}
+            headlineStartFrame={toSceneBeatFrame('ownIt', 1)}
+            sentenceStartFrame={toSceneBeatFrame('ownIt', 2)}
+          />
+        </AbsoluteFill>
       </Drift>
-    </AbsoluteFill>
-  )
-}
-
-function SamePicture({ format, exitFrame }: SceneProps & { exitFrame: number }) {
-  const frame = useCurrentFrame()
-  const layout = filmLayouts[format]
-  const { ownIt } = layout
-  const framesStartFrame = toSceneBeatFrame('ownIt', 2)
-  const opacity = frame < exitFrame ? 1 : Math.max(0, 1 - (frame - exitFrame) / 12)
-
-  return (
-    <AbsoluteFill style={{ opacity }}>
-      <MaskedRise
-        lines={ownItContent.statement}
-        startFrame={0}
-        fontSize={ownIt.statementFontSize}
-        lineHeight={1.05}
-        color={colors.textPrimary}
-        style={{ left: ownIt.statement.left, top: ownIt.statement.top }}
-      />
-      <MaskedRise
-        lines={[ownItContent.framesMetaItems.join('  •  ').toUpperCase()]}
-        startFrame={framesStartFrame}
-        fontSize={layout.metaFontSize}
-        fontWeight={500}
-        color={colors.textPrimary}
-        style={{ left: ownIt.framesMeta.left, top: ownIt.framesMeta.top }}
-      />
-      <FootageFrame
-        crop={ownIt.appCrop}
-        fileName="app-home-level-02.mp4"
-        label={ownItContent.appFrameLabel}
-        labelTop={ownIt.framesLabelTop}
-        metaFontSize={layout.metaFontSize}
-        startFrame={framesStartFrame}
-      />
-      <FootageFrame
-        crop={ownIt.explorerCrop}
-        fileName="monadvision-level-02.mp4"
-        label={ownItContent.explorerFrameLabel}
-        labelTop={ownIt.framesLabelTop}
-        metaFontSize={layout.metaFontSize}
-        startFrame={framesStartFrame + 6}
-      />
-    </AbsoluteFill>
-  )
-}
-
-function FootageFrame({
-  crop,
-  fileName,
-  label,
-  labelTop,
-  metaFontSize,
-  startFrame,
-}: {
-  crop: FootageCrop
-  fileName: string
-  label: string
-  labelTop: number
-  metaFontSize: number
-  startFrame: number
-}) {
-  const width = (crop.sourceWidth ?? 0) * crop.scale
-  const height = crop.sourceHeight * crop.scale
-  return (
-    <>
-      <ClipRise
-        startFrame={startFrame}
-        style={{
-          left: crop.frame.left,
-          top: crop.frame.top,
-          width,
-          height,
-          borderRadius: FRAME_RADIUS_PIXELS,
-        }}
-      >
-        <CroppedFootage fileName={fileName} crop={{ ...crop, frame: { left: 0, top: 0 } }} />
-      </ClipRise>
-      <MaskedRise
-        lines={[label.toUpperCase()]}
-        startFrame={startFrame + 6}
-        fontSize={metaFontSize}
-        fontWeight={500}
-        color={colors.textSecondarySmall}
-        style={{ left: crop.frame.left, top: labelTop }}
-      />
-    </>
-  )
-}
-
-function Transfer({ format }: SceneProps) {
-  const layout = filmLayouts[format]
-  const { ownIt } = layout
-  const markups = useSneakerArtMarkups(TRANSFER_ART_FILE_NAMES)
-  const markup = markups?.get(TRANSFER_ART_FILE_NAMES[0] ?? '')
-  const ownerFontSize = layout.monoCalloutFontSize * 0.8
-  const ownerRollFrame = toSceneBeatFrame('ownIt', OWNER_ROLL_BEATS_AFTER_TRANSFER)
-
-  return (
-    <AbsoluteFill>
-      {markup !== undefined && (
-        <ClipRise
-          startFrame={0}
-          style={{
-            left: ownIt.transferArt.left,
-            top: ownIt.transferArt.top,
-            width: ownIt.transferArt.width,
-            height: ownIt.transferArt.height,
-            borderRadius: FRAME_RADIUS_PIXELS,
-          }}
-        >
-          <SneakerArt markup={markup} size={ownIt.transferArt.width} />
-        </ClipRise>
-      )}
-      <CrossMarks
-        box={{ left: ownIt.owner.left - 24, top: ownIt.owner.top - 24, width: 430, height: 170 }}
-        color={colors.crossMark}
-        contentStartFrame={4}
-      />
-      <MaskedRise
-        lines={[ownItContent.ownerLabel.toUpperCase()]}
-        startFrame={4}
-        fontSize={layout.metaFontSize}
-        fontWeight={500}
-        color={colors.textSecondarySmall}
-        style={{ left: ownIt.owner.left, top: ownIt.owner.top }}
-      />
-      <ClipRise
-        startFrame={8}
-        style={{
-          left: ownIt.owner.left,
-          top: ownIt.owner.top + 48,
-          width: 420,
-          height: ownerFontSize * 1.2,
-        }}
-      >
-        <LabelRoll
-          steps={[
-            { startFrame: 0, text: walletAddresses.playerA.short },
-            { startFrame: ownerRollFrame, text: walletAddresses.playerB.short },
-          ]}
-          lineHeightPixels={ownerFontSize * 1.2}
-          style={{
-            fontFamily: fontFamilies.mono,
-            fontSize: ownerFontSize,
-            lineHeight: 1.2,
-            color: colors.textPrimary,
-          }}
-        />
-      </ClipRise>
-      <MaskedRise
-        lines={[ownItContent.lockedStatsItems.join('  •  ').toUpperCase()]}
-        startFrame={8}
-        fontSize={layout.metaFontSize}
-        fontWeight={500}
-        color={colors.textPrimary}
-        style={{ left: ownIt.lockedStats.left, top: ownIt.lockedStats.top }}
-      />
-      <MaskedRise
-        lines={ownItContent.transferCaption}
-        startFrame={0}
-        fontSize={ownIt.transferCaptionFontSize}
-        lineHeight={1.1}
-        color={colors.textPrimary}
-        style={{ left: ownIt.caption.left, top: ownIt.caption.top }}
-      />
     </AbsoluteFill>
   )
 }

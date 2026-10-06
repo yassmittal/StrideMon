@@ -1,6 +1,6 @@
 import { AbsoluteFill } from 'remotion'
 import { RunScreen } from '../components/RunScreen'
-import { coldOpenRunScreen, ENERGY_AT_START, screenshotRunScreen } from '../content'
+import { ENERGY_AT_START, runScreenContent, screenshotRunScreen } from '../content'
 
 /** The rebuild in screenshot 03's state, for the 50/50 overlay check against the PNG. */
 export function RunScreenCheck() {
@@ -14,10 +14,10 @@ export function RunScreenCheck() {
           energyLeft: screenshotRunScreen.energyLeft,
           energyAtStart: ENERGY_AT_START,
           estimatedRewardText: screenshotRunScreen.estimatedRewardText,
-          estimateNoteLines: coldOpenRunScreen.estimateNoteLines,
+          estimateNoteLines: runScreenContent.estimateNoteLines,
           gpsStatus: screenshotRunScreen.gpsStatus,
-          metaItems: coldOpenRunScreen.metaItems,
-          stopLabel: coldOpenRunScreen.stopLabel,
+          metaItems: runScreenContent.metaItems,
+          stopLabel: runScreenContent.stopLabel,
         }}
       />
     </AbsoluteFill>

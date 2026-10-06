@@ -52,7 +52,8 @@ export type RunScreenState = {
   energyAtStart: number
   estimatedRewardText: string
   estimateNoteLines: readonly string[]
-  gpsStatus: string
+  /** The GPS line under the estimate. Left out where its count isn't known (the ramped walk). */
+  gpsStatus?: string
   metaItems: readonly string[]
   stopLabel: string
 }
@@ -97,12 +98,14 @@ export function RunScreen({ state }: { state: RunScreenState }) {
           isUppercase={false}
         />
       ))}
-      <CaptionText
-        top={elementTops.gpsStatus}
-        text={state.gpsStatus}
-        color={colors.textOnDarkMuted}
-        isUppercase={false}
-      />
+      {state.gpsStatus !== undefined && (
+        <CaptionText
+          top={elementTops.gpsStatus}
+          text={state.gpsStatus}
+          color={colors.textOnDarkMuted}
+          isUppercase={false}
+        />
+      )}
       <StopPill label={state.stopLabel} />
       <div
         style={{

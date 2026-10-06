@@ -17,7 +17,6 @@ STATUS_BAR_HEIGHT_PIXELS=58
 GEAR_BOX="x=480:y=66:w=86:h=88"
 
 RUN_SCREEN_BACKGROUND=0x000000
-LIGHT_SCREEN_BACKGROUND=0xEFF0F9
 
 ENCODE=(-an -c:v libx264 -preset slow -crf 10 -pix_fmt yuv420p
   -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -movflags +faststart)
@@ -32,15 +31,11 @@ build_frame_filter() {
   echo "fps=60,scale=in_color_matrix=bt601:in_range=tv:out_range=pc,format=gbrp,${paint},scale=out_color_matrix=bt709:in_range=pc:out_range=tv,format=yuv420p"
 }
 
+# The film uses only the STOP tap: every other recording shows the token's old name (SOLE) or
+# was cut when the film was simplified (SCRIPT.md, revision 2). FOOTAGE.md still logs them all.
 # name | source | start (s) | end (s) | background | paint the gear
-# app-home-level-02 keeps the gear: it overlaps the card's top edge, and the film crops below it.
 SEGMENTS="
-walk-run-screen|video2|184.00|250.70|${RUN_SCREEN_BACKGROUND}|yes
 stop-tap|video2|252.80|255.00|${RUN_SCREEN_BACKGROUND}|yes
-settling|video2|256.52|259.00|${LIGHT_SCREEN_BACKGROUND}|yes
-metamask-confirm|video2|397.00|404.00|${RUN_SCREEN_BACKGROUND}|no
-app-home-level-02|video2|427.00|429.50|${LIGHT_SCREEN_BACKGROUND}|no
-monadvision-level-02|video2|441.00|443.50|${RUN_SCREEN_BACKGROUND}|no
 "
 
 mkdir -p "$OUTPUT_DIRECTORY"

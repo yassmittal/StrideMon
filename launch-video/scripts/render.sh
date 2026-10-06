@@ -4,7 +4,8 @@
 #
 #   1. The picture: H.264, CRF 16, yuv420p, BT.709 (launch-video-prompt.md §7), no audio.
 #   2. The mix (music and sound effects) as a 48 kHz WAV.
-#   3. Two-pass loudnorm to −14 LUFS integrated, −1 dBTP, as one linear gain.
+#   3. A peak limiter for the few transients that land on a kick, then two-pass loudnorm to
+#      −14 LUFS integrated, −1 dBTP, as one linear gain.
 #   4. The picture and the normalised mix muxed with AAC 320 kbps at 48 kHz, +faststart.
 #   5. The poster: the end card's last frame. For 4:5, also a silent copy for autoplay embeds.
 set -euo pipefail
@@ -23,9 +24,12 @@ LAST_FRAME=2699
 TARGET_LOUDNESS_LUFS=-14
 TARGET_TRUE_PEAK_DBTP=-1
 TARGET_LOUDNESS_RANGE_LU=11
+# −1.5 dBFS: half a dB under the true-peak target, for the AAC encode's overshoot.
+LIMITER_CEILING_LINEAR=0.841
 
 PICTURE_FILE=$WORK_DIRECTORY/$FORMAT-picture.mp4
 MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix.wav
+LIMITED_MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix-limited.wav
 NORMALISED_MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix-normalised.wav
 FILM_FILE=$OUTPUT_DIRECTORY/stridemon-launch-$FORMAT.mp4
 POSTER_FILE=$OUTPUT_DIRECTORY/stridemon-launch-$FORMAT-poster.png
@@ -37,12 +41,25 @@ bunx remotion render "$COMPOSITION_ID" "$PICTURE_FILE" \
 bunx remotion render "$COMPOSITION_ID" "$MIX_FILE" --codec wav
 
 LOUDNORM_TARGET="I=$TARGET_LOUDNESS_LUFS:TP=$TARGET_TRUE_PEAK_DBTP:LRA=$TARGET_LOUDNESS_RANGE_LU"
-measurement=$(ffmpeg -nostdin -hide_banner -i "$MIX_FILE" \
-  -af "loudnorm=$LOUDNORM_TARGET:print_format=json" -f null - 2>&1 | sed -n '/^{/,/^}/p')
-read_measurement() { jq -r ".$1" <<<"$measurement"; }
+measure_loudness() {
+  ffmpeg -nostdin -hide_banner -i "$1" -af "loudnorm=$LOUDNORM_TARGET:print_format=json" -f null - 2>&1 |
+    sed -n '/^{/,/^}/p'
+}
+
+# A few effects land on a kick, and those peaks would pass −1 dBTP once the mix is brought up to
+# −14 LUFS. So: bring it up by the measured gap, let a limiter catch only those transients (at
+# −1.5 dBFS, with 4× oversampling for true peak), then the two-pass loudnorm as one linear gain.
+first_measurement=$(measure_loudness "$MIX_FILE")
+gain_decibels=$(jq -r "$TARGET_LOUDNESS_LUFS - (.input_i | tonumber)" <<<"$first_measurement")
 ffmpeg -nostdin -v error -y -i "$MIX_FILE" \
+  -af "volume=${gain_decibels}dB,aresample=192000,alimiter=limit=$LIMITER_CEILING_LINEAR:attack=1:release=60:level=false,aresample=48000" \
+  -c:a pcm_s24le "$LIMITED_MIX_FILE"
+
+measurement=$(measure_loudness "$LIMITED_MIX_FILE")
+read_measurement() { jq -r ".$1" <<<"$measurement"; }
+ffmpeg -nostdin -hide_banner -y -i "$LIMITED_MIX_FILE" \
   -af "loudnorm=$LOUDNORM_TARGET:measured_I=$(read_measurement input_i):measured_TP=$(read_measurement input_tp):measured_LRA=$(read_measurement input_lra):measured_thresh=$(read_measurement input_thresh):offset=$(read_measurement target_offset):linear=true:print_format=summary,aresample=48000" \
-  -c:a pcm_s24le "$NORMALISED_MIX_FILE"
+  -c:a pcm_s24le "$NORMALISED_MIX_FILE" 2>&1 | grep -E 'Normalization Type|Output (Integrated|True Peak)'
 
 # h264_metadata writes BT.709 into the stream itself, so players that ignore the MP4 colour
 # atom still decode lime and black correctly.

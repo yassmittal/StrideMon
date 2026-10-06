@@ -1,66 +1,64 @@
-# Script and storyboard (STOP 2)
+# Script and storyboard
 
 4:5 master, 60 fps, 2700 frames, 120 BPM (1 beat = 30 frames). Every line below is in
 `src/content.ts`, and `FACTS.md` §9 gives each one its source.
 
+**Revision 2 (2026-10-06, after STOP 4).** Yash's notes: this is the project's first film and
+nobody knows StrideMon yet, so it has to be as simple as possible; and the token is renamed
+**SOLE → STRIDE** everywhere. The film is now an intro, four numbered steps, one line on
+ownership and the end card. Each scene says one thing in one headline and one plain sentence.
+
 ## Spine
 
-1. Hook: you walk, and the run settles on Monad.
-2. Stakes: your Sneaker and its rewards aren't rows in our database.
-3. Reveal: own a Sneaker NFT, walk with it, earn SOLE, upgrade it.
-4. Proof: the run's real settle transaction and four verified contracts.
-5. Action: stridemon.yashmittal.xyz.
+1. What it is: a move-to-earn game on Monad.
+2. How it works, in four steps: get a Sneaker, walk or run, earn STRIDE, level it up.
+3. Why it matters: the Sneaker is really yours.
+4. Action: stridemon.yashmittal.xyz.
 
 ## Storyboard as built
 
-| # | Time | Frames | Section | What happens |
+| # | Time | Beats | Section | What happens |
 |---|---|---|---|---|
-| 1 | 0:00–0:03 | 0–180 | black | Macro (1.45×, 3.5× the phone view) of the rebuilt run screen: `RUN IN PROGRESS • SNEAKER #2`, timer **1:53 → 1:56** (ticks on beats 1, 3, 5). "Walk." rises on beat 2. On beat 4, a 36-frame pull-back to the phone |
-| 2 | 0:03–0:08 | 180–480 | black | Real run footage, 1× → 8× → 1× (video2 187.75–212.0 s). Distance, speed and energy callouts mirror the phone frame by frame (energy 9 → 8, +5 → +10 estimate). Caption from beat 4 |
-| 3 | 0:08–0:15 | 480–900 | black → off-white | Real STOP tap cropped to the button (press on beat 1). Real "Settling on Monad…" in the phone. Flip on beat 6, `+10` counts up and lands on beat 7, "Earn." rises. Hash, decoded event and VIEW TRANSACTION (the one blue) on beat 8 |
-| 4 | 0:15–0:24 | 900–1440 | black | The contract's SVG draws in. Durability 060 → 100 through the renderer's real output. Real MetaMask confirm (1 s, tap on beat 8). Levels 02–05 on beats 9–12, each adding a speed line. Efficiency 10 → 18 and SOLE/min 5 → 9 roll. "Upgrade." on beat 13 |
-| 5 | 0:24–0:31 | 1440–1860 | off-white | Statement, then the app card and MonadVision side by side, both from video2 at level 02 / durability 100. Beat 7: transfer, owner rolls `0xdfAb…1465 → 0xe4ae…356f`, stats locked |
-| 6 | 0:31–0:38 | 1860–2280 | black | Five rule rows, one per beat. Beat 7: four contract addresses, `VERIFIED • MONAD TESTNET`, closing line |
-| 7 | 0:38–0:45 | 2280–2700 | off-white | Walk. / Earn. / Upgrade. on beats 0–2. Beat 4: panel, wordmark, meta, pill. Beat 5: disclaimer. Holds 4 s (poster) |
+| 1 Intro | 0:00–0:04 | 0–8 | black | "Meet / StrideMon." rises on beat 0, "A move-to-earn game on Monad." on beat 2 |
+| 2 Get a Sneaker | 0:04–0:10 | 8–20 | off-white | `STEP 1 OF 4`. The contract's starter Sneaker (level 01, durability 100) draws in. "Get a Sneaker." on beat 1, "Your Sneaker is an NFT. The first one is free." on beat 2 |
+| 3 Walk or run | 0:10–0:16 | 20–32 | black | The music's kick comes in. `STEP 2 OF 4`. The rebuilt run screen, speed-ramped 1× → 6× → 1× over the real run (timer 1:53 → 2:17), with DISTANCE and ESTIMATED REWARD lifted out beside it. "Walk or run." / "The app tracks your time and distance as you go." |
+| 4 Earn STRIDE | 0:16–0:23 | 32–46 | black → off-white | `STEP 3 OF 4`. The real STOP tap (press on beat 1). Flip on beat 3, `+10 STRIDE` counts up and lands on beat 4, with `A 3-MINUTE WALK • SETTLED ON MONAD TESTNET`. "Earn STRIDE." / "Stop the run, and STRIDE lands in your wallet." |
+| 5 Level it up | 0:23–0:31 | 46–62 | black | `STEP 4 OF 4`. Durability 060 → 100 on beats 2–4 through the renderer's real output, then levels 02–05 on beats 6–9, each adding a speed line, and `STRIDE / MIN` 5 → 9. "Level it up." / "Spend STRIDE to repair and upgrade it. Each level earns more." |
+| 6 Yours | 0:31–0:38 | 62–76 | off-white | The Sneaker; the owner rolls `0xdfAb…1465 → 0xe4ae…356f` on beat 4. "It’s really yours." / "It lives in your wallet. Send it to any wallet, and its stats go with it." |
+| 7 End card | 0:38–0:45 | 76–90 | off-white | Walk. / Earn. / Upgrade. on beats 0–2. Beat 4: panel, wordmark, meta, pill. Beat 5: disclaimer. Holds (poster) |
 
-**Changes from the brief's storyboard, and why**
+**What changed from revision 1, and why**
 
-- **Timer 1:53 → 1:56, not 2:49 → 2:52.** The walk footage follows the cold open, and there's too
-  little footage after 2:52 for an 8× ramp, so the timer would have run backwards.
-- **Scene 5 uses footage frames, not screenshots `02`/`09`.** Those two show durability 096 and 095,
-  which contradicts "the same picture".
-- **Scene 6 drops `1–20 KM/H`.** The API enforces it, not the contract (FACTS §9).
-- **No MetaMask frame in scene 5:** no footage of it exists.
-- **Settle speed isn't stated anywhere:** "seconds" was the default, and in the end no line needs it.
+- **Cut as jargon for a first-time viewer:** the settle transaction's hash and decoded event, the
+  rule table, the four contract addresses, "1–20 km/h counts. Cars don't.", the MetaMask insert
+  and the app-vs-MonadVision comparison. They're all still true (FACTS.md keeps them); they just
+  aren't what a stranger needs in 45 s.
+- **SOLE → STRIDE.** Real footage that shows the old name is out: the walk recording shows
+  `+5/+10 SOLE` in the phone, and the settling screen says "Minting your SOLE". The walk now uses
+  the vector rebuild of the run screen (checked against screenshot 03 within ±3 px), set in
+  STRIDE and driven by the same recorded readouts. The STOP tap stays: its crop shows no token.
+- **No cold-open macro:** the film opens by saying what StrideMon is. The old macro pull-back (and
+  its motion blur) went with it; motion blur now runs only on the walk's fast stretch.
+- **The music starts four bars earlier in the track** (46.045 s), so its kick lands on the walk.
 
 ## On-screen text, in order
 
-1. `RUN IN PROGRESS • SNEAKER #2` · `TIME` · `1:53`–`1:56` · `DISTANCE` `64 m` · `SPEED • 4.0 KM/H` ·
-   `ENERGY LEFT (ESTIMATED) 9 / 10` · `ESTIMATED REWARD` `+5 SOLE` · app captions · `STOP` — **Walk.**
-2. `DISTANCE` `64 → 93 m` · `SPEED` `4.0 → 3.2 KM/H` · `ENERGY LEFT (ESTIMATED)` `9 → 8 / 10` —
-   *1–20 km/h counts. Cars don't.*
-3. (footage: `STOP`, `Settling on Monad…`) · `YOU EARNED • RUN SETTLED` · `+10 SOLE` ·
-   `SETTLED ON MONAD TESTNET • BLOCK 68183542` · `0x4c614ce4…9a233a1b` (full, 2 lines) ·
-   `event SessionSettled` · `tokenId 2 · rewardedMinutes 2 · 10 SOLE` · `VIEW TRANSACTION ↗` — **Earn.**
-4. *Repair it with SOLE.* · (art: `LEVEL 01 / 30`, `DURABILITY 060 → 100 / 100`) · *Your wallet signs it.* ·
-   (footage: MetaMask `Transaction request`, `Monad Testnet`, `0.0126 MON`, `Confirm`) · *Each level pays
-   more.* · `EFFICIENCY 10 → 18` · `SOLE / MIN 5 → 9` — **Upgrade.**
-5. *Not points in an app. An NFT in your wallet.* · `ERC-721 • ART DRAWN BY THE CONTRACT` ·
-   `IN THE APP` · `ON MONADVISION` · `OWNER 0xdfAb…1465 → 0xe4ae…356f` ·
-   `LEVEL 02 • EFFICIENCY 12 • DURABILITY 100` — *Send it to any wallet. Its stats go with it.*
-6. `THE RULES • ON-CHAIN` · `10 ENERGY` · `1 POINT = 1 MINUTE` · `0.5 SOLE × EFFICIENCY / MIN` ·
-   `+2 EFFICIENCY / LEVEL` · `LEVEL 30 MAX` · four names and addresses · `VERIFIED • MONAD TESTNET` —
-   *The contract enforces the rules. The app only estimates.*
+1. **Meet StrideMon.** · A move-to-earn game on Monad.
+2. `STEP 1 OF 4` · (art: `LEVEL 01 / 30`, `DURABILITY 100 / 100`) · **Get a Sneaker.** · Your Sneaker
+   is an NFT. The first one is free.
+3. `STEP 2 OF 4` · (rebuilt run screen) · `DISTANCE` `64 → 87 m` · `ESTIMATED REWARD` `+5 → +10 STRIDE` ·
+   **Walk or run.** · The app tracks your time and distance as you go.
+4. `STEP 3 OF 4` · (footage: `STOP`) · `YOU EARNED • RUN SETTLED` · `+10 STRIDE` ·
+   `A 3-MINUTE WALK • SETTLED ON MONAD TESTNET` · **Earn STRIDE.** · Stop the run, and STRIDE lands
+   in your wallet.
+5. `STEP 4 OF 4` · (art: durability `060 → 100`, levels `01 → 05`) · `STRIDE / MIN` `5 → 9` ·
+   **Level it up.** · Spend STRIDE to repair and upgrade it. Each level earns more.
+6. (art) · `OWNER` `0xdfAb…1465 → 0xe4ae…356f` · **It’s really yours.** · It lives in your wallet.
+   Send it to any wallet, and its stats go with it.
 7. **Walk. Earn. Upgrade.** · `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.yashmittal.xyz →` ·
-   *SOLE is a testnet token with no monetary value.*
+   STRIDE is a testnet token with no monetary value.
 
-## Three alternative hooks for scene 1
+## Reading time
 
-1. *This walk settles on Monad.* States the hook outright, but loses the triad.
-2. *3 minutes. 2 counted. +10 SOLE.* All true (FACTS §3) and very concrete, but it spoils scene 3.
-3. *Your steps, on-chain.* Short and punchy. It reads as a claim, so it needs scene 3 to back it.
-
-## Styleframes
-
-`out/styleframes/`: `4x5-1-cold-open`, `4x5-3-earn`, `4x5-4-upgrade`, `4x5-5-own-it`, `4x5-6-rules`,
-`4x5-7-end-card`, `16x9-3-earn`, `16x9-7-end-card`, `9x16-3-earn`, `9x16-7-end-card` (all PNG).
+Each sentence stays up at least `0.4 s + words ÷ 3.5`: the longest, scene 6's 14 words, needs
+4.4 s and has about 5.5 s.

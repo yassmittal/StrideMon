@@ -2,11 +2,11 @@ import { Composition, Folder, Still } from 'remotion'
 import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
 import { RunScreenCheck } from './checks/RunScreenCheck'
 import { LaunchFilm } from './LaunchFilm'
-import { ColdOpenScene } from './scenes/ColdOpenScene'
 import { EarnScene } from './scenes/EarnScene'
 import { EndCardScene } from './scenes/EndCardScene'
+import { GetSneakerScene } from './scenes/GetSneakerScene'
+import { IntroScene } from './scenes/IntroScene'
 import { OwnItScene } from './scenes/OwnItScene'
-import { RulesScene } from './scenes/RulesScene'
 import { UpgradeScene } from './scenes/UpgradeScene'
 import { WalkScene } from './scenes/WalkScene'
 
@@ -42,12 +42,21 @@ export function RemotionRoot() {
       />
       <Folder name="Scenes-4x5">
         <Composition
-          id="ColdOpen"
-          component={ColdOpenScene}
+          id="Intro"
+          component={IntroScene}
           width={1080}
           height={1350}
           fps={FRAMES_PER_SECOND}
-          durationInFrames={readSceneDurationInFrames('coldOpen')}
+          durationInFrames={readSceneDurationInFrames('intro')}
+          defaultProps={{ format: '4x5' as const }}
+        />
+        <Composition
+          id="GetSneaker"
+          component={GetSneakerScene}
+          width={1080}
+          height={1350}
+          fps={FRAMES_PER_SECOND}
+          durationInFrames={readSceneDurationInFrames('getSneaker')}
           defaultProps={{ format: '4x5' as const }}
         />
         <Composition
@@ -84,15 +93,6 @@ export function RemotionRoot() {
           height={1350}
           fps={FRAMES_PER_SECOND}
           durationInFrames={readSceneDurationInFrames('ownIt')}
-          defaultProps={{ format: '4x5' as const }}
-        />
-        <Composition
-          id="Rules"
-          component={RulesScene}
-          width={1080}
-          height={1350}
-          fps={FRAMES_PER_SECOND}
-          durationInFrames={readSceneDurationInFrames('rules')}
           defaultProps={{ format: '4x5' as const }}
         />
         <Composition

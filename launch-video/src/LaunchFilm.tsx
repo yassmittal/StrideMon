@@ -1,16 +1,16 @@
 import { Series, useVideoConfig } from 'remotion'
 import { readSceneDurationInFrames } from './beats'
 import { Soundtrack } from './components/Soundtrack'
-import { ColdOpenScene } from './scenes/ColdOpenScene'
 import { EarnScene } from './scenes/EarnScene'
 import { EndCardScene } from './scenes/EndCardScene'
+import { GetSneakerScene } from './scenes/GetSneakerScene'
+import { IntroScene } from './scenes/IntroScene'
 import { OwnItScene } from './scenes/OwnItScene'
-import { RulesScene } from './scenes/RulesScene'
 import type { SceneProps } from './scenes/scene-props'
 import { UpgradeScene } from './scenes/UpgradeScene'
 import { WalkScene } from './scenes/WalkScene'
 
-/** The whole film: seven scenes, hard cuts between them, every cut on a beat (beats.ts). */
+/** The whole film: an intro, four steps, ownership and the end card, every cut on a beat (beats.ts). */
 export function LaunchFilm({ format }: SceneProps) {
   const { fps } = useVideoConfig()
   return (
@@ -18,46 +18,46 @@ export function LaunchFilm({ format }: SceneProps) {
       <Soundtrack />
       <Series>
         <Series.Sequence
-          name="1 Cold open"
-          durationInFrames={readSceneDurationInFrames('coldOpen')}
+          name="1 Intro"
+          durationInFrames={readSceneDurationInFrames('intro')}
           premountFor={fps}
         >
-          <ColdOpenScene format={format} />
+          <IntroScene format={format} />
         </Series.Sequence>
         <Series.Sequence
-          name="2 Walk"
+          name="2 Get a Sneaker"
+          durationInFrames={readSceneDurationInFrames('getSneaker')}
+          premountFor={fps}
+        >
+          <GetSneakerScene format={format} />
+        </Series.Sequence>
+        <Series.Sequence
+          name="3 Walk"
           durationInFrames={readSceneDurationInFrames('walk')}
           premountFor={fps}
         >
           <WalkScene format={format} />
         </Series.Sequence>
         <Series.Sequence
-          name="3 Earn"
+          name="4 Earn"
           durationInFrames={readSceneDurationInFrames('earn')}
           premountFor={fps}
         >
           <EarnScene format={format} />
         </Series.Sequence>
         <Series.Sequence
-          name="4 Upgrade"
+          name="5 Upgrade"
           durationInFrames={readSceneDurationInFrames('upgrade')}
           premountFor={fps}
         >
           <UpgradeScene format={format} />
         </Series.Sequence>
         <Series.Sequence
-          name="5 Own it"
+          name="6 Yours"
           durationInFrames={readSceneDurationInFrames('ownIt')}
           premountFor={fps}
         >
           <OwnItScene format={format} />
-        </Series.Sequence>
-        <Series.Sequence
-          name="6 Rules"
-          durationInFrames={readSceneDurationInFrames('rules')}
-          premountFor={fps}
-        >
-          <RulesScene format={format} />
         </Series.Sequence>
         <Series.Sequence
           name="7 End card"

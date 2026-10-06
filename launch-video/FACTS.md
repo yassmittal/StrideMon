@@ -15,12 +15,19 @@ recordings, with times from `FOOTAGE.md`. `01`–`09` are `website/public/screen
 | On screen | Source | Status |
 |---|---|---|
 | `StrideMon` (wordmark, one word, capital S and M) | `02` header, `CLAUDE.md` | ✓ |
-| `SOLE` (the ERC-20, always in capitals) | Chain: `symbol()` = `"SOLE"`, 18 decimals | ✓ |
+| `SOLE` (the ERC-20, always in capitals) | Chain: `symbol()` = `"SOLE"`, 18 decimals | ✗ on screen since 2026-10-06: the film calls the token STRIDE (next row) |
+| `STRIDE` (the reward token's name, always in capitals) | Yash's decision, 2026-10-06: the token is renamed from SOLE to STRIDE everywhere. **The deployed `SoleToken` still returns `symbol()` = `"SOLE"`, and the app and website still say SOLE** until the rename ships | ✓ by decision. Every SOLE amount in §2–§10 is shown as the same amount of STRIDE |
 | `Sneaker` (capital S, the NFT) | `coding-standards.md` vocabulary, every app screen | ✓ |
 | `Walk. Earn. Upgrade.` | `01` (welcome headline), `design-system.md` §9 | ✓ |
 | `Monad testnet` / `MONAD TESTNET` (text only, no logo, no purple) | `02` header, chain id 10143 | ✓ |
 | `Android` | `landing-page-prompt.md` §1, status line: "on Android (an internal demo build)" | ⚠ The app works on Android but isn't publicly downloadable. Don't imply a store listing (see §9) |
-| `SOLE is a testnet token with no monetary value.` | `landing-page-prompt.md` §1 | ✓ **Required in the end card** |
+| `STRIDE is a testnet token with no monetary value.` | `landing-page-prompt.md` §1 (as SOLE), renamed | ✓ **Required in the end card** |
+| `A move-to-earn game on Monad.` | `MVP.md` §1 ("a simplified move-to-earn game … built around the Monad ecosystem"), website hero meta `Move to earn` | ✓ The end card says `MONAD TESTNET` |
+| "Your Sneaker is an NFT. The first one is free." | `website/src/content/how-it-works.ts` ("get a free starter Sneaker NFT"), `phase-03-starter-sneaker-and-home.md` (the game server mints it and pays the gas) | ✓ On testnet, in the Android demo |
+| "The app tracks your time and distance as you go." | `how-it-works.ts` ("Time, distance, speed and your estimated reward are live on screen."), screenshot `03` | ✓ |
+| "Stop the run, and STRIDE lands in your wallet." | `how-it-works.ts` Earn step; §4 token transfer to the player's wallet | ✓ |
+| "Spend STRIDE to repair and upgrade it. Each level earns more." | `how-it-works.ts` Upgrade step; §5 | ✓ |
+| "It’s really yours." · "It lives in your wallet. Send it to any wallet, and its stats go with it." | `how-it-works.ts` ("Own it, really"), `MVP.md` §4, §6 | ✓ |
 | `stridemon.yashmittal.xyz` | `landing-page-prompt.md` §2. Checked live 2026-10-05: HTTP 200, title "StrideMon: walk, earn and upgrade a Sneaker NFT on Monad" | ✓ |
 
 ## 2. Game rules
@@ -144,41 +151,30 @@ the website's `sneaker-art/sneaker-0002-level-02.svg` (apart from a trailing new
 
 ## 9. The script, line by line
 
-Every line in `SCRIPT.md`, in order. Footage text (the app's and MetaMask's own UI) is in
-`FOOTAGE.md`. The storyboard changes that came out of this check are listed in `SCRIPT.md`.
+The simplified film (2026-10-06, after STOP 4). Every line in `SCRIPT.md`, in order.
 
 | Scene | On screen | Source | Status |
 |---|---|---|---|
-| 1 | Rebuilt run screen at `1:53`–`1:56` | §3 | ✓ |
-| 1, 7 | `Walk.` `Earn.` `Upgrade.` | §1 | ✓ |
-| 2 | Callouts | §3 | ✓ |
-| 2 | "1–20 km/h counts. Cars don’t." | §2 speed band | ✓ True, and not called on-chain |
-| 3 | Footage: STOP, "Settling on Monad…" | FOOTAGE M4, M6 | ✓ The crop keeps the `+15 SOLE` estimate out |
-| 3 | `YOU EARNED • RUN SETTLED` · `+10 SOLE` | §3 | ✓ |
-| 3 | `SETTLED ON MONAD TESTNET • BLOCK 68183542` | §4 | ✓ |
-| 3 | The full hash, in two lines | §4 | ✓ |
-| 3 | `event SessionSettled` · `tokenId 2 · rewardedMinutes 2 · 10 SOLE` | §4, decoded log (`10e18` wei = 10 SOLE) | ✓ |
-| 3 | `VIEW TRANSACTION ↗` | `04`, the app's own link label | ✓ |
-| 4 | Art: `LEVEL 01 / 30`, `DURABILITY 060 → 100 / 100` | §8 | ⚠ Renderer output, no caption calls it a recorded repair |
-| 4 | "Repair it with SOLE." | §2 repair cost | ✓ |
-| 4 | "Your wallet signs it." + MetaMask `Transaction request`, `Monad Testnet`, `0.0126 MON`, `Confirm` | §5, FOOTAGE M9 | ✓ |
-| 4 | Levels `02`–`05`, `EFFICIENCY 10 → 18` | §8, §2 (+2 per level) | ⚠ How levels work. No Sneaker is at level 5 |
-| 4 | `SOLE / MIN 5 → 9` | §2: 0.5 SOLE × efficiency per rewarded minute (10 → 5, 18 → 9) | ✓ |
-| 4 | "Each level pays more." | §5 | ✓ |
-| 5 | "Not points in an app. An NFT in your wallet." | §6, §7 (ERC-721, `ownerOf`) | ✓ About StrideMon, not other apps |
-| 5 | `ERC-721 • ART DRAWN BY THE CONTRACT` | §7 (`tokenURI` → on-chain SVG) | ✓ |
-| 5 | `IN THE APP`: Home card, level 02, durability 100 | v2 07:07–07:09.5 (`public/footage/app-home-level-02.mp4`) | ✓ |
-| 5 | `ON MONADVISION`: NFT card, level 02, durability 100 | v2 07:21–07:23.5 (`public/footage/monadvision-level-02.mp4`). The same session as the app frame, so the art matches | ✓ |
-| 5 | `OWNER 0xdfAb…1465 → 0xe4ae…356f` | §6, v1 M12–M14 | ✓ |
-| 5 | `LEVEL 02 • EFFICIENCY 12 • DURABILITY 100` | §6 | ✓ |
-| 5 | "Send it to any wallet. Its stats go with it." | §6, `07` ("These stats live on the Sneaker and go with it.") | ✓ |
-| 6 | `THE RULES • ON-CHAIN` + `10 ENERGY` · `1 POINT = 1 MINUTE` · `0.5 SOLE × EFFICIENCY / MIN` · `+2 EFFICIENCY / LEVEL` · `LEVEL 30 MAX` | §2, all enforced by the contract | ✓ |
-| 6 | The four names and addresses, `VERIFIED • MONAD TESTNET` | §7 | ✓ |
-| 6 | "The contract enforces the rules. The app only estimates." | §2, `game-rules.md:123–134` | ✓ True for every rule on screen |
-| 7 | `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.yashmittal.xyz →` | §1 | ✓ |
-| 7 | "SOLE is a testnet token with no monetary value." | §1 | ✓ Required |
+| 1 | "Meet StrideMon." · "A move-to-earn game on Monad." | §1 | ✓ |
+| 2 | `STEP 1 OF 4` · "Get a Sneaker." · "Your Sneaker is an NFT. The first one is free." | §1 | ✓ |
+| 2 | Art: `LEVEL 01 / 30`, `DURABILITY 100 / 100` (the starter's stats) | §8, renderer output; `MVP.md` §4 (level 1, efficiency 10, durability 100) | ✓ |
+| 3 | `STEP 2 OF 4` · "Walk or run." · "The app tracks your time and distance as you go." | §1 | ✓ |
+| 3 | Rebuilt run screen, ramped 1× → 6× → 1×: timer `1:53 → 2:17`, distance `64 → 87 m`, speed, energy `9 → 8 / 10`, estimate `+5 → +10 STRIDE` | §3 (v2 184.25–209.0 s; the timer is the run's clock, 1:53 at 184.25 s) | ✓ Each value changes when the phone's did |
+| 3 | Callouts `DISTANCE` and `ESTIMATED REWARD` (same values) | §3 | ✓ |
+| 4 | `STEP 3 OF 4` · footage: the STOP tap | FOOTAGE M4 | ✓ The crop shows no token name and no `+15` estimate |
+| 4 | `YOU EARNED • RUN SETTLED` · `+10 STRIDE` · `A 3-MINUTE WALK • SETTLED ON MONAD TESTNET` | §3, §4 | ✓ |
+| 4 | "Earn STRIDE." · "Stop the run, and STRIDE lands in your wallet." | §1 | ✓ |
+| 5 | `STEP 4 OF 4` · art `DURABILITY 060 → 100`, levels `01 → 05` | §8 | ⚠ How repair and levels work; no caption calls it a recorded repair or a player at level 5 |
+| 5 | `STRIDE / MIN 5 → 9` | §2: 0.5 × efficiency per rewarded minute (10 → 5, 18 → 9) | ✓ |
+| 5 | "Level it up." · "Spend STRIDE to repair and upgrade it. Each level earns more." | §1, §5 | ✓ |
+| 6 | Art (level 02, durability 100) · `OWNER 0xdfAb…1465 → 0xe4ae…356f` | §6 | ✓ |
+| 6 | "It’s really yours." · "It lives in your wallet. Send it to any wallet, and its stats go with it." | §1, §6 | ✓ |
+| 7 | `Walk.` `Earn.` `Upgrade.` · `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.yashmittal.xyz →` | §1 | ✓ |
+| 7 | "STRIDE is a testnet token with no monetary value." | §1 | ✓ Required |
 
-No settlement time appears on screen (§10 stays as a reference).
+No transaction hash, contract address, rule table or settlement time is on screen any more.
+The footage that shows the old name (the walk recording's `+5/+10 SOLE`, "Minting your SOLE" on
+the settling screen) is out of the film; the run screen is the vector rebuild, set in STRIDE.
 
 ## 10. Settlement speed (measured in v2)
 

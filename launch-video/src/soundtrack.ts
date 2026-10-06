@@ -3,8 +3,8 @@
 
 /**
  * "I Am Techno" by DeltaX-Music (Pixabay), 120 BPM, trimmed by fetch-audio.sh so a downbeat is
- * at 0 s. The breakdown's last four bars play under scenes 1 and 2, and the kick comes back on
- * frame 480, the earn scene's first beat.
+ * at 0 s. The breakdown's last five bars play under the intro and step 1, and the kick comes back
+ * on frame 600, the walk's first beat.
  */
 export const MUSIC_FILE_NAME = 'music.wav'
 
@@ -13,9 +13,9 @@ export const soundEffectFileNames = {
   tick: 'sfx-tick.wav',
   /** A section flips between black and off-white. */
   thump: 'sfx-thump.wav',
-  /** A finger on the STOP pill or MetaMask's Confirm. */
+  /** A finger on the STOP pill. */
   tap: 'sfx-tap.wav',
-  /** +10 SOLE lands. */
+  /** +10 STRIDE lands. */
   tone: 'sfx-tone.wav',
 } as const
 

@@ -11,24 +11,24 @@ export const beatFrames = (FRAMES_PER_SECOND * 60) / BEATS_PER_MINUTE
 
 /** Where each scene starts on the grid, in beats from the first frame. */
 export const sceneStartBeats = {
-  coldOpen: 0,
-  walk: 6,
-  earn: 16,
-  upgrade: 30,
-  ownIt: 48,
-  rules: 62,
+  intro: 0,
+  getSneaker: 8,
+  walk: 20,
+  earn: 32,
+  upgrade: 46,
+  ownIt: 62,
   endCard: 76,
 } as const
 
 export type SceneName = keyof typeof sceneStartBeats
 
 const SCENE_ORDER: readonly SceneName[] = [
-  'coldOpen',
+  'intro',
+  'getSneaker',
   'walk',
   'earn',
   'upgrade',
   'ownIt',
-  'rules',
   'endCard',
 ]
 

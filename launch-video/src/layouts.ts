@@ -1,7 +1,9 @@
 // Where everything sits, per format. Each format is laid out on its own, never a crop of the
-// master. All values are pixels in the composition. 4:5 is the master. In 16:9 and 9:16, the
-// earn scene and the end card are designed; the other scenes are first passes, re-laid after
-// the 4:5 notes (launch-video-prompt.md §6).
+// master. All values are pixels in the composition; 4:5 is the master.
+//
+// Every step scene shares one text block: a small step label at the top, and the headline and
+// one plain sentence at the bottom. The scene's picture fills the space between them (in 16:9,
+// the picture sits on the right and the text on the left).
 
 export type FilmFormat = '4x5' | '16x9' | '9x16'
 
@@ -21,6 +23,15 @@ export type FootageCrop = {
   frame: Point
 }
 
+/** The text every step scene shares. */
+export type StepTextLayout = {
+  stepLabel: Point
+  headline: Point
+  headlineFontSize: number
+  sentence: Point
+  sentenceFontSize: number
+}
+
 export type FilmLayout = {
   width: number
   height: number
@@ -28,56 +39,30 @@ export type FilmLayout = {
   /** Platform UI covers these bands (9:16): no text inside them. */
   safeTop: number
   safeBottom: number
-  headlineFontSize: number
-  captionFontSize: number
   metaFontSize: number
   monoCalloutFontSize: number
-  /** Baseline of the big bottom-left word ("Walk.", "Earn.", "Upgrade."). */
-  headlineBaseline: number
-  /** The phone's outer box, where it shows the run screen or footage. */
-  phone: Box
-  coldOpen: {
-    /** The run screen (1080 × 2340) at this scale, its top-left at `origin`, framed for the macro. */
-    macroScale: number
-    macroOrigin: Point
-    /** During the macro, nothing below this line shows, so "Walk." reads on black. */
-    macroClipBottom: number
+  stepText: StepTextLayout
+  intro: { headline: Point; headlineFontSize: number; sentence: Point; sentenceFontSize: number }
+  getSneaker: { art: Box }
+  walk: {
+    /** The phone's outer box, showing the rebuilt run screen. */
+    phone: Box
+    /** The first callout's top-left; the second sits `calloutGap` below it. */
+    callouts: Point
+    calloutGap: number
   }
-  walk: { callouts: Box; caption: Point }
   earn: {
     stopCrop: FootageCrop
-    settlePhone: Box
-    reward: { meta: Point; number: Point; numberFontSize: number; symbolFontSize: number }
-    proof: { origin: Point; width: number; hashFontSize: number }
+    reward: {
+      meta: Point
+      number: Point
+      numberFontSize: number
+      symbolFontSize: number
+      note: Point
+    }
   }
-  upgrade: {
-    caption: Point
-    art: Box
-    callouts: { origin: Point; columnGap: number }
-    metamaskCrop: FootageCrop
-  }
-  ownIt: {
-    statement: Point
-    statementFontSize: number
-    framesMeta: Point
-    /** The Home card (video2 07:08) and MonadVision's NFT card (07:21.5): level 02, durability 100. */
-    appCrop: FootageCrop
-    explorerCrop: FootageCrop
-    framesLabelTop: number
-    transferArt: Box
-    owner: Point
-    lockedStats: Point
-    caption: Point
-    transferCaptionFontSize: number
-  }
-  rules: {
-    meta: Point
-    cards: { origin: Point; width: number; rowHeight: number; fontSize: number }
-    addresses: { origin: Point; rowHeight: number; fontSize: number }
-    verified: Point
-    closing: Point
-    closingFontSize: number
-  }
+  upgrade: { art: Box; callout: Point }
+  ownIt: { art: Box; owner: Point; ownerFontSize: number }
   endCard: {
     headline: Point
     headlineFontSize: number
@@ -131,77 +116,50 @@ const masterLayout: FilmLayout = {
   gutter: 60,
   safeTop: 0,
   safeBottom: 0,
-  headlineFontSize: 200,
-  captionFontSize: 52,
   metaFontSize: 30,
   monoCalloutFontSize: 72,
-  headlineBaseline: 1270,
-  phone: buildPhoneBox({ left: 556, top: 70, outerWidth: 464 }),
-  coldOpen: {
-    macroScale: 1.45,
-    macroOrigin: { left: -5, top: -72 },
-    macroClipBottom: 800,
+  stepText: {
+    stepLabel: { left: 60, top: 70 },
+    headline: { left: 60, top: 960 },
+    headlineFontSize: 100,
+    sentence: { left: 60, top: 1095 },
+    sentenceFontSize: 52,
   },
+  intro: {
+    headline: { left: 60, top: 380 },
+    headlineFontSize: 180,
+    sentence: { left: 60, top: 790 },
+    sentenceFontSize: 56,
+  },
+  getSneaker: { art: { left: 170, top: 150, width: 740, height: 740 } },
   walk: {
-    callouts: { left: 60, top: 130, width: 430, height: 820 },
-    caption: { left: 60, top: 1100 },
+    phone: buildPhoneBox({ left: 650, top: 130, outerWidth: 370 }),
+    callouts: { left: 60, top: 200 },
+    calloutGap: 260,
   },
   earn: {
     stopCrop: {
       sourceTop: 880,
       sourceHeight: 400,
       scale: 1080 / 586,
-      frame: { left: 0, top: 306 },
+      frame: { left: 0, top: 170 },
     },
-    settlePhone: buildPhoneBox({ left: 300, top: 60, outerWidth: 480 }),
     reward: {
-      meta: { left: 60, top: 120 },
-      number: { left: 60, top: 170 },
-      numberFontSize: 360,
-      symbolFontSize: 110,
+      meta: { left: 60, top: 150 },
+      number: { left: 60, top: 200 },
+      numberFontSize: 300,
+      symbolFontSize: 96,
+      note: { left: 60, top: 560 },
     },
-    proof: { origin: { left: 60, top: 640 }, width: 960, hashFontSize: 44 },
   },
   upgrade: {
-    caption: { left: 60, top: 80 },
-    art: { left: 200, top: 160, width: 680, height: 680 },
-    callouts: { origin: { left: 200, top: 880 }, columnGap: 360 },
-    metamaskCrop: { sourceTop: 458, sourceHeight: 752, scale: 1.4, frame: { left: 130, top: 200 } },
+    art: { left: 60, top: 140, width: 700, height: 700 },
+    callout: { left: 820, top: 380 },
   },
   ownIt: {
-    statement: { left: 60, top: 100 },
-    statementFontSize: 80,
-    framesMeta: { left: 60, top: 330 },
-    appCrop: {
-      sourceLeft: 22,
-      sourceWidth: 542,
-      sourceTop: 150,
-      sourceHeight: 520,
-      scale: 0.85,
-      frame: { left: 60, top: 400 },
-    },
-    explorerCrop: {
-      sourceLeft: 24,
-      sourceWidth: 538,
-      sourceTop: 422,
-      sourceHeight: 540,
-      scale: 0.85,
-      frame: { left: 563, top: 400 },
-    },
-    framesLabelTop: 885,
-    transferArt: { left: 60, top: 160, width: 520, height: 520 },
-    owner: { left: 620, top: 200 },
-    lockedStats: { left: 60, top: 720 },
-    caption: { left: 60, top: 1050 },
-    transferCaptionFontSize: 64,
-  },
-  rules: {
-    meta: { left: 60, top: 110 },
-    cards: { origin: { left: 60, top: 190 }, width: 960, rowHeight: 124, fontSize: 56 },
-    addresses: { origin: { left: 60, top: 200 }, rowHeight: 140, fontSize: 32 },
-    verified: { left: 60, top: 790 },
-    closing: { left: 60, top: 1080 },
-    closingFontSize: 64,
+    art: { left: 60, top: 140, width: 560, height: 560 },
+    owner: { left: 680, top: 180 },
+    ownerFontSize: 44,
   },
   endCard: {
     headline: { left: 60, top: 70 },
@@ -220,77 +178,50 @@ const wideLayout: FilmLayout = {
   gutter: 100,
   safeTop: 0,
   safeBottom: 0,
-  headlineFontSize: 200,
-  captionFontSize: 52,
   metaFontSize: 30,
   monoCalloutFontSize: 72,
-  headlineBaseline: 980,
-  phone: buildPhoneBox({ left: 1260, top: 60, outerWidth: 444 }),
-  coldOpen: {
-    macroScale: 1.6,
-    macroOrigin: { left: 31, top: -154 },
-    macroClipBottom: 760,
+  stepText: {
+    stepLabel: { left: 100, top: 80 },
+    headline: { left: 100, top: 700 },
+    headlineFontSize: 100,
+    sentence: { left: 100, top: 835 },
+    sentenceFontSize: 48,
   },
+  intro: {
+    headline: { left: 100, top: 230 },
+    headlineFontSize: 190,
+    sentence: { left: 100, top: 650 },
+    sentenceFontSize: 60,
+  },
+  getSneaker: { art: { left: 1060, top: 160, width: 760, height: 760 } },
   walk: {
-    callouts: { left: 100, top: 120, width: 520, height: 640 },
-    caption: { left: 700, top: 760 },
+    phone: buildPhoneBox({ left: 1390, top: 80, outerWidth: 430 }),
+    callouts: { left: 100, top: 220 },
+    calloutGap: 220,
   },
   earn: {
     stopCrop: {
       sourceTop: 880,
       sourceHeight: 400,
-      scale: 1080 / 586,
-      frame: { left: 420, top: 171 },
+      scale: 1.4,
+      frame: { left: 1000, top: 260 },
     },
-    settlePhone: buildPhoneBox({ left: 730, top: 50, outerWidth: 454 }),
     reward: {
-      meta: { left: 100, top: 130 },
-      number: { left: 100, top: 180 },
-      numberFontSize: 320,
-      symbolFontSize: 100,
+      meta: { left: 100, top: 150 },
+      number: { left: 100, top: 200 },
+      numberFontSize: 260,
+      symbolFontSize: 84,
+      note: { left: 100, top: 500 },
     },
-    proof: { origin: { left: 1100, top: 210 }, width: 720, hashFontSize: 36 },
   },
   upgrade: {
-    caption: { left: 100, top: 100 },
-    art: { left: 660, top: 140, width: 600, height: 600 },
-    callouts: { origin: { left: 1340, top: 300 }, columnGap: 0 },
-    metamaskCrop: { sourceTop: 458, sourceHeight: 752, scale: 1.2, frame: { left: 608, top: 90 } },
+    art: { left: 1060, top: 160, width: 760, height: 760 },
+    callout: { left: 100, top: 260 },
   },
   ownIt: {
-    statement: { left: 100, top: 100 },
-    statementFontSize: 80,
-    framesMeta: { left: 1000, top: 240 },
-    appCrop: {
-      sourceLeft: 22,
-      sourceWidth: 542,
-      sourceTop: 150,
-      sourceHeight: 520,
-      scale: 0.75,
-      frame: { left: 1000, top: 300 },
-    },
-    explorerCrop: {
-      sourceLeft: 24,
-      sourceWidth: 538,
-      sourceTop: 422,
-      sourceHeight: 540,
-      scale: 0.75,
-      frame: { left: 1420, top: 300 },
-    },
-    framesLabelTop: 735,
-    transferArt: { left: 100, top: 140, width: 520, height: 520 },
-    owner: { left: 700, top: 180 },
-    lockedStats: { left: 700, top: 420 },
-    caption: { left: 700, top: 700 },
-    transferCaptionFontSize: 64,
-  },
-  rules: {
-    meta: { left: 100, top: 100 },
-    cards: { origin: { left: 100, top: 180 }, width: 1000, rowHeight: 120, fontSize: 56 },
-    addresses: { origin: { left: 100, top: 180 }, rowHeight: 120, fontSize: 32 },
-    verified: { left: 100, top: 700 },
-    closing: { left: 1080, top: 760 },
-    closingFontSize: 56,
+    art: { left: 1180, top: 200, width: 640, height: 640 },
+    owner: { left: 100, top: 260 },
+    ownerFontSize: 58,
   },
   endCard: {
     headline: { left: 100, top: 70 },
@@ -309,86 +240,61 @@ const verticalLayout: FilmLayout = {
   gutter: 60,
   safeTop: 220,
   safeBottom: 380,
-  headlineFontSize: 200,
-  captionFontSize: 52,
   metaFontSize: 30,
   monoCalloutFontSize: 72,
-  headlineBaseline: 1500,
-  phone: buildPhoneBox({ left: 290, top: 240, outerWidth: 500 }),
-  coldOpen: {
-    macroScale: 1.45,
-    macroOrigin: { left: -5, top: 88 },
-    macroClipBottom: 1000,
+  stepText: {
+    stepLabel: { left: 60, top: 240 },
+    headline: { left: 60, top: 1240 },
+    headlineFontSize: 100,
+    sentence: { left: 60, top: 1375 },
+    sentenceFontSize: 52,
   },
+  intro: {
+    headline: { left: 60, top: 620 },
+    headlineFontSize: 180,
+    sentence: { left: 60, top: 1030 },
+    sentenceFontSize: 56,
+  },
+  getSneaker: { art: { left: 110, top: 330, width: 860, height: 860 } },
   walk: {
-    callouts: { left: 60, top: 1340, width: 960, height: 200 },
-    caption: { left: 60, top: 1380 },
+    phone: buildPhoneBox({ left: 610, top: 320, outerWidth: 410 }),
+    callouts: { left: 60, top: 400 },
+    calloutGap: 300,
   },
   earn: {
     stopCrop: {
       sourceTop: 880,
       sourceHeight: 400,
       scale: 1080 / 586,
-      frame: { left: 0, top: 591 },
+      frame: { left: 0, top: 420 },
     },
-    settlePhone: buildPhoneBox({ left: 248, top: 250, outerWidth: 584 }),
     reward: {
-      meta: { left: 60, top: 260 },
-      number: { left: 60, top: 310 },
-      numberFontSize: 360,
-      symbolFontSize: 110,
+      meta: { left: 60, top: 320 },
+      number: { left: 60, top: 370 },
+      numberFontSize: 300,
+      symbolFontSize: 96,
+      note: { left: 60, top: 730 },
     },
-    proof: { origin: { left: 60, top: 780 }, width: 960, hashFontSize: 44 },
   },
   upgrade: {
-    caption: { left: 60, top: 240 },
-    art: { left: 120, top: 340, width: 840, height: 840 },
-    callouts: { origin: { left: 120, top: 1210 }, columnGap: 440 },
-    metamaskCrop: { sourceTop: 458, sourceHeight: 752, scale: 1.6, frame: { left: 71, top: 330 } },
+    art: { left: 60, top: 330, width: 700, height: 700 },
+    callout: { left: 800, top: 580 },
   },
   ownIt: {
-    statement: { left: 60, top: 240 },
-    statementFontSize: 80,
-    framesMeta: { left: 60, top: 470 },
-    appCrop: {
-      sourceLeft: 22,
-      sourceWidth: 542,
-      sourceTop: 150,
-      sourceHeight: 520,
-      scale: 0.85,
-      frame: { left: 60, top: 530 },
-    },
-    explorerCrop: {
-      sourceLeft: 24,
-      sourceWidth: 538,
-      sourceTop: 422,
-      sourceHeight: 540,
-      scale: 0.85,
-      frame: { left: 563, top: 530 },
-    },
-    framesLabelTop: 1015,
-    transferArt: { left: 60, top: 240, width: 620, height: 620 },
-    owner: { left: 60, top: 900 },
-    lockedStats: { left: 60, top: 1080 },
-    caption: { left: 60, top: 1260 },
-    transferCaptionFontSize: 64,
-  },
-  rules: {
-    meta: { left: 60, top: 240 },
-    cards: { origin: { left: 60, top: 320 }, width: 960, rowHeight: 124, fontSize: 56 },
-    addresses: { origin: { left: 60, top: 320 }, rowHeight: 150, fontSize: 32 },
-    verified: { left: 60, top: 940 },
-    closing: { left: 60, top: 1260 },
-    closingFontSize: 64,
+    art: { left: 60, top: 330, width: 640, height: 640 },
+    owner: { left: 60, top: 1020 },
+    ownerFontSize: 58,
   },
   endCard: {
     headline: { left: 60, top: 230 },
     headlineFontSize: 180,
-    panel: { left: 60, top: 820, width: 440, height: 440 },
-    brand: { left: 540, top: 860 },
-    pill: { left: 60, top: 1300 },
+    // The brand's meta line is about 560 px wide, so it sits under the wordmark on the left
+    // and the panel takes the right.
+    panel: { left: 640, top: 800, width: 380, height: 380 },
+    brand: { left: 60, top: 820 },
+    pill: { left: 60, top: 1230 },
     pillWidth: 960,
-    disclaimer: { left: 60, top: 1450 },
+    disclaimer: { left: 60, top: 1380 },
   },
 }
 

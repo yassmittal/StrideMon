@@ -1,24 +1,12 @@
-// Every word, number, address and hash in the film, mirrored from FACTS.md. Nothing goes on
-// screen from anywhere else. Times in source seconds refer to website/media-source/video2.mp4.
-
-export const contracts = [
-  { name: 'SneakerNft', address: '0xC116917b06BD9079C87334ED5499054b1B54Fa80' },
-  { name: 'SoleToken', address: '0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0' },
-  { name: 'SneakerGame', address: '0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9' },
-  { name: 'SneakerArtRenderer', address: '0x7e01732461C1879915C35E56e73Fd8569B289ADa' },
-] as const
+// Every word, number and address in the film, mirrored from FACTS.md. Nothing goes on screen from
+// anywhere else. Times in source seconds refer to website/media-source/video2.mp4.
+//
+// The reward token is called STRIDE (Yash, 2026-10-06; FACTS.md §1). The deployed contract and the
+// app still say SOLE until the rename ships, so the film never shows footage with the old name.
 
 export const walletAddresses = {
   playerA: { short: '0xdfAb…1465', full: '0xdfAb550B4D28cD040Cf79Bf350Ac3017923C1465' },
   playerB: { short: '0xe4ae…356f', full: '0xe4ae33003C3fF8afd68fa65Fafa97F6206c3356f' },
-} as const
-
-/** The +10 SOLE run's settlement: FACTS.md §4, decoded from the chain. */
-export const settlement = {
-  transactionHash: '0x4c614ce4b86203d066da45dda51b8a4632d71326b9e79db4f5ac2d529a233a1b',
-  blockNumber: '68183542',
-  eventName: 'SessionSettled',
-  rewardSole: 10,
 } as const
 
 /** What the run screen showed, second by second. FACTS.md §3 and FOOTAGE.md. */
@@ -33,91 +21,93 @@ export type LiveRunReadout = {
 
 export const ENERGY_AT_START = 10
 
-/** The walk, video2 184.0–212.0 s (timer 1:53 → 2:20). */
+/** The walk, video2 184.0–212.0 s (timer 1:53 → 2:20). The rebuilt run screen shows these. */
 export const liveRunReadouts: readonly LiveRunReadout[] = [
   {
     sourceSeconds: 184.0,
     distanceText: '64 m',
     speedText: '4.0 KM/H',
     energyLeft: 9,
-    estimatedRewardText: '+5 SOLE',
+    estimatedRewardText: '+5 STRIDE',
   },
   {
     sourceSeconds: 188.5,
     distanceText: '64 m',
     speedText: '3.2 KM/H',
     energyLeft: 9,
-    estimatedRewardText: '+5 SOLE',
+    estimatedRewardText: '+5 STRIDE',
   },
   {
     sourceSeconds: 188.75,
     distanceText: '70 m',
     speedText: '3.2 KM/H',
     energyLeft: 9,
-    estimatedRewardText: '+5 SOLE',
+    estimatedRewardText: '+5 STRIDE',
   },
   {
     sourceSeconds: 190.9,
     distanceText: '70 m',
     speedText: '3.2 KM/H',
     energyLeft: 8,
-    estimatedRewardText: '+10 SOLE',
+    estimatedRewardText: '+10 STRIDE',
   },
   {
     sourceSeconds: 194.9,
     distanceText: '77 m',
     speedText: '3.9 KM/H',
     energyLeft: 8,
-    estimatedRewardText: '+10 SOLE',
+    estimatedRewardText: '+10 STRIDE',
   },
   {
     sourceSeconds: 198.5,
     distanceText: '77 m',
     speedText: '4.1 KM/H',
     energyLeft: 8,
-    estimatedRewardText: '+10 SOLE',
+    estimatedRewardText: '+10 STRIDE',
   },
   {
     sourceSeconds: 199.0,
     distanceText: '82 m',
     speedText: '4.1 KM/H',
     energyLeft: 8,
-    estimatedRewardText: '+10 SOLE',
+    estimatedRewardText: '+10 STRIDE',
   },
   {
     sourceSeconds: 205.0,
     distanceText: '87 m',
     speedText: '3.7 KM/H',
     energyLeft: 8,
-    estimatedRewardText: '+10 SOLE',
+    estimatedRewardText: '+10 STRIDE',
   },
   {
     sourceSeconds: 210.75,
     distanceText: '93 m',
     speedText: '3.2 KM/H',
     energyLeft: 8,
-    estimatedRewardText: '+10 SOLE',
+    estimatedRewardText: '+10 STRIDE',
   },
 ]
 
-/** The cold open's rebuilt run screen: timer 1:53 → 1:56 (video2 184.25–188.0). */
-export const coldOpenRunScreen = {
+export const TOKEN_SYMBOL = 'STRIDE'
+
+/** The run screen's fixed text (screenshot 03), for the rebuild. */
+export const runScreenContent = {
   metaItems: ['Run in progress', 'Sneaker #2'],
-  timerTexts: ['1:53', '1:54', '1:55', '1:56'],
-  distanceText: '64 m',
-  speedText: '4.0 KM/H',
-  energyLeft: 9,
-  estimatedRewardText: '+5 SOLE',
   // Wrapped where the phone wraps it (screenshot 03).
   estimateNoteLines: [
     'Estimates assume every minute counts. The server checks',
     'your GPS when you stop.',
   ],
-  gpsStatus: '19 GPS points recorded. 1 waiting to upload.',
   stopLabel: 'Stop',
 } as const
 
-/** Screenshot 03 (timer 2:52), for the rebuild's overlay check against the PNG. */
+/** The run's clock: 1:53 shows from 184.25 s of video2 (FACTS.md §3). */
+export const RUN_TIMER_SECONDS_AT_SOURCE_ZERO = 113 - 184.25
+
+/**
+ * Screenshot 03 (timer 2:52), only for the rebuild's overlay check against the PNG, which still
+ * shows the old token name. Never on screen.
+ */
 export const screenshotRunScreen = {
   timerText: '2:52',
   distanceText: '132 m',
@@ -127,75 +117,77 @@ export const screenshotRunScreen = {
   gpsStatus: '31 GPS points recorded. 1 waiting to upload.',
 } as const
 
-export const coldOpenContent = {
-  headline: 'Walk.',
+/** Each step scene: a small step label, one headline and one plain sentence. */
+export type StepCopy = {
+  stepLabel?: string
+  headline: string
+  sentenceLines: readonly string[]
+}
+
+export const introContent = {
+  headlineLines: ['Meet', 'StrideMon.'],
+  sentence: 'A move-to-earn game on Monad.',
 } as const
 
-export const walkContent = {
-  caption: ['1–20 km/h counts.', 'Cars don’t.'],
-} as const
+export const getSneakerContent: StepCopy = {
+  stepLabel: 'Step 1 of 4',
+  headline: 'Get a Sneaker.',
+  sentenceLines: ['Your Sneaker is an NFT.', 'The first one is free.'],
+}
 
-export const earnContent = {
+export const walkContent: StepCopy & { distanceLabel: string; rewardLabel: string } = {
+  stepLabel: 'Step 2 of 4',
+  headline: 'Walk or run.',
+  sentenceLines: ['The app tracks your time', 'and distance as you go.'],
+  distanceLabel: 'Distance',
+  rewardLabel: 'Estimated reward',
+}
+
+export const earnContent: StepCopy & {
+  metaItems: readonly string[]
+  rewardNumber: number
+  noteItems: readonly string[]
+} = {
+  stepLabel: 'Step 3 of 4',
+  headline: `Earn ${TOKEN_SYMBOL}.`,
+  sentenceLines: [`Stop the run, and ${TOKEN_SYMBOL}`, 'lands in your wallet.'],
   metaItems: ['You earned', 'Run settled'],
   rewardNumber: 10,
-  rewardSymbol: 'SOLE',
-  proofMetaItems: ['Settled on Monad testnet', 'Block 68183542'],
-  /** The settle transaction's hash, split where it fits two lines of mono. */
-  transactionHashLines: ['0x4c614ce4b86203d066da45dda51b8a4', '632d71326b9e79db4f5ac2d529a233a1b'],
-  /** The decoded SessionSettled log (FACTS.md §4). */
-  eventLines: ['event SessionSettled', 'tokenId 2 · rewardedMinutes 2 · 10 SOLE'],
-  transactionLinkLabel: 'View transaction',
-  headline: 'Earn.',
-} as const
+  noteItems: ['A 3-minute walk', 'Settled on Monad testnet'],
+}
 
-/** Level → efficiency (10 + 2 per level) and SOLE per rewarded minute (0.5 × efficiency). */
+/** Level → STRIDE per rewarded minute (0.5 × efficiency, efficiency 10 + 2 per level). */
 export const upgradeLevels = [
-  { level: 1, efficiency: 10, solePerMinute: 5 },
-  { level: 2, efficiency: 12, solePerMinute: 6 },
-  { level: 3, efficiency: 14, solePerMinute: 7 },
-  { level: 4, efficiency: 16, solePerMinute: 8 },
-  { level: 5, efficiency: 18, solePerMinute: 9 },
+  { level: 1, tokensPerMinute: 5 },
+  { level: 2, tokensPerMinute: 6 },
+  { level: 3, tokensPerMinute: 7 },
+  { level: 4, tokensPerMinute: 8 },
+  { level: 5, tokensPerMinute: 9 },
 ] as const
 
-export const upgradeContent = {
-  metaItems: ['Sneaker #0002', 'Drawn on-chain'],
+export const upgradeContent: StepCopy & {
+  repairDurabilityFrom: number
+  repairDurabilityTo: number
+  tokensPerMinuteLabel: string
+} = {
+  stepLabel: 'Step 4 of 4',
+  headline: 'Level it up.',
+  sentenceLines: [`Spend ${TOKEN_SYMBOL} to repair and`, 'upgrade it. Each level earns more.'],
   repairDurabilityFrom: 60,
   repairDurabilityTo: 100,
-  repairCaption: 'Repair it with SOLE.',
-  signCaption: 'Your wallet signs it.',
-  levelCaption: 'Each level pays more.',
-  efficiencyLabel: 'Efficiency',
-  solePerMinuteLabel: 'SOLE / min',
-  headline: 'Upgrade.',
-} as const
+  tokensPerMinuteLabel: `${TOKEN_SYMBOL} / min`,
+}
 
-export const ownItContent = {
-  statement: ['Not points in an app.', 'An NFT in your wallet.'],
-  appFrameLabel: 'In the app',
-  explorerFrameLabel: 'On MonadVision',
-  framesMetaItems: ['ERC-721', 'Art drawn by the contract'],
+export const ownItContent: StepCopy & { ownerLabel: string } = {
+  headline: 'It’s really yours.',
+  sentenceLines: ['It lives in your wallet. Send it to', 'any wallet, and its stats go with it.'],
   ownerLabel: 'Owner',
-  lockedStatsItems: ['Level 02', 'Efficiency 12', 'Durability 100'],
-  transferCaption: ['Send it to any wallet.', 'Its stats go with it.'],
-} as const
-
-export const rulesContent = {
-  metaItems: ['The rules', 'On-chain'],
-  ruleCards: [
-    '10 ENERGY',
-    '1 POINT = 1 MINUTE',
-    '0.5 SOLE × EFFICIENCY / MIN',
-    '+2 EFFICIENCY / LEVEL',
-    'LEVEL 30 MAX',
-  ],
-  verifiedMetaItems: ['Verified', 'Monad testnet'],
-  closingLine: ['The contract enforces the rules.', 'The app only estimates.'],
-} as const
+}
 
 export const endCardContent = {
   headlineLines: ['Walk.', 'Earn.', 'Upgrade.'],
   wordmark: 'StrideMon',
   metaItems: ['Monad testnet', 'Android demo'],
   siteLabel: 'stridemon.yashmittal.xyz',
-  disclaimer: 'SOLE is a testnet token with no monetary value.',
+  disclaimer: `${TOKEN_SYMBOL} is a testnet token with no monetary value.`,
 } as const

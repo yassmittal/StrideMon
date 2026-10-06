@@ -1,57 +1,49 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion'
+import { AbsoluteFill, useCurrentFrame } from 'remotion'
 import { readSceneDurationInFrames, toSceneBeatFrame } from '../beats'
 import { ClipRise } from '../components/ClipRise'
-import { CrossMarks } from '../components/CrossMarks'
 import { Drift } from '../components/Drift'
-import { Footage } from '../components/Footage'
+import { LabelRoll } from '../components/LabelRoll'
 import { MaskedRise } from '../components/MaskedRise'
 import { MotionBlur } from '../components/MotionBlur'
 import { PhoneFrame } from '../components/PhoneFrame'
 import { RollingDigits, type RollingDigitsStep } from '../components/RollingDigits'
-import { ENERGY_AT_START, type LiveRunReadout, liveRunReadouts, walkContent } from '../content'
-import { type Box, filmLayouts } from '../layouts'
-import { colors, easings } from '../theme'
+import { RUN_SCREEN_WIDTH_PIXELS, RunScreen } from '../components/RunScreen'
+import { StepText } from '../components/StepText'
 import {
-  findWalkSceneFrame,
-  isWalkFootageFast,
-  toWalkFootageFrame,
-  toWalkSourceSeconds,
-} from '../walk-ramp'
+  ENERGY_AT_START,
+  type LiveRunReadout,
+  liveRunReadouts,
+  RUN_TIMER_SECONDS_AT_SOURCE_ZERO,
+  runScreenContent,
+  walkContent,
+} from '../content'
+import { type FilmFormat, filmLayouts, readPhoneBezel } from '../layouts'
+import { colors, fontFamilies } from '../theme'
+import { findWalkSceneFrame, isWalkFast, toWalkSourceSeconds } from '../walk-ramp'
 import type { SceneProps } from './scene-props'
 
-const ENERGY_BAR_HEIGHT_PIXELS = 8
 const CALLOUT_VALUE_OFFSET_PIXELS = 48
 
 /**
- * Scene 2 (0:03–0:08), black. The real run, speed-ramped 1× → 8× → 1×, with its numbers lifted
- * out beside it. Every number is what the phone showed at that moment.
+ * Scene 3 (0:10–0:16), black. Step 2: the run screen during the real walk, ramped 1× → 6× → 1×,
+ * with the distance and the estimated reward lifted out beside it. Every number is what the phone
+ * showed at that second; the screen is the vector rebuild, so the token reads STRIDE.
  */
 export function WalkScene({ format }: SceneProps) {
   const frame = useCurrentFrame()
   const layout = filmLayouts[format]
-  const durationInFrames = readSceneDurationInFrames('walk')
-  const callouts = layout.walk.callouts
-  const isRow = callouts.width > callouts.height
-  const calloutBoxes = splitCalloutBoxes(callouts, isRow)
-  const energyFill = interpolate(frame, energyBarKeyframes.changeFrames, energyBarKeyframes.fills, {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easings.emphasized,
-  })
+  const { callouts, calloutGap } = layout.walk
+  const calloutValueHeight = layout.monoCalloutFontSize * 1.1
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.darkBackground }}>
-      <Drift durationInFrames={durationInFrames}>
-        <MotionBlur isActive={isWalkFootageFast(frame)}>
-          <PhoneFrame box={layout.phone} tone="dark">
-            <WalkFootage />
-          </PhoneFrame>
+      <Drift durationInFrames={readSceneDurationInFrames('walk')}>
+        <MotionBlur isActive={isWalkFast(frame)}>
+          <WalkPhone format={format} />
         </MotionBlur>
-        <CrossMarks box={callouts} color={colors.crossMark} contentStartFrame={0} />
-        {calloutBoxes.map((calloutBox, calloutIndex) => {
-          const callout = CALLOUTS[calloutIndex]
-          if (callout === undefined) return null
-          const startFrame = toSceneBeatFrame('walk', calloutIndex)
+        {CALLOUTS.map((callout, calloutIndex) => {
+          const top = callouts.top + calloutIndex * calloutGap
+          const startFrame = toSceneBeatFrame('walk', 1) + calloutIndex * 4
           return (
             <div key={callout.label}>
               <MaskedRise
@@ -60,125 +52,133 @@ export function WalkScene({ format }: SceneProps) {
                 fontSize={layout.metaFontSize}
                 fontWeight={500}
                 color={colors.textOnDarkSecondary}
-                style={{ left: calloutBox.left, top: calloutBox.top }}
+                style={{ left: callouts.left, top }}
               />
               <ClipRise
                 startFrame={startFrame + 4}
                 style={{
-                  left: calloutBox.left,
-                  top: calloutBox.top + CALLOUT_VALUE_OFFSET_PIXELS,
-                  width: calloutBox.width,
-                  height: layout.monoCalloutFontSize * 1.1,
+                  left: callouts.left,
+                  top: top + CALLOUT_VALUE_OFFSET_PIXELS,
+                  width: layout.monoCalloutFontSize * 0.6 * 11,
+                  height: calloutValueHeight,
                 }}
               >
-                <RollingDigits
-                  steps={readoutSteps[callout.readoutKey]}
-                  fontSize={layout.monoCalloutFontSize}
-                  color={colors.textOnDark}
-                />
-              </ClipRise>
-              {callout.readoutKey === 'energy' && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: calloutBox.left,
-                    top:
-                      calloutBox.top +
-                      CALLOUT_VALUE_OFFSET_PIXELS +
-                      layout.monoCalloutFontSize * 1.3,
-                    width: calloutBox.width,
-                    height: ENERGY_BAR_HEIGHT_PIXELS,
-                    borderRadius: ENERGY_BAR_HEIGHT_PIXELS / 2,
-                    backgroundColor: colors.darkTrack,
-                    overflow: 'hidden',
-                    opacity: frame >= startFrame + 4 ? 1 : 0,
-                  }}
-                >
-                  <div
+                {callout.readoutKey === 'reward' ? (
+                  // The whole value slides: rolling +5 → +10 digit by digit would pass +15,
+                  // which the run never showed at this point (FACTS.md §3).
+                  <LabelRoll
+                    steps={readoutSteps.reward}
+                    lineHeightPixels={calloutValueHeight}
                     style={{
-                      width: `${energyFill * 100}%`,
-                      height: '100%',
-                      backgroundColor: colors.highlight,
+                      fontFamily: fontFamilies.mono,
+                      fontSize: layout.monoCalloutFontSize,
+                      lineHeight: 1.1,
+                      color: colors.textOnDark,
                     }}
                   />
-                </div>
-              )}
+                ) : (
+                  <RollingDigits
+                    steps={readoutSteps.distance}
+                    fontSize={layout.monoCalloutFontSize}
+                    color={colors.textOnDark}
+                  />
+                )}
+              </ClipRise>
             </div>
           )
         })}
-        <MaskedRise
-          lines={walkContent.caption}
-          startFrame={toSceneBeatFrame('walk', 4)}
-          fontSize={layout.captionFontSize}
-          lineHeight={1.15}
+        <StepText
+          copy={walkContent}
+          layout={layout.stepText}
+          metaFontSize={layout.metaFontSize}
           color={colors.textOnDark}
-          style={{ left: layout.walk.caption.left, top: layout.walk.caption.top }}
+          labelColor={colors.textOnDarkSecondary}
+          labelStartFrame={0}
+          headlineStartFrame={toSceneBeatFrame('walk', 1)}
+          sentenceStartFrame={toSceneBeatFrame('walk', 2)}
         />
       </Drift>
     </AbsoluteFill>
   )
 }
 
-/** The ramped footage. It reads its own frame, so each motion-blur sample shows its own sub-frame. */
-function WalkFootage() {
+/** The phone and its run screen. It reads its own frame, so each motion-blur sample is its own sub-frame. */
+function WalkPhone({ format }: { format: FilmFormat }) {
   const frame = useCurrentFrame()
-  return <Footage fileName="walk-run-screen.mp4" sourceFrame={toWalkFootageFrame(frame)} />
+  const { phone } = filmLayouts[format].walk
+  const readout = findReadoutAt(toWalkSourceSeconds(frame))
+  const screenScale = (phone.width - 2 * readPhoneBezel(phone.width)) / RUN_SCREEN_WIDTH_PIXELS
+
+  return (
+    <PhoneFrame box={phone} tone="dark">
+      <div style={{ scale: screenScale, transformOrigin: '0 0' }}>
+        <RunScreen
+          state={{
+            timerSteps,
+            distanceSteps: readoutSteps.distance,
+            speedText: readout.speedText,
+            energyLeft: readout.energyLeft,
+            energyAtStart: ENERGY_AT_START,
+            estimatedRewardText: readout.estimatedRewardText,
+            estimateNoteLines: runScreenContent.estimateNoteLines,
+            metaItems: runScreenContent.metaItems,
+            stopLabel: runScreenContent.stopLabel,
+          }}
+        />
+      </div>
+    </PhoneFrame>
+  )
 }
 
 const CALLOUTS = [
-  { label: 'Distance', readoutKey: 'distance' },
-  { label: 'Speed', readoutKey: 'speed' },
-  { label: 'Energy left (estimated)', readoutKey: 'energy' },
+  { label: walkContent.distanceLabel, readoutKey: 'distance' },
+  { label: walkContent.rewardLabel, readoutKey: 'reward' },
 ] as const
 
 type ReadoutKey = (typeof CALLOUTS)[number]['readoutKey']
 
-const ENERGY_BAR_EASE_FRAMES = 30
 const readoutSteps = buildReadoutSteps()
-const energyBarKeyframes = buildEnergyBarKeyframes()
+const timerSteps = buildTimerSteps()
 
-/** Every frame where a callout starts rolling to a new value (frame 0 shows the first values). */
-export function readWalkReadoutChangeFrames(): number[] {
-  const changeFrames = Object.values(readoutSteps).flatMap((steps) =>
-    steps.map((step) => step.startFrame).filter((startFrame) => startFrame > 0),
-  )
-  return [...new Set(changeFrames)].sort((first, second) => first - second)
+/** The readout the phone showed at a second of video2. */
+function findReadoutAt(sourceSeconds: number): LiveRunReadout {
+  const shownReadouts = liveRunReadouts.filter((readout) => readout.sourceSeconds <= sourceSeconds)
+  const readout = shownReadouts.at(-1) ?? liveRunReadouts[0]
+  if (readout === undefined) throw new Error('liveRunReadouts is empty')
+  return readout
 }
 
-function splitCalloutBoxes(callouts: Box, isRow: boolean): Box[] {
-  return CALLOUTS.map((_callout, calloutIndex) => {
-    if (isRow) {
-      const width = callouts.width / CALLOUTS.length
-      return {
-        left: callouts.left + calloutIndex * width,
-        top: callouts.top,
-        width: width - 30,
-        height: callouts.height,
-      }
-    }
-    const height = callouts.height / CALLOUTS.length
-    return {
-      left: callouts.left + 30,
-      top: callouts.top + 30 + calloutIndex * height,
-      width: callouts.width - 60,
-      height,
-    }
-  })
-}
-
-/** When each readout first shows in the ramped footage, as rolling-digit steps. */
+/** Each frame where a readout changes, as rolling-digit steps. */
 function buildReadoutSteps(): Record<ReadoutKey, RollingDigitsStep[]> {
-  const steps: Record<ReadoutKey, RollingDigitsStep[]> = { distance: [], speed: [], energy: [] }
+  const steps: Record<ReadoutKey, RollingDigitsStep[]> = { distance: [], reward: [] }
   const firstSourceSeconds = toWalkSourceSeconds(0)
   for (const readout of liveRunReadouts) {
     const startFrame =
       readout.sourceSeconds <= firstSourceSeconds ? 0 : findWalkSceneFrame(readout.sourceSeconds)
     if (startFrame === null) continue
     pushIfChanged(steps.distance, startFrame, readout.distanceText)
-    pushIfChanged(steps.speed, startFrame, readout.speedText)
-    pushIfChanged(steps.energy, startFrame, formatEnergy(readout))
+    pushIfChanged(steps.reward, startFrame, readout.estimatedRewardText)
   }
   return steps
+}
+
+/** The run's clock, one step per second of the recording. */
+function buildTimerSteps(): RollingDigitsStep[] {
+  const steps: RollingDigitsStep[] = []
+  const firstTimerSeconds = Math.floor(toWalkSourceSeconds(0) + RUN_TIMER_SECONDS_AT_SOURCE_ZERO)
+  for (let timerSeconds = firstTimerSeconds; ; timerSeconds++) {
+    const sourceSeconds = timerSeconds - RUN_TIMER_SECONDS_AT_SOURCE_ZERO
+    const startFrame = timerSeconds === firstTimerSeconds ? 0 : findWalkSceneFrame(sourceSeconds)
+    if (startFrame === null) break
+    pushIfChanged(steps, startFrame, formatTimer(timerSeconds))
+  }
+  return steps
+}
+
+function formatTimer(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
 
 function pushIfChanged(steps: RollingDigitsStep[], startFrame: number, text: string): void {
@@ -191,27 +191,10 @@ function pushIfChanged(steps: RollingDigitsStep[], startFrame: number, text: str
   steps.push({ startFrame, text })
 }
 
-function formatEnergy(readout: LiveRunReadout): string {
-  return `${readout.energyLeft} / ${ENERGY_AT_START}`
-}
-
-/** The energy bar's keyframes: it eases to each new level when the readout changes. */
-function buildEnergyBarKeyframes(): { changeFrames: number[]; fills: number[] } {
-  const changeFrames: number[] = []
-  const fills: number[] = []
-  for (const step of readoutSteps.energy) {
-    const energyLeft = Number(step.text.split(' / ')[0])
-    const previousFill = fills[fills.length - 1]
-    if (previousFill !== undefined) {
-      changeFrames.push(step.startFrame)
-      fills.push(previousFill)
-    }
-    changeFrames.push(step.startFrame + (previousFill === undefined ? 0 : ENERGY_BAR_EASE_FRAMES))
-    fills.push(energyLeft / ENERGY_AT_START)
-  }
-  if (changeFrames.length === 1) {
-    changeFrames.push((changeFrames[0] ?? 0) + 1)
-    fills.push(fills[0] ?? 0)
-  }
-  return { changeFrames, fills }
+/** Every frame where a callout starts rolling to a new value (frame 0 shows the first values). */
+export function readWalkReadoutChangeFrames(): number[] {
+  const changeFrames = Object.values(readoutSteps).flatMap((steps) =>
+    steps.map((step) => step.startFrame).filter((startFrame) => startFrame > 0),
+  )
+  return [...new Set(changeFrames)].sort((first, second) => first - second)
 }
