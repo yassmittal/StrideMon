@@ -27,7 +27,7 @@ describe('LiveRunStats', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Energy left (estimated)' }).props.accessibilityValue,
     ).toMatchObject({ now: 7, max: 10 })
-    expect(screen.getByLabelText('Reward (estimated): +15 SOLE')).toBeTruthy()
+    expect(screen.getByLabelText('Reward (estimated): +15 STRIDE')).toBeTruthy()
   })
 
   it('waits for GPS before the first fix', async () => {

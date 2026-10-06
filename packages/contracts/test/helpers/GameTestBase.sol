@@ -6,14 +6,14 @@ import {DeployGame} from "../../script/DeployGame.s.sol";
 import {GameConfig} from "../../src/libraries/GameMath.sol";
 import {SessionSettlement, SneakerGame} from "../../src/SneakerGame.sol";
 import {SneakerAttributes, SneakerNft} from "../../src/SneakerNft.sol";
-import {SoleToken} from "../../src/SoleToken.sol";
+import {StrideToken} from "../../src/StrideToken.sol";
 
 /// @notice Deploys the game through the real `DeployGame` script, so every test runs
 /// against production role wiring and the initial game config.
 abstract contract GameTestBase is Test {
     uint256 internal constant DEPLOYER_PRIVATE_KEY = 0xA11CE;
     uint256 internal constant REALISTIC_START_TIMESTAMP = 1_790_000_000;
-    uint256 internal constant ONE_SOLE_WEI = 1e18;
+    uint256 internal constant ONE_STRIDE_WEI = 1e18;
 
     address internal deployer = vm.addr(DEPLOYER_PRIVATE_KEY);
     address internal gameServer = makeAddr("gameServer");
@@ -21,7 +21,7 @@ abstract contract GameTestBase is Test {
     address internal otherPlayer = makeAddr("otherPlayer");
 
     SneakerNft internal sneakerNft;
-    SoleToken internal soleToken;
+    StrideToken internal strideToken;
     SneakerGame internal sneakerGame;
     GameConfig internal gameConfig;
 
@@ -34,7 +34,7 @@ abstract contract GameTestBase is Test {
 
         DeployGame.GameDeployment memory deployment = new DeployGame().run();
         sneakerNft = deployment.sneakerNft;
-        soleToken = deployment.soleToken;
+        strideToken = deployment.strideToken;
         sneakerGame = deployment.sneakerGame;
         gameConfig = sneakerGame.getGameConfig();
     }
@@ -80,11 +80,11 @@ abstract contract GameTestBase is Test {
         return sneakerNft.getAttributes(tokenId);
     }
 
-    /// @dev Mints SOLE through a real minter so totalSupply stays consistent.
-    function fundWithSole(address walletAddress, uint256 amountWei) internal {
-        bytes32 minterRole = soleToken.MINTER_ROLE();
+    /// @dev Mints STRIDE through a real minter so totalSupply stays consistent.
+    function fundWithStride(address walletAddress, uint256 amountWei) internal {
+        bytes32 minterRole = strideToken.MINTER_ROLE();
         vm.prank(deployer);
-        soleToken.grantRole(minterRole, address(this));
-        soleToken.mint(walletAddress, amountWei);
+        strideToken.grantRole(minterRole, address(this));
+        strideToken.mint(walletAddress, amountWei);
     }
 }

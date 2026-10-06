@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react-native'
 import { RepairPanel } from './RepairPanel'
 
-const SOLE_WEI = 10n ** 18n
+const STRIDE_WEI = 10n ** 18n
 const noop = () => {}
 
 describe('RepairPanel', () => {
@@ -12,14 +12,14 @@ describe('RepairPanel', () => {
         durability={72}
         maxDurability={100}
         repairCost={{ status: 'ready', costWei: 196n * 10n ** 17n }}
-        rewardBalanceWei={45n * SOLE_WEI}
+        rewardBalanceWei={45n * STRIDE_WEI}
         transactionState={{ phase: 'idle' }}
         onConfirmPress={noop}
         onTransactionReset={noop}
       />,
     )
 
-    expect(screen.getByText('19.6 SOLE')).toBeTruthy()
+    expect(screen.getByText('19.6 STRIDE')).toBeTruthy()
     expect(screen.getByLabelText('Durability: 72 to 100')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Repair to 100' })).toBeEnabled()
   })
@@ -31,7 +31,7 @@ describe('RepairPanel', () => {
         durability={100}
         maxDurability={100}
         repairCost={{ status: 'ready', costWei: 0n }}
-        rewardBalanceWei={45n * SOLE_WEI}
+        rewardBalanceWei={45n * STRIDE_WEI}
         transactionState={{ phase: 'idle' }}
         onConfirmPress={noop}
         onTransactionReset={noop}

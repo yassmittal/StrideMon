@@ -98,7 +98,7 @@ repair or upgrade.
   each step (e.g. a pre-recorded walk if the venue has no GPS signal).
 - Maestro flow for the non-GPS parts (sign-in → home → repair → upgrade → transfer).
 - **Approach (D-033):** both scripts are shell wrappers around Foundry scripts that sign with the
-  deployer key, never the game server's. Wallet A earns its SOLE by walking; the script mints
+  deployer key, never the game server's. Wallet A earns its STRIDE by walking; the script mints
   only a shortfall (through a `MINTER_ROLE` it grants and revokes in the same run) and tops MON
   up below 0.5. The demo config sets energy regeneration to 60 s. The Maestro flow lives in
   `apps/mobile/.maestro/` and drives MetaMask's sheets too; running it is in

@@ -1,6 +1,6 @@
 # StrideMon
 
-A move-to-earn game on Monad: own a Sneaker NFT, walk or run to earn **SOLE**,
+A move-to-earn game on Monad: own a Sneaker NFT, walk or run to earn **STRIDE**,
 and spend it to repair and upgrade the Sneaker. `MVP.md` is the product brief;
 `docs/` is the architecture and the phased build plan (start at `docs/README.md`).
 
@@ -70,5 +70,5 @@ apps/mobile         Expo + React Native + Expo Router
 apps/api            Fastify 5 on Bun, MongoDB, viem
 packages/shared     zod API contracts, domain types, game-rule mirror
 packages/chain      ABIs, deployed addresses, Monad chain definitions
-packages/contracts  Foundry: SneakerNft, SoleToken, SneakerGame
+packages/contracts  Foundry: SneakerNft, StrideToken, SneakerGame
 ```

@@ -7,7 +7,7 @@ import { ActivitySessionSummaryCard } from '../../../src/features/activity-sessi
 import { useActivitySession } from '../../../src/features/activity-session/hooks/useActivitySession'
 import { useIsGamePaused } from '../../../src/features/sneaker/hooks/useIsGamePaused'
 
-/** A finished run: settling on Monad, then the SOLE it earned. Opened after STOP and from History. */
+/** A finished run: settling on Monad, then the STRIDE it earned. Opened after STOP and from History. */
 export default function ActivitySessionSummaryScreen() {
   const { activitySessionId } = useLocalSearchParams<{ activitySessionId: string }>()
   const activitySessionQuery = useActivitySession(activitySessionId)

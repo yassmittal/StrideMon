@@ -48,7 +48,7 @@ describe('ActivitySessionSummaryCard', () => {
     expect(screen.getByLabelText('Average speed: 5.1 km/h')).toBeTruthy()
   })
 
-  it('shows the SOLE earned, the durability lost and a link to the transaction', async () => {
+  it('shows the STRIDE earned, the durability lost and a link to the transaction', async () => {
     await render(
       <ActivitySessionSummaryCard
         isGamePaused={false}
@@ -56,7 +56,7 @@ describe('ActivitySessionSummaryCard', () => {
       />,
     )
 
-    expect(screen.getByLabelText('You earned +50 SOLE')).toBeTruthy()
+    expect(screen.getByLabelText('You earned +50 STRIDE')).toBeTruthy()
     expect(screen.getByLabelText('Durability lost: −3')).toBeTruthy()
     expect(screen.getByRole('link', { name: /settlement transaction/ })).toBeTruthy()
   })
@@ -76,7 +76,7 @@ describe('ActivitySessionSummaryCard', () => {
       />,
     )
 
-    expect(screen.getByLabelText('You earned +20 SOLE')).toBeTruthy()
+    expect(screen.getByLabelText('You earned +20 STRIDE')).toBeTruthy()
     expect(screen.getByText(/energy for 4 of your 10 active minutes/)).toBeTruthy()
   })
 
@@ -137,11 +137,11 @@ describe('ActivitySessionSummaryCard', () => {
       />,
     )
 
-    expect(screen.getByText('No SOLE this time')).toBeTruthy()
+    expect(screen.getByText('No STRIDE this time')).toBeTruthy()
     expect(screen.getByText(/full minute of walking/)).toBeTruthy()
     expect(screen.getByLabelText('Duration: 1:03')).toBeTruthy()
     expect(screen.queryByLabelText(/^Distance/)).toBeNull()
-    expect(screen.queryByText(/\+0 SOLE/)).toBeNull()
+    expect(screen.queryByText(/\+0 STRIDE/)).toBeNull()
   })
 
   it('says a run with a simulated location didn’t count', async () => {

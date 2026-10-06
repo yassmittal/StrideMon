@@ -47,7 +47,7 @@ describe('ActivitySessionHistoryList', () => {
     await renderHistoryList([SETTLED_ACTIVITY_SESSION])
 
     expect(screen.getByText('11:00  •  842 m')).toBeTruthy()
-    expect(screen.getByText('+50 SOLE')).toBeTruthy()
+    expect(screen.getByText('+50 STRIDE')).toBeTruthy()
     expect(screen.getByText('Settled')).toBeTruthy()
   })
 
@@ -63,7 +63,7 @@ describe('ActivitySessionHistoryList', () => {
     ])
 
     expect(screen.getByText('Didn’t count')).toBeTruthy()
-    expect(screen.queryByText(/SOLE/)).toBeNull()
+    expect(screen.queryByText(/STRIDE/)).toBeNull()
   })
 
   it('opens the run that was pressed', async () => {

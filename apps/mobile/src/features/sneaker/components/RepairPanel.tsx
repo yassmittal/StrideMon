@@ -17,7 +17,7 @@ type RepairPanelProps = {
   onTransactionReset: () => void
 }
 
-/** Spend SOLE to restore durability to full. */
+/** Spend STRIDE to restore durability to full. */
 export function RepairPanel({
   isGamePaused,
   durability,

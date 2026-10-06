@@ -3,7 +3,7 @@ import {
   type StrideMonContractAddresses,
   sneakerGameAbi,
   sneakerNftAbi,
-  soleTokenAbi,
+  strideTokenAbi,
 } from '@stridemon/chain'
 import {
   type ActivitySession,
@@ -51,7 +51,7 @@ const WALK_BACKDATE_MILLISECONDS = (WALK_DURATION_SECONDS + 30) * 1000
 // also gets its spawned processes killed, which would take the shared Anvil down with it.
 const WORN_OUT_SNEAKER_TEST_TIMEOUT_MILLISECONDS = 30_000
 const MAXIMUM_DURABILITY_LOSS_PER_MINUTE_BASIS_POINTS = 65_535
-// MVP.md: 10 minutes × efficiency 10 × 0.5 SOLE.
+// MVP.md: 10 minutes × efficiency 10 × 0.5 STRIDE.
 const MVP_EXAMPLE_REWARD_AMOUNT_WEI = 50n * 10n ** 18n
 
 let testChain: TestChain
@@ -361,7 +361,7 @@ describe('POST /v1/activity-sessions/:activitySessionId/finish', () => {
 })
 
 describe('settlement', () => {
-  it('settles the MVP example on-chain: +50 SOLE, durability 100 → 97, energy 10 → 0', async () => {
+  it('settles the MVP example on-chain: +50 STRIDE, durability 100 → 97, energy 10 → 0', async () => {
     const activitySession = await startBackdatedWalk()
     await finishActivitySession(activitySession.activitySessionId)
 
@@ -613,13 +613,13 @@ async function listActivitySessions(queryString: string) {
   return activitySessionPageSchema.parse(response.json())
 }
 
-/** The player's SOLE balance and the Sneaker's durability and energy, as the chain has them. */
+/** The player's STRIDE balance and the Sneaker's durability and energy, as the chain has them. */
 async function readChainState() {
   const publicClient: PublicClient = server.chain.publicClient
   const [rewardBalanceWei, attributes, currentEnergy] = await Promise.all([
     publicClient.readContract({
-      address: contractAddresses.soleToken,
-      abi: soleTokenAbi,
+      address: contractAddresses.strideToken,
+      abi: strideTokenAbi,
       functionName: 'balanceOf',
       args: [playerAccount.address],
     }),

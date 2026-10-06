@@ -13,7 +13,7 @@ import type { StatChange } from './StatChangeRow'
 /** What the player is about to do, snapshotted when they tapped the action. */
 export type SneakerTransactionConfirmation =
   | {
-      /** Repair or upgrade: SOLE is spent and stats change. */
+      /** Repair or upgrade: STRIDE is spent and stats change. */
       kind: 'spend'
       confirmationTitle: string
       successTitle: string

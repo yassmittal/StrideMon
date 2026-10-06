@@ -14,9 +14,9 @@ export const sneakerGameAbi = [
         "internalType": "contract SneakerNft"
       },
       {
-        "name": "soleTokenAddress",
+        "name": "strideTokenAddress",
         "type": "address",
-        "internalType": "contract SoleToken"
+        "internalType": "contract StrideToken"
       },
       {
         "name": "initialGameConfig",
@@ -608,13 +608,13 @@ export const sneakerGameAbi = [
   },
   {
     "type": "function",
-    "name": "soleToken",
+    "name": "strideToken",
     "inputs": [],
     "outputs": [
       {
         "name": "",
         "type": "address",
-        "internalType": "contract SoleToken"
+        "internalType": "contract StrideToken"
       }
     ],
     "stateMutability": "view"

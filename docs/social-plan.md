@@ -155,7 +155,7 @@ invent one.
 - A launch thread opens with one specific claim, then 5–8 posts that each make sense alone, then
   the call to action. [20]
 - Starting from zero: reply to every reply within the first hour, and leave substantive replies
-  on Monad builders' posts. [20] Real numbers beat vague progress ("+10 SOLE for 2 rewarded
+  on Monad builders' posts. [20] Real numbers beat vague progress ("+10 STRIDE for 2 rewarded
   minutes" beats "rewards work"). [20]
 
 ### 8. Measurement
@@ -337,7 +337,7 @@ Do this before any post. Draft copy for `profile.md`:
 
 - **Name:** `StrideMon`
 - **Bio** (≤ 160 characters, the composer will enforce it):
-  `A walking game on Monad testnet. Own a Sneaker NFT, walk to earn SOLE, upgrade it. SOLE has no monetary value. Built by @yash_mittal_dev`
+  `A walking game on Monad testnet. Own a Sneaker NFT, walk to earn STRIDE, upgrade it. STRIDE has no monetary value. Built by @yash_mittal_dev`
   (136 characters)
 - **Link:** `stridemon.yashmittal.xyz`
 - **Avatar:** the site's mark (`website/src/app/icon.svg`: the Sneaker line on `#141515` with the
@@ -375,7 +375,7 @@ job. No "gm" posts, no engagement bait ("RT if…", "drop your wallet").
 |---|---|
 | **StrideMon** | Stridemon, STRIDEMON in prose |
 | **Sneaker** (capital S, the NFT) | shoe, NFT on its own, item |
-| **SOLE** (always caps) | soles, coins, points, tokens on its own |
+| **STRIDE** (always caps) | lowercase "stride" for the token, coins, points, tokens on its own |
 | **Monad testnet**, **testnet MON** | Monad on its own when it means the network, MON on its own |
 | **walk**, **run** (what the screens say); **activity session** only about code | workout, session on its own |
 | **rewarded minutes**, **energy**, **durability**, **level**, **efficiency** | stamina, HP, XP |
@@ -384,7 +384,7 @@ job. No "gm" posts, no engagement bait ("RT if…", "drop your wallet").
 #### 5.3 Never say (banned)
 
 - Money: *earn money, income, passive income, yield, APY, ROI, profit, cash out, worth, price,
-  value* (about SOLE), *investment, presale, mint price, floor*.
+  value* (about STRIDE), *investment, presale, mint price, floor*.
 - Farming: *airdrop, points program, eligibility, whitelist/WL, allowlist, early users will…,
   snapshot*. On crypto X, "whitelist" means a guaranteed spot in a token or NFT sale, so the
   landing page's sign-up is a **waitlist**: "Get notified when StrideMon opens". The same word is
@@ -392,7 +392,7 @@ job. No "gm" posts, no engagement bait ("RT if…", "drop your wallet").
 - Hype: *revolutionary, next-gen, game-changer, unleash, the future of fitness, LFG, WAGMI, moon,
   gem, alpha, don't miss out, 100x, first-ever / first on Monad* (unverified).
 - False facts: *mainnet, download now, App Store / Play Store, iOS (live), N users / runners*,
-  any number not in `FACTS.md`. Never "a 2-minute walk paid 10 SOLE" (it was a 3:05 walk with 2
+  any number not in `FACTS.md`. Never "a 2-minute walk paid 10 STRIDE" (it was a 3:05 walk with 2
   rewarded minutes, FACTS §3), "MetaMask updates the art when you level up" (it doesn't refresh:
   say "the app and the explorer redraw it", disagreement 3), "cheat-proof", or
   speed-band rules under an "on-chain" claim (that check is in the API, FACTS §2).
@@ -401,12 +401,12 @@ job. No "gm" posts, no engagement bait ("RT if…", "drop your wallet").
 
 #### 5.4 Disclaimers
 
-- **Every post that shows an amount of SOLE** ends with, or has in its thread:
-  `Monad testnet. SOLE has no monetary value.`
+- **Every post that shows an amount of STRIDE** ends with, or has in its thread:
+  `Monad testnet. STRIDE has no monetary value.`
 - **The launch thread** also says: there's no token sale, no airdrop and nothing to buy, and the
   Android build is a demo build that isn't publicly downloadable yet. Its last post links the
   **waitlist** on the landing page (once it ships, §15).
-- **The standing answer to "airdrop?" / "wen token?":** "No. SOLE is a testnet game token with
+- **The standing answer to "airdrop?" / "wen token?":** "No. STRIDE is a testnet game token with
   no monetary value, and there's no sale or airdrop. The game is the point." Same words every time.
 
 #### 5.5 Hashtags and tagging
@@ -501,7 +501,7 @@ spent the last few weeks building this…").
 | D11 | Build story | The contract computes the reward and the server only reports minutes (D-007) | Single | Rules card | The trust boundary, said plainly |
 | D12 | Changelog | Week 1 recap: what shipped, what broke, what's next | Single | None, or the best clip of the week | A fixed weekly slot readers can expect |
 | D13 | Conversation | Replies only | — | — | — |
-| D14 | Deep dive | The rules on-chain: energy, 0.5 SOLE × efficiency per minute, upgrade 50 × level (`game-rules.md`) | Single + card | The site's rules table as a dark card | Keeps every number checkable |
+| D14 | Deep dive | The rules on-chain: energy, 0.5 STRIDE × efficiency per minute, upgrade 50 × level (`game-rules.md`) | Single + card | The site's rules table as a dark card | Keeps every number checkable |
 | D15 | Build story | `bson@7` crashing at import on Bun, and the pin (D-015) | Single | Text | For developers, short |
 | D16 | Proof | Gas drip and starter mint: "connect wallet → you own a Sneaker" (D-009) | Single + clip | Demo chapter "Sign in with MetaMask" (exists) | Onboarding is the friction every Web3 game has |
 | D17 | Build story | What I'd do differently, and what's next (marketplace, the iOS day) | Single + question | None | Invites replies. Honest about what isn't done |
@@ -514,12 +514,12 @@ spent the last few weeks building this…").
 Each one is the front-matter block from §2 plus the body below.
 
 - **single.md:** one claim in the first line. One or two lines of proof (a number, with its
-  source in front-matter). The disclaimer if SOLE is shown. The link goes in the reply, not here.
+  source in front-matter). The disclaimer if STRIDE is shown. The link goes in the reply, not here.
 - **thread.md:** Post 1 is a hook with one specific claim and the media. Posts 2–n each make
   sense alone, one idea each. The last post links (site, GitHub, the relevant decision or file)
   and carries the disclaimer. At most 8 posts.
 - **reply.md:** the reusable answers: "airdrop?", "is it live / iOS?", "can I cheat by driving?",
-  "where's the code?", "what's SOLE worth?". Each one is the FAQ wording from
+  "where's the code?", "what's STRIDE worth?". Each one is the FAQ wording from
   `website/src/content/faq.ts`, so the site and X never disagree.
 - **launch.md:** the D0 thread skeleton: hook + film, the loop in one post, the real settled run
   (FACTS §3–§4), the rules on-chain, fair play and privacy, "testnet · no value · no sale ·
@@ -603,8 +603,8 @@ Each one is the front-matter block from §2 plus the body below.
 >   4. Media reuses `website/public/`, `website/media-source/` and `launch-video/`. Cards are
 >      `remotion still` renders in `launch-video/`. X-only outputs go in the gitignored
 >      `social/media/`, each rebuilt from the command in its post file.
->   5. Every number in a post cites `launch-video/FACTS.md` or a doc. Every post showing SOLE
->      says "Monad testnet. SOLE has no monetary value." No hashtags, and at most one tag a post.
+>   5. Every number in a post cites `launch-video/FACTS.md` or a doc. Every post showing STRIDE
+>      says "Monad testnet. STRIDE has no monetary value." No hashtags, and at most one tag a post.
 >   6. The research and full plan are in [`social-plan.md`](social-plan.md).
 > - **Why:** the facts, footage and voice already live in this repo, so posts written next to
 >   them stay true. Manual posting is free, follows X's automation rules with nothing to label,
@@ -620,7 +620,7 @@ Each one is the front-matter block from §2 plus the body below.
 > [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 > front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
 > there and **never posts, schedules, logs in to X or calls its API**. Only Yash publishes, and
-> only posts with his name in `approved:`. Every SOLE amount carries "Monad testnet. SOLE has no
+> only posts with his name in `approved:`. Every STRIDE amount carries "Monad testnet. STRIDE has no
 > monetary value."
 
 ### 14. What happens after the go-ahead

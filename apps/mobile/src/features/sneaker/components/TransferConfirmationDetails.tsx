@@ -32,8 +32,8 @@ export function TransferConfirmationDetails({
         </Text>
       </View>
       <Text style={styles.caption}>
-        There’s no SOLE cost. Your wallet opens next to approve it, and Monad charges a small fee in
-        MON.
+        There’s no STRIDE cost. Your wallet opens next to approve it, and Monad charges a small fee
+        in MON.
       </Text>
     </>
   )

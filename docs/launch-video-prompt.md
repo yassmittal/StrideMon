@@ -67,7 +67,7 @@ Work in **gates**. At each **STOP**, show me the result and wait for my go-ahead
 ### 1. What StrideMon is (the only facts you may use)
 
 A STEPN-style move-to-earn game on **Monad testnet**, live on Android. You own a **Sneaker NFT**,
-walk or run with it to earn **SOLE** (an ERC-20), and spend SOLE to repair and level up the
+walk or run with it to earn **STRIDE** (an ERC-20), and spend STRIDE to repair and level up the
 Sneaker. The rules live in contracts, and so does the Sneaker's picture: `SneakerArtRenderer`
 draws it as an SVG, so the app, MonadVision and MetaMask show the same image. Send the Sneaker to
 any wallet and its stats go with it.
@@ -79,14 +79,14 @@ number, address and hash that will appear on screen, each with its source (file 
 screenshot, or a footage timestamp). Nothing goes on screen that isn't in it. In particular:
 
 - Rules come from `game-rules.md`: max energy 10, 1 point = 1 rewarded minute, 1 point back every
-  30 min, 0.5 SOLE per efficiency point per minute, 1–20 km/h average counts, max level 30,
-  +2 efficiency per level, upgrade 50 SOLE × level.
-- Verified on the phone: a 2-minute walk paid **+10 SOLE** (screenshot `04`). Repair took durability
-  96 → 100, level 1 → 2, and the next run paid 6 SOLE/min (efficiency 12).
+  30 min, 0.5 STRIDE per efficiency point per minute, 1–20 km/h average counts, max level 30,
+  +2 efficiency per level, upgrade 50 STRIDE × level.
+- Verified on the phone: a 2-minute walk paid **+10 STRIDE** (screenshot `04`). Repair took durability
+  96 → 100, level 1 → 2, and the next run paid 6 STRIDE/min (efficiency 12).
 - **Settlement speed:** only state a number of seconds if you measured it in the footage, from
   the STOP tap to the reward appearing. Otherwise say "seconds", or nothing. No Monad TPS or
   benchmark claims.
-- SOLE is a testnet token with **no monetary value**. That line appears in the end card.
+- STRIDE is a testnet token with **no monetary value**. That line appears in the end card.
 - Voice: plain and confident. No hype words ("revolutionary", "next-gen", "unleash"), no
   exclamation marks, no price or earnings claims, no "passive income".
 - Monad appears **as text only**. Don't use Monad's logo or purple unless I give you their brand kit.
@@ -148,7 +148,7 @@ Never take a centre crop of the master.
 
 1. *Hook:* you walk, and the run settles on Monad.
 2. *Stakes:* most step rewards are points in someone else's database.
-3. *Reveal:* StrideMon. Own a Sneaker NFT, walk with it, earn SOLE, upgrade it.
+3. *Reveal:* StrideMon. Own a Sneaker NFT, walk with it, earn STRIDE, upgrade it.
 4. *Proof:* the run's real settle transaction and four verified contracts.
 5. *Action:* stridemon.yashmittal.xyz.
 
@@ -158,18 +158,18 @@ Never take a centre crop of the master.
 |---|---|---|---|
 | 1 | 0:00–0:03 | 0–180 | **Cold open, black.** Frame 0 is already the product: a macro of the active run's mono timer ticking 2:49 → 2:52, the lime "run in progress" dot, the meta `RUN IN PROGRESS • SNEAKER #2`. At 0:01 **"Walk."** rises from a line mask, huge Satoshi, bottom left. At 0:02 a fast eased pull-back shows the whole active-run screen in a plain phone frame. |
 | 2 | 0:03–0:08 | 180–480 | **Walk.** Real walking footage inside the phone, speed-ramped 1× → 8× → 1×. Next to it, numbers lifted out of the UI as 2.5D mono callouts framed by "+" marks: distance counting up, speed, and the energy bar draining lime 10 → 8. A small line: "1–20 km/h counts. Cars don't." |
-| 3 | 0:08–0:14 | 480–840 | **Earn.** The real STOP tap at 1×, then "Settling on Monad…" from the footage. On the downbeat, a hard flip to off-white: **+10 SOLE** in giant mono counting 0 → 10 (the last digit lands on the beat), meta `YOU EARNED • RUN SETTLED`. The proof: the real transaction hash in mono, and the `SessionSettled` event (footage or explorer, never mocked). **"Earn."** |
+| 3 | 0:08–0:14 | 480–840 | **Earn.** The real STOP tap at 1×, then "Settling on Monad…" from the footage. On the downbeat, a hard flip to off-white: **+10 STRIDE** in giant mono counting 0 → 10 (the last digit lands on the beat), meta `YOU EARNED • RUN SETTLED`. The proof: the real transaction hash in mono, and the `SessionSettled` event (footage or explorer, never mocked). **"Earn."** |
 | 4 | 0:14–0:23 | 840–1380 | **Upgrade, black.** The contract's Sneaker SVG draws its lines in, then the lime accent, then the speed lines. Repair first: durability 060 → 100, the lime brightening as it fills. Then one level per beat, 01 → 05: a lime tick per level, a speed line per level, efficiency 10 → 18 in mono. A 1-second insert of the real MetaMask confirm sheet: the player's own wallet signs it. **"Upgrade."** Caption: "Each level pays more." |
 | 5 | 0:23–0:31 | 1380–1860 | **Own it, off-white.** "Not points in an app. An NFT in your wallet." The same art in three frames at once: the app card, MonadVision (`09-explorer-nft.png`) and MetaMask (if the footage has it). "Drawn by a contract. The same picture everywhere." Then the transfer: owner `0x…A` → `0x…B` rolls over in mono while the line `LEVEL 02 • EFFICIENCY 12 • DURABILITY 100` stays locked. |
-| 6 | 0:31–0:38 | 1860–2280 | **The rules are on-chain, black.** One mono stat card per beat: `10 ENERGY` · `1 POINT = 1 MINUTE` · `0.5 SOLE × EFFICIENCY / MIN` · `1–20 KM/H` · `LEVEL 30 MAX`. Then the four contract addresses run past, with `VERIFIED • MONAD TESTNET`. Line: "The contract enforces the rules. The app only estimates." |
-| 7 | 0:38–0:45 | 2280–2700 | **End card, off-white.** **Walk. Earn. Upgrade.** builds line by line on three beats. The dark Sneaker panel, the `StrideMon` wordmark, meta `LIVE ON MONAD TESTNET • ANDROID`, a pill with an arrow: `stridemon.yashmittal.xyz →`. Small: "SOLE is a testnet token with no monetary value." Hold at least 2.5 s, so the last frame works as a poster. |
+| 6 | 0:31–0:38 | 1860–2280 | **The rules are on-chain, black.** One mono stat card per beat: `10 ENERGY` · `1 POINT = 1 MINUTE` · `0.5 STRIDE × EFFICIENCY / MIN` · `1–20 KM/H` · `LEVEL 30 MAX`. Then the four contract addresses run past, with `VERIFIED • MONAD TESTNET`. Line: "The contract enforces the rules. The app only estimates." |
+| 7 | 0:38–0:45 | 2280–2700 | **End card, off-white.** **Walk. Earn. Upgrade.** builds line by line on three beats. The dark Sneaker panel, the `StrideMon` wordmark, meta `LIVE ON MONAD TESTNET • ANDROID`, a pill with an arrow: `stridemon.yashmittal.xyz →`. Small: "STRIDE is a testnet token with no monetary value." Hold at least 2.5 s, so the last frame works as a poster. |
 
 **Where pixels come from:**
 
 - **Real footage** wherever reality matters: taps, walking, MetaMask, settling, the explorer. Only
   ever the recorded footage, never a re-enactment.
 - **Vector rebuilds** of app screens (with the real fonts and tokens) only where you need a macro
-  crop sharper than 586 px footage allows: the timer, +10 SOLE, the Home card. Each rebuild must
+  crop sharper than 586 px footage allows: the timer, +10 STRIDE, the Home card. Each rebuild must
   match its screenshot. Check it with a 50/50 overlay still against the PNG, and fix anything
   more than a few pixels off.
 - The phone is a **plain flat frame** like the website's (`website/src/components/ui/phone-frame.tsx`:
@@ -238,7 +238,7 @@ Translate the Lusion system into time:
   fade the music to fit the picture, not the other way around.
 - **SFX:** quiet and tactile, from **CC0** sources (Kenney's UI and interface packs, Freesound CC0
   only). Include a soft tick for each counter landing, a low muted thump on each black/white flip,
-  a real-feeling tap on STOP and the MetaMask confirm, and one clean tone for "+10 SOLE". No
+  a real-feeling tap on STOP and the MetaMask confirm, and one clean tone for "+10 STRIDE". No
   whooshes on every move, no risers, no coin sounds. Record each file's source and licence in
   `launch-video/CREDITS.md`.
 - **Mix:** music ducks about 4 dB under the key SFX. The final mix is **−14 LUFS integrated, −1 dBTP**
@@ -305,5 +305,5 @@ film on the landing page is a separate decision).
 ### Stretch (only if I say yes at STOP 5)
 
 - A **15 s cut-down** at 9:16: scenes 1, 3 and 7 only.
-- Two **6 s loops** for replies and Discord: the Sneaker levelling up 01 → 05, and +10 SOLE
+- Two **6 s loops** for replies and Discord: the Sneaker levelling up 01 → 05, and +10 STRIDE
   settling.

@@ -13,7 +13,7 @@ type ActivitySessionSummaryCardProps = {
 }
 
 /**
- * A finished run: "Settling on Monad…" and then the SOLE it earned, with the
+ * A finished run: "Settling on Monad…" and then the STRIDE it earned, with the
  * validated numbers below. Or why it didn't count.
  */
 export function ActivitySessionSummaryCard({

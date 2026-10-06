@@ -6,7 +6,7 @@ The three StrideMon contracts on Monad (Foundry, Solidity 0.8.37, OpenZeppelin 5
 |----------|----|-------|
 | `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` with an SVG `image` | every Sneaker's level, efficiency, durability and energy |
 | `SneakerArtRenderer` | draws the Sneaker's SVG (D-030), swappable by the admin | nothing |
-| `SoleToken` | ERC-20 + Permit, 18 decimals (`Sole` / `SOLE`) | rewards |
+| `StrideToken` | ERC-20 + Permit, 18 decimals (`Stride` / `STRIDE`) | rewards |
 | `SneakerGame` | the rules: starter mint, settlement, repair, upgrade | `GAME_ROLE` on the NFT, `MINTER_ROLE` + `BURNER_ROLE` on the token |
 
 Design: [`docs/architecture/smart-contracts.md`](../../docs/architecture/smart-contracts.md).
@@ -71,7 +71,7 @@ Redeployed 2026-10-03 for Phase 8.3 (the Sneaker image, D-030) and verified (Sou
 |----------|---------|
 | `SneakerArtRenderer` | [`0x7e01732461C1879915C35E56e73Fd8569B289ADa`](https://testnet.monadvision.com/address/0x7e01732461C1879915C35E56e73Fd8569B289ADa) |
 | `SneakerNft` | [`0xC116917b06BD9079C87334ED5499054b1B54Fa80`](https://testnet.monadvision.com/address/0xC116917b06BD9079C87334ED5499054b1B54Fa80) |
-| `SoleToken` | [`0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0`](https://testnet.monadvision.com/address/0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0) |
+| `StrideToken` | [`0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0`](https://testnet.monadvision.com/address/0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0) |
 | `SneakerGame` | [`0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9`](https://testnet.monadvision.com/address/0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9) |
 
 The first deployment (2026-09-29, `SneakerNft` `0x082072B5…`, no image) is abandoned; its
@@ -98,7 +98,7 @@ The steps around them are in [`docs/demo-script.md`](../../docs/demo-script.md).
 
 | Wrapper | Script | Does |
 |---------|--------|------|
-| `scripts/prepare-demo-wallets` | `PrepareDemoWallets.s.sol` | Mints wallet A any SOLE it lacks for its next upgrade plus 10 (granting and revoking `MINTER_ROLE` in the same run), tops A and B up to 1 MON below 0.5, prints both |
+| `scripts/prepare-demo-wallets` | `PrepareDemoWallets.s.sol` | Mints wallet A any STRIDE it lacks for its next upgrade plus 10 (granting and revoking `MINTER_ROLE` in the same run), tops A and B up to 1 MON below 0.5, prints both |
 | `scripts/demo-energy-config apply\|revert` | `DemoEnergyConfig.s.sol` | Sets `energyRegenerationSeconds` to 60, or back to the launch 30 minutes |
 
 ## Manual loop
@@ -123,7 +123,7 @@ DEPLOYMENT=deployments/10143.json
 
 ```bash
 SNEAKER_NFT=$(jq -r .sneakerNft $DEPLOYMENT)
-SOLE_TOKEN=$(jq -r .soleToken $DEPLOYMENT)
+STRIDE_TOKEN=$(jq -r .strideToken $DEPLOYMENT)
 SNEAKER_GAME=$(jq -r .sneakerGame $DEPLOYMENT)
 PLAYER=$DEPLOYER_ADDRESS
 PLAYER_PRIVATE_KEY=$DEPLOYER_PRIVATE_KEY
@@ -134,8 +134,8 @@ show_sneaker() {
   cast call $SNEAKER_NFT "tokenURI(uint256)(string)" $1 | tr -d '"' \
     | sed 's|^data:application/json;base64,||' | base64 --decode | jq -c 'del(.image)'
 }
-show_sole_balance() {
-  cast call $SOLE_TOKEN "balanceOf(address)(uint256)" $1 | cut -d' ' -f1 | xargs cast from-wei
+show_stride_balance() {
+  cast call $STRIDE_TOKEN "balanceOf(address)(uint256)" $1 | cut -d' ' -f1 | xargs cast from-wei
 }
 ```
 
@@ -148,14 +148,14 @@ show_sneaker $TOKEN_ID                                  # Level 1, Efficiency 10
 cast call $SNEAKER_GAME "currentEnergy(uint256)(uint16)" $TOKEN_ID   # 10
 ```
 
-**3. Settle a 10-minute activity session: 50 SOLE, 3 durability**
+**3. Settle a 10-minute activity session: 50 STRIDE, 3 durability**
 
 ```bash
 cast call $SNEAKER_GAME "previewSessionReward(uint256,uint32)(uint256,uint16,uint16)" $TOKEN_ID 10
 SESSION_ID=$(cast keccak "manual-loop-$(date +%s)-first")
 cast send $SNEAKER_GAME $SETTLEMENT_SIGNATURE "($SESSION_ID,$TOKEN_ID,$PLAYER,10,830)" \
   --private-key $GAME_SERVER_PRIVATE_KEY
-show_sole_balance $PLAYER                                # 50.000000000000000000
+show_stride_balance $PLAYER                                # 50.000000000000000000
 show_sneaker $TOKEN_ID                                   # Durability 97
 
 # The same session can't be settled twice: reverts SessionAlreadySettled(sessionId)
@@ -163,16 +163,16 @@ cast call --from $GAME_SERVER_ADDRESS $SNEAKER_GAME $SETTLEMENT_SIGNATURE \
   "($SESSION_ID,$TOKEN_ID,$PLAYER,10,830)" || echo "replay rejected ✓"
 ```
 
-**4. Upgrade: burns 50 SOLE, level 2, efficiency 12** (the demo check: compare `show_sneaker` before and after)
+**4. Upgrade: burns 50 STRIDE, level 2, efficiency 12** (the demo check: compare `show_sneaker` before and after)
 
 ```bash
 cast call $SNEAKER_GAME "quoteUpgradeCost(uint256)(uint256)" $TOKEN_ID   # 50e18
 cast send $SNEAKER_GAME "upgrade(uint256)" $TOKEN_ID --private-key $PLAYER_PRIVATE_KEY
 show_sneaker $TOKEN_ID                                   # Level 2, Efficiency 12, Durability 97
-show_sole_balance $PLAYER                                # 0.000000000000000000
+show_stride_balance $PLAYER                                # 0.000000000000000000
 ```
 
-**5. Wait for one energy point (30 minutes), then settle 1 minute: 6 SOLE**
+**5. Wait for one energy point (30 minutes), then settle 1 minute: 6 STRIDE**
 
 ```bash
 sleep 1800
@@ -180,16 +180,16 @@ cast call $SNEAKER_GAME "currentEnergy(uint256)(uint16)" $TOKEN_ID   # 1
 SESSION_ID=$(cast keccak "manual-loop-$(date +%s)-second")
 cast send $SNEAKER_GAME $SETTLEMENT_SIGNATURE "($SESSION_ID,$TOKEN_ID,$PLAYER,1,83)" \
   --private-key $GAME_SERVER_PRIVATE_KEY
-show_sole_balance $PLAYER                                # 6.000000000000000000
+show_stride_balance $PLAYER                                # 6.000000000000000000
 ```
 
-**6. Repair: 4 points × 0.8 SOLE = 3.2 SOLE, durability back to 100**
+**6. Repair: 4 points × 0.8 STRIDE = 3.2 STRIDE, durability back to 100**
 
 ```bash
 cast call $SNEAKER_GAME "quoteRepairCost(uint256)(uint256)" $TOKEN_ID    # 3.2e18
 cast send $SNEAKER_GAME "repair(uint256)" $TOKEN_ID --private-key $PLAYER_PRIVATE_KEY
 show_sneaker $TOKEN_ID                                   # Level 2, Efficiency 12, Durability 100
-show_sole_balance $PLAYER                                # 2.800000000000000000
+show_stride_balance $PLAYER                                # 2.800000000000000000
 ```
 
 **7. Transfer: the stats travel with the Sneaker, and the old owner can't settle**

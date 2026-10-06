@@ -59,7 +59,7 @@ apps/api/src/
 │
 ├── services/                    external I/O other than Mongo
 │   ├── siwe-signature-verifier.ts viem verifySiweMessage (EOA + ERC-1271/6492 wallets)
-│   ├── sneaker-chain-reader.ts    reads SneakerNft / SneakerGame / SoleToken
+│   ├── sneaker-chain-reader.ts    reads SneakerNft / SneakerGame / StrideToken
 │   └── chain-transaction-sender.ts signs and broadcasts outbox transactions
 │
 ├── jobs/                        background work run by plugins/background-jobs.ts

@@ -16,7 +16,7 @@ contract DemoToolingTest is GameTestBase {
         super.setUp();
         vm.setEnv("SNEAKER_GAME_ADDRESS", vm.toString(address(sneakerGame)));
         vm.setEnv("SNEAKER_NFT_ADDRESS", vm.toString(address(sneakerNft)));
-        vm.setEnv("SOLE_TOKEN_ADDRESS", vm.toString(address(soleToken)));
+        vm.setEnv("STRIDE_TOKEN_ADDRESS", vm.toString(address(strideToken)));
         vm.setEnv("DEMO_WALLET_A_ADDRESS", vm.toString(walletA));
         vm.setEnv("DEMO_WALLET_B_ADDRESS", vm.toString(walletB));
         vm.deal(deployer, 10 ether);
@@ -30,9 +30,9 @@ contract DemoToolingTest is GameTestBase {
 
         new PrepareDemoWallets().run();
 
-        assertEq(soleToken.balanceOf(walletA), targetBalanceWei);
-        assertEq(soleToken.balanceOf(walletB), 0);
-        assertFalse(soleToken.hasRole(soleToken.MINTER_ROLE(), deployer));
+        assertEq(strideToken.balanceOf(walletA), targetBalanceWei);
+        assertEq(strideToken.balanceOf(walletB), 0);
+        assertFalse(strideToken.hasRole(strideToken.MINTER_ROLE(), deployer));
         assertEq(walletA.balance, 1 ether);
         assertEq(walletB.balance, 1 ether);
     }
@@ -40,12 +40,12 @@ contract DemoToolingTest is GameTestBase {
     function test_PrepareSendsNothingWhenTheWalletsAreReady() public {
         new PrepareDemoWallets().run();
         uint256 deployerBalanceWei = deployer.balance;
-        uint256 walletASoleBalanceWei = soleToken.balanceOf(walletA);
+        uint256 walletAStrideBalanceWei = strideToken.balanceOf(walletA);
 
         new PrepareDemoWallets().run();
 
         assertEq(deployer.balance, deployerBalanceWei);
-        assertEq(soleToken.balanceOf(walletA), walletASoleBalanceWei);
+        assertEq(strideToken.balanceOf(walletA), walletAStrideBalanceWei);
     }
 
     function test_EnergyConfigAppliesAndRestoresOnlyRegeneration() public {

@@ -2,7 +2,10 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { CounterText } from '../../../components/ui/CounterText'
 import { ErrorState } from '../../../components/ui/ErrorState'
 import { Panel } from '../../../components/ui/Panel'
-import { formatSoleAmount, formatSoleAmountNumber } from '../../../lib/format/format-sole-amount'
+import {
+  formatStrideAmount,
+  formatStrideAmountNumber,
+} from '../../../lib/format/format-stride-amount'
 import { colors, spacing, textStyles } from '../../../theme'
 
 type RewardBalanceCardProps = {
@@ -12,7 +15,7 @@ type RewardBalanceCardProps = {
   onRetryPress: () => void
 }
 
-/** The player's SOLE, read from `SoleToken`, as a rolling counter. */
+/** The player's STRIDE, read from `StrideToken`, as a rolling counter. */
 export function RewardBalanceCard({
   rewardBalanceWei,
   isLoading,
@@ -23,7 +26,7 @@ export function RewardBalanceCard({
     <Panel>
       <View style={styles.labelRow}>
         <Text style={styles.label}>Your balance</Text>
-        <Text style={styles.label}>SOLE</Text>
+        <Text style={styles.label}>STRIDE</Text>
       </View>
       <RewardBalanceContent
         rewardBalanceWei={rewardBalanceWei}
@@ -32,7 +35,7 @@ export function RewardBalanceCard({
         onRetryPress={onRetryPress}
       />
       <Text style={styles.caption}>
-        Earn SOLE by walking and running with your Sneaker, then spend it on repairs and upgrades.
+        Earn STRIDE by walking and running with your Sneaker, then spend it on repairs and upgrades.
       </Text>
     </Panel>
   )
@@ -45,20 +48,20 @@ function RewardBalanceContent({
   onRetryPress,
 }: RewardBalanceCardProps) {
   if (isLoading) {
-    return <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading your SOLE" />
+    return <ActivityIndicator color={colors.textPrimary} accessibilityLabel="Loading your STRIDE" />
   }
   if (isError || rewardBalanceWei === undefined) {
     return (
       <ErrorState
-        message="Couldn’t read your SOLE balance from Monad."
+        message="Couldn’t read your STRIDE balance from Monad."
         onRetryPress={onRetryPress}
       />
     )
   }
   return (
     <CounterText
-      value={formatSoleAmountNumber(rewardBalanceWei)}
-      accessibilityLabel={`SOLE balance: ${formatSoleAmount(rewardBalanceWei)}`}
+      value={formatStrideAmountNumber(rewardBalanceWei)}
+      accessibilityLabel={`STRIDE balance: ${formatStrideAmount(rewardBalanceWei)}`}
     />
   )
 }

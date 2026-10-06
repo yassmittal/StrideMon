@@ -141,7 +141,7 @@ light screens it's black text on a `successSurface` fill.
 | Lusion family | Weights and styles | Role | For StrideMon |
 |---|---|---|---|
 | **Aeonik** (CoType Foundry) | 400, 500, 400 italic | Everything | **Commercial font. Buy an app/embedding licence from CoType** before shipping. Don't copy the files from lusion.co, because they are Lusion's licensed copies. |
-| **IBM Plex Mono** | 400, 500 | Counters, toggles, award lists, numbers | Free (SIL OFL): `@expo-google-fonts/ibm-plex-mono`. Use it for every number: SOLE amounts, distance, time, energy, stats. |
+| **IBM Plex Mono** | 400, 500 | Counters, toggles, award lists, numbers | Free (SIL OFL): `@expo-google-fonts/ibm-plex-mono`. Use it for every number: STRIDE amounts, distance, time, energy, stats. |
 | **LusionMono** | 400 | Capability letter cards, playground text | Lusion's own proprietary face, so it is **not available**. IBM Plex Mono takes its place. |
 
 If the Aeonik licence isn't bought in time for the demo, **Satoshi** (Indian Type
@@ -374,7 +374,7 @@ becomes `Panel`. `MediaCard` and `MenuListItem` are built when a screen needs on
 | **`MenuListItem`** | `menuItem` (26 UPPER, line height 1), padding `16 26`, hover wash and active dot (interaction 5). | Settings, navigation lists |
 | **`ProgressBar`** | Track `darkTrack` 4 pt tall, fill `highlight`, grows from the left with `scaleX`. Label: `caption` UPPER, white. | **Energy** and **durability** on dark screens |
 | **`CrossMarks`** | "+" marks at `--cross-size` (14) at the section corners, with a centered 14/500 UPPER caption between them. | "SWIPE TO START", "EARNED THIS RUN" frames |
-| **`CounterText`** | IBM Plex Mono digits, one character per slot (`width: 1ch`), each digit rolling vertically. Preloader style: `counter` size, line height 0.75, white on black. | SOLE balance, live distance and time, "Minting…" percent |
+| **`CounterText`** | IBM Plex Mono digits, one character per slot (`width: 1ch`), each digit rolling vertically. Preloader style: `counter` size, line height 0.75, white on black. | STRIDE balance, live distance and time, "Minting…" percent |
 
 ---
 
@@ -386,10 +386,10 @@ This maps each existing phase's screens onto the system. It is applied in Phase 
 |---|---|
 | Onboarding and sign-in (2) | Light `background`. `displayLarge` headline, "Walk. Earn. Upgrade.", pulled left. `intro` subline. `PrimaryPillButton` "CONNECT WALLET". |
 | "Minting your Sneaker…" (3) | Full black screen, Lusion preloader style: huge IBM Plex Mono percent digits bottom-left (`counter`), white. |
-| Home (3) | Header: wordmark on the left, `IconCircleButton` and `SecondaryPillButton` on the right. `HeroPanel` with the Sneaker. `MetaLabel` stats row. SOLE balance in `CounterText`. `CallToActionPill` "START RUN". |
+| Home (3) | Header: wordmark on the left, `IconCircleButton` and `SecondaryPillButton` on the right. `HeroPanel` with the Sneaker. `MetaLabel` stats row. STRIDE balance in `CounterText`. `CallToActionPill` "START RUN". |
 | Sneaker art (8.3) | The `HeroPanel`'s picture is the Sneaker's on-chain SVG (D-030), drawn on the same `darkPanel` so it reads as one surface: "+" corner marks, a thin white line Sneaker with a lime stripe, lime level ticks and durability bar, IBM Plex Mono metadata. It fades in (`durationMedium`, `easingStandard`); while it loads, the `sneaker` icon holds its place at `sneakerArtPlaceholderIconSize` (64, **derived**). Below it, the card keeps efficiency, energy and the explorer link. |
 | Active run (4) | The screen flips to `darkBackground`. Time and distance in huge IBM Plex Mono (`displayHuge`). Energy left as `ProgressBar` (lime on `#34393F`). `CrossMarks` frame the estimated reward. STOP is a `PrimaryPillButton`. |
-| Run summary (4, 5) | Back to light. `displayLarge` "+12.40 SOLE". `Panel` stack with rewarded minutes and durability lost. |
+| Run summary (4, 5) | Back to light. `displayLarge` "+12.40 STRIDE". `Panel` stack with rewarded minutes and durability lost. |
 | Repair and upgrade (6) | `Panel`s with quotes. `CallToActionPill` for confirm. Transaction states as `MetaLabel` (`AWAITING SIGNATURE • CONFIRMING`). |
 | Transfer (7) | `TextField` for the address, `PrimaryPillButton` send. |
 | Tab bar (8.2) | White `surface` bar with a hairline top. Each tab has a line icon (the `Icon` set, same stroke as the arrows) above a `label` UPPER title; active `textPrimary`, inactive `textSecondary`. |

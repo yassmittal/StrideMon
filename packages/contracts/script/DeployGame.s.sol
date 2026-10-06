@@ -7,24 +7,24 @@ import {GameConfig} from "../src/libraries/GameMath.sol";
 import {SneakerArtRenderer} from "../src/SneakerArtRenderer.sol";
 import {SneakerGame} from "../src/SneakerGame.sol";
 import {SneakerNft} from "../src/SneakerNft.sol";
-import {SoleToken} from "../src/SoleToken.sol";
+import {StrideToken} from "../src/StrideToken.sol";
 
-/// @notice Deploys SneakerArtRenderer, SneakerNft, SoleToken and SneakerGame, wires every role, and on a real
+/// @notice Deploys SneakerArtRenderer, SneakerNft, StrideToken and SneakerGame, wires every role, and on a real
 /// broadcast writes the addresses to `deployments/<chainId>.json`.
 /// @dev Reads `DEPLOYER_PRIVATE_KEY` and `GAME_SERVER_ADDRESS` from the environment
 /// (`packages/contracts/.env`). The deployer becomes admin and pauser.
 contract DeployGame is Script {
     string public constant SNEAKER_NFT_NAME = "StrideMon Sneaker";
     string public constant SNEAKER_NFT_SYMBOL = "SNEAKER";
-    string public constant SOLE_TOKEN_NAME = "Sole";
-    string public constant SOLE_TOKEN_SYMBOL = "SOLE";
+    string public constant STRIDE_TOKEN_NAME = "Stride";
+    string public constant STRIDE_TOKEN_SYMBOL = "STRIDE";
 
-    uint256 private constant ONE_SOLE_WEI = 1e18;
+    uint256 private constant ONE_STRIDE_WEI = 1e18;
 
     struct GameDeployment {
         SneakerArtRenderer sneakerArtRenderer;
         SneakerNft sneakerNft;
-        SoleToken soleToken;
+        StrideToken strideToken;
         SneakerGame sneakerGame;
     }
 
@@ -57,10 +57,10 @@ contract DeployGame is Script {
             efficiencyGainPerLevel: 2,
             durabilityLossPerMinuteBasisPoints: 3000,
             energyRegenerationSeconds: 30 minutes,
-            rewardPerEfficiencyMinuteWei: ONE_SOLE_WEI / 2,
-            repairCostPerPointWei: (ONE_SOLE_WEI * 7) / 10,
-            repairCostPerPointIncreasePerLevelWei: ONE_SOLE_WEI / 10,
-            upgradeCostPerLevelWei: 50 * ONE_SOLE_WEI
+            rewardPerEfficiencyMinuteWei: ONE_STRIDE_WEI / 2,
+            repairCostPerPointWei: (ONE_STRIDE_WEI * 7) / 10,
+            repairCostPerPointIncreasePerLevelWei: ONE_STRIDE_WEI / 10,
+            upgradeCostPerLevelWei: 50 * ONE_STRIDE_WEI
         });
     }
 
@@ -72,15 +72,16 @@ contract DeployGame is Script {
         deployment.sneakerNft = new SneakerNft(
             SNEAKER_NFT_NAME, SNEAKER_NFT_SYMBOL, adminAddress, deployment.sneakerArtRenderer
         );
-        deployment.soleToken = new SoleToken(SOLE_TOKEN_NAME, SOLE_TOKEN_SYMBOL, adminAddress);
+        deployment.strideToken =
+            new StrideToken(STRIDE_TOKEN_NAME, STRIDE_TOKEN_SYMBOL, adminAddress);
         deployment.sneakerGame = new SneakerGame(
-            adminAddress, deployment.sneakerNft, deployment.soleToken, buildInitialGameConfig()
+            adminAddress, deployment.sneakerNft, deployment.strideToken, buildInitialGameConfig()
         );
 
         address sneakerGameAddress = address(deployment.sneakerGame);
         deployment.sneakerNft.grantRole(deployment.sneakerNft.GAME_ROLE(), sneakerGameAddress);
-        deployment.soleToken.grantRole(deployment.soleToken.MINTER_ROLE(), sneakerGameAddress);
-        deployment.soleToken.grantRole(deployment.soleToken.BURNER_ROLE(), sneakerGameAddress);
+        deployment.strideToken.grantRole(deployment.strideToken.MINTER_ROLE(), sneakerGameAddress);
+        deployment.strideToken.grantRole(deployment.strideToken.BURNER_ROLE(), sneakerGameAddress);
         deployment.sneakerGame
             .grantRole(deployment.sneakerGame.GAME_SERVER_ROLE(), gameServerAddress);
         deployment.sneakerGame.grantRole(deployment.sneakerGame.PAUSER_ROLE(), adminAddress);
@@ -97,7 +98,7 @@ contract DeployGame is Script {
         vm.serializeAddress(objectKey, "gameServer", gameServerAddress);
         vm.serializeAddress(objectKey, "sneakerArtRenderer", address(deployment.sneakerArtRenderer));
         vm.serializeAddress(objectKey, "sneakerNft", address(deployment.sneakerNft));
-        vm.serializeAddress(objectKey, "soleToken", address(deployment.soleToken));
+        vm.serializeAddress(objectKey, "strideToken", address(deployment.strideToken));
         string memory deploymentJson =
             vm.serializeAddress(objectKey, "sneakerGame", address(deployment.sneakerGame));
         vm.writeJson(

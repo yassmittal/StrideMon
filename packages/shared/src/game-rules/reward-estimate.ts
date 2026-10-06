@@ -15,7 +15,7 @@ export function calculateRewardedMinutes({
 }
 
 /**
- * SOLE earned: `rewardedMinutes × efficiency × rewardPerEfficiencyMinuteWei`.
+ * STRIDE earned: `rewardedMinutes × efficiency × rewardPerEfficiencyMinuteWei`.
  * Mirrors `GameMath.calculateSessionReward`.
  */
 export function calculateSessionReward({
@@ -49,7 +49,7 @@ export function calculateDurabilityLoss({
 }
 
 /**
- * SOLE the run in progress would earn if every elapsed whole minute counted, capped
+ * STRIDE the run in progress would earn if every elapsed whole minute counted, capped
  * by energy like settlement. An **estimate** for the live run screen: only the API's
  * validation and the contract decide the real reward.
  */

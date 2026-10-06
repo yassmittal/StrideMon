@@ -9,8 +9,8 @@ export function MaintenanceNotice() {
     <Panel>
       <MetaLabel items={['Maintenance']} />
       <Text style={styles.body} accessibilityRole="alert">
-        StrideMon is paused for a short while. Your Sneaker and SOLE are safe, and runs, repairs and
-        upgrades are back soon.
+        StrideMon is paused for a short while. Your Sneaker and STRIDE are safe, and runs, repairs
+        and upgrades are back soon.
       </Text>
     </Panel>
   )

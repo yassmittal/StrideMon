@@ -5,7 +5,7 @@ import {
   buildSneakerExplorerUrl,
   buildTransactionExplorerUrl,
 } from '../../../lib/chain/explorer-urls'
-import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
+import { formatStrideAmount } from '../../../lib/format/format-stride-amount'
 import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
 import { colors, layout, radii, spacing, textStyles } from '../../../theme'
 import {
@@ -59,13 +59,13 @@ function SpendConfirmationDetails({
         ))}
         <View style={styles.divider} />
         <StatChangeRow
-          label="SOLE balance"
-          valueBefore={formatSoleAmount(rewardBalanceWei)}
-          valueAfter={formatSoleAmount(rewardBalanceWei - costWei)}
+          label="STRIDE balance"
+          valueBefore={formatStrideAmount(rewardBalanceWei)}
+          valueAfter={formatStrideAmount(rewardBalanceWei - costWei)}
         />
       </View>
       <Text style={styles.caption}>
-        You spend {formatSoleAmount(costWei)}. Your wallet opens next to approve it, and Monad
+        You spend {formatStrideAmount(costWei)}. Your wallet opens next to approve it, and Monad
         charges a small fee in MON.
       </Text>
     </>
@@ -120,7 +120,7 @@ export function SucceededStep({
           {title}
         </Text>
         {confirmation.kind === 'spend' ? (
-          <Text style={styles.caption}>Spent {formatSoleAmount(confirmation.costWei)}</Text>
+          <Text style={styles.caption}>Spent {formatStrideAmount(confirmation.costWei)}</Text>
         ) : (
           <Text style={styles.caption}>
             Now owned by {formatWalletAddress(confirmation.recipientWalletAddress)}

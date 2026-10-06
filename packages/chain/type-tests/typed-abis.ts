@@ -3,7 +3,7 @@
  * precisely enough that a misspelled function or a wrong argument fails the build.
  */
 import { encodeFunctionData, zeroAddress, zeroHash } from 'viem'
-import { sneakerGameAbi, sneakerNftAbi, soleTokenAbi } from '../src'
+import { sneakerGameAbi, sneakerNftAbi, strideTokenAbi } from '../src'
 
 export const settleSessionCalldata = encodeFunctionData({
   abi: sneakerGameAbi,
@@ -40,8 +40,8 @@ export const wrongArgumentTypeCalldata = encodeFunctionData({
 })
 
 export const unknownTokenFunctionCalldata = encodeFunctionData({
-  abi: soleTokenAbi,
-  // @ts-expect-error: SoleToken has no public burn(); only BURNER_ROLE's burnFrom
+  abi: strideTokenAbi,
+  // @ts-expect-error: StrideToken has no public burn(); only BURNER_ROLE's burnFrom
   functionName: 'burn',
   args: [],
 })

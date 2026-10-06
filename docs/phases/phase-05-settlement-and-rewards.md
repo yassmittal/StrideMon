@@ -1,7 +1,7 @@
 # Phase 5 — Settlement & Rewards
 
 **Goal:** STOP → validated session → `SneakerGame.settleSession` on Monad →
-SOLE lands in the player's wallet, energy is spent, and durability
+STRIDE lands in the player's wallet, energy is spent, and durability
 drops. The summary screen shows the **real** on-chain numbers with a
 transaction link.
 
@@ -34,12 +34,12 @@ Spending rewards (Phase 6).
 
 ## Definition of done
 
-Closed on 2026-10-02. On the Android phone, a 5-minute walk settled on testnet as +25 SOLE,
+Closed on 2026-10-02. On the Android phone, a 5-minute walk settled on testnet as +25 STRIDE,
 durability −2 and energy −5, matching `balanceOf`, `getAttributes` and `tokenURI`. The exact
 10-minute example is pinned by the API test against Anvil, because a 10-minute walk needs the
 hosted API (D-025).
 
-- [x] The `MVP.md` example: 10 active minutes at efficiency 10 → **+50 SOLE**, durability **100 → 97**, energy **10 → 0** (API test on Anvil; a shorter walk on testnet).
+- [x] The `MVP.md` example: 10 active minutes at efficiency 10 → **+50 STRIDE**, durability **100 → 97**, energy **10 → 0** (API test on Anvil; a shorter walk on testnet).
 - [x] The token balance matches the explorer, and the Sneaker attributes match `tokenURI`.
 - [x] Killing the API between "submitted" and "confirmed" still ends with a settled session and exactly one on-chain settlement (API test).
 - [x] A settlement with 0 energy left mints 0 and spends nothing (the contract caps it; `forge test`).

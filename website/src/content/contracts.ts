@@ -23,9 +23,9 @@ export const sneakerNftContract: DeployedContract = {
 export const deployedContracts: readonly DeployedContract[] = [
   sneakerNftContract,
   {
-    name: 'SoleToken',
+    name: 'StrideToken',
     standard: 'ERC-20',
-    role: 'SOLE, the reward token',
+    role: 'STRIDE, the reward token',
     address: '0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0',
   },
   {

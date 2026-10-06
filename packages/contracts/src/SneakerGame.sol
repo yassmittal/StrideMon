@@ -6,7 +6,7 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuardTransient} from "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
 import {GameConfig, GameMath} from "./libraries/GameMath.sol";
 import {SneakerAttributes, SneakerNft} from "./SneakerNft.sol";
-import {SoleToken} from "./SoleToken.sol";
+import {StrideToken} from "./StrideToken.sol";
 
 /// @notice What the game server reports when an activity session ends.
 struct SessionSettlement {
@@ -20,7 +20,7 @@ struct SessionSettlement {
 /// @title SneakerGame
 /// @notice The game rules: starter Sneakers, activity-session settlement, repair and
 /// upgrade. Holds `GAME_ROLE` on `SneakerNft` and `MINTER_ROLE`/`BURNER_ROLE` on
-/// `SoleToken`; replace the rules by deploying a new `SneakerGame` and moving the roles.
+/// `StrideToken`; replace the rules by deploying a new `SneakerGame` and moving the roles.
 contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
     bytes32 public constant GAME_SERVER_ROLE = keccak256("GAME_SERVER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -28,7 +28,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
     uint16 public constant STARTER_LEVEL = 1;
 
     SneakerNft public immutable sneakerNft;
-    SoleToken public immutable soleToken;
+    StrideToken public immutable strideToken;
 
     GameConfig private gameConfig;
 
@@ -78,16 +78,16 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
 
     /// @param admin Receives `DEFAULT_ADMIN_ROLE`.
     /// @param sneakerNftAddress The Sneaker NFT this game grants `GAME_ROLE` access to.
-    /// @param soleTokenAddress The reward token this game mints and burns.
+    /// @param strideTokenAddress The reward token this game mints and burns.
     /// @param initialGameConfig The starting rules.
     constructor(
         address admin,
         SneakerNft sneakerNftAddress,
-        SoleToken soleTokenAddress,
+        StrideToken strideTokenAddress,
         GameConfig memory initialGameConfig
     ) {
         sneakerNft = sneakerNftAddress;
-        soleToken = soleTokenAddress;
+        strideToken = strideTokenAddress;
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         applyGameConfig(initialGameConfig);
     }
@@ -148,7 +148,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
 
         sneakerNft.setAttributes(settlement.tokenId, outcome.attributesAfterSession);
         if (outcome.rewardAmountWei > 0) {
-            soleToken.mint(settlement.player, outcome.rewardAmountWei);
+            strideToken.mint(settlement.player, outcome.rewardAmountWei);
         }
     }
 
@@ -165,7 +165,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
         emit SneakerRepaired(tokenId, msg.sender, durabilityRestored, repairCostWei);
 
         sneakerNft.setAttributes(tokenId, attributes);
-        soleToken.burnFrom(msg.sender, repairCostWei);
+        strideToken.burnFrom(msg.sender, repairCostWei);
     }
 
     /// @notice Raises a Sneaker one level and adds efficiency, burning `quoteUpgradeCost`
@@ -183,7 +183,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
         );
 
         sneakerNft.setAttributes(tokenId, attributes);
-        soleToken.burnFrom(msg.sender, upgradeCostWei);
+        strideToken.burnFrom(msg.sender, upgradeCostWei);
     }
 
     /// @notice Replaces the game config.
@@ -221,7 +221,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
         );
     }
 
-    /// @notice SOLE that `repair` would burn now. 0 at full durability.
+    /// @notice STRIDE that `repair` would burn now. 0 at full durability.
     /// @param tokenId The Sneaker to quote.
     /// @return repairCostWei The repair cost.
     function quoteRepairCost(uint256 tokenId) external view returns (uint256 repairCostWei) {
@@ -229,7 +229,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
         return GameMath.calculateRepairCost(attributes.level, attributes.durability, gameConfig);
     }
 
-    /// @notice SOLE that `upgrade` would burn now. Reverts at max level.
+    /// @notice STRIDE that `upgrade` would burn now. Reverts at max level.
     /// @param tokenId The Sneaker to quote.
     /// @return upgradeCostWei The upgrade cost.
     function quoteUpgradeCost(uint256 tokenId) external view returns (uint256 upgradeCostWei) {
@@ -241,7 +241,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
     /// @notice What `settleSession` would pay and cost right now, without side effects.
     /// @param tokenId The Sneaker to preview.
     /// @param activeMinutes Validated active minutes.
-    /// @return rewardAmountWei SOLE the activity session would mint.
+    /// @return rewardAmountWei STRIDE the activity session would mint.
     /// @return durabilityLoss Durability it would cost.
     /// @return rewardedMinutes Active minutes that would earn, after the energy cap.
     function previewSessionReward(uint256 tokenId, uint32 activeMinutes)

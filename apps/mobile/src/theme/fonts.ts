@@ -9,7 +9,7 @@ import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono/500Mediu
 export const fontFamilies = {
   regular: 'Satoshi-Regular',
   medium: 'Satoshi-Medium',
-  /** Every number: SOLE, distance, time, energy, stats. */
+  /** Every number: STRIDE, distance, time, energy, stats. */
   monoRegular: 'IBMPlexMono-Regular',
   monoMedium: 'IBMPlexMono-Medium',
 } as const

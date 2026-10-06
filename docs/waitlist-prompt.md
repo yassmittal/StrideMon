@@ -8,7 +8,7 @@ repo on 2026-10-05. Background: [`social-plan.md`](social-plan.md) §15.
 ## Why it's shaped this way (2026-10-05)
 
 - **"Waitlist", not "whitelist".** On crypto X, a whitelist (WL, allowlist) is a guaranteed spot
-  in a token or NFT sale. StrideMon sells nothing, and SOLE has no monetary value, so the word
+  in a token or NFT sale. StrideMon sells nothing, and STRIDE has no monetary value, so the word
   would promise the very thing we deny. A waitlist promises one email.
 - **Email only, never a wallet address.** A list of wallets reads as an airdrop list. Testnet
   farmers rank projects by expected airdrop
@@ -51,7 +51,7 @@ plan and wait for my go-ahead before writing code.**
   write once when you can play."
 - Fields: **email** (required, `type="email"`, `autocomplete="email"`) and **phone** as two pills
   (Android, iPhone), optional. A pill button with the arrow: **Join the waitlist**.
-- Under the button, small: "One email when it opens, nothing else. No token sale, no airdrop. SOLE
+- Under the button, small: "One email when it opens, nothing else. No token sale, no airdrop. STRIDE
   has no monetary value. Ask and we'll delete your email."
 - After submitting: the form is replaced with "You're on the list." The same message shows for an
   email that was already on the list, so the form never reveals who signed up.

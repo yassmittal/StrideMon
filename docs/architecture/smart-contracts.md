@@ -23,7 +23,7 @@ through Sourcify. The chain definition lives in `packages/chain/src/monad-chains
       GAME_ROLE on     │              │    MINTER_ROLE + BURNER_ROLE on
                        ↓              ↓
        ┌──────────────────────┐   ┌──────────────────────┐
-       │      SneakerNft      │   │   SoleToken (SOLE)   │
+       │      SneakerNft      │   │ StrideToken (STRIDE) │
        │  ERC-721             │   │  ERC-20 (18 dec.)    │
        │  stats + energy      │   │  mint / burn gated   │
        │  on-chain tokenURI   │   │                      │
@@ -31,7 +31,7 @@ through Sourcify. The chain definition lives in `packages/chain/src/monad-chains
           the asset (permanent)      the currency (permanent)
 ```
 
-**Why split the rules from the asset:** `SneakerNft` and `SoleToken` hold
+**Why split the rules from the asset:** `SneakerNft` and `StrideToken` hold
 players' property and should never need redeploying. `SneakerGame` holds rules,
 which will change. To change the rules, deploy a new `SneakerGame`, grant it the
 roles and revoke them from the old one. Nobody's Sneaker or balance moves.
@@ -95,7 +95,7 @@ them are drawn full). Text uses a generic monospace stack (`'IBM Plex Mono', ui-
 monospace`) on the root `<svg>`, so no font is fetched. Everything is plain paths, rects and text,
 with no filters, gradients or CSS, so `react-native-svg` draws it exactly like a browser.
 
-## `SoleToken`
+## `StrideToken`
 
 ERC-20 + ERC20Permit + AccessControl.
 
@@ -108,7 +108,7 @@ ERC-20 + ERC20Permit + AccessControl.
 `upgrade`). The player therefore needs **no separate approve transaction**, and
 nobody else can burn their tokens. Unit tests must pin this invariant.
 
-Name `Sole`, symbol `SOLE`, 18 decimals. The name and symbol are passed to the
+Name `Stride`, symbol `STRIDE`, 18 decimals. The name and symbol are passed to the
 constructor by `DeployGame.s.sol`, not hardcoded in the contract.
 
 ## `SneakerGame`
@@ -151,10 +151,10 @@ struct GameConfig {                            // initial values from game-rules
     uint16  efficiencyGainPerLevel;              // 2
     uint16  durabilityLossPerMinuteBasisPoints;  // 3_000
     uint32  energyRegenerationSeconds;           // 1_800
-    uint256 rewardPerEfficiencyMinuteWei;        // 0.5 SOLE
-    uint256 repairCostPerPointWei;               // 0.7 SOLE (at level 1)
-    uint256 repairCostPerPointIncreasePerLevelWei; // 0.1 SOLE
-    uint256 upgradeCostPerLevelWei;              // 50 SOLE
+    uint256 rewardPerEfficiencyMinuteWei;        // 0.5 STRIDE
+    uint256 repairCostPerPointWei;               // 0.7 STRIDE (at level 1)
+    uint256 repairCostPerPointIncreasePerLevelWei; // 0.1 STRIDE
+    uint256 upgradeCostPerLevelWei;              // 50 STRIDE
 }
 ```
 
@@ -186,7 +186,7 @@ struct SessionSettlement {
 
 `repair` emits `SneakerRepaired(tokenId, owner, durabilityRestored, repairCostWei)`
 and `upgrade` emits `SneakerUpgraded(tokenId, owner, newLevel, newEfficiency, upgradeCostWei)`.
-If the owner's SOLE balance is short, OpenZeppelin's `ERC20InsufficientBalance`
+If the owner's STRIDE balance is short, OpenZeppelin's `ERC20InsufficientBalance`
 bubbles up.
 
 Custom errors, not revert strings: `SessionAlreadySettled(bytes32)`,
@@ -201,7 +201,7 @@ packages/contracts/
 ├── foundry.toml
 ├── src/
 │   ├── SneakerNft.sol
-│   ├── SoleToken.sol
+│   ├── StrideToken.sol
 │   ├── SneakerGame.sol
 │   ├── SneakerArtRenderer.sol    the on-chain SVG (D-030)
 │   └── libraries/
@@ -214,15 +214,15 @@ packages/contracts/
 └── test/
     ├── SneakerNft.t.sol
     ├── SneakerArtRenderer.t.sol
-    ├── SoleToken.t.sol
+    ├── StrideToken.t.sol
     ├── SneakerGame.t.sol         starter mint, settlement, views, config, pause
     ├── SneakerGameRepairUpgrade.t.sol
     ├── GameMath.t.sol            reads packages/shared/.../game-rule-fixtures.json, plus fuzz
     ├── DeployGame.t.sol          role wiring; initial config == fixture config
     ├── helpers/                  GameTestBase (deploys via DeployGame), fixture reader
     └── invariants/
-        ├── SoleSupply.invariant.t.sol
-        └── SoleSupplyHandler.sol
+        ├── StrideSupply.invariant.t.sol
+        └── StrideSupplyHandler.sol
 ```
 
 `GameMath` is a library of pure functions. Keeping the math out of storage-touching

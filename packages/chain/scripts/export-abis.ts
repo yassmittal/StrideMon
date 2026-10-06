@@ -17,7 +17,7 @@ const CONTRACT_ADDRESSES_OUTPUT_URL = new URL('../src/contract-addresses.ts', im
 
 const EXPORTED_CONTRACTS = [
   { contractName: 'SneakerNft', abiExportName: 'sneakerNftAbi', fileName: 'sneaker-nft-abi.ts' },
-  { contractName: 'SoleToken', abiExportName: 'soleTokenAbi', fileName: 'sole-token-abi.ts' },
+  { contractName: 'StrideToken', abiExportName: 'strideTokenAbi', fileName: 'stride-token-abi.ts' },
   {
     contractName: 'SneakerGame',
     abiExportName: 'sneakerGameAbi',
@@ -25,7 +25,7 @@ const EXPORTED_CONTRACTS = [
   },
 ] as const
 
-const DEPLOYED_CONTRACT_KEYS = ['sneakerNft', 'soleToken', 'sneakerGame'] as const
+const DEPLOYED_CONTRACT_KEYS = ['sneakerNft', 'strideToken', 'sneakerGame'] as const
 
 type DeployedContractKey = (typeof DEPLOYED_CONTRACT_KEYS)[number]
 
@@ -94,7 +94,7 @@ function parseDeployment(deploymentJson: unknown, fileName: string): ChainDeploy
   if (typeof chainId !== 'number') throw new Error(`deployments/${fileName} has no chainId`)
   const addresses: DeployedContractAddresses = {
     sneakerNft: readDeployedAddress(fields, 'sneakerNft', fileName),
-    soleToken: readDeployedAddress(fields, 'soleToken', fileName),
+    strideToken: readDeployedAddress(fields, 'strideToken', fileName),
     sneakerGame: readDeployedAddress(fields, 'sneakerGame', fileName),
   }
   return { chainId, addresses }
@@ -127,7 +127,7 @@ import type { SupportedChainId } from './monad-chains'
 
 export type StrideMonContractAddresses = {
   sneakerNft: Address
-  soleToken: Address
+  strideToken: Address
   sneakerGame: Address
 }
 

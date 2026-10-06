@@ -1,4 +1,4 @@
-import { formatSoleAmount } from '../../lib/format/format-sole-amount'
+import { formatStrideAmount } from '../../lib/format/format-stride-amount'
 
 /** Why Repair or Upgrade is disabled. The contract enforces all of them; the app explains them. */
 type SneakerActionBlockedReason = 'gamePaused' | 'fullDurability' | 'maxLevel' | 'notEnoughRewards'
@@ -60,8 +60,8 @@ export function describeSneakerActionBlockedReason({
       return 'Max level. This Sneaker can’t go any higher.'
     case 'notEnoughRewards':
       return costWei === undefined
-        ? 'Not enough rewards. Walk to earn more SOLE.'
-        : `Not enough rewards. You need ${formatSoleAmount(costWei)} and have ${formatSoleAmount(rewardBalanceWei)}. Walk to earn more.`
+        ? 'Not enough rewards. Walk to earn more STRIDE.'
+        : `Not enough rewards. You need ${formatStrideAmount(costWei)} and have ${formatStrideAmount(rewardBalanceWei)}. Walk to earn more.`
     default: {
       const unhandledReason: never = blockedReason
       throw new Error(`Unhandled blocked reason: ${String(unhandledReason)}`)

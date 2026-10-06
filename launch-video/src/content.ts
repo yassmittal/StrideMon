@@ -1,8 +1,8 @@
 // Every word, number and address in the film, mirrored from FACTS.md. Nothing goes on screen from
 // anywhere else. Times in source seconds refer to website/media-source/video2.mp4.
 //
-// The reward token is called STRIDE (Yash, 2026-10-06; FACTS.md §1). The deployed contract and the
-// app still say SOLE until the rename ships, so the film never shows footage with the old name.
+// The reward token is called STRIDE (D-038; FACTS.md §1). The footage was recorded when the app said
+// SOLE, so the film never shows footage with the old name.
 
 export const walletAddresses = {
   playerA: { short: '0xdfAb…1465', full: '0xdfAb550B4D28cD040Cf79Bf350Ac3017923C1465' },

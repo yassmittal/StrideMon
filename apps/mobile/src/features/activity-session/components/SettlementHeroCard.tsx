@@ -6,7 +6,7 @@ import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { Panel } from '../../../components/ui/Panel'
 import { StatValue } from '../../../components/ui/StatValue'
 import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
-import { formatSoleAmountNumber } from '../../../lib/format/format-sole-amount'
+import { formatStrideAmountNumber } from '../../../lib/format/format-stride-amount'
 import { colors, readOpticalPullLeft, spacing, textStyles } from '../../../theme'
 import { SummaryHeadline } from './SummaryHeadline'
 
@@ -16,7 +16,7 @@ type SettlementHeroCardProps =
   | { phase: 'settled'; settlement: ActivitySessionSettlement; activeMinutes: number }
 
 /**
- * The top of the summary (design-system.md §9): "Settling on Monad…", then the SOLE
+ * The top of the summary (design-system.md §9): "Settling on Monad…", then the STRIDE
  * the run earned in huge digits, with what it cost the Sneaker in a panel below.
  */
 export function SettlementHeroCard(props: SettlementHeroCardProps) {
@@ -35,7 +35,7 @@ export function SettlementHeroCard(props: SettlementHeroCardProps) {
       <SummaryHeadline
         metaItems={['Run finished', 'Settling']}
         title="Settling on Monad…"
-        message="Minting your SOLE and updating your Sneaker. This takes a few seconds."
+        message="Minting your STRIDE and updating your Sneaker. This takes a few seconds."
         isLoading
       />
     )
@@ -46,23 +46,23 @@ export function SettlementHeroCard(props: SettlementHeroCardProps) {
     return (
       <SummaryHeadline
         metaItems={['Run settled']}
-        title="No SOLE this time"
+        title="No STRIDE this time"
         message={
           activeMinutes === 0
-            ? 'SOLE is earned per full minute of walking: 60 seconds of moving with good GPS. This run didn’t complete one. Walk for 3–4 minutes outdoors next time.'
+            ? 'STRIDE is earned per full minute of walking: 60 seconds of moving with good GPS. This run didn’t complete one. Walk for 3–4 minutes outdoors next time.'
             : 'Your Sneaker had no energy left, so these minutes couldn’t earn. Energy refills over time.'
         }
       />
     )
   }
-  const rewardAmountNumber = `+${formatSoleAmountNumber(BigInt(settlement.rewardAmountWei))}`
+  const rewardAmountNumber = `+${formatStrideAmountNumber(BigInt(settlement.rewardAmountWei))}`
   return (
     <>
       <View
         style={styles.hero}
         accessible
         accessibilityRole="header"
-        accessibilityLabel={`You earned ${rewardAmountNumber} SOLE`}
+        accessibilityLabel={`You earned ${rewardAmountNumber} STRIDE`}
         accessibilityLiveRegion="polite"
       >
         <MetaLabel items={['You earned', 'Run settled']} />
@@ -70,7 +70,7 @@ export function SettlementHeroCard(props: SettlementHeroCardProps) {
           <View style={styles.amount}>
             <CounterText value={rewardAmountNumber} size="displayLarge" />
           </View>
-          <Text style={styles.symbol}>SOLE</Text>
+          <Text style={styles.symbol}>STRIDE</Text>
         </View>
       </View>
       <Panel>

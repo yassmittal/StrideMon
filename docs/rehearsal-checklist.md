@@ -10,7 +10,7 @@ there's an error).
 
 **State on 2026-10-04 (read from testnet):**
 
-| | Address | Sneaker | SOLE |
+| | Address | Sneaker | STRIDE |
 |---|---|---|---|
 | Wallet A (MetaMask Account 1) | `0xdfAb550B4D28cD040Cf79Bf350Ac3017923C1465` | #2: level 1, efficiency 10, durability 99, energy 10 | 60 |
 | Wallet B (MetaMask Account 2) | `0xe4ae33003C3fF8afd68fa65Fafa97F6206c3356f` | #1: level 2, efficiency 12, durability 94 | 12 |
@@ -67,9 +67,9 @@ From the repo root:
 bun run demo:prepare-wallets --dry-run
 ```
 
-- [ ] It prints wallet A and wallet B with their Sneakers, SOLE and MON. A has 60 SOLE, which
+- [ ] It prints wallet A and wallet B with their Sneakers, STRIDE and MON. A has 60 STRIDE, which
       covers the upgrade (50) plus a repair, so it plans **no transactions** and doesn't print
-      "SIMULATION COMPLETE". If it does print that line, it planned a mint, so A's SOLE dropped
+      "SIMULATION COMPLETE". If it does print that line, it planned a mint, so A's STRIDE dropped
       since 2026-10-04. Then run `bun run demo:prepare-wallets` (no `--dry-run`) to mint the gap.
 
 ```bash
@@ -111,7 +111,7 @@ cast call 0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9 "paused()(bool)" \
 **Step 2: show the Sneaker**
 
 - [ ] Home's dark card: `#0002`, `LEVEL 01 / 30`, `DURABILITY 099 / 100`, efficiency **10**,
-      energy **10 / 10**. Balance **60 SOLE**.
+      energy **10 / 10**. Balance **60 STRIDE**.
 - [ ] **Explorer ↗** opens MonadVision on Sneaker #2: the same picture, and the owner is
       `0xdfAb…1465`.
 
@@ -122,25 +122,25 @@ cast call 0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9 "paused()(bool)" \
 - [ ] The dark active-run screen shows **Time**, **Distance**, **Speed**, energy left and the
       estimated reward.
 - [ ] Walk at a normal pace for **3 to 4 minutes** (only whole minutes at 1–20 km/h count). Distance
-      and the estimated reward go up. The numbers below assume 3 rewarded minutes; add 5 SOLE per
+      and the estimated reward go up. The numbers below assume 3 rewarded minutes; add 5 STRIDE per
       extra minute.
 
 **Step 4: finish**
 
-- [ ] **STOP**. The summary shows "Settling on Monad…", then within a few seconds **+15 SOLE**,
-      **3 rewarded min** and **Durability −1** (3 minutes × 5 SOLE; durability loss rounds up from
-      0.9). A shorter walk pays 5 SOLE a minute.
+- [ ] **STOP**. The summary shows "Settling on Monad…", then within a few seconds **+15 STRIDE**,
+      **3 rewarded min** and **Durability −1** (3 minutes × 5 STRIDE; durability loss rounds up from
+      0.9). A shorter walk pays 5 STRIDE a minute.
 - [ ] **View transaction** opens MonadVision with a `SessionSettled` event.
-- [ ] **Done**. Home: **75 SOLE**, durability **98**, energy **7 / 10** with "Next energy point
+- [ ] **Done**. Home: **75 STRIDE**, durability **98**, energy **7 / 10** with "Next energy point
       in" **under 1:00**. One minute later energy shows 8 (the demo config working).
 
 **Step 5: repair and upgrade** (Sneaker tab)
 
-- [ ] **Repair to 100** shows durability 98 → 100 and costs **1.4 SOLE** (2 points × 0.7). Tap it →
+- [ ] **Repair to 100** shows durability 98 → 100 and costs **1.4 STRIDE** (2 points × 0.7). Tap it →
       **Confirm in wallet** → MetaMask **Confirm** → "Sneaker repaired" → **Done**.
-- [ ] **Upgrade to level 2** shows level 1 → 2 and efficiency 10 → 12 for **50 SOLE**. Tap it →
+- [ ] **Upgrade to level 2** shows level 1 → 2 and efficiency 10 → 12 for **50 STRIDE**. Tap it →
       **Confirm in wallet** → MetaMask **Confirm** → "Level 2 reached" → **Done**.
-- [ ] Balance is now **23.6 SOLE**, and it matches MetaMask's SOLE balance.
+- [ ] Balance is now **23.6 STRIDE**, and it matches MetaMask's STRIDE balance.
 
 **Step 6: show the NFT again**
 
@@ -197,7 +197,7 @@ It sends real transactions from A: a repair (if worn), an upgrade, and the trans
 ### B1. Setup
 
 - [ ] Part A's reset is done: A owns #2 and is signed in.
-- [ ] A needs SOLE for **level 2 → 3**: 100, plus 10 for a repair. After Part A it has about
+- [ ] A needs STRIDE for **level 2 → 3**: 100, plus 10 for a repair. After Part A it has about
       23.6. From the repo root, `bun run demo:prepare-wallets --dry-run` shows the gap. Then run
       `bun run demo:prepare-wallets` (3 testnet transactions from the deployer, about 0.05 MON). Or
       skip Part B.
@@ -241,7 +241,7 @@ maestro test -e WALLET_B_ADDRESS=0xe4ae33003C3fF8afd68fa65Fafa97F6206c3356f \
 | MetaMask `Invalid Id`, or a request never arrives | Profile → Sign out, sign in again. Don't kill the app while a wallet request is open |
 | "Settling…" for more than a minute | Is the game paused (A3's `cast call`)? Is the API terminal showing an outbox error? Send me its output |
 | Energy countdown still says ~30 minutes after `apply` | Reload the app (shake → Reload) |
-| Repair or Upgrade disabled | Not enough SOLE, or nothing to repair: the caption under the button says which |
+| Repair or Upgrade disabled | Not enough STRIDE, or nothing to repair: the caption under the button says which |
 | `adb devices` lists nothing | USB tethering off, mode File transfer, data cable, accept "Allow USB debugging?" |
 | Maestro `INSTALL_FAILED_USER_RESTRICTED` | Developer options → **Install via USB** on |
 | Maestro `INJECT_EVENTS permission` | Developer options → **USB debugging (Security settings)** on, then replug |

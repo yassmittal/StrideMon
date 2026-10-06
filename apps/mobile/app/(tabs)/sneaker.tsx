@@ -27,7 +27,7 @@ import { useUpgradeSneaker } from '../../src/features/sneaker/hooks/useUpgradeSn
 import { buildSneakerExplorerUrl } from '../../src/lib/chain/explorer-urls'
 import { colors, textStyles } from '../../src/theme'
 
-/** Sneaker detail: stats, spending SOLE to repair and upgrade it, and sending it to another wallet. */
+/** Sneaker detail: stats, spending STRIDE to repair and upgrade it, and sending it to another wallet. */
 export default function SneakerScreen() {
   const currentUserQuery = useCurrentUser()
   const walletAddress = currentUserQuery.data?.user.walletAddress

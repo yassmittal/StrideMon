@@ -16,7 +16,7 @@ recordings, with times from `FOOTAGE.md`. `01`–`09` are `website/public/screen
 |---|---|---|
 | `StrideMon` (wordmark, one word, capital S and M) | `02` header, `CLAUDE.md` | ✓ |
 | `SOLE` (the ERC-20, always in capitals) | Chain: `symbol()` = `"SOLE"`, 18 decimals | ✗ on screen since 2026-10-06: the film calls the token STRIDE (next row) |
-| `STRIDE` (the reward token's name, always in capitals) | Yash's decision, 2026-10-06: the token is renamed from SOLE to STRIDE everywhere. **The deployed `SoleToken` still returns `symbol()` = `"SOLE"`, and the app and website still say SOLE** until the rename ships | ✓ by decision. Every SOLE amount in §2–§10 is shown as the same amount of STRIDE |
+| `STRIDE` (the reward token's name, always in capitals) | Yash's decision, 2026-10-06: the token is renamed from SOLE to STRIDE everywhere. **The app, website and code say STRIDE since D-038; the deployed `SoleToken` still returns `symbol()` = `"SOLE"`** until the contracts are redeployed | ✓ by decision. Every SOLE amount in §2–§10 is shown as the same amount of STRIDE |
 | `Sneaker` (capital S, the NFT) | `coding-standards.md` vocabulary, every app screen | ✓ |
 | `Walk. Earn. Upgrade.` | `01` (welcome headline), `design-system.md` §9 | ✓ |
 | `Monad testnet` / `MONAD TESTNET` (text only, no logo, no purple) | `02` header, chain id 10143 | ✓ |

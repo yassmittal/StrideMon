@@ -19,11 +19,11 @@ contract SneakerGameTest is GameTestBase {
     function test_ConstructorStoresConfigAndEmitsGameConfigUpdated() public {
         vm.expectEmit();
         emit SneakerGame.GameConfigUpdated(gameConfig);
-        SneakerGame newSneakerGame = new SneakerGame(deployer, sneakerNft, soleToken, gameConfig);
+        SneakerGame newSneakerGame = new SneakerGame(deployer, sneakerNft, strideToken, gameConfig);
 
         assertEq(abi.encode(newSneakerGame.getGameConfig()), abi.encode(gameConfig));
         assertEq(address(newSneakerGame.sneakerNft()), address(sneakerNft));
-        assertEq(address(newSneakerGame.soleToken()), address(soleToken));
+        assertEq(address(newSneakerGame.strideToken()), address(strideToken));
         assertTrue(newSneakerGame.hasRole(newSneakerGame.DEFAULT_ADMIN_ROLE(), deployer));
     }
 
@@ -32,7 +32,7 @@ contract SneakerGameTest is GameTestBase {
         invalidGameConfig.energyRegenerationSeconds = 0;
 
         vm.expectRevert(SneakerGame.InvalidGameConfig.selector);
-        new SneakerGame(deployer, sneakerNft, soleToken, invalidGameConfig);
+        new SneakerGame(deployer, sneakerNft, strideToken, invalidGameConfig);
     }
 
     // ---------------------------------------------------------------------------------
@@ -86,12 +86,12 @@ contract SneakerGameTest is GameTestBase {
         bytes32 sessionId = buildNextSessionId();
 
         vm.expectEmit(address(sneakerGame));
-        emit SneakerGame.SessionSettled(sessionId, tokenId, player, 10, 830, 50 * ONE_SOLE_WEI, 3);
+        emit SneakerGame.SessionSettled(sessionId, tokenId, player, 10, 830, 50 * ONE_STRIDE_WEI, 3);
         vm.prank(gameServer);
         sneakerGame.settleSession(buildSessionSettlement(sessionId, tokenId, player, 10));
 
         SneakerAttributes memory attributes = readAttributes(tokenId);
-        assertEq(soleToken.balanceOf(player), 50 * ONE_SOLE_WEI);
+        assertEq(strideToken.balanceOf(player), 50 * ONE_STRIDE_WEI);
         assertEq(attributes.durability, 97);
         assertEq(attributes.storedEnergy, 0);
         assertEq(sneakerGame.currentEnergy(tokenId), 0);
@@ -104,18 +104,20 @@ contract SneakerGameTest is GameTestBase {
 
         settleActivitySession(tokenId, player, 25);
 
-        assertEq(soleToken.balanceOf(player), 50 * ONE_SOLE_WEI, "6 + 4 minutes at efficiency 10");
+        assertEq(
+            strideToken.balanceOf(player), 50 * ONE_STRIDE_WEI, "6 + 4 minutes at efficiency 10"
+        );
         assertEq(sneakerGame.currentEnergy(tokenId), 0);
     }
 
     function test_SettleSessionWithNoEnergyMintsNothingButIsStillSettled() public {
         uint256 tokenId = mintStarterSneakerFor(player);
         settleActivitySession(tokenId, player, 10);
-        uint256 supplyBefore = soleToken.totalSupply();
+        uint256 supplyBefore = strideToken.totalSupply();
 
         bytes32 sessionId = settleActivitySession(tokenId, player, 10);
 
-        assertEq(soleToken.totalSupply(), supplyBefore);
+        assertEq(strideToken.totalSupply(), supplyBefore);
         assertEq(readAttributes(tokenId).durability, 97);
         assertTrue(sneakerGame.isSessionSettled(sessionId));
     }
@@ -195,9 +197,9 @@ contract SneakerGameTest is GameTestBase {
 
         settleActivitySession(tokenId, player, 7);
 
-        assertEq(previewRewardWei, 35 * ONE_SOLE_WEI);
+        assertEq(previewRewardWei, 35 * ONE_STRIDE_WEI);
         assertEq(previewRewardedMinutes, 7);
-        assertEq(soleToken.balanceOf(player), previewRewardWei);
+        assertEq(strideToken.balanceOf(player), previewRewardWei);
         assertEq(durabilityBefore - readAttributes(tokenId).durability, previewDurabilityLoss);
     }
 

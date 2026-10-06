@@ -12,7 +12,7 @@ export const fontSizes = {
   title: 25,
   menuItem: 26,
   heading: 47,
-  /** The one number a result screen is about: "+50 SOLE". */
+  /** The one number a result screen is about: "+50 STRIDE". */
   hero: 62,
   counter: 51,
   display: 58,

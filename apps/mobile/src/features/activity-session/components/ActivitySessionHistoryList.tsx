@@ -63,7 +63,7 @@ function HistoryEmptyState() {
     <Panel>
       <Text style={styles.emptyTitle}>No runs yet</Text>
       <Text style={styles.emptyMessage}>
-        Press START on Home and go for a walk. Each run you finish shows up here with the SOLE it
+        Press START on Home and go for a walk. Each run you finish shows up here with the STRIDE it
         earned.
       </Text>
     </Panel>

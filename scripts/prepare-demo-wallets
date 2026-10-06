@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Readies wallets A and B for the demo (docs/demo-script.md, D-033): tops wallet A up to
-# its next upgrade plus a repair in SOLE, and both wallets to 1 MON if below 0.5.
+# its next upgrade plus a repair in STRIDE, and both wallets to 1 MON if below 0.5.
 # Needs DEMO_WALLET_A_ADDRESS and DEMO_WALLET_B_ADDRESS in packages/contracts/.env.
 #
 #   scripts/prepare-demo-wallets [--dry-run]

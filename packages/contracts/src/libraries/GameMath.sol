@@ -94,7 +94,7 @@ library GameMath {
         return uint16(activeMinutes);
     }
 
-    /// @notice SOLE earned for a session.
+    /// @notice STRIDE earned for a session.
     /// @param rewardedMinutes Minutes that earn a reward.
     /// @param efficiency The Sneaker's efficiency.
     /// @param config Game config supplying `rewardPerEfficiencyMinuteWei`.
@@ -127,7 +127,7 @@ library GameMath {
         return uint16(uncappedLoss);
     }
 
-    /// @notice SOLE burned to restore durability to `maxDurability`.
+    /// @notice STRIDE burned to restore durability to `maxDurability`.
     /// @param level The Sneaker's level.
     /// @param durability The Sneaker's durability.
     /// @param config Game config supplying `maxDurability` and the repair prices.
@@ -144,7 +144,7 @@ library GameMath {
         return missingDurability * repairCostPerPointWei;
     }
 
-    /// @notice SOLE burned to upgrade a Sneaker from `level` to `level + 1`.
+    /// @notice STRIDE burned to upgrade a Sneaker from `level` to `level + 1`.
     /// @param level The Sneaker's current level.
     /// @param config Game config supplying `upgradeCostPerLevelWei`.
     /// @return upgradeCostWei `upgradeCostPerLevelWei × level`.

@@ -6,8 +6,8 @@ import { ProgressBar } from '../../../components/ui/ProgressBar'
 import type { ApiClientErrorCode } from '../../../lib/api-client'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
-import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
 import { formatSpeed } from '../../../lib/format/format-speed'
+import { formatStrideAmount } from '../../../lib/format/format-stride-amount'
 import { colors, spacing, textStyles } from '../../../theme'
 import type { LiveRunStats as LiveRunStatsValues } from '../live-run-stats'
 
@@ -32,7 +32,7 @@ export function LiveRunStats({
     liveRunStats.currentSpeedKilometersPerHour === null
       ? '—'
       : formatSpeed(liveRunStats.currentSpeedKilometersPerHour)
-  const rewardDisplay = `+${formatSoleAmount(liveRunStats.estimatedRewardWei)}`
+  const rewardDisplay = `+${formatStrideAmount(liveRunStats.estimatedRewardWei)}`
 
   return (
     <View style={styles.container}>

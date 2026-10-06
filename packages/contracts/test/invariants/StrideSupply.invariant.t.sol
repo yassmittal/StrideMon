@@ -4,21 +4,21 @@ pragma solidity 0.8.37;
 import {GameConfig} from "../../src/libraries/GameMath.sol";
 import {SneakerAttributes} from "../../src/SneakerNft.sol";
 import {GameTestBase} from "../helpers/GameTestBase.sol";
-import {SoleSupplyHandler} from "./SoleSupplyHandler.sol";
+import {StrideSupplyHandler} from "./StrideSupplyHandler.sol";
 
-contract SoleSupplyInvariantTest is GameTestBase {
-    SoleSupplyHandler private handler;
+contract StrideSupplyInvariantTest is GameTestBase {
+    StrideSupplyHandler private handler;
 
     function setUp() public override {
         super.setUp();
-        handler = new SoleSupplyHandler(sneakerGame, gameServer);
+        handler = new StrideSupplyHandler(sneakerGame, gameServer);
         targetContract(address(handler));
     }
 
-    /// @notice SOLE only enters through settlement and only leaves through repair and upgrade.
+    /// @notice STRIDE only enters through settlement and only leaves through repair and upgrade.
     function invariant_SupplyEqualsSettlementRewardsMinusBurns() public view {
         assertEq(
-            soleToken.totalSupply(), handler.ghostMintedRewardWei() - handler.ghostBurnedCostWei()
+            strideToken.totalSupply(), handler.ghostMintedRewardWei() - handler.ghostBurnedCostWei()
         );
     }
 
@@ -27,13 +27,13 @@ contract SoleSupplyInvariantTest is GameTestBase {
         assertFalse(handler.hasBurnedFromNonCaller());
     }
 
-    /// @notice Every SOLE is held by a player; nothing is minted to anyone else.
+    /// @notice Every STRIDE is held by a player; nothing is minted to anyone else.
     function invariant_PlayersHoldTheWholeSupply() public view {
         uint256 heldByActorsWei;
         for (uint256 actorIndex; actorIndex < handler.actorCount(); actorIndex++) {
-            heldByActorsWei += soleToken.balanceOf(handler.actors(actorIndex));
+            heldByActorsWei += strideToken.balanceOf(handler.actors(actorIndex));
         }
-        assertEq(heldByActorsWei, soleToken.totalSupply());
+        assertEq(heldByActorsWei, strideToken.totalSupply());
     }
 
     /// @notice Stats never leave their ranges, whatever the sequence of actions.

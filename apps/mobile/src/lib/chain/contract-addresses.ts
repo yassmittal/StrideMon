@@ -1,7 +1,7 @@
 import { CONTRACT_ADDRESSES_BY_CHAIN_ID, type StrideMonContractAddresses } from '@stridemon/chain'
 import { monadChain } from './monad-chain'
 
-/** SneakerNft, SoleToken and SneakerGame on the chain the app is built for. */
+/** SneakerNft, StrideToken and SneakerGame on the chain the app is built for. */
 export const contractAddresses = resolveContractAddresses()
 
 function resolveContractAddresses(): StrideMonContractAddresses {

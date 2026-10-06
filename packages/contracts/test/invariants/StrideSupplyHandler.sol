@@ -5,18 +5,18 @@ import {Test} from "forge-std/Test.sol";
 import {GameConfig, GameMath} from "../../src/libraries/GameMath.sol";
 import {SessionSettlement, SneakerGame} from "../../src/SneakerGame.sol";
 import {SneakerAttributes, SneakerNft} from "../../src/SneakerNft.sol";
-import {SoleToken} from "../../src/SoleToken.sol";
+import {StrideToken} from "../../src/StrideToken.sol";
 
 /// @notice Drives random starter mints, settlements, repairs, upgrades, Sneaker transfers
 /// and time jumps. Expected rewards and costs come from `GameMath` directly, not from the
 /// contract's own quote functions, so the ghosts are an independent ledger.
-contract SoleSupplyHandler is Test {
+contract StrideSupplyHandler is Test {
     uint256 private constant MAX_SECONDS_PER_WARP = 6 hours;
     uint32 private constant MAX_ACTIVE_MINUTES = 240;
 
     SneakerGame private immutable sneakerGame;
     SneakerNft private immutable sneakerNft;
-    SoleToken private immutable soleToken;
+    StrideToken private immutable strideToken;
     address private immutable gameServer;
 
     address[] public actors;
@@ -31,7 +31,7 @@ contract SoleSupplyHandler is Test {
     constructor(SneakerGame sneakerGameAddress, address gameServerAddress) {
         sneakerGame = sneakerGameAddress;
         sneakerNft = sneakerGameAddress.sneakerNft();
-        soleToken = sneakerGameAddress.soleToken();
+        strideToken = sneakerGameAddress.strideToken();
         gameServer = gameServerAddress;
         for (uint256 actorIndex; actorIndex < 4; actorIndex++) {
             actors.push(makeAddr(string.concat("actor", vm.toString(actorIndex))));
@@ -146,7 +146,7 @@ contract SoleSupplyHandler is Test {
     function readActorBalances() private view returns (uint256[] memory balances) {
         balances = new uint256[](actors.length);
         for (uint256 actorIndex; actorIndex < actors.length; actorIndex++) {
-            balances[actorIndex] = soleToken.balanceOf(actors[actorIndex]);
+            balances[actorIndex] = strideToken.balanceOf(actors[actorIndex]);
         }
     }
 
@@ -154,7 +154,7 @@ contract SoleSupplyHandler is Test {
         for (uint256 actorIndex; actorIndex < actors.length; actorIndex++) {
             address actor = actors[actorIndex];
             if (actor == caller) continue;
-            if (soleToken.balanceOf(actor) != balancesBefore[actorIndex]) {
+            if (strideToken.balanceOf(actor) != balancesBefore[actorIndex]) {
                 hasBurnedFromNonCaller = true;
             }
         }

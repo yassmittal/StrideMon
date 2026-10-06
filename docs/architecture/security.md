@@ -113,7 +113,7 @@ Phase 10.
   checks-effects-interactions is followed everywhere.
 - Burning only ever happens from `msg.sender`, and a test pins this invariant.
 - `settleSession` is idempotent by `sessionId`, and a test pins that too.
-- Invariant tests: total `SoleToken` supply equals the sum of minted
+- Invariant tests: total `StrideToken` supply equals the sum of minted
   settlement rewards minus the sum of repair and upgrade burns.
 - **Before mainnet** (Phase 10): an external audit, a multisig admin,
   timelocked config changes, and a static analysis pass (Slither) in the pipeline.

@@ -148,7 +148,7 @@ contract SneakerNft is ERC721Enumerable, AccessControl, IERC4906 {
             name(),
             " #",
             tokenId.toString(),
-            '","description":"A StrideMon Sneaker. Walk or run with it to earn SOLE.",',
+            '","description":"A StrideMon Sneaker. Walk or run with it to earn STRIDE.",',
             '"image":"data:image/svg+xml;base64,',
             Base64.encode(bytes(imageSvg(tokenId))),
             '","attributes":',

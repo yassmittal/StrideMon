@@ -22,16 +22,16 @@ contract DeployGameTest is GameTestBase, GameRuleFixtures {
     function test_DeploysNamedCollections() public view {
         assertEq(sneakerNft.name(), "StrideMon Sneaker");
         assertEq(sneakerNft.symbol(), "SNEAKER");
-        assertEq(soleToken.name(), "Sole");
-        assertEq(soleToken.symbol(), "SOLE");
-        assertEq(soleToken.decimals(), 18);
+        assertEq(strideToken.name(), "Stride");
+        assertEq(strideToken.symbol(), "STRIDE");
+        assertEq(strideToken.decimals(), 18);
     }
 
     function test_WiresGameRolesToSneakerGame() public view {
         address sneakerGameAddress = address(sneakerGame);
         assertTrue(sneakerNft.hasRole(sneakerNft.GAME_ROLE(), sneakerGameAddress));
-        assertTrue(soleToken.hasRole(soleToken.MINTER_ROLE(), sneakerGameAddress));
-        assertTrue(soleToken.hasRole(soleToken.BURNER_ROLE(), sneakerGameAddress));
+        assertTrue(strideToken.hasRole(strideToken.MINTER_ROLE(), sneakerGameAddress));
+        assertTrue(strideToken.hasRole(strideToken.BURNER_ROLE(), sneakerGameAddress));
     }
 
     function test_GameServerHoldsOnlyGameServerRole() public view {
@@ -39,14 +39,14 @@ contract DeployGameTest is GameTestBase, GameRuleFixtures {
         assertFalse(sneakerGame.hasRole(sneakerGame.DEFAULT_ADMIN_ROLE(), gameServer));
         assertFalse(sneakerGame.hasRole(sneakerGame.PAUSER_ROLE(), gameServer));
         assertFalse(sneakerNft.hasRole(sneakerNft.GAME_ROLE(), gameServer));
-        assertFalse(soleToken.hasRole(soleToken.MINTER_ROLE(), gameServer));
-        assertFalse(soleToken.hasRole(soleToken.BURNER_ROLE(), gameServer));
+        assertFalse(strideToken.hasRole(strideToken.MINTER_ROLE(), gameServer));
+        assertFalse(strideToken.hasRole(strideToken.BURNER_ROLE(), gameServer));
     }
 
     function test_DeployerIsAdminAndPauserEverywhere() public view {
         assertTrue(sneakerGame.hasRole(sneakerGame.DEFAULT_ADMIN_ROLE(), deployer));
         assertTrue(sneakerGame.hasRole(sneakerGame.PAUSER_ROLE(), deployer));
         assertTrue(sneakerNft.hasRole(sneakerNft.DEFAULT_ADMIN_ROLE(), deployer));
-        assertTrue(soleToken.hasRole(soleToken.DEFAULT_ADMIN_ROLE(), deployer));
+        assertTrue(strideToken.hasRole(strideToken.DEFAULT_ADMIN_ROLE(), deployer));
     }
 }

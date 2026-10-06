@@ -40,7 +40,7 @@ export function describeRejectionReason(
     case 'INSUFFICIENT_ACTIVITY_DATA':
       return 'There wasn’t enough GPS data to count this run. Keep it going for at least a minute, outdoors.'
     case 'SNEAKER_TRANSFERRED_DURING_SESSION':
-      return 'Your Sneaker changed owner during this run, so it couldn’t earn SOLE.'
+      return 'Your Sneaker changed owner during this run, so it couldn’t earn STRIDE.'
     case null:
       return 'The run was rejected.'
     default: {

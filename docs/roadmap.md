@@ -12,7 +12,7 @@ half-built layer. Each one has a detailed spec in [`phases/`](phases/).
  Phase 2  Wallet & sign-in ─────────┤
  Phase 3  Starter Sneaker & home ───┘  ← "I own a Sneaker NFT on Monad"
  Phase 4  Activity tracking ────────┐
- Phase 5  Settlement & rewards ─────┘  ← "I ran and earned SOLE"
+ Phase 5  Settlement & rewards ─────┘  ← "I ran and earned STRIDE"
  Phase 6  Repair & upgrade ─────────   ← "I improved my Sneaker"
  Phase 7  Sneaker transfer ─────────   ← MVP COMPLETE (MVP.md §26)
  Phase 8  Demo hardening ───────────   ← hackathon-ready
@@ -28,7 +28,7 @@ half-built layer. Each one has a detailed spec in [`phases/`](phases/).
 | 2 | [Wallet & sign-in](phases/phase-02-wallet-and-sign-in.md) | M | Connect wallet, sign in, see your address and MON balance |
 | 3 | [Starter Sneaker & home](phases/phase-03-starter-sneaker-and-home.md) | M | A new wallet receives a Sneaker NFT; home shows stats, energy and balance from the chain |
 | 4 | [Activity tracking](phases/phase-04-activity-tracking.md) | L | Walk outside and see live time, distance, speed and an estimated reward; the server validates the run |
-| 5 | [Settlement & rewards](phases/phase-05-settlement-and-rewards.md) | M | STOP → SOLE arrives in your wallet and durability drops on-chain |
+| 5 | [Settlement & rewards](phases/phase-05-settlement-and-rewards.md) | M | STOP → STRIDE arrives in your wallet and durability drops on-chain |
 | 6 | [Repair & upgrade](phases/phase-06-repair-and-upgrade.md) | S | Spend rewards to repair and to level up; the stats change on-chain |
 | 7 | [Sneaker transfer](phases/phase-07-sneaker-transfer.md) | S | Send the Sneaker to wallet B, and B sees it. **MVP done.** |
 | 8 | [Demo hardening](phases/phase-08-demo-hardening.md) | M | The full `MVP.md` §21 demo runs on a hosted API without surprises |
@@ -57,7 +57,7 @@ API + demo wallets + demo script". The optional durability-below-50 penalty
 |------|-------|
 | Product name | **StrideMon** (domain `stridemon.com`) |
 | App slug / bundle id / Android package | `stridemon` / `com.stridemon.app` |
-| Reward token | name `Sole`, symbol **`SOLE`**, 18 decimals, contract `SoleToken` |
+| Reward token | name `Stride`, symbol **`STRIDE`**, 18 decimals, contract `StrideToken` |
 | npm workspace scope | `@stridemon/*` |
 | MongoDB database | `stridemon` |
 

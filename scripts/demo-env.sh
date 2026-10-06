@@ -8,7 +8,7 @@ set -a && source .env && set +a
 DEPLOYMENT=deployments/10143.json
 export SNEAKER_GAME_ADDRESS="$(jq -r .sneakerGame "$DEPLOYMENT")"
 export SNEAKER_NFT_ADDRESS="$(jq -r .sneakerNft "$DEPLOYMENT")"
-export SOLE_TOKEN_ADDRESS="$(jq -r .soleToken "$DEPLOYMENT")"
+export STRIDE_TOKEN_ADDRESS="$(jq -r .strideToken "$DEPLOYMENT")"
 
 # Always Monad testnet, never a local Anvil (D-019). --dry-run simulates without sending.
 FORGE_SCRIPT_FLAGS=(--rpc-url monad_testnet --broadcast)

@@ -199,7 +199,7 @@ If it shows `errored`, the first log lines name the missing or wrong `.env` vari
    the JavaScript, so the phone and the Mac still share Wi-Fi; only the API calls go to the
    instance. The demo build in step 8 needs none of this.
 
-What carries over: everything on-chain. Wallets A and B keep their Sneakers, levels and SOLE, and
+What carries over: everything on-chain. Wallets A and B keep their Sneakers, levels and STRIDE, and
 they aren't minted a new starter Sneaker (the app reads that from the chain). What doesn't: the
 **History** tab starts empty, because past runs live in your laptop's database.
 

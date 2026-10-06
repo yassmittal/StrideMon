@@ -9,13 +9,13 @@ the demo build against the hosted API, and the laptop steps below fall away.
 
 ## The day before
 
-- **Wallet A can afford the upgrade.** A earns SOLE by walking. Check what's missing:
+- **Wallet A can afford the upgrade.** A earns STRIDE by walking. Check what's missing:
 
   ```bash
   bun run demo:prepare-wallets --dry-run
   ```
 
-  It prints both wallets and simulates any top-up: SOLE for A up to its next upgrade plus 10 for a
+  It prints both wallets and simulates any top-up: STRIDE for A up to its next upgrade plus 10 for a
   repair, and MON for either wallet below 0.5. If A is still short, run it without `--dry-run`
   (D-033). It needs `DEMO_WALLET_A_ADDRESS` and `DEMO_WALLET_B_ADDRESS` in
   `packages/contracts/.env`.
@@ -70,7 +70,7 @@ the demo build against the hosted API, and the laptop steps below fall away.
 
 - **Do:** **STOP**.
 - **Show:** "Settling on Monad…", then the reward and the durability lost. Tap **View transaction**
-  to show the `SessionSettled` event. A 2-minute walk at efficiency 10 pays 10 SOLE. `MVP.md`'s
+  to show the `SessionSettled` event. A 2-minute walk at efficiency 10 pays 10 STRIDE. `MVP.md`'s
   +50 is a 10-minute walk.
 - **Fallback:** settlement normally takes seconds. If it's slow, say the run is saved and settles
   by itself, go on to step 5, and come back to History later. If the API is down, show History's
@@ -81,7 +81,7 @@ the demo build against the hosted API, and the laptop steps below fall away.
 - **Say:** "Rewards are spent on the Sneaker itself."
 - **Do:** Sneaker tab → **Upgrade to level 2** → **Confirm in wallet** → **Confirm** in MetaMask.
   If the walk wore it down, **Repair** first the same way.
-- **Show:** level 1 → 2, efficiency 10 → 12, and the SOLE that was burned.
+- **Show:** level 1 → 2, efficiency 10 → 12, and the STRIDE that was burned.
 - **Fallback:** if A can't afford it, the dry run the day before was skipped: move on to step 6
   and show the upgrade cost instead. If MetaMask fails, see step 1.
 

@@ -19,7 +19,7 @@ type UpgradePanelProps = {
   onTransactionReset: () => void
 }
 
-/** Spend SOLE to go up a level: more efficiency, so every rewarded minute earns more. */
+/** Spend STRIDE to go up a level: more efficiency, so every rewarded minute earns more. */
 export function UpgradePanel({
   isGamePaused,
   level,
@@ -47,7 +47,7 @@ export function UpgradePanel({
   return (
     <SneakerActionPanel
       title="Upgrade"
-      description="Higher efficiency earns more SOLE for every rewarded minute."
+      description="Higher efficiency earns more STRIDE for every rewarded minute."
       actionLabel={isAtMaxLevel ? 'Upgrade' : `Upgrade to level ${nextLevel}`}
       statChanges={
         isAtMaxLevel

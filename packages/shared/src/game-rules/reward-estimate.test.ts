@@ -33,7 +33,7 @@ describe('session reward (shared fixtures)', () => {
 })
 
 describe('estimateLiveReward', () => {
-  it('matches the MVP example after 10 minutes at efficiency 10: 50 SOLE', () => {
+  it('matches the MVP example after 10 minutes at efficiency 10: 50 STRIDE', () => {
     const rewardAmountWei = estimateLiveReward({
       elapsedActiveSeconds: 600,
       efficiency: 10,

@@ -1,7 +1,7 @@
 import type { GameConfig } from './game-config'
 
 /**
- * SOLE to restore durability to `maxDurability`, 0 when already full. The on-chain
+ * STRIDE to restore durability to `maxDurability`, 0 when already full. The on-chain
  * `quoteRepairCost` is what the player pays. Mirrors `GameMath.calculateRepairCost`.
  */
 export function calculateRepairCost({
@@ -22,7 +22,7 @@ export function calculateRepairCost({
 }
 
 /**
- * SOLE to upgrade from `level` to `level + 1`: `upgradeCostPerLevelWei × level`.
+ * STRIDE to upgrade from `level` to `level + 1`: `upgradeCostPerLevelWei × level`.
  * Mirrors `GameMath.calculateUpgradeCost`.
  */
 export function calculateUpgradeCost({

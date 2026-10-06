@@ -23,16 +23,16 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
     function test_RepairRestoresMaxDurabilityAndBurnsTheQuote() public {
         settleActivitySession(playerTokenId, player, 10);
         uint256 quotedCostWei = sneakerGame.quoteRepairCost(playerTokenId);
-        uint256 balanceBefore = soleToken.balanceOf(player);
+        uint256 balanceBefore = strideToken.balanceOf(player);
 
         vm.expectEmit(address(sneakerGame));
         emit SneakerGame.SneakerRepaired(playerTokenId, player, 3, quotedCostWei);
         vm.prank(player);
         sneakerGame.repair(playerTokenId);
 
-        assertEq(quotedCostWei, (21 * ONE_SOLE_WEI) / 10, "3 points at 0.7 SOLE");
+        assertEq(quotedCostWei, (21 * ONE_STRIDE_WEI) / 10, "3 points at 0.7 STRIDE");
         assertEq(readAttributes(playerTokenId).durability, 100);
-        assertEq(soleToken.balanceOf(player), balanceBefore - quotedCostWei);
+        assertEq(strideToken.balanceOf(player), balanceBefore - quotedCostWei);
         assertEq(sneakerGame.quoteRepairCost(playerTokenId), 0);
     }
 
@@ -68,9 +68,9 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
 
     function test_RevertWhen_RepairCostExceedsBalance() public {
         settleActivitySession(playerTokenId, player, 10);
-        uint256 balanceWei = soleToken.balanceOf(player);
+        uint256 balanceWei = strideToken.balanceOf(player);
         vm.prank(player);
-        soleToken.transfer(otherPlayer, balanceWei);
+        strideToken.transfer(otherPlayer, balanceWei);
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -97,12 +97,12 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
         uint256 otherTokenId = mintStarterSneakerFor(otherPlayer);
         settleActivitySession(playerTokenId, player, 10);
         settleActivitySession(otherTokenId, otherPlayer, 10);
-        uint256 otherBalanceBefore = soleToken.balanceOf(otherPlayer);
+        uint256 otherBalanceBefore = strideToken.balanceOf(otherPlayer);
 
         vm.prank(player);
         sneakerGame.repair(playerTokenId);
 
-        assertEq(soleToken.balanceOf(otherPlayer), otherBalanceBefore);
+        assertEq(strideToken.balanceOf(otherPlayer), otherBalanceBefore);
     }
 
     // ---------------------------------------------------------------------------------
@@ -114,32 +114,32 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
         uint256 quotedCostWei = sneakerGame.quoteUpgradeCost(playerTokenId);
 
         vm.expectEmit(address(sneakerGame));
-        emit SneakerGame.SneakerUpgraded(playerTokenId, player, 2, 12, 50 * ONE_SOLE_WEI);
+        emit SneakerGame.SneakerUpgraded(playerTokenId, player, 2, 12, 50 * ONE_STRIDE_WEI);
         vm.prank(player);
         sneakerGame.upgrade(playerTokenId);
 
         SneakerAttributes memory attributes = readAttributes(playerTokenId);
-        assertEq(quotedCostWei, 50 * ONE_SOLE_WEI);
+        assertEq(quotedCostWei, 50 * ONE_STRIDE_WEI);
         assertEq(attributes.level, 2);
         assertEq(attributes.efficiency, 12);
         assertEq(attributes.durability, 97, "upgrading doesn't repair");
-        assertEq(soleToken.balanceOf(player), 0);
-        assertEq(sneakerGame.quoteUpgradeCost(playerTokenId), 100 * ONE_SOLE_WEI);
+        assertEq(strideToken.balanceOf(player), 0);
+        assertEq(sneakerGame.quoteUpgradeCost(playerTokenId), 100 * ONE_STRIDE_WEI);
     }
 
     function test_UpgradedEfficiencyRaisesTheNextReward() public {
-        fundWithSole(player, 50 * ONE_SOLE_WEI);
+        fundWithStride(player, 50 * ONE_STRIDE_WEI);
         vm.prank(player);
         sneakerGame.upgrade(playerTokenId);
 
         settleActivitySession(playerTokenId, player, 10);
 
-        assertEq(soleToken.balanceOf(player), 60 * ONE_SOLE_WEI, "10 minutes at efficiency 12");
+        assertEq(strideToken.balanceOf(player), 60 * ONE_STRIDE_WEI, "10 minutes at efficiency 12");
     }
 
     function test_RevertWhen_UpgradingAtMaxLevel() public {
         setMaxLevel(1);
-        fundWithSole(player, 50 * ONE_SOLE_WEI);
+        fundWithStride(player, 50 * ONE_STRIDE_WEI);
 
         vm.expectRevert(
             abi.encodeWithSelector(SneakerGame.SneakerAtMaxLevel.selector, playerTokenId)
@@ -158,7 +158,7 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
     }
 
     function test_RevertWhen_UpgradeCalledByNonOwner() public {
-        fundWithSole(otherPlayer, 50 * ONE_SOLE_WEI);
+        fundWithStride(otherPlayer, 50 * ONE_STRIDE_WEI);
 
         vm.expectRevert(
             abi.encodeWithSelector(SneakerGame.NotSneakerOwner.selector, playerTokenId, otherPlayer)
@@ -174,8 +174,8 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
             abi.encodeWithSelector(
                 IERC20Errors.ERC20InsufficientBalance.selector,
                 player,
-                45 * ONE_SOLE_WEI,
-                50 * ONE_SOLE_WEI
+                45 * ONE_STRIDE_WEI,
+                50 * ONE_STRIDE_WEI
             )
         );
         vm.prank(player);
@@ -183,7 +183,7 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
     }
 
     function test_RevertWhen_UpgradeWhilePaused() public {
-        fundWithSole(player, 50 * ONE_SOLE_WEI);
+        fundWithStride(player, 50 * ONE_STRIDE_WEI);
         pauseGame();
 
         vm.expectRevert(Pausable.EnforcedPause.selector);
@@ -192,14 +192,14 @@ contract SneakerGameRepairUpgradeTest is GameTestBase {
     }
 
     function test_UpgradeBurnsOnlyFromTheCaller() public {
-        fundWithSole(player, 50 * ONE_SOLE_WEI);
-        fundWithSole(otherPlayer, 500 * ONE_SOLE_WEI);
+        fundWithStride(player, 50 * ONE_STRIDE_WEI);
+        fundWithStride(otherPlayer, 500 * ONE_STRIDE_WEI);
 
         vm.prank(player);
         sneakerGame.upgrade(playerTokenId);
 
-        assertEq(soleToken.balanceOf(otherPlayer), 500 * ONE_SOLE_WEI);
-        assertEq(soleToken.balanceOf(player), 0);
+        assertEq(strideToken.balanceOf(otherPlayer), 500 * ONE_STRIDE_WEI);
+        assertEq(strideToken.balanceOf(player), 0);
     }
 
     function pauseGame() private {

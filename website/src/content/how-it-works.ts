@@ -38,13 +38,13 @@ export const howItWorksSteps: readonly HowItWorksStep[] = [
   {
     title: 'Earn',
     description:
-      'Press STOP. The run is checked, then settled on Monad in seconds, and SOLE lands in your wallet.',
+      'Press STOP. The run is checked, then settled on Monad in seconds, and STRIDE lands in your wallet.',
     screenshots: [screenshots.runSummary],
   },
   {
     title: 'Upgrade',
     description:
-      'Spend SOLE to repair durability or to level the Sneaker up. Each level adds efficiency, so the next run pays more.',
+      'Spend STRIDE to repair durability or to level the Sneaker up. Each level adds efficiency, so the next run pays more.',
     screenshots: [screenshots.sneakerTab, screenshots.repairReview],
   },
   {

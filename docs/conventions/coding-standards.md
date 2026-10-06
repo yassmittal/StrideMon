@@ -85,7 +85,7 @@ Pick a term and use it everywhere: in contract, API, DB, app and UI copy.
 | A walk/run | **activity session** | run, workout, activity, session (bare) |
 | Login state | **auth session** | session (bare) |
 | The NFT | **Sneaker** | shoe, item, nft (in domain code) |
-| The ERC-20 | **SOLE** in UI copy and docs; `SoleToken` for the contract; **reward** for amounts in code (`rewardAmountWei`) | coins, points, credits, soles |
+| The ERC-20 | **STRIDE** in UI copy and docs; `StrideToken` for the contract; **reward** for amounts in code (`rewardAmountWei`) | coins, points, credits, lowercase "stride" (that's the verb) |
 | Player wallet | **walletAddress** | address, account, wallet (as a string) |
 | NFT id | **sneakerTokenId** (TS) / `tokenId` (inside Solidity) | id, nftId |
 

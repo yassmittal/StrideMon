@@ -18,14 +18,14 @@ You're building the landing page for **StrideMon**, a move-to-earn game on Monad
 ### 1. What StrideMon is
 
 A STEPN-style move-to-earn game. The player owns a **Sneaker NFT** on Monad, walks or runs with it
-to earn **SOLE** (an ERC-20 reward token), and spends SOLE to repair and upgrade the Sneaker. The
+to earn **STRIDE** (an ERC-20 reward token), and spends STRIDE to repair and upgrade the Sneaker. The
 Sneaker's stats live on-chain, and it can be sent to any wallet with its stats intact.
 
 - One-sentence pitch: *A move-to-earn game where you own a Sneaker NFT on Monad, walk or run with
   it to earn rewards, and spend them to repair and upgrade the Sneaker.*
 - The loop: **Own Sneaker → Get Energy → Move → Earn → Upgrade Sneaker → Move Again.**
 - Status: complete and working end to end on **Monad testnet**, on Android (an internal demo build).
-  iOS comes later. SOLE is a testnet token with **no monetary value**. Built for a hackathon.
+  iOS comes later. STRIDE is a testnet token with **no monetary value**. Built for a hackathon.
 
 Who reads the page: hackathon judges (they decide in a minute or two), the Monad community, and
 curious players. It must make three things obvious, from `MVP.md` §25:
@@ -114,7 +114,7 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
 2. **Hero:**
    - Meta: `STRIDEMON • MOVE TO EARN • MONAD TESTNET`
    - Headline (the app's welcome screen): **Walk. Earn. Upgrade.**
-   - Intro: "Your Sneaker is an NFT on Monad. Walk or run with it to earn SOLE, then spend SOLE to
+   - Intro: "Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then spend STRIDE to
      repair and level it up."
    - Visual: a dark panel with the real on-chain Sneaker art
      (`public/sneaker-art/sneaker-0002-level-02.svg`), plus the Home screenshot in a plain phone
@@ -129,9 +129,9 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
       comes back every 30 minutes.
    3. **Move:** press START and walk or run. Time, distance, speed and your estimated reward are
       live on screen.
-   4. **Earn:** press STOP. The run is checked, then settled on Monad in seconds, and SOLE lands in
+   4. **Earn:** press STOP. The run is checked, then settled on Monad in seconds, and STRIDE lands in
       your wallet.
-   5. **Upgrade:** spend SOLE to repair durability or to level the Sneaker up. Each level adds
+   5. **Upgrade:** spend STRIDE to repair durability or to level the Sneaker up. Each level adds
       efficiency, so the next run pays more.
    6. **Own it, really:** send the Sneaker to any wallet. Its level, efficiency and durability go
       with it.
@@ -148,10 +148,10 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    |---|---|
    | Max energy | 10 points; 1 point = 1 rewarded minute |
    | Energy regeneration | 1 point every 30 minutes |
-   | Reward | 0.5 SOLE per efficiency point per minute (a starter at efficiency 10 earns 5 SOLE a minute) |
+   | Reward | 0.5 STRIDE per efficiency point per minute (a starter at efficiency 10 earns 5 STRIDE a minute) |
    | Durability loss | 0.3 per rewarded minute, rounded up per run (a 10-minute run costs 3) |
-   | Repair | 0.7 SOLE per point at level 1, plus 0.1 SOLE per point for each level above 1 |
-   | Upgrade | 50 SOLE × current level; +2 efficiency per level |
+   | Repair | 0.7 STRIDE per point at level 1, plus 0.1 STRIDE per point for each level above 1 |
+   | Upgrade | 50 STRIDE × current level; +2 efficiency per level |
    | Max level | 30 |
    | Starter Sneaker | Level 1, efficiency 10, durability 100, energy 10 |
 
@@ -172,7 +172,7 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    | Contract | Address (chain 10143) |
    |---|---|
    | `SneakerNft` (ERC-721) | `0xC116917b06BD9079C87334ED5499054b1B54Fa80` |
-   | `SoleToken` (ERC-20 SOLE) | `0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0` |
+   | `StrideToken` (ERC-20 STRIDE) | `0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0` |
    | `SneakerGame` (the rules) | `0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9` |
    | `SneakerArtRenderer` (the SVG) | `0x7e01732461C1879915C35E56e73Fd8569B289ADa` |
 
@@ -186,20 +186,20 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    - *Is it live?* Yes, on Monad testnet, on Android. iOS comes later.
    - *Do I need crypto?* A wallet such as MetaMask with Monad Testnet added. New players get a
      small amount of test MON for gas.
-   - *Is SOLE worth money?* No. It's a testnet token for the game.
+   - *Is STRIDE worth money?* No. It's a testnet token for the game.
    - *Can I cheat by driving?* No. Minutes above 20 km/h don't count.
    - *What happens to my location data?* Only active minutes and distance reach the chain. Raw
      samples are deleted after 30 days.
    - *Can I sell my Sneaker?* You can send it to any wallet today. A marketplace is planned.
 10. **Footer:** the wordmark, "Built on Monad testnet for a hackathon.", the GitHub link,
-    the contract links, and "SOLE has no monetary value."
+    the contract links, and "STRIDE has no monetary value."
 
 ### 6. SEO
 
 - `metadata` in `app/layout.tsx`: `metadataBase` = `siteUrl`, a title template, and:
   - title: "StrideMon: walk, earn and upgrade a Sneaker NFT on Monad"
   - description (≤ 155 characters): "A move-to-earn game on Monad. Own a Sneaker NFT, walk or run to
-    earn SOLE, and spend it to repair and level up your Sneaker."
+    earn STRIDE, and spend it to repair and level up your Sneaker."
   - canonical, Open Graph (`type: website`, `siteName`, `locale: en_US`), Twitter
     `summary_large_image`.
 - `app/opengraph-image.tsx` (1200×630, `next/og`): the off-white page, the headline, and the
@@ -232,9 +232,9 @@ placeholder of the same size for any that are missing.
 | File | Screen | Used in |
 |---|---|---|
 | `01-welcome.png` | Welcome ("Walk. Earn. Upgrade.") | How it works 1 |
-| `02-home.png` | Home: Sneaker card, energy, SOLE balance | Hero, How it works 2 |
+| `02-home.png` | Home: Sneaker card, energy, STRIDE balance | Hero, How it works 2 |
 | `03-active-run.png` | Dark active run: time, distance, speed, estimated reward | How it works 3 |
-| `04-run-summary.png` | Summary: +SOLE, rewarded minutes, durability lost | How it works 4 |
+| `04-run-summary.png` | Summary: +STRIDE, rewarded minutes, durability lost | How it works 4 |
 | `05-sneaker-tab.png` | Sneaker tab: repair and upgrade panels | How it works 5 |
 | `06-repair-review.png` | Repair review sheet (replaced "Level 2 reached", 2026-10-05) | How it works 5 |
 | `07-transfer.png` | Send Sneaker: recipient address and review | How it works 6 |

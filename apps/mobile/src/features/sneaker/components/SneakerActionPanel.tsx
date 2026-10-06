@@ -3,7 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
 import { ErrorState } from '../../../components/ui/ErrorState'
 import { Panel } from '../../../components/ui/Panel'
-import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
+import { formatStrideAmount } from '../../../lib/format/format-stride-amount'
 import { colors, fontFamilies, radii, spacing, textStyles } from '../../../theme'
 import type { SneakerActionCost } from '../sneaker-action-cost'
 import type { SneakerGameTransactionState } from '../sneaker-game-transaction-state'
@@ -81,9 +81,9 @@ export function SneakerActionPanel({
           <View
             style={styles.costChip}
             accessible
-            accessibilityLabel={`Costs ${formatSoleAmount(costWei)}`}
+            accessibilityLabel={`Costs ${formatStrideAmount(costWei)}`}
           >
-            <Text style={styles.costChipLabel}>{formatSoleAmount(costWei)}</Text>
+            <Text style={styles.costChipLabel}>{formatStrideAmount(costWei)}</Text>
           </View>
         )}
       </View>
@@ -108,7 +108,7 @@ export function SneakerActionPanel({
             isDisabled={blockedReasonMessage !== null || costWei === undefined}
           />
           <Text style={styles.caption}>
-            {blockedReasonMessage ?? `You have ${formatSoleAmount(rewardBalanceWei)}.`}
+            {blockedReasonMessage ?? `You have ${formatStrideAmount(rewardBalanceWei)}.`}
           </Text>
         </>
       )}

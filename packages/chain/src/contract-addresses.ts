@@ -3,7 +3,7 @@ import type { SupportedChainId } from './monad-chains'
 
 export type StrideMonContractAddresses = {
   sneakerNft: Address
-  soleToken: Address
+  strideToken: Address
   sneakerGame: Address
 }
 
@@ -16,7 +16,7 @@ export const CONTRACT_ADDRESSES_BY_CHAIN_ID: Partial<
 > = {
   10143: {
     sneakerNft: '0xC116917b06BD9079C87334ED5499054b1B54Fa80',
-    soleToken: '0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0',
+    strideToken: '0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0',
     sneakerGame: '0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9',
   },
 }

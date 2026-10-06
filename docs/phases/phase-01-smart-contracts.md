@@ -24,7 +24,7 @@ chain definition points at `testnet.monadexplorer.com`).
 ### `packages/contracts`
 - `libraries/GameMath.sol`: pure functions for current energy, rewarded minutes, reward, durability loss, repair cost and upgrade cost.
 - `SneakerNft.sol`: ERC-721, `SneakerAttributes` storage, `GAME_ROLE`-gated `mint` and `setAttributes`, and an on-chain JSON `tokenURI` (text attributes only; art comes in Phase 8).
-- `SoleToken.sol`: ERC-20 + Permit, with `MINTER_ROLE`/`BURNER_ROLE`, and name `Sole` and symbol `SOLE` passed as constructor args (18 decimals).
+- `StrideToken.sol`: ERC-20 + Permit, with `MINTER_ROLE`/`BURNER_ROLE`, and name `Stride` and symbol `STRIDE` passed as constructor args (18 decimals).
 - `SneakerGame.sol`: every function in the contracts doc, `GameConfig`, roles, `Pausable`, `ReentrancyGuard` and custom errors.
 - `script/DeployGame.s.sol`: deploys, wires all roles, grants `GAME_SERVER_ROLE` to the relayer address from env, and writes `deployments/<chainId>.json`.
 - Tests:

@@ -182,7 +182,7 @@ STOP pressed
 
 Home decides what to show from the chain, not from the API:
 
-- **The wallet owns a Sneaker** (`balanceOf` > 0) → the Sneaker card, the SOLE
+- **The wallet owns a Sneaker** (`balanceOf` > 0) → the Sneaker card, the STRIDE
   balance and START.
 - **It owns more than one** (it received a Sneaker, Phase 7) → a picker above the
   Sneaker card. The picked Sneaker drives START, repair, upgrade and transfer (D-027).
@@ -196,7 +196,7 @@ Home decides what to show from the chain, not from the API:
   confirmed, it re-reads the chain until the Sneaker appears, since an RPC node
   can lag a block behind.
 
-Sneaker stats, energy and the SOLE balance are wagmi reads. Energy's value comes
+Sneaker stats, energy and the STRIDE balance are wagmi reads. Energy's value comes
 from `SneakerGame.currentEnergy`; the countdown to the next point is computed on
 the device from the on-chain `energyUpdatedAt`, and the value is read again when
 it reaches zero.

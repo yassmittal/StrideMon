@@ -27,9 +27,9 @@ export const gameRules: readonly GameRule[] = [
     label: 'Reward',
     value: 0.5,
     fractionDigits: 1,
-    unit: 'SOLE',
+    unit: 'STRIDE',
     explanation:
-      'Per efficiency point per minute. A starter at efficiency 10 earns 5 SOLE a minute.',
+      'Per efficiency point per minute. A starter at efficiency 10 earns 5 STRIDE a minute.',
   },
   {
     label: 'Durability loss',
@@ -42,14 +42,14 @@ export const gameRules: readonly GameRule[] = [
     label: 'Repair',
     value: 0.7,
     fractionDigits: 1,
-    unit: 'SOLE / point',
-    explanation: 'At level 1, plus 0.1 SOLE per point for each level above 1.',
+    unit: 'STRIDE / point',
+    explanation: 'At level 1, plus 0.1 STRIDE per point for each level above 1.',
   },
   {
     label: 'Upgrade',
     value: 50,
     fractionDigits: 0,
-    unit: 'SOLE × level',
+    unit: 'STRIDE × level',
     explanation: 'Each level adds 2 efficiency.',
   },
   {

@@ -4,7 +4,7 @@ import { RewardBalanceCard } from './RewardBalanceCard'
 const noop = () => {}
 
 describe('RewardBalanceCard', () => {
-  it('shows a new player’s balance as 0 SOLE', async () => {
+  it('shows a new player’s balance as 0 STRIDE', async () => {
     await render(
       <RewardBalanceCard
         rewardBalanceWei={0n}
@@ -14,10 +14,10 @@ describe('RewardBalanceCard', () => {
       />,
     )
 
-    expect(screen.getByLabelText('SOLE balance: 0 SOLE')).toBeTruthy()
+    expect(screen.getByLabelText('STRIDE balance: 0 STRIDE')).toBeTruthy()
   })
 
-  it('formats earned SOLE from wei', async () => {
+  it('formats earned STRIDE from wei', async () => {
     await render(
       <RewardBalanceCard
         rewardBalanceWei={12_500_000_000_000_000_000n}
@@ -27,7 +27,7 @@ describe('RewardBalanceCard', () => {
       />,
     )
 
-    expect(screen.getByLabelText('SOLE balance: 12.5 SOLE')).toBeTruthy()
+    expect(screen.getByLabelText('STRIDE balance: 12.5 STRIDE')).toBeTruthy()
   })
 
   it('offers a retry when the balance can’t be read', async () => {

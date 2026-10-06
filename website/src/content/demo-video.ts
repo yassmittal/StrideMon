@@ -26,7 +26,7 @@ export const demoVideo = {
   uploadDate: '2026-10-05',
   heading: 'One Sneaker, start to finish',
   description:
-    'Recorded on the Android demo build: sign in, a three-minute walk, SOLE settled on Monad, a repair and an upgrade, then the Sneaker sent to another wallet.',
+    'Recorded on the Android demo build: sign in, a three-minute walk, STRIDE settled on Monad, a repair and an upgrade, then the Sneaker sent to another wallet.',
   structuredDataName: 'StrideMon demo: walk, earn, upgrade and send a Sneaker NFT on Monad',
   chaptersLabel: 'Chapters',
   chapters: demoVideoChapters,

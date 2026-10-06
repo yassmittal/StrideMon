@@ -20,7 +20,7 @@
 │   Node-compatible · Bun · TypeScript  │   │                                │
 │                                       │   │  SneakerNft   (ERC-721)        │
 │  • Sign-In With Ethereum → JWT        │   │    stats, energy, durability   │
-│  • Receives GPS samples               │   │  SoleToken  (ERC-20, SOLE)     │
+│  • Receives GPS samples               │   │  StrideToken  (ERC-20, STRIDE)     │
 │  • Validates activity (anti-cheat)    │   │  SneakerGame  (rules)          │
 │  • Relays game-server transactions ───┼──→│    settleSession, repair,      │
 │    (mint starter, settle session)     │   │    upgrade, starter mint       │
@@ -58,8 +58,8 @@ Two practical consequences:
 | Sneaker ownership | **Monad** (`SneakerNft`) | It is the point of the product. |
 | Sneaker level, efficiency, durability | **Monad** (`SneakerNft`, written only by `SneakerGame`) | Decision: everything about the Sneaker lives on-chain. |
 | Energy | **Monad** (`SneakerNft`, computed lazily) | Energy gates rewards, so it has to be enforced where the rewards are minted. |
-| Reward balance | **Monad** (`SoleToken`) | ERC-20 from day one. |
-| Repair / upgrade costs | **Monad** (`SneakerGame` view functions) | The contract burns the SOLE, so it also quotes the price. |
+| Reward balance | **Monad** (`StrideToken`) | ERC-20 from day one. |
+| Repair / upgrade costs | **Monad** (`SneakerGame` view functions) | The contract burns the STRIDE, so it also quotes the price. |
 | Reward formula | **Monad** (`SneakerGame.settleSession`) | The contract mints, so it computes. The TypeScript mirror in `packages/shared` only produces *estimates* for the UI. |
 | Raw GPS samples | **MongoDB** | Private data. It must never go on-chain. |
 | "Was this run real?" | **API** | A contract cannot see GPS. The API is the trusted *activity oracle*. |
@@ -110,7 +110,7 @@ App                              API                                   Monad
  │←── session (status: settling)─│                                        │
  │                                │ job: SneakerGame.settleSession(...) ──→│ consume energy
  │                                │                                        │ reduce durability
- │                                │←── receipt + SessionSettled event ─────│ mint SOLE
+ │                                │←── receipt + SessionSettled event ─────│ mint STRIDE
  │── GET …/:sessionId (poll) ────→│ status: settled, reward, txHash       │
  │←── summary ────────────────────│                                        │
 ```
@@ -120,7 +120,7 @@ App                              API                                   Monad
 ```text
 App                                              Monad
  │── read quoteRepairCost(tokenId) ─────────────→│
- │ user confirms, wallet signs repair(tokenId) ─→│ burns SOLE from player,
+ │ user confirms, wallet signs repair(tokenId) ─→│ burns STRIDE from player,
  │←── receipt ───────────────────────────────────│ restores durability
  │ refetch Sneaker + balance                      │
 ```

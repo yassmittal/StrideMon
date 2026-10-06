@@ -64,7 +64,7 @@ export type ActivityValidationResult = z.infer<typeof activityValidationResultSc
 export const activitySessionSettlementSchema = z.object({
   /** `null` only for a 0-minute run, which settles without a transaction (D-026). */
   transactionHash: transactionHashSchema.nullable(),
-  /** SOLE minted, in wei, as a decimal string. */
+  /** STRIDE minted, in wei, as a decimal string. */
   rewardAmountWei: z.string().regex(/^\d+$/, 'must be a whole number of wei'),
   durabilityLoss: z.int().nonnegative(),
   rewardedMinutes: z.int().nonnegative(),

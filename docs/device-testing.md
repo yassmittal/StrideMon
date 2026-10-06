@@ -140,12 +140,12 @@ Phase 4's, and how to run them:
 
 Phase 5's check, within Wi-Fi range:
 
-- On Home, note the SOLE balance, energy and durability. Press START and walk steadily for
+- On Home, note the STRIDE balance, energy and durability. Press START and walk steadily for
   3–4 minutes (a minute only counts as a whole minute at 1–20 km/h). Press STOP.
-- The summary shows "Settling on Monad…", then **+N SOLE**, "N rewarded min" and "Durability −N".
-  For N minutes at efficiency 10, the reward is 5 × N SOLE. Tap **View transaction** and check the
+- The summary shows "Settling on Monad…", then **+N STRIDE**, "N rewarded min" and "Durability −N".
+  For N minutes at efficiency 10, the reward is 5 × N STRIDE. Tap **View transaction** and check the
   `SessionSettled` event on MonadVision.
-- Tap **Done**. Home shows the new SOLE balance and lower energy and durability. The balance
+- Tap **Done**. Home shows the new STRIDE balance and lower energy and durability. The balance
   matches MetaMask, and the Sneaker's explorer page (`tokenURI`) shows the same durability.
 - The **History** tab lists the run at the top with its reward and a "Settled" badge. Tapping it
   opens the same summary.
@@ -185,7 +185,7 @@ and the local database was reset):
   indexer can lag a few minutes). In MetaMask → NFTs → Import NFT, paste the new `SneakerNft`
   address and id 1: the same picture appears.
 - **It changes:** walk a few minutes and STOP. Home redraws (it fades in again) with lower
-  durability, a shorter bar and slightly dimmer lime. Repair: back to `100 / 100`. With 50 SOLE
+  durability, a shorter bar and slightly dimmer lime. Repair: back to `100 / 100`. With 50 STRIDE
   (a 10-minute walk), Upgrade: `LEVEL 02 / 30`, two ticks, two speed lines. Refresh the
   MonadVision page and MetaMask: they follow.
 - **B:** sign in with Account 2. B gets starter `#0002`.
@@ -216,5 +216,5 @@ maestro test -e WALLET_B_ADDRESS=<B's address> .maestro/demo-without-gps.yaml
 
 - Unlock MetaMask on Account 1 first. Maestro can't type its password or pass a fingerprint.
 - Sign-in runs only if the app is signed out, and repair only if the Sneaker is worn and A can pay.
-- Wallet A needs SOLE for the upgrade (`bun run demo:prepare-wallets --dry-run` shows it).
+- Wallet A needs STRIDE for the upgrade (`bun run demo:prepare-wallets --dry-run` shows it).
 - It ends with the Sneaker in wallet B. Send it back from B before the demo.

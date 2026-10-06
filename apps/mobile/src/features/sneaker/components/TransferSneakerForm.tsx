@@ -85,7 +85,7 @@ export function TransferSneakerForm({
       </View>
       <ScreenTitle
         title={`Send Sneaker #${sneakerTokenId}`}
-        metaItems={['Transfer', 'No SOLE cost']}
+        metaItems={['Transfer', 'No STRIDE cost']}
       />
 
       <Panel>

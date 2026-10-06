@@ -7,7 +7,7 @@ const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const
 type CounterTextSize = 'title' | 'heading' | 'counter' | 'display' | 'displayLarge' | 'displayHuge'
 
 type CounterTextProps = {
-  /** Already formatted, e.g. "12.5 SOLE" or "50%". Only the digits roll. */
+  /** Already formatted, e.g. "12.5 STRIDE" or "50%". Only the digits roll. */
   value: string
   size?: CounterTextSize
   tone?: 'light' | 'dark'
@@ -16,7 +16,7 @@ type CounterTextProps = {
 
 /**
  * design-system.md §8: a number in IBM Plex Mono where each digit rolls vertically
- * to its new value, like Lusion's preloader. Used for SOLE, live stats and progress.
+ * to its new value, like Lusion's preloader. Used for STRIDE, live stats and progress.
  */
 export function CounterText({
   value,

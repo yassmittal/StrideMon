@@ -1,6 +1,6 @@
 # Phase 8.5: the demo's non-GPS steps as wallet A (docs/demo-script.md): sign in, Home,
 # repair, upgrade, then send the Sneaker to wallet B. Before running: Metro is up, the app is
-# open on the development build, MetaMask is unlocked on Account 1, and A has the SOLE.
+# open on the development build, MetaMask is unlocked on Account 1, and A has the STRIDE.
 # Run it as in docs/device-testing.md §10:
 #   maestro test -e WALLET_B_ADDRESS=0x… .maestro/demo-without-gps.yaml
 appId: com.stridemon.app

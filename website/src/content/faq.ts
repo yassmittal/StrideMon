@@ -25,7 +25,7 @@ export const frequentlyAskedQuestions: readonly FrequentlyAskedQuestion[] = [
       'A wallet such as MetaMask with Monad Testnet added. New players get a small amount of test MON for gas.',
   },
   {
-    question: 'Is SOLE worth money?',
+    question: 'Is STRIDE worth money?',
     answer: 'No. It’s a testnet token for the game.',
   },
   {

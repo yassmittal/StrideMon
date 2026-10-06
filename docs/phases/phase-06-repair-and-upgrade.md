@@ -1,6 +1,6 @@
 # Phase 6 — Repair & Upgrade
 
-**Goal:** the player spends SOLE to restore durability and to level up
+**Goal:** the player spends STRIDE to restore durability and to level up
 the Sneaker. The player's own wallet signs both transactions. The API is not
 involved.
 
@@ -33,9 +33,9 @@ Partial repairs, and attribute points or stat allocation.
 
 ## Definition of done
 - [x] Repair at durability 72 costs what `quoteRepairCost` returns, and the balance and durability update on-chain.
-  (Verified on the phone at durability 96: 2.8 SOLE, 96 → 100.)
+  (Verified on the phone at durability 96: 2.8 STRIDE, 96 → 100.)
 - [x] Upgrade 1 → 2 costs 50, and efficiency goes 10 → 12, visible in `tokenURI`.
-- [x] The next settled session uses efficiency 12 (reward goes up): 6 SOLE per minute, up from 5.
+- [x] The next settled session uses efficiency 12 (reward goes up): 6 STRIDE per minute, up from 5.
 - [x] Every disabled state and wallet-rejection path is handled.
 - [x] Repair and upgrade share one hook with no duplicated transaction logic.
 

@@ -16,8 +16,8 @@ export function buildActivitySessionQueryKey(activitySessionId: string) {
 /**
  * One activity session from the API, for the summary screen. Polls while the
  * server is still validating or settling it. When a settlement lands, the chain
- * reads (Sneaker, energy, SOLE) and the history are refreshed, so Home is current,
- * and a run that earned SOLE buzzes.
+ * reads (Sneaker, energy, STRIDE) and the history are refreshed, so Home is current,
+ * and a run that earned STRIDE buzzes.
  */
 export function useActivitySession(activitySessionId: string) {
   const queryClient = useQueryClient()

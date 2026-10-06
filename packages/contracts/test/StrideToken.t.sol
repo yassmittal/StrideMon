@@ -4,39 +4,39 @@ pragma solidity 0.8.37;
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import {Test} from "forge-std/Test.sol";
-import {SoleToken} from "../src/SoleToken.sol";
+import {StrideToken} from "../src/StrideToken.sol";
 
-contract SoleTokenTest is Test {
-    uint256 private constant ONE_SOLE_WEI = 1e18;
+contract StrideTokenTest is Test {
+    uint256 private constant ONE_STRIDE_WEI = 1e18;
 
     address private admin = makeAddr("admin");
     address private minter = makeAddr("minter");
     address private burner = makeAddr("burner");
     address private player = makeAddr("player");
 
-    SoleToken private soleToken;
+    StrideToken private strideToken;
 
     function setUp() public {
-        soleToken = new SoleToken("Sole", "SOLE", admin);
+        strideToken = new StrideToken("Stride", "STRIDE", admin);
         vm.startPrank(admin);
-        soleToken.grantRole(soleToken.MINTER_ROLE(), minter);
-        soleToken.grantRole(soleToken.BURNER_ROLE(), burner);
+        strideToken.grantRole(strideToken.MINTER_ROLE(), minter);
+        strideToken.grantRole(strideToken.BURNER_ROLE(), burner);
         vm.stopPrank();
     }
 
     function test_ConstructorSetsNameSymbolDecimalsAndAdmin() public view {
-        assertEq(soleToken.name(), "Sole");
-        assertEq(soleToken.symbol(), "SOLE");
-        assertEq(soleToken.decimals(), 18);
-        assertTrue(soleToken.hasRole(soleToken.DEFAULT_ADMIN_ROLE(), admin));
+        assertEq(strideToken.name(), "Stride");
+        assertEq(strideToken.symbol(), "STRIDE");
+        assertEq(strideToken.decimals(), 18);
+        assertTrue(strideToken.hasRole(strideToken.DEFAULT_ADMIN_ROLE(), admin));
     }
 
     function test_MinterMints() public {
         vm.prank(minter);
-        soleToken.mint(player, 50 * ONE_SOLE_WEI);
+        strideToken.mint(player, 50 * ONE_STRIDE_WEI);
 
-        assertEq(soleToken.balanceOf(player), 50 * ONE_SOLE_WEI);
-        assertEq(soleToken.totalSupply(), 50 * ONE_SOLE_WEI);
+        assertEq(strideToken.balanceOf(player), 50 * ONE_STRIDE_WEI);
+        assertEq(strideToken.totalSupply(), 50 * ONE_STRIDE_WEI);
     }
 
     function test_RevertWhen_MintCalledWithoutMinterRole() public {
@@ -44,54 +44,54 @@ contract SoleTokenTest is Test {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 player,
-                soleToken.MINTER_ROLE()
+                strideToken.MINTER_ROLE()
             )
         );
         vm.prank(player);
-        soleToken.mint(player, ONE_SOLE_WEI);
+        strideToken.mint(player, ONE_STRIDE_WEI);
     }
 
     function test_BurnerBurnsWithoutAnAllowance() public {
         vm.prank(minter);
-        soleToken.mint(player, 50 * ONE_SOLE_WEI);
+        strideToken.mint(player, 50 * ONE_STRIDE_WEI);
 
         vm.prank(burner);
-        soleToken.burnFrom(player, 20 * ONE_SOLE_WEI);
+        strideToken.burnFrom(player, 20 * ONE_STRIDE_WEI);
 
-        assertEq(soleToken.allowance(player, burner), 0);
-        assertEq(soleToken.balanceOf(player), 30 * ONE_SOLE_WEI);
-        assertEq(soleToken.totalSupply(), 30 * ONE_SOLE_WEI);
+        assertEq(strideToken.allowance(player, burner), 0);
+        assertEq(strideToken.balanceOf(player), 30 * ONE_STRIDE_WEI);
+        assertEq(strideToken.totalSupply(), 30 * ONE_STRIDE_WEI);
     }
 
     function test_RevertWhen_BurnFromCalledWithoutBurnerRole() public {
         vm.prank(minter);
-        soleToken.mint(player, 50 * ONE_SOLE_WEI);
+        strideToken.mint(player, 50 * ONE_STRIDE_WEI);
 
         vm.expectRevert(
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 minter,
-                soleToken.BURNER_ROLE()
+                strideToken.BURNER_ROLE()
             )
         );
         vm.prank(minter);
-        soleToken.burnFrom(player, ONE_SOLE_WEI);
+        strideToken.burnFrom(player, ONE_STRIDE_WEI);
     }
 
     function test_RevertWhen_BurningMoreThanTheBalance() public {
         vm.prank(minter);
-        soleToken.mint(player, ONE_SOLE_WEI);
+        strideToken.mint(player, ONE_STRIDE_WEI);
 
         vm.expectRevert(
             abi.encodeWithSelector(
                 IERC20Errors.ERC20InsufficientBalance.selector,
                 player,
-                ONE_SOLE_WEI,
-                2 * ONE_SOLE_WEI
+                ONE_STRIDE_WEI,
+                2 * ONE_STRIDE_WEI
             )
         );
         vm.prank(burner);
-        soleToken.burnFrom(player, 2 * ONE_SOLE_WEI);
+        strideToken.burnFrom(player, 2 * ONE_STRIDE_WEI);
     }
 
     function test_PermitSetsAllowanceFromASignature() public {
@@ -105,18 +105,19 @@ contract SoleTokenTest is Test {
                 ),
                 owner,
                 spender,
-                ONE_SOLE_WEI,
-                soleToken.nonces(owner),
+                ONE_STRIDE_WEI,
+                strideToken.nonces(owner),
                 deadline
             )
         );
-        bytes32 digest =
-            keccak256(abi.encodePacked("\x19\x01", soleToken.DOMAIN_SEPARATOR(), permitStructHash));
+        bytes32 digest = keccak256(
+            abi.encodePacked("\x19\x01", strideToken.DOMAIN_SEPARATOR(), permitStructHash)
+        );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPrivateKey, digest);
 
-        soleToken.permit(owner, spender, ONE_SOLE_WEI, deadline, v, r, s);
+        strideToken.permit(owner, spender, ONE_STRIDE_WEI, deadline, v, r, s);
 
-        assertEq(soleToken.allowance(owner, spender), ONE_SOLE_WEI);
-        assertEq(soleToken.nonces(owner), 1);
+        assertEq(strideToken.allowance(owner, spender), ONE_STRIDE_WEI);
+        assertEq(strideToken.nonces(owner), 1);
     }
 }

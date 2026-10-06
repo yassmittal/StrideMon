@@ -158,6 +158,7 @@ Format: **Decision**, **Why**, **Trade-off**, **Revisit when**.
 - **Note:** In code, amounts keep the generic word "reward" (`rewardAmountWei`,
   `calculateSessionReward`). If the token is ever renamed, only the contract
   name and UI copy change.
+- **Superseded in part:** the token is renamed SOLE → STRIDE by D-038 (2026-10-06).
 
 ## D-015 — Toolchain pins found in Phase 0
 
@@ -755,3 +756,32 @@ Made 2026-10-06, after Phase 8.8's first build. (D-036 is reserved for the socia
   of abuse is a few junk rows.
 - **Revisit when:** StrideMon opens to the public and the one promised email goes out, or junk
   sign-ups appear (Cloudflare Turnstile is a free next step).
+
+## D-038 — The reward token is renamed SOLE → STRIDE
+
+Made 2026-10-06, during Phase 8.8. Supersedes the token half of D-014.
+
+- **Decision:**
+  1. The ERC-20 is **STRIDE**: name `Stride`, symbol `STRIDE`, 18 decimals, contract
+     `StrideToken`. It's written in capitals in UI copy and docs, like SOLE was.
+  2. The rename covers everything we write from now on: the contract, scripts and tests,
+     `@stridemon/chain` (`strideTokenAbi`, `STRIDE_TOKEN_SYMBOL`, the `strideToken` address key),
+     the app's copy and `formatStrideAmount`, the API's test deploy, the docs and the landing
+     page. Amounts in code keep the generic word "reward" (`rewardAmountWei`), as D-014 planned.
+  3. Earlier decisions keep the word SOLE: the log doesn't rewrite history. Raw recordings and
+     notes that describe them (`launch-video/FOOTAGE.md`) also keep it, because that's what the
+     footage shows.
+  4. ERC-20 names are fixed at deploy time, so the live testnet token says SOLE until the
+     contracts are redeployed with `DeployGame.s.sol`. That's a full redeploy (as in 8.3), not
+     a new token alone: `SneakerGame` holds the token as `immutable`, plus the settled-session
+     and starter-claim records, so a new game next to the old `SneakerNft` would let every
+     player claim a second starter. The redeploy resets testnet balances and Sneakers, and the
+     database is reset with it.
+- **Why:** STRIDE says the core action and matches the product name, so "+10 STRIDE" needs no
+  explanation. Testnet data is disposable, so now is the cheap time to rename.
+- **Trade-off:** D-014 ruled `STRIDE` out because the Stride chain (STRD) uses the name, so a
+  search for the ticker finds them first. Until the redeploy, MetaMask and the explorer show SOLE
+  while the app says STRIDE. The screenshots and the demo video on the landing page show SOLE
+  until they're recaptured.
+- **Revisit when:** before any mainnet launch, when the trademark check D-014 asks for covers
+  the token name too.

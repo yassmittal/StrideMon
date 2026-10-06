@@ -16,7 +16,7 @@ export const githubRepositoryUrl = 'https://github.com/yassmittal/StrideMon'
 export const siteTitle = 'StrideMon: walk, earn and upgrade a Sneaker NFT on Monad'
 
 export const siteDescription =
-  'A move-to-earn game on Monad. Own a Sneaker NFT, walk or run to earn SOLE, and spend it to repair and level up your Sneaker.'
+  'A move-to-earn game on Monad. Own a Sneaker NFT, walk or run to earn STRIDE, and spend it to repair and level up your Sneaker.'
 
 export const siteMetaLabels = ['StrideMon', 'Move to earn', 'Monad'] as const
 
@@ -47,6 +47,6 @@ export const navigationLinks: readonly NavigationLink[] = [
 
 export const footerContent = {
   builtOnLine: 'Built on Monad testnet for a hackathon.',
-  noValueLine: 'SOLE has no monetary value.',
+  noValueLine: 'STRIDE has no monetary value.',
   githubLabel: 'GitHub',
 } as const

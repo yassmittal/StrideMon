@@ -73,10 +73,10 @@ rewardedMinutes = min(activeMinutes, currentEnergy)
 
 ```text
 reward = rewardedMinutes × efficiency × rewardPerEfficiencyMinute
-rewardPerEfficiencyMinute = 0.5 SOLE (5 × 10^17 wei)
+rewardPerEfficiencyMinute = 0.5 STRIDE (5 × 10^17 wei)
 ```
 
-Check against `MVP.md`: 10 minutes × efficiency 10 × 0.5 = **50 SOLE**. ✓
+Check against `MVP.md`: 10 minutes × efficiency 10 × 0.5 = **50 STRIDE**. ✓
 
 Distance is stored and emitted for history and anti-cheat analytics, but it
 doesn't change the MVP reward. Paying per distance rewards spoofed GPS the most,
@@ -101,17 +101,17 @@ what `settleSession` emits and `previewSessionReward` returns.
 
 ```text
 repairCost = (maxDurability − durability) × repairCostPerPoint(level)
-repairCostPerPoint(level) = 0.7 SOLE + (level − 1) × 0.1 SOLE
+repairCostPerPoint(level) = 0.7 STRIDE + (level − 1) × 0.1 STRIDE
 ```
 
-Check: level 1, durability 72 → 28 × 0.7 ≈ **19.6 SOLE** (`MVP.md` shows ~20). ✓
+Check: level 1, durability 72 → 28 × 0.7 ≈ **19.6 STRIDE** (`MVP.md` shows ~20). ✓
 
 A repair always restores to `maxDurability`. Partial repairs are Phase 10.
 
 ## Upgrade
 
 ```text
-upgradeCost(level)      = 50 SOLE × level
+upgradeCost(level)      = 50 STRIDE × level
 efficiencyGainPerLevel  = 2
 ```
 

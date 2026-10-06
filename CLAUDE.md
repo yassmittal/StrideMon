@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Working guide for **StrideMon** (stridemon.com), a STEPN-style move-to-earn game: the
-player owns a Sneaker NFT on Monad, walks or runs to earn **SOLE** (the ERC-20 reward token),
+player owns a Sneaker NFT on Monad, walks or runs to earn **STRIDE** (the ERC-20 reward token),
 and spends it to repair and upgrade the Sneaker.
 
 - `MVP.md` is the product brief (**what**).
@@ -16,7 +16,7 @@ apps/mobile         Expo (dev builds) + React Native + Expo Router + TypeScript
 apps/api            Fastify 5 + TypeScript on Bun, MongoDB (official driver), viem
 packages/shared     zod API contracts, domain types, game-rule mirror (estimates only)
 packages/chain      generated ABIs, deployed addresses, Monad chain definitions
-packages/contracts  Foundry: SneakerNft (ERC-721), SoleToken (ERC-20), SneakerGame (rules)
+packages/contracts  Foundry: SneakerNft (ERC-721), StrideToken (ERC-20), SneakerGame (rules)
 ```
 
 Everything targets **Monad testnet** until Phase 10.
@@ -27,7 +27,7 @@ Everything targets **Monad testnet** until Phase 10.
 - **Build phase by phase** from `docs/phases/`. Only write what the current phase needs.
 - **If code needs to differ from the docs, update the doc first.**
 - **The chain is the source of truth** for Sneaker stats, energy and balances. Mongo never caches them as truth.
-- **Follow `docs/conventions/coding-standards.md`**: full-word names with units (`distanceMeters`, `rewardAmountWei`), verb-first functions, no `any`, `bigint` for on-chain integers, and the vocabulary table (activity session, auth session, Sneaker, SOLE).
+- **Follow `docs/conventions/coding-standards.md`**: full-word names with units (`distanceMeters`, `rewardAmountWei`), verb-first functions, no `any`, `bigint` for on-chain integers, and the vocabulary table (activity session, auth session, Sneaker, STRIDE).
 - **Search `packages/shared` and `packages/chain` before writing anything new.**
 - API layer rules (`docs/architecture/backend-api.md`): routes are thin, `lib/` is pure, and all Mongo access goes through `repositories/`.
 - Mobile rules (`docs/architecture/mobile-app.md`): `app/` screens are thin, features own their logic, and only `lib/api-client` calls `fetch`.
@@ -99,10 +99,10 @@ Android phone (D-020 to D-024). Its outdoor walk, car and kill-and-reopen checks
 which brings the hosted API and a bundled-JS build (D-025).
 Phase 5 (settlement & rewards) is done (2026-10-02): STOP settles on Monad through the outbox, the
 summary shows the real reward, and History lists past runs (D-026). Verified on the Android phone
-(+25 SOLE for a 5-minute walk, matching the chain).
+(+25 STRIDE for a 5-minute walk, matching the chain).
 Phase 6 (repair & upgrade) is done (2026-10-03): the Sneaker tab repairs and upgrades through the
 player's own wallet with one shared hook (`useSneakerGameTransaction`), verified on the Android phone
-(repair 96 → 100, level 1 → 2, next run 6 SOLE/min).
+(repair 96 → 100, level 1 → 2, next run 6 STRIDE/min).
 Phase 7 (Sneaker transfer) is done (2026-10-03): transfer reuses `useSneakerGameTransaction`, Home
 has a Sneaker picker and an empty state (D-027). Verified on the Android phone with two MetaMask
 accounts (#4 sent A → B and back, stats intact). **The MVP is complete.**
@@ -150,5 +150,8 @@ it waits on the GitHub URL and the Vercel deploy.
 The page has a **waitlist** (D-037): `#waitlist` posts an email to the API's `POST /v1/waitlist`
 (`waitlistSignups`), the only route with CORS (`WAITLIST_ALLOWED_ORIGINS`). Email only, never a
 wallet; call it a waitlist, never a whitelist.
+The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy and docs. The live
+testnet token still says SOLE until a full `DeployGame` redeploy (ask Yash first: it resets testnet
+balances, Sneakers and the database). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. D-036 is reserved for the social plan (`docs/social-plan.md`); the next free number is D-038.
+for it. D-036 is reserved for the social plan (`docs/social-plan.md`); the next free number is D-039.

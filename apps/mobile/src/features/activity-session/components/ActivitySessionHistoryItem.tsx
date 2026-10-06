@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { formatDateTime } from '../../../lib/format/format-date-time'
 import { formatDistance } from '../../../lib/format/format-distance'
 import { formatDuration } from '../../../lib/format/format-duration'
-import { formatSoleAmount } from '../../../lib/format/format-sole-amount'
+import { formatStrideAmount } from '../../../lib/format/format-stride-amount'
 import {
   colors,
   fontFamilies,
@@ -38,7 +38,7 @@ export function ActivitySessionHistoryItem({
   const rewardAmountDisplay =
     settlement === null || settlement.rewardedMinutes === 0
       ? null
-      : `+${formatSoleAmount(BigInt(settlement.rewardAmountWei))}`
+      : `+${formatStrideAmount(BigInt(settlement.rewardAmountWei))}`
   const startedAtDisplay = formatDateTime(activitySession.startedAt)
   const statusLabel = describeActivitySessionStatus(activitySession.status).label
 

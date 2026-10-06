@@ -4,7 +4,7 @@ import {
   type StrideMonContractAddresses,
   sneakerGameAbi,
   sneakerNftAbi,
-  soleTokenAbi,
+  strideTokenAbi,
 } from '@stridemon/chain'
 import { FIXTURE_GAME_CONFIG } from '@stridemon/shared/game-rules/fixtures'
 import {
@@ -31,11 +31,11 @@ const FOUNDRY_OUT_URL = new URL('../../../../packages/contracts/out/', import.me
 // Same names and symbols as DeployGame.s.sol.
 const SNEAKER_NFT_NAME = 'StrideMon Sneaker'
 const SNEAKER_NFT_SYMBOL = 'SNEAKER'
-const SOLE_TOKEN_NAME = 'Sole'
-const SOLE_TOKEN_SYMBOL = 'SOLE'
+const STRIDE_TOKEN_NAME = 'Stride'
+const STRIDE_TOKEN_SYMBOL = 'STRIDE'
 
 /**
- * Deploys SneakerArtRenderer, SneakerNft, SoleToken and SneakerGame to a test Anvil and wires the same
+ * Deploys SneakerArtRenderer, SneakerNft, StrideToken and SneakerGame to a test Anvil and wires the same
  * roles as `DeployGame.s.sol`, with the game config from the shared fixtures
  * (which `DeployGame.t.sol` pins the real deploy to). Uses Foundry's `out/`, so run
  * `bun run contracts:build` first.
@@ -83,15 +83,15 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
     adminAddress,
     sneakerArtRenderer,
   ])
-  const soleToken = await deploy('SoleToken', soleTokenAbi, [
-    SOLE_TOKEN_NAME,
-    SOLE_TOKEN_SYMBOL,
+  const strideToken = await deploy('StrideToken', strideTokenAbi, [
+    STRIDE_TOKEN_NAME,
+    STRIDE_TOKEN_SYMBOL,
     adminAddress,
   ])
   const sneakerGame = await deploy('SneakerGame', sneakerGameAbi, [
     adminAddress,
     sneakerNft,
-    soleToken,
+    strideToken,
     FIXTURE_GAME_CONFIG,
   ])
 
@@ -103,13 +103,13 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
       functionName: 'GAME_ROLE',
     }),
     publicClient.readContract({
-      address: soleToken,
-      abi: soleTokenAbi,
+      address: strideToken,
+      abi: strideTokenAbi,
       functionName: 'MINTER_ROLE',
     }),
     publicClient.readContract({
-      address: soleToken,
-      abi: soleTokenAbi,
+      address: strideToken,
+      abi: strideTokenAbi,
       functionName: 'BURNER_ROLE',
     }),
     publicClient.readContract({
@@ -133,16 +133,16 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
   )
   await confirm(
     await deployerWalletClient.writeContract({
-      address: soleToken,
-      abi: soleTokenAbi,
+      address: strideToken,
+      abi: strideTokenAbi,
       functionName: 'grantRole',
       args: [minterRole, sneakerGame],
     }),
   )
   await confirm(
     await deployerWalletClient.writeContract({
-      address: soleToken,
-      abi: soleTokenAbi,
+      address: strideToken,
+      abi: strideTokenAbi,
       functionName: 'grantRole',
       args: [burnerRole, sneakerGame],
     }),
@@ -164,7 +164,7 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
     }),
   )
 
-  return { sneakerNft, soleToken, sneakerGame }
+  return { sneakerNft, strideToken, sneakerGame }
 }
 
 async function readCreationBytecode(contractName: string): Promise<Hex> {
