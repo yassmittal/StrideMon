@@ -244,6 +244,19 @@
   transform: rotate(45deg);
 }
 
+/* ---------- Waitlist: the joined line fades in where the form was ---------- */
+
+.waitlist-joined {
+  animation: waitlist-joined 500ms var(--ease-standard) both;
+}
+
+@keyframes waitlist-joined {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 /* ---------- Reduced motion: everything is simply there ---------- */
 
 @media (prefers-reduced-motion: reduce) {

@@ -244,3 +244,27 @@ type JobLeaseDocument = {
 ```
 
 No extra indexes: every lookup is by `_id`.
+
+## `waitlistSignups`
+
+Emails left on the landing page's waitlist (D-037). Not tied to a wallet or a user: the app
+gets the wallet when someone plays.
+
+```ts
+type WaitlistPhonePlatform = 'android' | 'ios'
+
+type WaitlistSignupDocument = {
+  _id: ObjectId
+  email: string                                // trimmed and lowercased, unique
+  phonePlatform: WaitlistPhonePlatform | null  // optional on the form
+  source: string | null                        // the page's ?source=, at most 32 of [a-z0-9-]
+  createdAt: Date
+}
+```
+
+Index: `{ email: 1 }` unique.
+
+A sign-up is written once and never changed, so there's no `updatedAt`. A repeat email is an
+upsert with `$setOnInsert` only: the first sign-up's platform and source stay. No IP address
+or user agent is ever stored. An email is deleted by hand when its owner asks (security.md →
+Privacy).

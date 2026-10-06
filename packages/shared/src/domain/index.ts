@@ -13,3 +13,4 @@ export {
   type ChainTransactionKind,
   type ChainTransactionStatus,
 } from './chain-transaction'
+export { WAITLIST_PHONE_PLATFORMS, type WaitlistPhonePlatform } from './waitlist'

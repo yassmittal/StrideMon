@@ -260,6 +260,8 @@ video isn't a screenshot any more: it, its poster and the walk loop live in `pub
 - Don't link an app store or a download. There's no public build yet.
 - Don't claim mainnet, real earnings or token value.
 - Don't add a cookie banner, analytics or newsletter form.
+  *As built (2026-10-06, D-037):* one form was added later, the waitlist (`#waitlist`), which
+  posts an email to the StrideMon API. Still no newsletter, cookies or analytics.
 - Don't copy Lusion's fonts, images or code. Use only the tokens above.
 
 ### 10. When it's built

@@ -15,6 +15,11 @@ export const frequentlyAskedQuestions: readonly FrequentlyAskedQuestion[] = [
     answer: 'Yes, on Monad testnet, on Android. iOS comes later.',
   },
   {
+    question: 'Can I play now?',
+    answer:
+      'It’s an Android demo build on Monad testnet. Join the waitlist and we’ll email you when it opens.',
+  },
+  {
     question: 'Do I need crypto?',
     answer:
       'A wallet such as MetaMask with Monad Testnet added. New players get a small amount of test MON for gas.',

@@ -2,12 +2,15 @@
 // stridemon.com later.
 export const siteUrl = 'https://stridemon.yashmittal.xyz'
 
+/**
+ * Where the waitlist form posts (D-037): the hosted StrideMon API, which allows this site's origin.
+ * `NEXT_PUBLIC_WAITLIST_API_URL` overrides it for a local run (website/README.md → Waitlist).
+ */
+export const waitlistApiUrl =
+  process.env.NEXT_PUBLIC_WAITLIST_API_URL ?? 'https://stridemon-api.yashmittal.xyz/v1/waitlist'
+
 export const siteName = 'StrideMon'
 
-/**
- * PLACEHOLDER: confirm before launch. Read from this checkout's `origin` remote; Yash fills in the
- * final public URL (the link 404s if the repository is private).
- */
 export const githubRepositoryUrl = 'https://github.com/yassmittal/StrideMon'
 
 export const siteTitle = 'StrideMon: walk, earn and upgrade a Sneaker NFT on Monad'
@@ -29,6 +32,7 @@ export const sectionIds = {
   fairPlay: 'fair-play',
   onChain: 'on-chain',
   whyMonad: 'why-monad',
+  waitlist: 'waitlist',
   faq: 'faq',
 } as const
 
@@ -37,6 +41,7 @@ export const navigationLinks: readonly NavigationLink[] = [
   { label: 'Rules', href: `#${sectionIds.rules}` },
   { label: 'Fair play', href: `#${sectionIds.fairPlay}` },
   { label: 'On-chain', href: `#${sectionIds.onChain}` },
+  { label: 'Waitlist', href: `#${sectionIds.waitlist}` },
   { label: 'FAQ', href: `#${sectionIds.faq}` },
 ]
 

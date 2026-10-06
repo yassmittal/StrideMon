@@ -121,6 +121,7 @@ Set these values. Every other line stays as in `.env.example`:
 | `JWT_ACCESS_TOKEN_SECRET` | a new one: run `openssl rand -hex 64` and paste the output |
 | `GAME_SERVER_PRIVATE_KEY` | the same key as in your laptop's `apps/api/.env` |
 | `SIWE_DOMAIN` | keep `stridemon.com`. It's the name inside the sign-in message, not the API's host |
+| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.yashmittal.xyz`, the landing page, the only browser origin the waitlist accepts (D-037) |
 
 ```bash
 chmod 600 .env
@@ -254,6 +255,9 @@ git pull
 ~/.bun-1.4.2/bin/bun install --frozen-lockfile --filter '@stridemon/api'
 pm2 restart stridemon-api
 ```
+
+A new variable in `.env.example` must be added to the server's `.env` before the restart, or
+the API refuses to boot and names it (`pm2 logs stridemon-api`).
 
 ## When something goes wrong
 

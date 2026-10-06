@@ -7,6 +7,7 @@ import { OnChainSection } from '@/components/sections/on-chain-section'
 import { RulesSection } from '@/components/sections/rules-section'
 import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
+import { WaitlistSection } from '@/components/sections/waitlist-section'
 import { WhyMonadSection } from '@/components/sections/why-monad-section'
 import { RevealObserver } from '@/components/ui/reveal-observer'
 import { demoVideo } from '@/content/demo-video'
@@ -35,6 +36,7 @@ export default function HomePage() {
         <FairPlaySection />
         <OnChainSection />
         <WhyMonadSection />
+        <WaitlistSection />
         <FaqSection />
       </main>
       <SiteFooter />

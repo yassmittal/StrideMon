@@ -82,6 +82,10 @@ Phase 10.
   hashed `sessionId` are settled.
 - `locationSamples` get a 30-day TTL (Phase 8).
 - The app explains location use before the OS prompt appears.
+- The landing page's waitlist (D-037) stores an email, an optional phone platform and the
+  page's `?source=`, never a wallet address, an IP address or a user agent. An email is deleted
+  on request (the form says so): `db.waitlistSignups.deleteOne({ email: '<lowercased email>' })`
+  against the Atlas `stridemon` database.
 
 ## API hardening
 
@@ -93,6 +97,11 @@ Phase 10.
 - Stack traces are never returned to clients.
 - The gas drip is one per wallet, ever, recorded in `users.hasReceivedGasDrip`
   and the outbox idempotency key.
+- **CORS** is off everywhere except `POST /v1/waitlist`, which allows only the origins in
+  `WAITLIST_ALLOWED_ORIGINS` (the landing page, D-037). The app is native and sends no origin.
+- **The waitlist route** is public, so it has its own limit (5 a minute per IP) and a hidden
+  honeypot field: a filled-in honeypot answers `200` and stores nothing, so a bot learns nothing.
+  No CAPTCHA (Turnstile is the free next step if junk appears).
 
 ## Smart contracts
 

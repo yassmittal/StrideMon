@@ -1,7 +1,7 @@
 import { ArrowIcon } from './arrow-icon'
 
-type PillVariant = 'primary' | 'secondary' | 'callToAction'
-type PillSize = 'regular' | 'compact'
+export type PillVariant = 'primary' | 'secondary' | 'callToAction'
+export type PillSize = 'regular' | 'compact'
 
 type PillButtonProps = {
   href: string
@@ -24,6 +24,26 @@ const sizeClasses: Record<PillSize, string> = {
   compact: 'h-10 pr-3.5 pl-5 text-xs',
 }
 
+/** The pill's classes, shared with the waitlist's submit button. */
+export function buildPillClassName(variant: PillVariant, size: PillSize, className = ''): string {
+  return `pill inline-flex items-center gap-2.5 rounded-full leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard ${variantClasses[variant]} ${sizeClasses[size]} ${className}`
+}
+
+/** The rolling label and the arrow inside a pill. */
+export function PillContent({ label }: { label: string }) {
+  return (
+    <>
+      <span className="pill-label-window">
+        <span className="pill-label">{label}</span>
+        <span aria-hidden="true" className="pill-label-clone">
+          {label}
+        </span>
+      </span>
+      <ArrowIcon className="pill-arrow" />
+    </>
+  )
+}
+
 // A pill with an arrow (D-029). On hover the label rolls and the arrow nudges right.
 export function PillButton({
   href,
@@ -35,18 +55,8 @@ export function PillButton({
 }: PillButtonProps) {
   const externalProps = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {}
   return (
-    <a
-      href={href}
-      className={`pill inline-flex items-center gap-2.5 rounded-full leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-      {...externalProps}
-    >
-      <span className="pill-label-window">
-        <span className="pill-label">{label}</span>
-        <span aria-hidden="true" className="pill-label-clone">
-          {label}
-        </span>
-      </span>
-      <ArrowIcon className="pill-arrow" />
+    <a href={href} className={buildPillClassName(variant, size, className)} {...externalProps}>
+      <PillContent label={label} />
     </a>
   )
 }

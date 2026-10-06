@@ -20,6 +20,25 @@ const weiAmountStringSchema = z
   .regex(/^[1-9]\d*$/, 'must be a positive whole number of wei')
   .transform(BigInt)
 
+// Comma-separated origins (`https://host` or `http://host:port`, no path), D-037.
+const originListSchema = z
+  .string()
+  .transform((originListText) =>
+    originListText
+      .split(',')
+      .map((originText) => originText.trim())
+      .filter((originText) => originText !== ''),
+  )
+  .pipe(
+    z
+      .array(
+        z.url().refine((originText) => new URL(originText).origin === originText, {
+          message: 'must be a bare origin such as https://stridemon.yashmittal.xyz (no path or /)',
+        }),
+      )
+      .min(1, 'must name at least one origin'),
+  )
+
 const environmentVariablesSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   API_PORT: z.string().regex(/^\d+$/, 'must be a port number').transform(Number),
@@ -57,6 +76,7 @@ const environmentVariablesSchema = z.object({
     .regex(/^0x[0-9a-fA-F]{64}$/, 'must be a 0x-prefixed 32-byte hex private key')
     .transform((privateKey) => privateKey as Hex),
   GAS_DRIP_AMOUNT_WEI: weiAmountStringSchema,
+  WAITLIST_ALLOWED_ORIGINS: originListSchema,
 })
 
 type SupportedChain = (typeof SUPPORTED_CHAINS)[number]
@@ -74,6 +94,8 @@ export type ApiConfig = {
   /** Never logged. Signs every outbox transaction. */
   gameServerPrivateKey: Hex
   gasDripAmountWei: bigint
+  /** The only browser origins that may call `POST /v1/waitlist` (D-037). */
+  waitlistAllowedOrigins: string[]
   contractAddresses: StrideMonContractAddresses
 }
 
@@ -116,6 +138,7 @@ export function parseApiConfig(
     monadChain: variables.MONAD_CHAIN_ID,
     gameServerPrivateKey: variables.GAME_SERVER_PRIVATE_KEY,
     gasDripAmountWei: variables.GAS_DRIP_AMOUNT_WEI,
+    waitlistAllowedOrigins: variables.WAITLIST_ALLOWED_ORIGINS,
     contractAddresses,
   }
 }

@@ -147,5 +147,8 @@ its own install (**not** a Bun workspace: never add it to the root `package.json
 (static export, `website/README.md`); screenshots are in, and the demo video (`public/videos/`, cut by
 `website/scripts/cut-demo-video.sh` from the gitignored `website/media-source/`) is on the page;
 it waits on the GitHub URL and the Vercel deploy.
+The page has a **waitlist** (D-037): `#waitlist` posts an email to the API's `POST /v1/waitlist`
+(`waitlistSignups`), the only route with CORS (`WAITLIST_ALLOWED_ORIGINS`). Email only, never a
+wallet; call it a waitlist, never a whitelist.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next decision number is D-036.
+for it. D-036 is reserved for the social plan (`docs/social-plan.md`); the next free number is D-038.

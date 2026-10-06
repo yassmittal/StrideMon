@@ -14,6 +14,8 @@ export const TEST_SIWE_DOMAIN = 'stridemon.test'
 
 export const TEST_GAS_DRIP_AMOUNT_WEI = 100_000_000_000_000_000n
 
+export const TEST_WAITLIST_ALLOWED_ORIGIN = 'https://stridemon.test'
+
 /** Environment variables every test server starts from. */
 export const TEST_ENVIRONMENT_VARIABLES = {
   NODE_ENV: 'test',
@@ -25,6 +27,7 @@ export const TEST_ENVIRONMENT_VARIABLES = {
   MONAD_CHAIN_ID: '10143',
   GAME_SERVER_PRIVATE_KEY: ANVIL_GAME_SERVER_PRIVATE_KEY,
   GAS_DRIP_AMOUNT_WEI: TEST_GAS_DRIP_AMOUNT_WEI.toString(),
+  WAITLIST_ALLOWED_ORIGINS: TEST_WAITLIST_ALLOWED_ORIGIN,
 }
 
 /**

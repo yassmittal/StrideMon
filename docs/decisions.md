@@ -722,3 +722,36 @@ Made 2026-10-05, after Phase 8.6.
   game numbers) instead of importing `@stridemon/chain` and `@stridemon/shared`, so a redeploy or
   a rule change must update `website/src/content/` too.
 - **Revisit when:** StrideMon gets `stridemon.com`, or the page needs live chain data.
+
+## D-037 — A waitlist on the landing page, stored by the StrideMon API
+
+Made 2026-10-06, after Phase 8.8's first build. (D-036 is reserved for the social plan,
+`social-plan.md`.)
+
+- **Decision:**
+  1. The landing page gets **one form: a waitlist** (section `#waitlist`, before the FAQ). It
+     replaces the "no newsletter form" rule in `landing-page-prompt.md` §9 for this form only:
+     there's still no newsletter, cookie or analytics.
+  2. It asks for an **email only**, plus an optional phone platform (Android or iPhone). Never a
+     wallet address: a list of wallets reads as an airdrop list and invites testnet farmers. The
+     app gets the wallet when someone actually plays. It's called a *waitlist*, never a
+     *whitelist*, because a whitelist promises a spot in a sale and StrideMon sells nothing.
+  3. The site posts to the hosted API, **`POST /v1/waitlist`**, which stores the email in the
+     `waitlistSignups` collection of our own Atlas `stridemon` database (unique by email, no IP
+     address or user agent). A repeat email answers the same as a new one, so the form never
+     reveals who signed up.
+  4. The API now accepts **browser requests**, through `@fastify/cors`, but only on
+     `/v1/waitlist` and only from the origins in `WAITLIST_ALLOWED_ORIGINS`
+     (`https://stridemon.yashmittal.xyz`, plus `http://localhost:3000` in development).
+  5. Abuse: 5 requests a minute per IP on that route, and a hidden honeypot field that answers
+     `200` and stores nothing. No CAPTCHA.
+  6. The page's `?source=` (for example `x-stridemon`, `x-yash`) is stored with the email, so we
+     can see which X account brings sign-ups without adding analytics.
+- **Why:** the static site has no server. The API is free, already hosted, and keeps the data in
+  our database; a Google Form would leave the page's look, hand the emails to Google and lose
+  `source`.
+- **Trade-off:** the site now depends on the API being up for one feature, and the API gains a
+  public, unauthenticated write route. A sign-up is one small upsert, rate-limited, so the cost
+  of abuse is a few junk rows.
+- **Revisit when:** StrideMon opens to the public and the one promised email goes out, or junk
+  sign-ups appear (Cloudflare Turnstile is a free next step).

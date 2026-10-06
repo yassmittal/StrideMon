@@ -9,6 +9,7 @@ import { apiDocsPlugin } from './plugins/api-docs'
 import { authenticationPlugin } from './plugins/authentication'
 import { backgroundJobsPlugin } from './plugins/background-jobs'
 import { chainClientsPlugin } from './plugins/chain-clients'
+import { corsPlugin } from './plugins/cors'
 import { type ApiConfig, envPlugin, parseApiConfig } from './plugins/env'
 import { errorHandlerPlugin } from './plugins/error-handler'
 import { mongoPlugin } from './plugins/mongo'
@@ -19,6 +20,7 @@ import { authRoutes } from './routes/auth'
 import { healthRoutes } from './routes/health'
 import { meRoutes } from './routes/me'
 import { onboardingRoutes } from './routes/onboarding'
+import { waitlistRoutes } from './routes/waitlist'
 
 type BuildServerOptions = {
   environmentVariables: Record<string, string | undefined>
@@ -47,6 +49,8 @@ export async function buildServer({
 
   await fastify.register(envPlugin, { apiConfig })
   await fastify.register(errorHandlerPlugin)
+  // Before the rate limit, so a preflight is answered without spending the route's budget.
+  await fastify.register(corsPlugin)
   await fastify.register(rateLimitPlugin)
   await fastify.register(mongoPlugin)
   await fastify.register(mongoIndexesPlugin)
@@ -62,6 +66,7 @@ export async function buildServer({
   await fastify.register(meRoutes, { prefix: '/v1' })
   await fastify.register(onboardingRoutes, { prefix: '/v1' })
   await fastify.register(activitySessionRoutes, { prefix: '/v1' })
+  await fastify.register(waitlistRoutes, { prefix: '/v1' })
 
   return fastify
 }

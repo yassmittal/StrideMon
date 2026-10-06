@@ -23,11 +23,12 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | Path | What |
 |---|---|
 | `src/content/` | Every piece of copy, number, link and address, as typed data |
-| `src/content/site.ts` | `siteUrl` (the one place the domain lives) and `githubRepositoryUrl` |
+| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `githubRepositoryUrl` and `waitlistApiUrl` |
+| `src/content/waitlist.ts` | The waitlist section's copy and error lines |
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
-| `src/components/ui/` | Pills, labels, cross marks, phone frame, and the three client components (reveal, count-up, copy) |
+| `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
 | `src/app/` | Layout, page, Open Graph image, icons, sitemap, robots |
 
 A contract redeploy or a rule change must update `src/content/` too (D-035).
@@ -92,6 +93,27 @@ ffmpeg -ss 190.2 -t 62.8 -i media-source/video2.mp4 \
 After a re-cut, update `durationSeconds` and the chapter `startSeconds` in
 `src/content/demo-video.ts` from what the script prints (a chapter seeks 0.2 s past the crossfade
 into it). Keep the demo under 8 MB and each loop under 1.5 MB.
+
+## Waitlist
+
+The `#waitlist` section (D-037) posts `{ email, phonePlatform?, source?, website? }` to the
+StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a hidden honeypot. The
+page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link such as
+`https://stridemon.yashmittal.xyz/?source=x-stridemon` credits the X account that shared it.
+
+The API only answers browsers from the origins in its `WAITLIST_ALLOWED_ORIGINS`. To try the form
+locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port, and
+point the site at it for that run:
+
+```bash
+NEXT_PUBLIC_WAITLIST_API_URL=http://localhost:3001/v1/waitlist bun run dev
+```
+
+Count the sign-ups by source (against Atlas, with `mongosh`):
+
+```js
+db.waitlistSignups.aggregate([{ $group: { _id: '$source', signups: { $sum: 1 } } }, { $sort: { signups: -1 } }])
+```
 
 ## Fonts
 

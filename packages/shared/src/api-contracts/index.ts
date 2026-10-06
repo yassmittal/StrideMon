@@ -64,4 +64,10 @@ export {
   transactionHashSchema,
 } from './onboarding'
 export { tokenIdStringSchema } from './token-id'
+export {
+  type JoinWaitlistBody,
+  type JoinWaitlistResponse,
+  joinWaitlistBodySchema,
+  joinWaitlistResponseSchema,
+} from './waitlist'
 export { walletAddressSchema } from './wallet-address'

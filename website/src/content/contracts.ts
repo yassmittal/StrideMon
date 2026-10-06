@@ -55,5 +55,5 @@ export const onChainContent = {
   intro: `Four verified contracts on Monad testnet (chain ${monadTestnetChainId}).`,
   artHeading: 'The picture is on-chain too',
   artText:
-    'The Sneaker’s picture is an SVG drawn by a contract, so the app, MonadVision and MetaMask all show the same image, and it changes when you repair or upgrade.',
+    'The Sneaker’s picture is an SVG drawn by a contract, so the app, MonadVision and MetaMask show the same image. The app and the explorer redraw it when you repair or upgrade.',
 } as const

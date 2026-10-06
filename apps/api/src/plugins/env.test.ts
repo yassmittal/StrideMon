@@ -14,6 +14,7 @@ const VALID_ENVIRONMENT_VARIABLES = {
   MONAD_CHAIN_ID: '10143',
   GAME_SERVER_PRIVATE_KEY: `0x${'ab'.repeat(32)}`,
   GAS_DRIP_AMOUNT_WEI: '100000000000000000',
+  WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.yashmittal.xyz, http://localhost:3000',
 }
 
 const DEPLOYED_CONTRACT_ADDRESSES = CONTRACT_ADDRESSES_BY_CHAIN_ID[10143]
@@ -40,6 +41,7 @@ describe('parseApiConfig', () => {
       monadChain: monadTestnet,
       gameServerPrivateKey: `0x${'ab'.repeat(32)}`,
       gasDripAmountWei: 100_000_000_000_000_000n,
+      waitlistAllowedOrigins: ['https://stridemon.yashmittal.xyz', 'http://localhost:3000'],
       contractAddresses: DEPLOYED_CONTRACT_ADDRESSES,
     })
   })
@@ -90,5 +92,14 @@ describe('parseApiConfig', () => {
     expect(() =>
       parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, SIWE_DOMAIN: 'https://stridemon.com' }),
     ).toThrow(/SIWE_DOMAIN/)
+  })
+
+  it('rejects a waitlist origin with a trailing slash', () => {
+    expect(() =>
+      parseApiConfig({
+        ...VALID_ENVIRONMENT_VARIABLES,
+        WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.yashmittal.xyz/',
+      }),
+    ).toThrow(/WAITLIST_ALLOWED_ORIGINS/)
   })
 })

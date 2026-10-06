@@ -5,6 +5,7 @@ import { getAuthSessionsCollection } from '../repositories/auth-sessions-reposit
 import { getChainTransactionsCollection } from '../repositories/chain-transactions-repository'
 import { getLocationSamplesCollection } from '../repositories/location-samples-repository'
 import { getUsersCollection } from '../repositories/users-repository'
+import { getWaitlistSignupsCollection } from '../repositories/waitlist-signups-repository'
 
 const SECONDS_PER_DAY = 86_400
 const LOCATION_SAMPLE_RETENTION_SECONDS = 30 * SECONDS_PER_DAY
@@ -52,6 +53,10 @@ export const mongoIndexesPlugin = fastifyPlugin(
       { key: { activitySessionId: 1, sequenceNumber: 1 }, unique: true },
       // Raw GPS is kept for validation and dispute review, not forever (data-model.md).
       { key: { receivedAt: 1 }, expireAfterSeconds: LOCATION_SAMPLE_RETENTION_SECONDS },
+    ])
+    // One sign-up per email, so a repeat is a no-op upsert (D-037).
+    await getWaitlistSignupsCollection(database).createIndexes([
+      { key: { email: 1 }, unique: true },
     ])
   },
   { name: 'mongo-indexes', dependencies: ['mongo'] },
