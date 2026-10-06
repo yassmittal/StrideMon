@@ -1,4 +1,4 @@
-// The demo video, cut from two Android screen recordings of the demo build (website/README.md has
+// The demo video, cut from one Android screen recording of the demo build (website/README.md has
 // the ffmpeg commands). Its width and height are the encode's, with the status bar cropped off.
 // The hero shows it in place of the Home screenshot when the file exists in public/.
 
@@ -6,13 +6,13 @@ export const demoVideo = {
   filePath: '/videos/stridemon-demo.mp4',
   posterPath: '/videos/stridemon-demo-poster.webp',
   widthPixels: 540,
-  heightPixels: 1136,
-  durationSeconds: 78,
-  uploadDate: '2026-10-05',
+  heightPixels: 1134,
+  durationSeconds: 56,
+  uploadDate: '2026-10-06',
   label: 'StrideMon demo: one Sneaker, start to finish',
   description:
-    'Recorded on the Android demo build: sign in, a three-minute walk, STRIDE settled on Monad, a repair and an upgrade, then the Sneaker sent to another wallet.',
-  structuredDataName: 'StrideMon demo: walk, earn, upgrade and send a Sneaker NFT on Monad',
+    'Recorded on the Android demo build: sign in with MetaMask, a three-and-a-half-minute walk, 15 STRIDE settled on Monad, then the Sneaker sent to another wallet with its stats.',
+  structuredDataName: 'StrideMon demo: walk, earn STRIDE and send a Sneaker NFT on Monad',
 } as const
 
 // A short silent loop of the active run screen (sped up about 12×), shown in How it works' Move

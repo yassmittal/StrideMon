@@ -52,41 +52,43 @@ of the Home screenshot (otherwise the screenshot stays). Its facts live in
 
 | File | What | Size |
 |---|---|---|
-| `public/videos/stridemon-demo.mp4` | 78 s demo: sign in, walk, reward, repair, upgrade, transfer. 540 × 1136, 30 fps, H.264, no audio | 2.1 MB |
-| `public/videos/stridemon-demo-poster.webp` | Its poster: Home with Sneaker #2 | 19 KB |
-| `public/videos/stridemon-walk-loop.mp4` | 5 s run-screen loop (12×) for How it works' Move step, 540 × 1170 | 90 KB |
+| `public/videos/stridemon-demo.mp4` | 56 s demo: sign in, a 3:31 walk at 16×, +15 STRIDE settled, the Sneaker tab, transfer to wallet B. 540 × 1134, 30 fps, H.264, no audio | 1.6 MB |
+| `public/videos/stridemon-demo-poster.webp` | Its poster: the run summary, +15 STRIDE settled | 21 KB |
+| `public/videos/stridemon-walk-loop.mp4` | 6 s run-screen loop (12×, +10 → +15 STRIDE) for How it works' Move step, 540 × 1170 | 96 KB |
 
 The demo loads nothing but its poster until the visitor presses play. The loop loads
 when its step nears the viewport, plays only on screen, and never shows with reduced motion (the
 screenshot stays).
 
-The raw screen recordings live in **`media-source/`**, which is gitignored: they are 190 MB and
-must never be committed or deployed. To redo the cut (from `website/`, with ffmpeg and cwebp):
+The raw screen recordings live in **`media-source/`**, which is gitignored: they are hundreds of MB
+and must never be committed or deployed. The cut uses `video3.mp4` (2026-10-06, STRIDE);
+`video1.mp4` and `video2.mp4` are the older SOLE recordings, no longer used. To redo the cut
+(from `website/`, with ffmpeg and cwebp):
 
 ```bash
 bash scripts/cut-demo-video.sh
 ```
 
-The script holds every segment (source, in and out points, speed), so new recordings mean new
+The script holds every segment (in and out points, speed, held frames), so new recordings mean new
 times there. What it runs, per step:
 
 ```bash
 # 1. Each segment: crop the status bar, 540 wide, constant 30 fps, sped up where speed > 1
-ffmpeg -nostdin -ss <start> -t <length> -i media-source/video2.mp4 -an \
-  -vf "setpts=(PTS-STARTPTS)/<speed>,crop=586:1232:0:48,scale=540:-2:flags=lanczos,fps=30,format=yuv420p" \
+ffmpeg -nostdin -ss <start> -t <length> -i media-source/video3.mp4 -an \
+  -vf "setpts=(PTS-STARTPTS)/<speed>,crop=880:1848:0:72,scale=540:-2:flags=lanczos,fps=30,format=yuv420p,tpad=…" \
   -c:v libx264 -preset veryfast -crf 12 -r 30 segment-NN.mp4
-# 2. Segments of one chapter joined with hard cuts
-ffmpeg -f concat -safe 0 -i chapter-N.txt -c copy chapter-N.mp4
-# 3. Chapters joined with 0.2 s crossfades (xfade), then the web encode
-ffmpeg -i chapter-1.mp4 … -filter_complex "[0:v][1:v]xfade=transition=fade:duration=0.2:offset=<t>[faded1];…" \
+# 2. Segments of one scene joined with hard cuts
+ffmpeg -f concat -safe 0 -i scene-N.txt -c copy scene-N.mp4
+# 3. Scenes joined with 0.2 s crossfades (xfade), then the web encode
+ffmpeg -i scene-1.mp4 … -filter_complex "[0:v][1:v]xfade=transition=fade:duration=0.2:offset=<t>[faded1];…" \
   -an -c:v libx264 -profile:v high -preset slow -crf 23 -pix_fmt yuv420p -r 30 -movflags +faststart \
   public/videos/stridemon-demo.mp4
 # 4. Poster
-ffmpeg -ss 12.5 -i public/videos/stridemon-demo.mp4 -frames:v 1 poster.png
+ffmpeg -ss 34.5 -i public/videos/stridemon-demo.mp4 -frames:v 1 poster.png
 cwebp -q 80 poster.png -o public/videos/stridemon-demo-poster.webp
 # 5. Walk loop: status bar painted black and fitted to the screenshots' aspect
-ffmpeg -ss 190.2 -t 62.8 -i media-source/video2.mp4 \
-  -vf "setpts=(PTS-STARTPTS)/12,crop=586:1270:0:5,drawbox=x=0:y=0:w=586:h=43:color=black:t=fill,scale=540:1170:flags=lanczos,fps=30,format=yuv420p" \
+ffmpeg -ss 180 -t 70 -i media-source/video3.mp4 \
+  -vf "setpts=(PTS-STARTPTS)/12,crop=880:1906:0:7,drawbox=x=0:y=0:w=880:h=66:color=black:t=fill,scale=540:1170:flags=lanczos,fps=30,format=yuv420p" \
   -an -c:v libx264 -profile:v high -preset slow -crf 22 -pix_fmt yuv420p -r 30 -movflags +faststart \
   public/videos/stridemon-walk-loop.mp4
 ```

@@ -143,8 +143,9 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    *As built (2026-10-05):* the demo is `public/videos/stridemon-demo.mp4` (78 s, cut from two
    screen recordings with [`landing-page-video-prompt.md`](landing-page-video-prompt.md)), with a
    chapter list beside it that seeks the video. *Moved to the hero (2026-10-06), without the
-   chapters.* How it works' Move step plays a 5 s loop of the run
-   screen in place of its screenshot while on screen, unless motion is reduced.
+   chapters.* *Re-cut (2026-10-06) for the STRIDE rename* from one new recording (`video3.mp4`):
+   56 s, sign in, walk, +15 STRIDE settled, transfer. How it works' Move step plays a 6 s loop of
+   the run screen in place of its screenshot while on screen, unless motion is reduced.
 5. **The rules are on-chain:** a dark section. The numbers in mono, each with one line of
    explanation. All from `SneakerGame`'s launch config (`docs/architecture/game-rules.md`):
 
