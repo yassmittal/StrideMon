@@ -1,5 +1,5 @@
-import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
+import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 import { preload } from 'react-dom'
