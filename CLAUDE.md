@@ -145,13 +145,20 @@ its own install (**not** a Bun workspace: never add it to the root `package.json
 `@stridemon/*` there), for `https://stridemon.yashmittal.xyz` on Vercel. The brief is
 `docs/landing-page-prompt.md`; screenshots go in `website/public/screenshots/`. Built 2026-10-05
 (static export, `website/README.md`); screenshots are in, and the demo video (`public/videos/`, cut by
-`website/scripts/cut-demo-video.sh` from the gitignored `website/media-source/`) is on the page;
-it waits on the GitHub URL and the Vercel deploy.
+`website/scripts/cut-demo-video.sh` from the gitignored `website/media-source/`) is on the page.
+The site is live and `github.com/yassmittal/StrideMon` is public; both are final (Yash, 2026-10-06).
 The page has a **waitlist** (D-037): `#waitlist` posts an email to the API's `POST /v1/waitlist`
 (`waitlistSignups`), the only route with CORS (`WAITLIST_ALLOWED_ORIGINS`). Email only, never a
 wallet; call it a waitlist, never a whitelist.
-The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy and docs. The live
-testnet token still says SOLE until a full `DeployGame` redeploy (ask Yash first: it resets testnet
-balances, Sneakers and the database). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
+The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy and docs. The contracts
+were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
+database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. D-036 is reserved for the social plan (`docs/social-plan.md`); the next free number is D-039.
+for it. The next free decision number is D-039.
+**X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
+[@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
+front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
+there and **never posts, schedules, logs in to X or calls its API**. Only Yash publishes, and only
+posts with his name in `approved:`. Every STRIDE amount carries "Monad testnet. STRIDE has no
+monetary value." StrideMon is entered in Monad's **Metropolis** hackathon (submission deadline
+2026-10-14 09:29 IST).

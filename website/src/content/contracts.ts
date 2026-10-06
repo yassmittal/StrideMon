@@ -17,7 +17,7 @@ export const sneakerNftContract: DeployedContract = {
   name: 'SneakerNft',
   standard: 'ERC-721',
   role: 'The Sneaker you own',
-  address: '0xC116917b06BD9079C87334ED5499054b1B54Fa80',
+  address: '0x6A9B08943f60F0bb779Bd229f907f92CB8002062',
 }
 
 export const deployedContracts: readonly DeployedContract[] = [
@@ -26,19 +26,19 @@ export const deployedContracts: readonly DeployedContract[] = [
     name: 'StrideToken',
     standard: 'ERC-20',
     role: 'STRIDE, the reward token',
-    address: '0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0',
+    address: '0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3',
   },
   {
     name: 'SneakerGame',
     standard: 'Rules',
     role: 'Energy, rewards, repair and upgrade',
-    address: '0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9',
+    address: '0x846cd7B8D213Bf516020f22343A69168B81fDE52',
   },
   {
     name: 'SneakerArtRenderer',
     standard: 'SVG',
     role: 'Draws the Sneaker’s picture',
-    address: '0x7e01732461C1879915C35E56e73Fd8569B289ADa',
+    address: '0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229',
   },
 ]
 

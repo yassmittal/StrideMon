@@ -724,10 +724,41 @@ Made 2026-10-05, after Phase 8.6.
   a rule change must update `website/src/content/` too.
 - **Revisit when:** StrideMon gets `stridemon.com`, or the page needs live chain data.
 
+## D-036 — StrideMon's X presence is run from `social/`, by hand
+
+Planned 2026-10-05, set up 2026-10-06. The research and the full plan are in
+[`social-plan.md`](social-plan.md).
+
+- **Decision:**
+  1. Two accounts. **@stridemon** posts the product (proof, deep dives), and Yash's
+     **@yash_mittal_dev** posts the build stories and the weekly changelog, and quote-posts the
+     launch. They never post the same text.
+  2. `social/` at the repo root holds both accounts' posts and rules: Markdown only, no tooling,
+     **not a Bun workspace**. One file per post (`posts/<slot date>-<slug>.md`), with its account
+     and state in the front-matter (`idea → draft → approved → scheduled → posted`).
+     `voice.md` holds the voice, banned phrases and disclaimers, and `profile.md` the bio and
+     images.
+  3. **Posting is manual.** Yash pastes each approved post into x.com, and may use X's own
+     scheduler for single posts on his Premium account. Claude drafts and never posts, schedules,
+     logs in or connects a tool. A post goes live only with Yash's name in its `approved:` field.
+  4. **No X API.** It has had no free tier since February 2026 ($0.015 a post, $0.20 with a URL).
+  5. Media reuses `website/public/`, `website/media-source/` and `launch-video/out/`. X-only
+     outputs (cards, stills, cuts) go in the gitignored `social/media/`, each rebuilt from the
+     command in its post file.
+  6. Every number in a post cites `launch-video/FACTS.md` or a doc. Every post showing STRIDE
+     says "Monad testnet. STRIDE has no monetary value." No hashtags, and at most one tag a post.
+     Site links carry `?source=x-stridemon` or `?source=x-yash`, which the waitlist stores (D-037).
+- **Why:** the facts, footage and voice already live in this repo, so posts written next to them
+  stay true. Manual posting is free, follows X's automation rules with nothing to label, and puts
+  Yash there to answer the first replies, which the ranking rewards.
+- **Trade-off:** someone has to be online at posting time, and threads can't be scheduled.
+  @stridemon's numbers are copied by hand from the X app, because only Premium has the dashboard.
+  Footage and transactions from before D-038's redeploy say SOLE, so posts prefer new material.
+- **Revisit when:** posting needs to happen while Yash is away, or @stridemon gets Premium.
+
 ## D-037 — A waitlist on the landing page, stored by the StrideMon API
 
-Made 2026-10-06, after Phase 8.8's first build. (D-036 is reserved for the social plan,
-`social-plan.md`.)
+Made 2026-10-06, after Phase 8.8's first build.
 
 - **Decision:**
   1. The landing page gets **one form: a waitlist** (section `#waitlist`, before the FAQ). It
@@ -776,7 +807,8 @@ Made 2026-10-06, during Phase 8.8. Supersedes the token half of D-014.
      a new token alone: `SneakerGame` holds the token as `immutable`, plus the settled-session
      and starter-claim records, so a new game next to the old `SneakerNft` would let every
      player claim a second starter. The redeploy resets testnet balances and Sneakers, and the
-     database is reset with it.
+     database is reset with it. Done 2026-10-06: the new contracts are in
+     `packages/contracts/README.md`. The reset keeps `waitlistSignups`.
 - **Why:** STRIDE says the core action and matches the product name, so "+10 STRIDE" needs no
   explanation. Testnet data is disposable, so now is the cheap time to rename.
 - **Trade-off:** D-014 ruled `STRIDE` out because the Stride chain (STRD) uses the name, so a

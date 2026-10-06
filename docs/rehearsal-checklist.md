@@ -15,8 +15,13 @@ there's an error).
 | Wallet A (MetaMask Account 1) | `0xdfAb550B4D28cD040Cf79Bf350Ac3017923C1465` | #2: level 1, efficiency 10, durability 99, energy 10 | 60 |
 | Wallet B (MetaMask Account 2) | `0xe4ae33003C3fF8afd68fa65Fafa97F6206c3356f` | #1: level 2, efficiency 12, durability 94 | 12 |
 
-`SneakerGame` (`0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9`) is unpaused, with energy regenerating
+`SneakerGame` (`0x846cd7B8D213Bf516020f22343A69168B81fDE52`) is unpaused, with energy regenerating
 at the launch pace (one point every 30 minutes).
+
+> **Stale since 2026-10-06:** the D-038 redeploy (STRIDE) started every wallet over, so the table
+> above no longer holds. Wallets A and B have no Sneaker and no STRIDE until they sign in again.
+> Each gets a new starter at level 1, numbered by who signs in first. Read the new state from
+> testnet before a rehearsal, and expect the Sneaker numbers below to differ.
 
 Time needed: about 30 minutes for Part A, plus a 3-minute walk with GPS signal (outdoors, or by a
 window).
@@ -82,7 +87,7 @@ bun run demo:energy apply
 Check the game isn't paused:
 
 ```bash
-cast call 0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9 "paused()(bool)" \
+cast call 0x846cd7B8D213Bf516020f22343A69168B81fDE52 "paused()(bool)" \
   --rpc-url https://testnet-rpc.monad.xyz
 ```
 

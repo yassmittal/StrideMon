@@ -171,10 +171,10 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
 
    | Contract | Address (chain 10143) |
    |---|---|
-   | `SneakerNft` (ERC-721) | `0xC116917b06BD9079C87334ED5499054b1B54Fa80` |
-   | `StrideToken` (ERC-20 STRIDE) | `0xe52DC9df236a6A4F8653432cE6Fd94Dd41e76CC0` |
-   | `SneakerGame` (the rules) | `0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9` |
-   | `SneakerArtRenderer` (the SVG) | `0x7e01732461C1879915C35E56e73Fd8569B289ADa` |
+   | `SneakerNft` (ERC-721) | `0x6A9B08943f60F0bb779Bd229f907f92CB8002062` |
+   | `StrideToken` (ERC-20 STRIDE) | `0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3` |
+   | `SneakerGame` (the rules) | `0x846cd7B8D213Bf516020f22343A69168B81fDE52` |
+   | `SneakerArtRenderer` (the SVG) | `0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229` |
 
    Explorer links: `https://testnet.monadvision.com/address/<address>`. Source of truth:
    `packages/contracts/deployments/10143.json`; copy from it, don't retype.

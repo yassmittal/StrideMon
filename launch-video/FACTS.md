@@ -123,6 +123,10 @@ creation match.
 | `SneakerGame` | `0x36cf91880F0fb41Eeda9fe79e7C5c2BE953f45B9` | ✓ verified |
 | `SneakerArtRenderer` | `0x7e01732461C1879915C35E56e73Fd8569B289ADa` | ✓ verified |
 
+These are the 8.3 contracts the footage was recorded on. They were replaced on 2026-10-06 when the
+token became STRIDE (D-038); the live addresses are in `packages/contracts/README.md`. The film
+shows no address, so nothing on screen changes.
+
 Source of the addresses: `packages/contracts/deployments/10143.json` and `packages/contracts/README.md`.
 
 | On screen | Source | Status |

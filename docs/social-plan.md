@@ -3,12 +3,12 @@
 The plan for running StrideMon on X from this repo. There are two accounts:
 **[@stridemon](https://x.com/stridemon)** (the product, no Premium) and Yash's personal
 **[@yash_mittal_dev](https://x.com/yash_mittal_dev)** (has Premium). The posts and the rules for
-writing them live next to the code. This is a plan only: nothing in it is built yet, and it waits
-for Yash's go-ahead.
+writing them live next to the code. The plan was approved on 2026-10-06, and `social/` was set up
+from it the same day (D-036; status in §12).
 
 The research was done on 2026-10-05 with web search. @stridemon exists but is empty (no avatar,
 banner or bio, per Yash). x.com pages can't be fetched from here, so neither account was checked
-directly. Yash answered §12's questions on 2026-10-05, and the plan below includes his answers.
+directly. Yash's answers to the open questions (2026-10-05 and 06) are folded into the plan.
 
 ## Why it's shaped this way (research, 2026-10-05)
 
@@ -129,7 +129,7 @@ invent one.
   launch post; one secondary source says $145k). A submission needs "a working product with a
   public project profile: a demo, a short write-up, and a link to the code". [27][28] Whether open
   source is *required* is disputed: Monad's page says encouraged, a GitHub listing says required
-  [29]. **Whether StrideMon is entered isn't in the repo** (§12).
+  [29]. StrideMon is entered (Yash, 2026-10-06; §12).
 - **How other Monad hackathon projects launched:** Blitz (one-day hackathons, 282 projects
   deployed across nine events in 2026) judges by live demo and audience vote, and projects post
   their repos and demos. [30] No first-hand study was made of how individual testnet projects
@@ -405,7 +405,7 @@ job. No "gm" posts, no engagement bait ("RT if…", "drop your wallet").
   `Monad testnet. STRIDE has no monetary value.`
 - **The launch thread** also says: there's no token sale, no airdrop and nothing to buy, and the
   Android build is a demo build that isn't publicly downloadable yet. Its last post links the
-  **waitlist** on the landing page (once it ships, §15).
+  **waitlist** on the landing page (§13).
 - **The standing answer to "airdrop?" / "wen token?":** "No. STRIDE is a testnet game token with
   no monetary value, and there's no sale or airdrop. The game is the point." Same words every time.
 
@@ -475,9 +475,10 @@ never install the app.
 ### 8. The first three weeks
 
 D0 is launch day: **as soon as everything is ready** (Yash, 2026-10-05). "Ready" means the profile
-(§3), the waitlist on the landing page (§15) and the D−1 to D1 posts approved. Times are
-14:30–16:30 UTC (20:00–22:00 IST, confirmed). "Exists" means the asset is in the repo today. If
-StrideMon is entered in Metropolis, the launch must come **before 2026-10-13**.
+(§3), the waitlist on the landing page (§13) and the D−1 to D1 posts approved. Times are
+14:30–16:30 UTC (20:00–22:00 IST, confirmed). "Exists" means the asset is in the repo today.
+StrideMon is entered in Metropolis, so the launch must come **before the 2026-10-14 09:29 IST
+deadline**. The drafts propose D−1 = Wed 2026-10-07, D0 = Thu 10-08 and D1 = Fri 10-09.
 
 **Which account:** proof and deep-dive rows post from **@stridemon**. Build-story and changelog
 rows post from **@yash_mittal_dev**, and @stridemon reposts them. On D0, @stridemon posts the
@@ -536,7 +537,7 @@ Each one is the front-matter block from §2 plus the body below.
   **replies, profile visits and follows per 1,000 impressions** (rates, not raw counts). Also
   GitHub traffic (views, `t.co` referrals), new starter Sneakers minted that week (one read-only
   count), and **waitlist sign-ups by source**. Links from X carry `?source=x-stridemon` or
-  `?source=x-yash`, and the form stores that value (§15). It's the only free way to see which
+  `?source=x-yash`, and the form stores that value (§13). It's the only free way to see which
   account brings sign-ups, with no analytics on the site. Then one change for next week, written
   in `reviews.md`.
 - Two accounts, two places to read the numbers: @yash_mittal_dev has Premium's analytics
@@ -558,95 +559,43 @@ Each one is the front-matter block from §2 plus the body below.
   public and fine.
 - 2FA on the account, and a dedicated email for it (§3).
 
-### 12. Questions
+### 12. Status (2026-10-06)
 
-**Answered by Yash on 2026-10-05:**
+**Answered by Yash:**
 
-- Accounts: @stridemon, plus personal @yash_mittal_dev, which posts too (§2a).
-- Launch date: as soon as everything is ready (§8).
-- Premium: on @yash_mittal_dev only, not on @stridemon.
-- The site (`https://stridemon.yashmittal.xyz`, the main URL) and the GitHub repo are final.
-- MetaMask shows the art but doesn't refresh it (disagreement 3).
-- Trying it: a waitlist form on the landing page (§15). Yash called it a "whitelist"; §5.3 explains
-  why the page should say "waitlist".
+- Accounts: @stridemon, plus personal @yash_mittal_dev, which posts too (§2a). @stridemon has its
+  own email (kept out of this public repo).
+- Premium: on @yash_mittal_dev only.
+- Launch date: as soon as everything is ready (§8), and before the Metropolis deadline.
+- **Metropolis: entered.** The dashboard's deadline is **2026-10-14 09:29 IST** (03:59 UTC; that's
+  Monad's "October 13" in US time). Team: Yash only. Still to do there: the description, the
+  track, at least one progress update (it unlocks mentor support), and the tagline, which still
+  says "earn SOLE".
+- The launch film is rendered (`launch-video/out/`, 45 s, three formats).
+- The site and the GitHub repo are final. MetaMask shows the art but doesn't refresh it.
 - Wording: walk and run. Posting at 20:00–22:00 IST suits him.
 
-**Still open:**
+**Done (D-036):** `social/` with `README.md`, `voice.md`, `profile.md`, `ideas.md`, `reviews.md`,
+five templates, and drafts for D−1, D0 (with Yash's quote-post) and D1. The avatar, header and
+D−1 card are in `social/media/`, built with `rsvg-convert` and `ffmpeg`, not `launch-video/`. Also
+D-036 in `decisions.md`, the `CLAUDE.md` line, and `docs/README.md`'s index.
 
-1. **Metropolis:** is StrideMon entered (submissions close **2026-10-13**)? If yes, which track?
-   That gives the launch a deadline and adds the submission post.
-2. **The launch film:** will it be rendered before D0? If not, the launch uses the 78 s demo
-   video, and the film becomes its own post later.
-3. **An email for @stridemon:** is it on its own email, with 2FA by authenticator app?
-4. **Waitlist storage:** decided in §15's prompt, at its plan gate.
+**Changed since the plan was written:**
 
-### 13. Proposed decision and CLAUDE.md line
+- The token is **STRIDE** (D-038), and the contracts were redeployed on 2026-10-06. Footage and
+  transactions from before that say SOLE, on abandoned contracts (`voice.md` §4). So D1 (the
+  "estimated / counted / paid" post) waits for a fresh walk on the new contracts.
+- The waitlist is live (D-037): the site's `#waitlist`, and `POST /v1/waitlist` on the API.
 
-**For `docs/decisions.md`:**
+**Before launch:** redeploy the site (on 2026-10-06 it still served the old contract addresses),
+make sure the hosted API is on the new contracts, set up the profile, and get Yash's approval on
+the D−1 and D0 drafts.
 
-> ## D-036 — StrideMon's X presence is run from `social/`, by hand
->
-> Made 2026-10-05, after Phase 8.8.
->
-> - **Decision:**
->   0. Two accounts: **@stridemon** posts the product (proof, deep dives), and Yash's
->      **@yash_mittal_dev** posts the build stories and quote-posts launches. They never post the
->      same text.
->   1. `social/` at the repo root holds both accounts' posts and rules: Markdown only, no
->      tooling, **not a Bun workspace**. One file per post, with its state in front-matter
->      (`idea → draft → approved → scheduled → posted`). `voice.md` holds the voice and the
->      banned phrases, and `profile.md` the bio and images.
->   2. **Posting is manual:** Yash pastes each approved post into x.com, and may use X's own
->      scheduler for single posts. Claude drafts and never posts, schedules or connects. A post
->      goes live only with Yash's name in its `approved:` field.
->   3. **No X API**: it has no free tier since February 2026 ($0.015 a post, $0.20 with a URL).
->   4. Media reuses `website/public/`, `website/media-source/` and `launch-video/`. Cards are
->      `remotion still` renders in `launch-video/`. X-only outputs go in the gitignored
->      `social/media/`, each rebuilt from the command in its post file.
->   5. Every number in a post cites `launch-video/FACTS.md` or a doc. Every post showing STRIDE
->      says "Monad testnet. STRIDE has no monetary value." No hashtags, and at most one tag a post.
->   6. The research and full plan are in [`social-plan.md`](social-plan.md).
-> - **Why:** the facts, footage and voice already live in this repo, so posts written next to
->   them stay true. Manual posting is free, follows X's automation rules with nothing to label,
->   and puts Yash there to answer the first replies, which the ranking rewards.
-> - **Trade-off:** someone has to be online at posting time, and threads can't be scheduled.
->   Metrics are copied by hand from the X app.
-> - **Revisit when:** posting needs to happen while Yash is away, or the account needs the
->   analytics dashboard (Premium).
+**Later, with its own go-ahead:** cards made with `remotion still` in `launch-video/`, once nobody
+else is working there.
 
-**For `CLAUDE.md`** (under Current phase):
+### 13. The waitlist (D-037)
 
-> **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
-> [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
-> front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
-> there and **never posts, schedules, logs in to X or calls its API**. Only Yash publishes, and
-> only posts with his name in `approved:`. Every STRIDE amount carries "Monad testnet. STRIDE has no
-> monetary value."
-
-### 14. What happens after the go-ahead
-
-1. Answer §12.
-2. Create `social/` with `README.md`, `voice.md`, `profile.md`, `ideas.md`, `reviews.md` and the
-   five templates, plus the D−1, D0 and D1 post files as drafts. Add D-036 and the CLAUDE.md line,
-   and update `docs/README.md`'s reading-order table.
-3. Then the header and the cards, via a `SocialCard` composition in `launch-video/`. That waits
-   until the agent working there is finished **and** Yash gives a separate go-ahead. Nothing in
-   step 2 touches `launch-video/`.
-4. Stop for review before anything goes near X.
-
-### 15. The waitlist on the landing page
-
-Yash wants interested people to sign up on the landing page (2026-10-05). The brief for building
-it is [`waitlist-prompt.md`](waitlist-prompt.md), to run in its own Claude Code session. In short:
-
-- It's called a **waitlist**, never a whitelist (§5.3). It asks for an **email only**, plus an
-  optional "which phone" (Android or iPhone). It never asks for a wallet address: a list of
-  wallets reads as an airdrop list and draws farmers.
-- It changes D-035 ("no newsletter form"), so it needs its own decision, numbered after D-036.
-- The site is a static export with no server, so the form needs somewhere to send its data.
-  **Recommended:** a `POST /waitlist` route on the hosted StrideMon API (free, and the data stays
-  in our own Atlas database), with CORS limited to the site's origin, the existing rate limit and
-  a hidden honeypot field. The alternative is a Google Form link (no code, but off-brand, and
-  Google holds the emails). The prompt stops at a plan gate so Yash picks one.
-- The form records `?source=` from the page URL, which feeds §10's metrics.
-- The X links point at the waitlist only once it's live. Until then they point at the site.
+Built from [`waitlist-prompt.md`](waitlist-prompt.md): email only, called a waitlist, stored by the
+StrideMon API, with `?source=` saved for §10's metrics. X links use
+`https://stridemon.yashmittal.xyz/?source=x-stridemon#waitlist` (or `x-yash`).

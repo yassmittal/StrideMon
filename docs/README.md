@@ -30,6 +30,8 @@ these documents, and when a decision changes, the doc changes first.
 | 17 | [`deployment.md`](deployment.md) | Hosting the API and building the demo app (Phase 8.6). |
 | 18 | [`landing-page-prompt.md`](landing-page-prompt.md) | Building the landing page in `website/` (Phase 8.8). |
 | 19 | [`landing-page-video-prompt.md`](landing-page-video-prompt.md) | Cutting the screen recordings into the landing page's demo video. |
+| 20 | [`waitlist-prompt.md`](waitlist-prompt.md) | The brief the landing page's waitlist was built from (D-037). |
+| 21 | [`social-plan.md`](social-plan.md) | Posting on X: the research, the two accounts, the calendar. The posts themselves live in `../social/` (D-036). |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else

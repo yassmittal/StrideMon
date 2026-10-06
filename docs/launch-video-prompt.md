@@ -118,7 +118,7 @@ screenshot, or a footage timestamp). Nothing goes on screen that isn't in it. In
    durability 100:
 
    ```bash
-   cast call 0x7e01732461C1879915C35E56e73Fd8569B289ADa \
+   cast call 0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229 \
      "renderImageSvg(uint256,(uint16,uint16,uint16,uint16,uint64))(string)" \
      2 "(5,18,100,10,0)" --rpc-url https://testnet-rpc.monad.xyz
    ```
