@@ -46,8 +46,9 @@ what the screen shows.
 
 ## Demo video
 
-The demo section appears only when `public/videos/stridemon-demo.mp4` exists. Its facts and
-chapters live in `src/content/demo-video.ts`, and the section adds a `VideoObject` to the JSON-LD.
+When `public/videos/stridemon-demo.mp4` exists, the hero shows it beside the Sneaker art in place
+of the Home screenshot (otherwise the screenshot stays). Its facts live in
+`src/content/demo-video.ts`, and the page adds a `VideoObject` to the JSON-LD.
 
 | File | What | Size |
 |---|---|---|
@@ -55,7 +56,7 @@ chapters live in `src/content/demo-video.ts`, and the section adds a `VideoObjec
 | `public/videos/stridemon-demo-poster.webp` | Its poster: Home with Sneaker #2 | 19 KB |
 | `public/videos/stridemon-walk-loop.mp4` | 5 s run-screen loop (12×) for How it works' Move step, 540 × 1170 | 90 KB |
 
-The demo loads nothing but its poster until the visitor presses play or a chapter. The loop loads
+The demo loads nothing but its poster until the visitor presses play. The loop loads
 when its step nears the viewport, plays only on screen, and never shows with reduced motion (the
 screenshot stays).
 
@@ -90,9 +91,8 @@ ffmpeg -ss 190.2 -t 62.8 -i media-source/video2.mp4 \
   public/videos/stridemon-walk-loop.mp4
 ```
 
-After a re-cut, update `durationSeconds` and the chapter `startSeconds` in
-`src/content/demo-video.ts` from what the script prints (a chapter seeks 0.2 s past the crossfade
-into it). Keep the demo under 8 MB and each loop under 1.5 MB.
+After a re-cut, update `durationSeconds` in `src/content/demo-video.ts` from what the script
+prints. Keep the demo under 8 MB and each loop under 1.5 MB.
 
 ## Waitlist
 

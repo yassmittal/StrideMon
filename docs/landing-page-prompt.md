@@ -121,6 +121,9 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
      frame.
    - CTAs: **Watch the demo** (to the video in section 4, or hidden if there's no video) and **See
      the contracts** (scrolls to section 7).
+   - *Changed (2026-10-06):* the demo video sits in the hero in place of the Home screenshot (its
+     poster is that same Home screen), so the hero has one CTA, **See the contracts**, and there is
+     no separate demo section or chapter list. Without the video file the Home screenshot shows.
 3. **How it works:** the loop as six numbered steps, each with one line and, where there is one, a
    screenshot:
    1. **Own:** sign in with your wallet and get a free starter Sneaker NFT, plus a little test MON
@@ -139,7 +142,8 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    poster frame, `preload="none"`, played only on click.
    *As built (2026-10-05):* the demo is `public/videos/stridemon-demo.mp4` (78 s, cut from two
    screen recordings with [`landing-page-video-prompt.md`](landing-page-video-prompt.md)), with a
-   chapter list beside it that seeks the video. How it works' Move step plays a 5 s loop of the run
+   chapter list beside it that seeks the video. *Moved to the hero (2026-10-06), without the
+   chapters.* How it works' Move step plays a 5 s loop of the run
    screen in place of its screenshot while on screen, unless motion is reduced.
 5. **The rules are on-chain:** a dark section. The numbers in mono, each with one line of
    explanation. All from `SneakerGame`'s launch config (`docs/architecture/game-rules.md`):

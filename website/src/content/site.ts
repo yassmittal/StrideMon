@@ -27,7 +27,6 @@ export type NavigationLink = {
 
 export const sectionIds = {
   howItWorks: 'how-it-works',
-  demo: 'demo',
   rules: 'rules',
   fairPlay: 'fair-play',
   onChain: 'on-chain',

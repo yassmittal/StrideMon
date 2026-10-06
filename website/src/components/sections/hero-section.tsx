@@ -1,7 +1,10 @@
+import { demoVideo } from '@/content/demo-video'
 import { heroContent } from '@/content/hero'
 import { screenshots } from '@/content/screenshots'
 import { sectionIds } from '@/content/site'
+import { hasPublicFile } from '@/lib/read-public-file'
 import { readSneakerArtForDrawing } from '@/lib/read-sneaker-art'
+import { DemoVideoPlayer } from '../ui/demo-video-player'
 import { MetaLabel } from '../ui/meta-label'
 import { PhoneFrame } from '../ui/phone-frame'
 import { PillButton } from '../ui/pill-button'
@@ -10,6 +13,10 @@ type HeroSectionProps = {
   hasDemoVideo: boolean
 }
 
+const phoneClassName = 'w-[38%] max-w-[296px] shrink-0 self-end'
+
+// With the demo video in public/, it stands beside the Sneaker art in place of the Home screenshot
+// (its poster is that same screen).
 export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
   const sneakerArtMarkup = readSneakerArtForDrawing()
   return (
@@ -28,14 +35,7 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
         </h1>
         <p className="max-w-[17em] text-intro">{heroContent.intro}</p>
         <div className="flex flex-wrap gap-2.5 pt-2">
-          {hasDemoVideo ? (
-            <PillButton href={`#${sectionIds.demo}`} label={heroContent.watchDemoLabel} />
-          ) : null}
-          <PillButton
-            href={`#${sectionIds.onChain}`}
-            label={heroContent.seeContractsLabel}
-            variant={hasDemoVideo ? 'callToAction' : 'primary'}
-          />
+          <PillButton href={`#${sectionIds.onChain}`} label={heroContent.seeContractsLabel} />
         </div>
       </div>
 
@@ -50,12 +50,23 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
             {heroContent.sneakerArtCaption}
           </figcaption>
         </figure>
-        <PhoneFrame
-          screenshot={screenshots.home}
-          sizes="(min-width: 1024px) 296px, 38vw"
-          isPriority
-          className="w-[38%] max-w-[296px] shrink-0 self-end"
-        />
+        {hasDemoVideo ? (
+          <DemoVideoPlayer
+            filePath={demoVideo.filePath}
+            posterPath={hasPublicFile(demoVideo.posterPath) ? demoVideo.posterPath : undefined}
+            widthPixels={demoVideo.widthPixels}
+            heightPixels={demoVideo.heightPixels}
+            label={demoVideo.label}
+            className={phoneClassName}
+          />
+        ) : (
+          <PhoneFrame
+            screenshot={screenshots.home}
+            sizes="(min-width: 1024px) 296px, 38vw"
+            isPriority
+            className={phoneClassName}
+          />
+        )}
       </div>
     </section>
   )

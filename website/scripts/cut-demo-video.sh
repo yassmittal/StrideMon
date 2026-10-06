@@ -72,8 +72,7 @@ for listFile in "$WORK_DIRECTORY"/chapter-*.txt; do
   ffmpeg -nostdin -v error -y -f concat -safe 0 -i "$listFile" -c copy "${listFile%.txt}.mp4"
 done
 
-# 3. A 0.2 s crossfade between chapters, then the web encode. The printed start times feed the
-# chapters in src/content/demo-video.ts (add 0.2 s so a seek lands past the fade).
+# 3. A 0.2 s crossfade between chapters, then the web encode.
 chapterFiles=("$WORK_DIRECTORY"/chapter-*.mp4)
 inputs=()
 for chapterFile in "${chapterFiles[@]}"; do inputs+=(-i "$chapterFile"); done

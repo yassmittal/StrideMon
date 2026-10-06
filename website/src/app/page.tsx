@@ -1,4 +1,3 @@
-import { DemoSection } from '@/components/sections/demo-section'
 import { FairPlaySection } from '@/components/sections/fair-play-section'
 import { FaqSection } from '@/components/sections/faq-section'
 import { HeroSection } from '@/components/sections/hero-section'
@@ -31,7 +30,6 @@ export default function HomePage() {
       <main>
         <HeroSection hasDemoVideo={hasDemoVideo} />
         <HowItWorksSection />
-        {hasDemoVideo ? <DemoSection /> : null}
         <RulesSection />
         <FairPlaySection />
         <OnChainSection />
