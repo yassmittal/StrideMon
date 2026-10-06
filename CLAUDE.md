@@ -140,7 +140,7 @@ Bun at `~/.bun-1.4.2`), on the Atlas `stridemon` database, and the `demo` EAS bu
 `docs/deployment.md` step passed on the Android phone. **Never run the local API against testnet
 now**: it shares the game-server key with the hosted one. `apps/mobile/.env` points at the hosted API.
 8.7 (iOS device day, D-022) is **deferred** (D-035): it needs a borrowed iPhone and a paid Apple
-Developer account. **Now: 8.8 (landing page, D-035):** `website/` at the repo root, Next.js 16 on Bun with
+Developer account. **8.8 (landing page, D-035):** `website/` at the repo root, Next.js 16 on Bun with
 its own install (**not** a Bun workspace: never add it to the root `package.json` or import
 `@stridemon/*` there), for `https://stridemon.yashmittal.xyz` on Vercel. The brief is
 `docs/landing-page-prompt.md`; screenshots go in `website/public/screenshots/`. Built 2026-10-05
@@ -162,3 +162,8 @@ there and **never posts, schedules, logs in to X or calls its API**. Only Yash p
 posts with his name in `approved:`. Every STRIDE amount carries "Monad testnet. STRIDE has no
 monetary value." StrideMon is entered in Monad's **Metropolis** hackathon (submission deadline
 2026-10-14 09:29 IST).
+**8.8 is done** (2026-10-06). **Now: the Metropolis submission**, tracked in
+`docs/hackathon-submission.md`. Done 2026-10-07: `LICENSE` (MIT), the README rewrite (Monad, "Try it",
+"Run your own stack", the session's transaction hashes), the dashboard copy and the submission post
+draft. Left: a recorded run with a repair and an upgrade on the new contracts (none exist yet), the
+≤ 3-minute demo video, the dashboard itself, and the two `TODO(submission)` gaps in `README.md`.
