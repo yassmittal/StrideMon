@@ -16,8 +16,8 @@ results: {}
 ---
 
 <!-- Launch checklist
-- [ ] The profile is done (profile.md), and the warm-up post went out the day before
-- [ ] The site and the waitlist are up: open the link, sign up with a test address
+- [X] The profile is done (profile.md), and the warm-up post went out the day before
+- [X] The site and the waitlist are up: open the link, sign up with a test address
 - [ ] The rename note is in if anything links the explorer (voice.md §4)
 - [ ] Pin Post 1 straight after posting
 - [ ] @yash_mittal_dev quote-posts it about an hour later, in his own words
