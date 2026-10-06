@@ -7,7 +7,16 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!packages/contracts", "!packages/chain/src/abis", "!website/public"]
+    "includes": [
+      "**",
+      "!packages/contracts",
+      "!packages/chain/src/abis",
+      "!website/public",
+      "!launch-video/public",
+      "!launch-video/out",
+      "!launch-video/.agents",
+      "!launch-video/.claude"
+    ]
   },
   "formatter": {
     "enabled": true,

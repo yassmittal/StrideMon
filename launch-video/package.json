@@ -1,0 +1,25 @@
+{
+  "name": "stridemon-launch-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.533",
+    "@remotion/fonts": "4.0.533",
+    "@remotion/google-fonts": "4.0.533",
+    "@remotion/media": "4.0.533",
+    "@remotion/motion-blur": "4.0.533",
+    "@remotion/paths": "4.0.533",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "typescript": "5.9.3"
+  }
+}
