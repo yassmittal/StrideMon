@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Working guide for **StrideMon** (stridemon.com), a STEPN-style move-to-earn game: the
+Working guide for **StrideMon** (stridemon.xyz), a STEPN-style move-to-earn game: the
 player owns a Sneaker NFT on Monad, walks or runs to earn **STRIDE** (the ERC-20 reward token),
 and spends it to repair and upgrade the Sneaker.
 
@@ -159,11 +159,16 @@ The site is live and `github.com/yassmittal/StrideMon` is public; both are final
 The page has a **waitlist** (D-037): `#waitlist` posts an email to the API's `POST /v1/waitlist`
 (`waitlistSignups`), the only route with CORS (`WAITLIST_ALLOWED_ORIGINS`). Email only, never a
 wallet; call it a waitlist, never a whitelist.
+**Domain (D-040, 2026-10-07):** **`stridemon.xyz`** (Namecheap DNS) is the main domain. The site is
+`https://stridemon.xyz`; `www` and the old `stridemon.yashmittal.xyz` 308-redirect to it from
+`website/vercel.json`. The API also answers at `https://api.stridemon.xyz` (new builds and the
+waitlist use it); the old API name stays up for installed builds. `SIWE_DOMAIN` and the AppKit
+metadata are `stridemon.xyz`. The rollout steps are `docs/deployment.md` §11, run by Yash.
 The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy and docs. The contracts
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-040.
+for it. The next free decision number is D-041.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts

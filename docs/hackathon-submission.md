@@ -34,7 +34,7 @@ deadline.
 - The four contracts are deployed and verified on Monad testnet (chain 10143). Addresses are in
   `packages/contracts/README.md`.
 - The hosted API answers `GET /health` with `ok` and Mongo connected.
-- The live site (`https://stridemon.yashmittal.xyz`) shows the new STRIDE contract addresses.
+- The live site (`https://stridemon.xyz`) shows the new STRIDE contract addresses.
 - The `demo` APK is current: built 2026-10-06 from `d1fbcc3` (the STRIDE rename), with the new
   contract addresses. Link:
   `https://expo.dev/artifacts/eas/Aa0J7FXKPHyaKSGL-74nW66qSugLVcvhOMLyRrGL2iY.apk`
@@ -149,7 +149,7 @@ The submission is incomplete without these.
 - [ ] Add a description and topics in the GitHub repo's About section (it's empty). Paste these:
   - **Description:** `Move-to-earn on Monad: walk with a Sneaker NFT, earn STRIDE, repair and
     upgrade it. Expo app, Fastify API, Foundry contracts. Testnet only.`
-  - **Website:** `https://stridemon.yashmittal.xyz`
+  - **Website:** `https://stridemon.xyz`
   - **Topics:** `monad`, `move-to-earn`, `web3`, `nft`, `erc721`, `erc20`, `solidity`, `foundry`,
     `expo`, `react-native`, `fastify`, `bun`, `mongodb`, `viem`, `wagmi`, `hackathon`
 - [x] Update the status tables in `docs/README.md` and `CLAUDE.md` (8.8 done, plus a submission

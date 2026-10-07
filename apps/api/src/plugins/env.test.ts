@@ -9,12 +9,12 @@ const VALID_ENVIRONMENT_VARIABLES = {
   JWT_ACCESS_TOKEN_SECRET: 'a'.repeat(128),
   ACCESS_TOKEN_TTL_SECONDS: '900',
   REFRESH_TOKEN_TTL_DAYS: '30',
-  SIWE_DOMAIN: 'stridemon.com',
+  SIWE_DOMAIN: 'stridemon.xyz',
   MONAD_RPC_URL: 'https://testnet-rpc.monad.xyz',
   MONAD_CHAIN_ID: '10143',
   GAME_SERVER_PRIVATE_KEY: `0x${'ab'.repeat(32)}`,
   GAS_DRIP_AMOUNT_WEI: '100000000000000000',
-  WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.yashmittal.xyz, http://localhost:3000',
+  WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.xyz, http://localhost:3000',
 }
 
 const DEPLOYED_CONTRACT_ADDRESSES = CONTRACT_ADDRESSES_BY_CHAIN_ID[10143]
@@ -36,12 +36,12 @@ describe('parseApiConfig', () => {
       jwtAccessTokenSecret: 'a'.repeat(128),
       accessTokenTtlSeconds: 900,
       refreshTokenTtlDays: 30,
-      siweDomain: 'stridemon.com',
+      siweDomain: 'stridemon.xyz',
       monadRpcUrl: 'https://testnet-rpc.monad.xyz',
       monadChain: monadTestnet,
       gameServerPrivateKey: `0x${'ab'.repeat(32)}`,
       gasDripAmountWei: 100_000_000_000_000_000n,
-      waitlistAllowedOrigins: ['https://stridemon.yashmittal.xyz', 'http://localhost:3000'],
+      waitlistAllowedOrigins: ['https://stridemon.xyz', 'http://localhost:3000'],
       contractAddresses: DEPLOYED_CONTRACT_ADDRESSES,
     })
   })
@@ -90,7 +90,7 @@ describe('parseApiConfig', () => {
 
   it('rejects a SIWE domain written as a URL', () => {
     expect(() =>
-      parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, SIWE_DOMAIN: 'https://stridemon.com' }),
+      parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, SIWE_DOMAIN: 'https://stridemon.xyz' }),
     ).toThrow(/SIWE_DOMAIN/)
   })
 
@@ -98,7 +98,7 @@ describe('parseApiConfig', () => {
     expect(() =>
       parseApiConfig({
         ...VALID_ENVIRONMENT_VARIABLES,
-        WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.yashmittal.xyz/',
+        WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.xyz/',
       }),
     ).toThrow(/WAITLIST_ALLOWED_ORIGINS/)
   })

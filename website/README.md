@@ -1,6 +1,6 @@
 # StrideMon landing page
 
-The one-page site at `https://stridemon.yashmittal.xyz` (Phase 8.8, D-035). Next.js 16 + React 19 +
+The one-page site at `https://stridemon.xyz` (Phase 8.8, D-035, D-040). Next.js 16 + React 19 +
 Tailwind CSS v4 on Bun, exported as static files. It is **not** a Bun workspace: it has its own
 `package.json` and `bun.lock`, and never imports `@stridemon/*`.
 
@@ -107,7 +107,7 @@ from what the script prints. Keep the demo under 8 MB and each loop under 1.5 MB
 The `#waitlist` section (D-037) posts `{ email, phonePlatform?, source?, website? }` to the
 StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a hidden honeypot. The
 page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link such as
-`https://stridemon.yashmittal.xyz/?source=x-stridemon` credits the X account that shared it.
+`https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it.
 
 The API only answers browsers from the origins in its `WAITLIST_ALLOWED_ORIGINS`. To try the form
 locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port, and
@@ -134,8 +134,10 @@ TTF the same way at build time. IBM Plex Mono comes from `next/font/google`.
 
 1. New project from the repo. Root directory `website`, framework Next.js, install command
    `bun install`, build command `bun run build`.
-2. Add the domain `stridemon.yashmittal.xyz`. The `*.yashmittal.xyz` wildcard already points at
-   Vercel, so no DNS record is needed.
+2. Domains (D-040): `stridemon.xyz` (the canonical one), `www.stridemon.xyz` and the old
+   `stridemon.yashmittal.xyz`, all on this project with no dashboard redirect. `vercel.json`
+   308-redirects the other two to `https://stridemon.xyz`, keeping the path and query string.
+   DNS for `stridemon.xyz` is on Namecheap (`docs/deployment.md` §11).
 
-`vercel.json` serves the generated `opengraph-image`, `twitter-image` and `apple-icon` (which
+`vercel.json` also serves the generated `opengraph-image`, `twitter-image` and `apple-icon` (which
 have no file extension in a static export) as `image/png`.

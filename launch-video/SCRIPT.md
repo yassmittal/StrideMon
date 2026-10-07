@@ -13,7 +13,7 @@ ownership and the end card. Each scene says one thing in one headline and one pl
 1. What it is: a move-to-earn game on Monad.
 2. How it works, in four steps: get a Sneaker, walk or run, earn STRIDE, level it up.
 3. Why it matters: the Sneaker is really yours.
-4. Action: stridemon.yashmittal.xyz.
+4. Action: stridemon.xyz.
 
 ## Storyboard as built
 
@@ -55,7 +55,7 @@ ownership and the end card. Each scene says one thing in one headline and one pl
    **Level it up.** · Spend STRIDE to repair and upgrade it. Each level earns more.
 6. (art) · `OWNER` `0xdfAb…1465 → 0xe4ae…356f` · **It’s really yours.** · It lives in your wallet.
    Send it to any wallet, and its stats go with it.
-7. **Walk. Earn. Upgrade.** · `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.yashmittal.xyz →` ·
+7. **Walk. Earn. Upgrade.** · `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.xyz →` ·
    STRIDE is a testnet token with no monetary value.
 
 ## Reading time

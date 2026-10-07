@@ -10,7 +10,7 @@ import { monadChain } from './monad-chain'
 const APP_METADATA = {
   name: 'StrideMon',
   description: 'Walk. Earn. Upgrade your Sneaker.',
-  url: 'https://stridemon.com',
+  url: 'https://stridemon.xyz',
   icons: [],
   // After the player approves in their wallet, the wallet sends them back here.
   redirect: { native: 'stridemon://' },

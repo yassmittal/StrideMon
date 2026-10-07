@@ -87,7 +87,7 @@ code, following `docs/conventions/coding-standards.md`.
 The app collects precise location, a wallet address, and (on the website) emails. Play rejects
 apps without a public privacy policy URL.
 
-- Add `website/src/app/privacy/page.tsx` → `https://stridemon.yashmittal.xyz/privacy`.
+- Add `website/src/app/privacy/page.tsx` → `https://stridemon.xyz/privacy`.
 - It must say, in plain words:
   - **What is collected:** precise location samples during an active run (stored up to 30 days,
     the `locationSamples` TTL), wallet address, activity sessions (time, distance, speed),
@@ -111,7 +111,7 @@ creates a player record, so this applies.
   and location samples for that wallet address, through `repositories/`. It can't touch the chain:
   Sneakers and STRIDE stay in the wallet, and the docs and copy must say so.
 - **App:** Profile → "Delete account" → confirm sheet → call it → sign out.
-- **Web:** `https://stridemon.yashmittal.xyz/delete-account`: explains what is deleted and what
+- **Web:** `https://stridemon.xyz/delete-account`: explains what is deleted and what
   stays on-chain, and how to request it (in the app, or by email from the wallet owner with a
   signed message). A simple email-based process is accepted by Play as long as it's documented.
 
@@ -125,7 +125,7 @@ Add a `production` profile next to `demo`. Play needs an **Android App Bundle** 
   "autoIncrement": true,
   "android": { "buildType": "app-bundle" },
   "env": {
-    "EXPO_PUBLIC_API_BASE_URL": "https://stridemon-api.yashmittal.xyz",
+    "EXPO_PUBLIC_API_BASE_URL": "https://api.stridemon.xyz",
     "EXPO_PUBLIC_MONAD_CHAIN_ID": "10143",
     "EXPO_PUBLIC_MONAD_RPC_URL": "https://testnet-rpc.monad.xyz",
     "EXPO_PUBLIC_REOWN_PROJECT_ID": "ea460b58f93f44c50993ce1f67e6cee8"
@@ -184,7 +184,7 @@ Play users are real strangers, not demo wallets. Before step 7:
 2. **Reown (WalletConnect) project.** In <https://cloud.reown.com>, open the project for
    `EXPO_PUBLIC_REOWN_PROJECT_ID` and add `com.stridemon.app` to its allowed mobile app IDs if the
    project uses an allowlist, so production connections aren't refused.
-3. **Hosted API.** `https://stridemon-api.yashmittal.xyz` must stay up during review and testing:
+3. **Hosted API.** `https://api.stridemon.xyz` must stay up during review and testing:
    PM2 restart on reboot (`pm2 startup` + `pm2 save`), certbot auto-renewal, Atlas free tier limits.
 4. **Testnet risk.** The whole app depends on Monad testnet. If the testnet resets or changes,
    the app breaks for everyone. Write down what you'd do (redeploy contracts, a forced update).
@@ -215,8 +215,8 @@ Then **Grow → Store presence → Main store listing**:
 | Phone screenshots | 2–8, 16:9 or 9:16, 320–3840 px per side | `website/public/screenshots/` (retake on the new contracts if stale) |
 | Video (optional) | YouTube URL | The demo video, once uploaded |
 | Contact email | required | The public support email from step 1 |
-| Website | optional | `https://stridemon.yashmittal.xyz` |
-| Privacy policy | required | `https://stridemon.yashmittal.xyz/privacy` |
+| Website | optional | `https://stridemon.xyz` |
+| Privacy policy | required | `https://stridemon.xyz/privacy` |
 
 Avoid in the listing: "earn money", "passive income", prices, "invest", ranking claims, other
 brands (STEPN, MetaMask logos) and the word "whitelist".

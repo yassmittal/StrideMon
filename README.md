@@ -4,7 +4,7 @@ A move-to-earn game on Monad. Your Sneaker is an NFT. Walk or run with it to ear
 spend STRIDE to repair the Sneaker and level it up. Every run settles on Monad testnet as its own
 transaction.
 
-- **Live site:** <https://stridemon.yashmittal.xyz>
+- **Live site:** <https://stridemon.xyz>
 - **X:** [@stridemon](https://x.com/stridemon) (the product) and [@yash_mittal_dev](https://x.com/yash_mittal_dev) (the builder)
 - **Demo video:** _link added once uploaded_ <!-- TODO(submission): the ≤ 3 min video's public URL -->
 - **Android demo build (APK):** <https://expo.dev/artifacts/eas/Aa0J7FXKPHyaKSGL-74nW66qSugLVcvhOMLyRrGL2iY.apk>

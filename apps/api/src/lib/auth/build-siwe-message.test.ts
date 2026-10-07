@@ -8,7 +8,7 @@ describe('buildSiweMessage', () => {
     const expiresAt = new Date('2026-09-29T10:05:00Z')
 
     const message = buildSiweMessage({
-      siweDomain: 'stridemon.com',
+      siweDomain: 'stridemon.xyz',
       walletAddress: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
       chainId: 10143,
       nonce: 'a1b2c3d4e5f60718',
@@ -17,8 +17,8 @@ describe('buildSiweMessage', () => {
     })
 
     expect(parseSiweMessage(message)).toMatchObject({
-      domain: 'stridemon.com',
-      uri: 'https://stridemon.com',
+      domain: 'stridemon.xyz',
+      uri: 'https://stridemon.xyz',
       address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
       chainId: 10143,
       nonce: 'a1b2c3d4e5f60718',

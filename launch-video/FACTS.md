@@ -28,7 +28,7 @@ recordings, with times from `FOOTAGE.md`. `01`–`09` are `website/public/screen
 | "Stop the run, and STRIDE lands in your wallet." | `how-it-works.ts` Earn step; §4 token transfer to the player's wallet | ✓ |
 | "Spend STRIDE to repair and upgrade it. Each level earns more." | `how-it-works.ts` Upgrade step; §5 | ✓ |
 | "It’s really yours." · "It lives in your wallet. Send it to any wallet, and its stats go with it." | `how-it-works.ts` ("Own it, really"), `MVP.md` §4, §6 | ✓ |
-| `stridemon.yashmittal.xyz` | `landing-page-prompt.md` §2. Checked live 2026-10-05: HTTP 200, title "StrideMon: walk, earn and upgrade a Sneaker NFT on Monad" | ✓ |
+| `stridemon.xyz` | D-040 (2026-10-07), replaces `stridemon.yashmittal.xyz` (`landing-page-prompt.md` §2, checked live 2026-10-05), which now redirects to it | ✓ |
 
 ## 2. Game rules
 
@@ -173,7 +173,7 @@ The simplified film (2026-10-06, after STOP 4). Every line in `SCRIPT.md`, in or
 | 5 | "Level it up." · "Spend STRIDE to repair and upgrade it. Each level earns more." | §1, §5 | ✓ |
 | 6 | Art (level 02, durability 100) · `OWNER 0xdfAb…1465 → 0xe4ae…356f` | §6 | ✓ |
 | 6 | "It’s really yours." · "It lives in your wallet. Send it to any wallet, and its stats go with it." | §1, §6 | ✓ |
-| 7 | `Walk.` `Earn.` `Upgrade.` · `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.yashmittal.xyz →` | §1 | ✓ |
+| 7 | `Walk.` `Earn.` `Upgrade.` · `StrideMon` · `MONAD TESTNET • ANDROID DEMO` · `stridemon.xyz →` | §1 | ✓ |
 | 7 | "STRIDE is a testnet token with no monetary value." | §1 | ✓ Required |
 
 No transaction hash, contract address, rule table or settlement time is on screen any more.

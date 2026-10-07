@@ -188,6 +188,6 @@ export const endCardContent = {
   headlineLines: ['Walk.', 'Earn.', 'Upgrade.'],
   wordmark: 'StrideMon',
   metaItems: ['Monad testnet', 'Android demo'],
-  siteLabel: 'stridemon.yashmittal.xyz',
+  siteLabel: 'stridemon.xyz',
   disclaimer: `${TOKEN_SYMBOL} is a testnet token with no monetary value.`,
 } as const

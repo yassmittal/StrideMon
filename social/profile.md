@@ -10,7 +10,7 @@ settings.
 | Name | `StrideMon` |
 | Bio (136 / 160) | `A walking game on Monad testnet. Own a Sneaker NFT, walk to earn STRIDE, upgrade it. STRIDE has no monetary value. Built by @yash_mittal_dev` |
 | Location | leave empty |
-| Website | `stridemon.yashmittal.xyz` |
+| Website | `stridemon.xyz` |
 | Pinned post | the launch thread's Post 1, from launch day |
 
 ## Images

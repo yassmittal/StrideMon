@@ -55,7 +55,7 @@ API + demo wallets + demo script". The optional durability-below-50 penalty
 
 | What | Value |
 |------|-------|
-| Product name | **StrideMon** (domain `stridemon.com`) |
+| Product name | **StrideMon** (domain `stridemon.xyz`, D-040) |
 | App slug / bundle id / Android package | `stridemon` / `com.stridemon.app` |
 | Reward token | name `Stride`, symbol **`STRIDE`**, 18 decimals, contract `StrideToken` |
 | npm workspace scope | `@stridemon/*` |

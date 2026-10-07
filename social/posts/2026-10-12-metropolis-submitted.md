@@ -6,8 +6,8 @@ format: single
 pillar: proof
 media:
   - path: launch-video/out/stridemon-launch-16x9.mp4
-    alt: "A 45-second film. Meet StrideMon, a move-to-earn game on Monad. Step 1: get a Sneaker, an NFT drawn as a line sneaker on a dark card; the first one is free. Step 2: walk or run, while the app counts time, distance and an estimated reward from +5 to +10 STRIDE. Step 3: press STOP and +10 STRIDE settles on Monad testnet after a 3-minute walk. Step 4: spend STRIDE to repair and level the Sneaker up; each level adds a lime speed line and earns more per minute. Then the Sneaker moves from one wallet to another with its stats. End card: Walk. Earn. Upgrade. StrideMon, Monad testnet, Android demo, stridemon.yashmittal.xyz. STRIDE is a testnet token with no monetary value."
-link_reply: https://stridemon.yashmittal.xyz/?source=x-stridemon
+    alt: "A 45-second film. Meet StrideMon, a move-to-earn game on Monad. Step 1: get a Sneaker, an NFT drawn as a line sneaker on a dark card; the first one is free. Step 2: walk or run, while the app counts time, distance and an estimated reward from +5 to +10 STRIDE. Step 3: press STOP and +10 STRIDE settles on Monad testnet after a 3-minute walk. Step 4: spend STRIDE to repair and level the Sneaker up; each level adds a lime speed line and earns more per minute. Then the Sneaker moves from one wallet to another with its stats. End card: Walk. Earn. Upgrade. StrideMon, Monad testnet, Android demo, stridemon.xyz. STRIDE is a testnet token with no monetary value."
+link_reply: https://stridemon.xyz/?source=x-stridemon
 sources:
   - docs/hackathon-submission.md (the hackathon, the track, the deadline)
   - docs/architecture/game-rules.md, docs/decisions.md D-007 (one settlement per run, minted by SneakerGame)
@@ -33,4 +33,4 @@ Monad testnet. STRIDE has no monetary value.
 ## Reply (the link)
 
 The code is open: github.com/yassmittal/StrideMon
-The site and the waitlist: https://stridemon.yashmittal.xyz/?source=x-stridemon
+The site and the waitlist: https://stridemon.xyz/?source=x-stridemon

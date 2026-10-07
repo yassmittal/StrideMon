@@ -1,7 +1,8 @@
 # Deployment (Phase 8.6)
 
 Every step to host the API at **`https://stridemon-api.yashmittal.xyz`** and build the demo app,
-in order, in one file (D-028, D-034). You run the steps yourself. Each one says what you should
+in order, in one file (D-028, D-034). Step 11 moves everything to **`stridemon.xyz`** (D-040): the
+API also answers at `https://api.stridemon.xyz`. You run the steps yourself. Each one says what you should
 see. If a step doesn't match, stop there and send the step number, the command and its output.
 
 How it fits on the instance, next to `meAsAgent` and the others:
@@ -212,7 +213,7 @@ bunx eas-cli build --profile demo --platform android
 ```
 
 The `demo` profile in `eas.json` bundles the JavaScript and points at
-`https://stridemon-api.yashmittal.xyz`. Its `EXPO_PUBLIC_*` values live on the profile, because
+`https://stridemon-api.yashmittal.xyz` (`https://api.stridemon.xyz` since D-040). Its `EXPO_PUBLIC_*` values live on the profile, because
 `.env` files never reach EAS.
 
 - It waits in the free EAS queue for 10 to 80 minutes, like the development build
@@ -244,6 +245,135 @@ All on the demo build and the hosted API. Details are in `device-testing.md` §9
 
 Then one full rehearsal of [`demo-script.md`](demo-script.md) on this build. Send me the ticked
 list.
+
+## 11. The `stridemon.xyz` domain (D-040)
+
+`stridemon.xyz` (Namecheap) becomes the main domain: the site at `https://stridemon.xyz`, the API
+also at `https://api.stridemon.xyz`. `www.stridemon.xyz` and `stridemon.yashmittal.xyz` redirect
+(308) to the site, path and `?source=` kept. The old API name keeps working for installed builds.
+Do the steps in order: the API must accept the new origin before the site moves.
+
+- [X] (done 2026-10-07) `stridemon.xyz` and `www.stridemon.xyz` are domains of the `stridemon`
+      Vercel project (`vercel domains add <name> stridemon`). Keep `stridemon.yashmittal.xyz`
+      attached too, with no redirect set in the dashboard: `website/vercel.json` does all the
+      redirects.
+
+### 11.1 DNS (Namecheap)
+
+namecheap.com → **Domain List** → `stridemon.xyz` → **Manage**. Keep **Nameservers: Namecheap
+BasicDNS** (its free email forwarding needs it). **Advanced DNS** → **Host Records**: delete the
+parking records (`URL Redirect Record @` and `CNAME www → parkingpage.namecheap.com`), then add:
+
+| Type | Host | Value | TTL |
+|------|------|-------|-----|
+| `A` | `@` | `216.198.79.1` | Automatic |
+| `A` | `@` | `64.29.17.1` | Automatic |
+| `CNAME` | `www` | `db99236d6ab969ef.vercel-dns-017.com.` | Automatic |
+| `A` | `api` | `100.55.119.114` | Automatic |
+
+The first three are what `vercel domains verify stridemon.xyz` asked for on 2026-10-07. If Vercel
+shows other values later, use those.
+
+- [ ] `dig +short stridemon.xyz` prints the two Vercel IPs, `dig +short api.stridemon.xyz` prints
+      `100.55.119.114`.
+- [ ] `vercel domains verify stridemon.xyz` and `vercel domains verify www.stridemon.xyz` say
+      `"ok": true`. Vercel then issues the HTTPS certificates on its own.
+
+### 11.2 Email: `support@stridemon.xyz`
+
+Same page → **Mail Settings** → **Email Forwarding** → add `support` → `yashmittalmm@gmail.com`.
+Namecheap adds its own `MX` and SPF `TXT` records. Add one more record in **Host Records** so no
+one can send mail as `@stridemon.xyz` (nothing sends from it; forwarding only receives):
+
+| Type | Host | Value |
+|------|------|-------|
+| `TXT` | `_dmarc` | `v=DMARC1; p=reject;` |
+
+- [ ] An email from another account to `support@stridemon.xyz` arrives in Gmail (check spam).
+- [ ] Then set `supportEmail` in `website/src/content/site.ts` to `support@stridemon.xyz`. Use it
+      for Google Play's contact email too.
+
+If you later want Gmail to *send* as `support@stridemon.xyz`, change the DMARC policy to
+`p=none` first, or those emails get rejected.
+
+### 11.3 The API at `api.stridemon.xyz`
+
+On the server, like step 5, a second server block next to the old one (which stays). Don't copy
+the old file: certbot added its certificate lines to it.
+
+```bash
+sudo vim /etc/nginx/sites-available/api.stridemon.xyz
+```
+
+Paste step 5's block with `server_name api.stridemon.xyz;`. Then:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/api.stridemon.xyz /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d api.stridemon.xyz
+```
+
+Then in `~/projects/stridemon/apps/api/.env`, allow the new site (keep the old origin):
+
+```text
+WAITLIST_ALLOWED_ORIGINS=https://stridemon.xyz,https://stridemon.yashmittal.xyz
+```
+
+```bash
+pm2 restart stridemon-api
+```
+
+Leave `SIWE_DOMAIN` as it is until 11.5.
+
+- [ ] From your Mac: `curl -s https://api.stridemon.xyz/health` prints
+      `{"status":"ok","mongo":"connected"}`, and the old name still does too.
+- [ ] `curl -si -X OPTIONS https://api.stridemon.xyz/v1/waitlist -H 'Origin: https://stridemon.xyz' -H 'Access-Control-Request-Method: POST' | grep -i access-control-allow-origin`
+      prints `https://stridemon.xyz`.
+
+### 11.4 Deploy the website
+
+Push the change (`siteUrl`, the waitlist URL and the redirects in `website/vercel.json`). Vercel
+builds it like any other push.
+
+- [ ] `https://stridemon.xyz` loads with a valid certificate, and the waitlist form accepts an
+      email (then delete that row from `waitlistSignups`).
+- [ ] `curl -sI 'https://stridemon.yashmittal.xyz/privacy?source=x-stridemon'` answers `308` with
+      `location: https://stridemon.xyz/privacy?source=x-stridemon`.
+- [ ] `curl -sI https://www.stridemon.xyz` answers `308` with `location: https://stridemon.xyz/`.
+- [ ] `curl -s https://stridemon.xyz | grep -o '<link rel="canonical"[^>]*>'` shows
+      `https://stridemon.xyz`, and `curl -s https://stridemon.xyz/sitemap.xml` lists only
+      `stridemon.xyz` URLs.
+
+### 11.5 The app
+
+1. Build the `demo` profile (step 8). It now points at `https://api.stridemon.xyz`, links the
+   privacy policy on `stridemon.xyz` and tells the wallet its site is `https://stridemon.xyz`.
+2. Install it. Then, on the server, set `SIWE_DOMAIN=stridemon.xyz` in the `.env` and
+   `pm2 restart stridemon-api`. Older builds still say `stridemon.com` to the wallet, which may
+   warn on their sign-in from now on (D-040), so swap the APK link in `README.md` at the same time.
+3. For development, set `EXPO_PUBLIC_API_BASE_URL=https://api.stridemon.xyz` in
+   `apps/mobile/.env`.
+
+- [ ] Sign out, then sign in again on the phone: the wallet's sign-in request names
+      `stridemon.xyz`, and Home loads.
+
+### 11.6 Search engines and links
+
+1. **Google Search Console** (search.google.com/search-console) → **Add property** → **Domain** →
+   `stridemon.xyz`. Copy the `google-site-verification=…` value and add it in Namecheap as a
+   `TXT` record on host `@` (it sits next to the SPF record). Verify.
+2. **Sitemaps** → submit `https://stridemon.xyz/sitemap.xml`. **URL inspection** →
+   `https://stridemon.xyz/` → **Request indexing**.
+3. **Bing Webmaster Tools** (bing.com/webmasters) → **Import from Google Search Console**. Bing
+   also feeds DuckDuckGo and ChatGPT search.
+4. The old address was public for two days, so the 308 redirects are enough to move it. If
+   Search Console lists `stridemon.yashmittal.xyz` anywhere, leave it: it fades out on its own.
+5. Change the website link everywhere it's set by hand: the @stridemon and @yash_mittal_dev X
+   profiles (`social/profile.md`), the GitHub repo's **About → Website**, the DeltaV profile, the
+   Metropolis submission, and the Play listing when there is one.
+6. **Reown** (dashboard.reown.com → the project): if it has a domain set, change it to
+   `stridemon.xyz` (and verify it if it offers to), so wallets don't flag a mismatch with the
+   app's metadata.
 
 ---
 

@@ -283,7 +283,7 @@ pillar: proof            # proof | build-story | deep-dive | conversation (§6)
 media:
   - path: launch-video/out/stridemon-launch-4x5.mp4
     alt: "…"
-link_reply: https://stridemon.yashmittal.xyz
+link_reply: https://stridemon.xyz
 sources: [launch-video/FACTS.md §3, docs/decisions.md D-007]
 approved: ""             # Yash writes "Yash 2026-10-07". Claude never fills this in
 x_url: ""
@@ -339,7 +339,7 @@ Do this before any post. Draft copy for `profile.md`:
 - **Bio** (≤ 160 characters, the composer will enforce it):
   `A walking game on Monad testnet. Own a Sneaker NFT, walk to earn STRIDE, upgrade it. STRIDE has no monetary value. Built by @yash_mittal_dev`
   (136 characters)
-- **Link:** `stridemon.yashmittal.xyz`
+- **Link:** `stridemon.xyz` (D-040; was `stridemon.yashmittal.xyz`)
 - **Avatar:** the site's mark (`website/src/app/icon.svg`: the Sneaker line on `#141515` with the
   lime stroke), rendered at 400 × 400. The circle crop hides the rounded corners.
   `rsvg-convert -w 400 -h 400 website/src/app/icon.svg -o social/media/avatar-400.png`
@@ -598,4 +598,4 @@ else is working there.
 
 Built from [`waitlist-prompt.md`](waitlist-prompt.md): email only, called a waitlist, stored by the
 StrideMon API, with `?source=` saved for §10's metrics. X links use
-`https://stridemon.yashmittal.xyz/?source=x-stridemon#waitlist` (or `x-yash`).
+`https://stridemon.xyz/?source=x-stridemon#waitlist` (or `x-yash`).

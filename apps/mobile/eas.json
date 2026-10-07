@@ -16,7 +16,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://stridemon-api.yashmittal.xyz",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.stridemon.xyz",
         "EXPO_PUBLIC_MONAD_CHAIN_ID": "10143",
         "EXPO_PUBLIC_MONAD_RPC_URL": "https://testnet-rpc.monad.xyz",
         "EXPO_PUBLIC_REOWN_PROJECT_ID": "ea460b58f93f44c50993ce1f67e6cee8"
@@ -29,7 +29,7 @@
         "buildType": "app-bundle"
       },
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://stridemon-api.yashmittal.xyz",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.stridemon.xyz",
         "EXPO_PUBLIC_MONAD_CHAIN_ID": "10143",
         "EXPO_PUBLIC_MONAD_RPC_URL": "https://testnet-rpc.monad.xyz",
         "EXPO_PUBLIC_REOWN_PROJECT_ID": "ea460b58f93f44c50993ce1f67e6cee8"

@@ -33,7 +33,7 @@ const originListSchema = z
     z
       .array(
         z.url().refine((originText) => new URL(originText).origin === originText, {
-          message: 'must be a bare origin such as https://stridemon.yashmittal.xyz (no path or /)',
+          message: 'must be a bare origin such as https://stridemon.xyz (no path or /)',
         }),
       )
       .min(1, 'must name at least one origin'),
@@ -55,7 +55,7 @@ const environmentVariablesSchema = z.object({
   REFRESH_TOKEN_TTL_DAYS: positiveIntegerStringSchema,
   SIWE_DOMAIN: z
     .string()
-    .regex(/^[a-z0-9.-]+(:\d+)?$/, 'must be a bare host such as stridemon.com (no scheme or path)'),
+    .regex(/^[a-z0-9.-]+(:\d+)?$/, 'must be a bare host such as stridemon.xyz (no scheme or path)'),
   MONAD_RPC_URL: z.url(),
   MONAD_CHAIN_ID: z
     .string()

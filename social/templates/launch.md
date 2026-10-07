@@ -8,7 +8,7 @@ media:
   - post: 1
     path: launch-video/out/stridemon-launch-4x5.mp4
     alt: ""
-link_reply: https://stridemon.yashmittal.xyz/?source=x-stridemon#waitlist
+link_reply: https://stridemon.xyz/?source=x-stridemon#waitlist
 sources: []
 approved: ""
 x_url: ""

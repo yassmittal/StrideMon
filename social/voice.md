@@ -69,7 +69,7 @@ excitement.
 | Asked | Answer |
 |---|---|
 | "Airdrop?" / "Wen token?" | No. STRIDE is a testnet game token with no monetary value, and there's no sale or airdrop. The game is the point. |
-| "Can I play?" | It's an Android demo build on Monad testnet for now. The waitlist gets one email when it opens: stridemon.yashmittal.xyz/#waitlist |
+| "Can I play?" | It's an Android demo build on Monad testnet for now. The waitlist gets one email when it opens: stridemon.xyz/#waitlist |
 | "iOS?" | Android first. iOS comes later. |
 | "Can I cheat by driving?" | No. A minute only counts at 1–20 km/h on average, and GPS jumps over 40 km/h are dropped. |
 | "What's STRIDE worth?" | Nothing. It's a testnet token for the game. |

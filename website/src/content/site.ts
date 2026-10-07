@@ -1,13 +1,13 @@
-// Site-wide facts. `siteUrl` is the one place the domain lives (D-035): it may move to
-// stridemon.com later.
-export const siteUrl = 'https://stridemon.yashmittal.xyz'
+// Site-wide facts. `siteUrl` is the one place the domain lives (D-035, D-040). `vercel.json`
+// redirects `www.stridemon.xyz` and the old `stridemon.yashmittal.xyz` here.
+export const siteUrl = 'https://stridemon.xyz'
 
 /**
  * Where the waitlist form posts (D-037): the hosted StrideMon API, which allows this site's origin.
  * `NEXT_PUBLIC_WAITLIST_API_URL` overrides it for a local run (website/README.md → Waitlist).
  */
 export const waitlistApiUrl =
-  process.env.NEXT_PUBLIC_WAITLIST_API_URL ?? 'https://stridemon-api.yashmittal.xyz/v1/waitlist'
+  process.env.NEXT_PUBLIC_WAITLIST_API_URL ?? 'https://api.stridemon.xyz/v1/waitlist'
 
 export const siteName = 'StrideMon'
 

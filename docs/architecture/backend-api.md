@@ -168,12 +168,12 @@ upgrade: the app reads and writes those on-chain directly.
 | `JWT_ACCESS_TOKEN_SECRET` | 64 random bytes | |
 | `ACCESS_TOKEN_TTL_SECONDS` | `900` | 15 minutes |
 | `REFRESH_TOKEN_TTL_DAYS` | `30` | |
-| `SIWE_DOMAIN` | `stridemon.com` | must match the domain in the message the app requests |
+| `SIWE_DOMAIN` | `stridemon.xyz` | must match the domain in the message the app requests |
 | `MONAD_RPC_URL` | testnet RPC | |
 | `MONAD_CHAIN_ID` | `10143` | selects addresses from `@stridemon/chain` |
 | `GAME_SERVER_PRIVATE_KEY` | `0x…` | **testnet only**; KMS in Phase 10 |
 | `GAS_DRIP_AMOUNT_WEI` | `"100000000000000000"` | 0.1 testnet MON |
-| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.yashmittal.xyz` | comma-separated origins allowed to call `/v1/waitlist` from a browser (D-037) |
+| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.xyz` | comma-separated origins allowed to call `/v1/waitlist` from a browser (D-037, D-040) |
 
 Contract addresses come from `@stridemon/chain` for `MONAD_CHAIN_ID`, and boot fails if
 that chain has none. API tests pass `buildServer({ contractAddresses })` instead, with the

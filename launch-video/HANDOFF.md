@@ -92,7 +92,7 @@ The list below is the original plan, kept for reference.
    and the exact render commands per format.
 7. **STOP 5:** report the files, sizes and durations, the three contact sheets, what changed from the
    storyboard (`SCRIPT.md` already lists the Gate 2 changes) and why, and a ready-to-paste two-line X
-   post with the URL `stridemon.yashmittal.xyz` and no hashtag spam.
+   post with the URL `stridemon.xyz` and no hashtag spam.
 
 ## Decisions already made (don't reopen them)
 

@@ -32,10 +32,25 @@ function buildDemoVideoObject() {
   }
 }
 
-// JSON-LD for the page: the game itself, the FAQ built from the same data as the section, and the
-// demo video when it's on the page.
+// JSON-LD for the page: the site's name (Google shows it above the result instead of the domain),
+// StrideMon as an organization with its logo, the game itself, the FAQ built from the same data as
+// the section, and the demo video when it's on the page.
 export function buildStructuredData({ hasDemoVideo }: StructuredDataOptions) {
   return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: `${siteUrl}/`,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: siteName,
+      url: `${siteUrl}/`,
+      logo: `${siteUrl}/apple-icon`,
+      sameAs: [xAccountUrl, githubRepositoryUrl],
+    },
     {
       '@context': 'https://schema.org',
       '@type': 'VideoGame',
