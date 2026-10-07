@@ -8,6 +8,9 @@ from the first attempt (a verified waitlist line with waves, §15) exists on `ma
 - **v3 (this file):** **1,000 one-of-a-kind Founding Passes.** Every pass is a different design,
   and each can be minted once. The player browses them, finds the one they love, and mints it in
   about a second.
+- **Art direction (2026-10-08, §4.3):** the pass art is one detailed Sneaker on a quiet
+  background (no scene). Its reference drawing is in `packages/contracts/art/sneaker/`. This
+  replaces the line-art scenes proposed in §3.2.
 
 **How to use it:** start a new Claude Code session in the repo root and say: *"Read
 `docs/founding-pass-brief.md`, ask me the open questions in §13, then plan Part 1 and wait."*
@@ -62,6 +65,12 @@ strongest line in a share post. The cost is more art to generate and more to rev
 a racier mint day for the most-wanted designs (§5.3, §9).
 
 ### 3.2 Anatomy of a design
+
+> **Superseded in part by §4.3 (2026-10-08).** The art is now the detailed Sneaker in
+> `packages/contracts/art/sneaker/`, on a quiet background with no scene. The *Family* and *Sky detail* layers
+> below were scene layers, so they no longer fit, and the line-art style is replaced. The rest of
+> this section (1-of-1s, generated names, rarity from layers, Unlaced/Laced, gold frame) still
+> holds. Part 1 redesigns the layer table around the new Sneaker.
 
 Every design is a combination of **layers** drawn in the same line-art style as the Sneaker
 (D-030: plain paths, rects and text, no filters, gradients or CSS, so the app's `react-native-svg`
@@ -135,6 +144,52 @@ design-table contract.
    website's content.
 6. **Export for the website:** the same script writes the 1,000 preview SVGs (about 4 MB in total)
    to `website/public/pass-art/` (it needs a `fs_permissions` write entry in `foundry.toml`).
+
+### 4.3 Art direction (2026-10-08)
+
+Yash's call after two rounds of drafts: **one high-quality, near-real Sneaker, on a quiet
+background with no scene.**
+
+- **The reference:** `packages/contracts/art/sneaker/` (`build-sneaker-art.ts` generates
+  `sneaker.svg` and a `sneaker.png` preview; its README explains every part). It's a detailed running
+  shoe, toe down and heel up: a knit upper with forefoot cage lines, a mesh window, a contoured toe
+  cap, orange suede, a black heel with amber waves, a padded collar, laces, and a sculpted midsole
+  with lugs underneath. It uses flat tonal panels and no gradients or filters, and is about 42 KB.
+- **A quiet background, no scene.** The busy collage of the first draft is out: the Sneaker
+  carries the image. The generator writes the bare shoe (`sneaker.svg`, transparent) and four
+  backgrounds to pick from: `studio` (warm wall, light pool, cast shadow), `contour` (warm wall,
+  thin rings, corner marks), `night` (the app's dark panel, faint lime glow) and `volt` (solid
+  lime). **Open:** which one, or whether the background varies across the 1,000 (it could be one
+  of the layers). The card's labels (`FOUNDING PASS`, `#0137`, `FOUNDER 42`) and the gold frame
+  are still to design.
+- **Where the 1,000 differences come from now:** the Sneaker's own parts, not scenes. Candidates are
+  the colourway (each panel's colour), the upper pattern (cage, contours, knit), the heel graphic,
+  the midsole insert, lace colour, sole shape and small details (tag, stitching). Part 1 designs
+  this table and checks it still gives 1,000 designs that don't look like copies (§4.2's
+  "≤ 5 of 8 layers shared" rule).
+- **Generative alternative (flat panels, STEPN-style):** `packages/contracts/art/sneaker-templates/`
+  draws 3 templates (runner, high-top, trail) in solid-colour angular panels with a thick outline,
+  coloured from 6 families by a seed. About 2 to 3 KB each, D-030-safe, and the most direct route to
+  1,000 different passes. STEPN's everyday sneakers work the same way: a base design plus colours,
+  rendered to PNG on their servers, with hand-painted one-offs for the top tiers. Open: this style,
+  the detailed Sneaker, or both (templates for the 1,000, the detailed one as a Legendary or hero).
+- **Reference SVGs:** `packages/contracts/art/sneaker-references/` holds 21 freely licensed sneaker
+  SVGs from the web (CC0, MIT, ISC, Apache 2.0, CC BY 4.0) to study or remix. Its README lists each
+  file's source, author and licence, plus what to fix before using one: brand-like stripes,
+  gradients, size and attribution.
+- **Before porting to Solidity:** check the drawing in the app with `SvgXml` on the Android phone.
+  It uses `<clipPath>`, one `<pattern>` and (for the shadow) `<use>`, which D-030 didn't list. If both draw the same as in a
+  browser, record that in the decision for this work.
+
+**Notes from a throwaway prototype of the §4.2 generator (2026-10-08, old line-art layers):**
+- The rules can all be met: 200 per family, exactly 10 Legendaries, no two designs sharing more than
+  5 of 8 layers, and 1,000 distinct SVGs, generated in well under a second with a seeded random.
+- **The contrast rule matters.** Rare palettes must be placed only where they stay readable. Gold
+  vanished on a light background, so the generator assigns rare layers to compatible slots first.
+- **Generated names repeat.** "Family + Silhouette + Extra" gave only 293 different names for 1,000
+  designs, with one name on up to 10 passes. To keep "one of one" true in share posts, either
+  include the number in the name, add a naming word and reject repeats, or give each pass its own
+  name from a word list (§13.3).
 
 ## 5. The gallery and the flow
 
@@ -346,10 +401,11 @@ email → verified → minted drop-off, races lost (a design taken first), minte
 
 ## 13. Open questions for Yash (answer these first)
 
-1. **Art:** layers drawn on-chain (recommended), or something else (§4.1)? And will you sketch the
-   layers yourself in Figma, or should Claude draft them in code for you to react to?
-2. **Theme:** families by time of day (Dawn, Noon, Dusk, Midnight, Storm) and the layer list in
-   §3.2, or another theme?
+1. **Art:** layers drawn on-chain (recommended), or something else (§4.1)? *Partly answered
+   2026-10-08:* the look is the detailed Sneaker in `packages/contracts/art/sneaker/` (§4.3), drafted
+   by Claude in code. Still open: whether it goes on-chain as is (the Solidity port).
+2. **Theme:** ~~families by time of day~~ dropped: a quiet background, no scene (§4.3). Open:
+   which background, which Sneaker parts vary across the 1,000, and the names that come from them.
 3. **Names:** generated from layers (recommended), plus hand-picked names for the ~10 Legendaries?
 4. **Gold frame** at random on about 1 in 10 passes? Recommended: yes.
 5. **Mint on the website (A)?** Recommended: yes.
