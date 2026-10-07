@@ -3,6 +3,7 @@ import { waitlistContent } from '@/content/waitlist'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { SectionHeading } from '../ui/section-heading'
 import { WaitlistForm } from '../ui/waitlist-form'
+import { XLogoIcon } from '../ui/x-logo-icon'
 
 const headingId = `${sectionIds.waitlist}-heading`
 
@@ -30,6 +31,7 @@ export function WaitlistSection() {
             rel="noopener noreferrer"
             className="group inline-flex min-h-11 items-center gap-2 font-mono"
           >
+            <XLogoIcon />
             {xAccountHandle}
             <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
           </a>

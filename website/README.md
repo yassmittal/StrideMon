@@ -23,13 +23,14 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | Path | What |
 |---|---|
 | `src/content/` | Every piece of copy, number, link and address, as typed data |
-| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `githubRepositoryUrl` and `waitlistApiUrl` |
+| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `githubRepositoryUrl`, `waitlistApiUrl`, `supportEmail` and the legal page paths |
+| `src/content/legal/` | The privacy policy (`/privacy`) and account deletion (`/delete-account`) pages Google Play asks for (D-039). Keep them true to the app and API |
 | `src/content/waitlist.ts` | The waitlist section's copy and error lines |
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
-| `src/app/` | Layout, page, Open Graph image, icons, sitemap, robots |
+| `src/app/` | Layout, home page, `privacy/` and `delete-account/`, Open Graph image, icons, sitemap, robots |
 
 A contract redeploy or a rule change must update `src/content/` too (D-035).
 
