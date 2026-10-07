@@ -104,23 +104,34 @@ from what the script prints. Keep the demo under 8 MB and each loop under 1.5 MB
 
 ## Waitlist
 
-The `#waitlist` section (D-037) posts `{ email, phonePlatform?, source?, website? }` to the
-StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a hidden honeypot. The
-page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link such as
-`https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it.
+The `#waitlist` section (D-037) is the line for the 1,000 Founding Passes (D-041,
+[`../docs/founding-pass-plan.md`](../docs/founding-pass-plan.md) §4.5). It has three steps:
+
+1. **Email:** posts `{ email, phonePlatform?, source?, referralCode?, website? }` to `waitlistApiUrl`
+   (`POST /v1/waitlist`). `website` is a hidden honeypot. The page's `?source=` goes along when
+   it's 1–32 characters of `[a-z0-9-]`, and `?ref=` when it's a referral code, so
+   `https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it and
+   `https://stridemon.xyz/?ref=8BNG6G7K#waitlist` credits the friend.
+2. **Code:** the API emails a 6-digit code; the form posts it to `POST /v1/waitlist/verify`.
+3. **Place:** "Your place in line" and the share link. The browser keeps its referral code in
+   `localStorage`, so a return visit opens on the place (`GET /v1/waitlist/place`).
+
+The code is in `src/components/ui/waitlist-*.tsx`, `src/lib/waitlist-request.ts` and
+`src/lib/remembered-referral-code.ts`; the copy is in `src/content/waitlist.ts`.
 
 The API only answers browsers from the origins in its `WAITLIST_ALLOWED_ORIGINS`. To try the form
-locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port, and
-point the site at it for that run:
+locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port (with
+no `BREVO_API_KEY`, it logs each code instead of emailing it), and point the site at it:
 
 ```bash
 NEXT_PUBLIC_WAITLIST_API_URL=http://localhost:3001/v1/waitlist bun run dev
 ```
 
-Count the sign-ups by source (against Atlas, with `mongosh`):
+Count the sign-ups by source, and the verified ones (against Atlas, with `mongosh`):
 
 ```js
 db.waitlistSignups.aggregate([{ $group: { _id: '$source', signups: { $sum: 1 } } }, { $sort: { signups: -1 } }])
+db.waitlistSignups.countDocuments({ verifiedAt: { $type: 'date' } })
 ```
 
 ## Fonts

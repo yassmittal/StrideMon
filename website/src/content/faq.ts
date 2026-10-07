@@ -17,7 +17,22 @@ export const frequentlyAskedQuestions: readonly FrequentlyAskedQuestion[] = [
   {
     question: 'Can I play now?',
     answer:
-      'It’s an Android demo build on Monad testnet. Join the waitlist and we’ll email you when it opens.',
+      'It’s an Android demo build on Monad testnet. Join the waitlist for a Founding Pass: we open the line in waves and email you when it’s your turn.',
+  },
+  {
+    question: 'What is the Founding Pass?',
+    answer:
+      'A free, numbered NFT on Monad testnet for the first 1,000 players. It lets you into StrideMon early, and it changes once you finish your first walk.',
+  },
+  {
+    question: 'Can I sell or send my Founding Pass?',
+    answer:
+      'No. It stays in the wallet it was minted to. It isn’t a token and never turns into one.',
+  },
+  {
+    question: 'Is this an airdrop?',
+    answer:
+      'No. There’s no token sale and no airdrop. The pass is a place in the game, nothing more.',
   },
   {
     question: 'Do I need crypto?',
