@@ -21,6 +21,7 @@ The two accounts never post the same text: the second one quotes or reposts, and
 | `templates/` | Start every post from one of these |
 | `reviews.md` | The weekly review, newest first |
 | `media/` | X-only images and clips. **Gitignored**: each file's post says the command that rebuilds it |
+| `deltav/` | The DeltaV profile: rewards, unlock timeline, weekly update drafts (`updates/`), and how to earn believers and feedback |
 
 No tooling, no `package.json`, not a Bun workspace. Images and clips come from `ffmpeg` and
 `rsvg-convert`. Later, cards will come from `remotion still` in `launch-video/`.
