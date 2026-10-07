@@ -1,4 +1,4 @@
-import { demoVideo } from '@/content/demo-video'
+import { demoVideo, demoVideoChapters } from '@/content/demo-video'
 import { heroContent } from '@/content/hero'
 import { screenshots } from '@/content/screenshots'
 import { sectionIds } from '@/content/site'
@@ -56,7 +56,11 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
             posterPath={hasPublicFile(demoVideo.posterPath) ? demoVideo.posterPath : undefined}
             widthPixels={demoVideo.widthPixels}
             heightPixels={demoVideo.heightPixels}
+            durationSeconds={demoVideo.durationSeconds}
+            chapters={demoVideoChapters}
             label={demoVideo.label}
+            playLabel={demoVideo.playLabel}
+            replayLabel={demoVideo.replayLabel}
             className={phoneClassName}
           />
         ) : (

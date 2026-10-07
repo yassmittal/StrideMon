@@ -161,6 +161,18 @@
   }
 }
 
+/* ---------- Demo player: the play button grows a little on hover ---------- */
+
+.demo-player-button {
+  transition: transform 300ms var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .demo-player-surface:hover .demo-player-button {
+    transform: scale(1.06);
+  }
+}
+
 /* ---------- Hero Sneaker art: lines draw in once, then the ticks and the bar fill ---------- */
 
 .sneaker-art svg {

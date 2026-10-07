@@ -13,7 +13,23 @@ export const demoVideo = {
   description:
     'Recorded on the Android demo build: sign in with MetaMask, a three-and-a-half-minute walk, 15 STRIDE settled on Monad, then the Sneaker sent to another wallet with its stats.',
   structuredDataName: 'StrideMon demo: walk, earn STRIDE and send a Sneaker NFT on Monad',
+  playLabel: 'Watch the demo',
+  replayLabel: 'Watch again',
 } as const
+
+export type DemoVideoChapter = {
+  title: string
+  startSeconds: number
+}
+
+// The player's chapter bars. Each starts mid-crossfade between two scenes of
+// scripts/cut-demo-video.sh (it prints those times), so a re-cut means new times here.
+export const demoVideoChapters: readonly DemoVideoChapter[] = [
+  { title: 'Sign in', startSeconds: 0 },
+  { title: 'Walk', startSeconds: 12.2 },
+  { title: 'Earn', startSeconds: 27.4 },
+  { title: 'Send', startSeconds: 35 },
+]
 
 // A short silent loop of the active run screen (sped up about 12×), shown in How it works' Move
 // step in place of its screenshot while on screen, when motion is allowed. It has the

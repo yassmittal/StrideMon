@@ -126,6 +126,11 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    - *Changed (2026-10-06):* the demo video sits in the hero in place of the Home screenshot (its
      poster is that same Home screen), so the hero has one CTA, **See the contracts**, and there is
      no separate demo section or chapter list. Without the video file the Home screenshot shows.
+   - *Changed (2026-10-07):* the browser's own video controls are gone. The player is ours: before
+     play, the poster with a white **Watch the demo · 0:56** pill; while playing, story-style chapter
+     bars across the top of the screen (Sign in, Walk, Earn, Send) that jump to a chapter when
+     pressed, and a press anywhere else pauses or resumes; at the end, a **Watch again** pill. Still
+     muted, `preload="none"`, played only on click. Space or K pauses, ← and → step 5 s.
 3. **How it works:** the loop as six numbered steps, each with one line and, where there is one, a
    screenshot:
    1. **Own:** sign in with your wallet and get a free starter Sneaker NFT, plus a little test MON

@@ -57,7 +57,12 @@ of the Home screenshot (otherwise the screenshot stays). Its facts live in
 | `public/videos/stridemon-demo-poster.webp` | Its poster: the run summary, +15 STRIDE settled | 21 KB |
 | `public/videos/stridemon-walk-loop.mp4` | 6 s run-screen loop (12×, +10 → +15 STRIDE) for How it works' Move step, 540 × 1170 | 96 KB |
 
-The demo loads nothing but its poster until the visitor presses play. The loop loads
+The demo loads nothing but its poster until the visitor presses play. It uses our own controls
+(`src/components/ui/demo-video-player.tsx`), not the browser's: a play button on the poster, chapter
+bars on a frosted strip while it plays (pressing one jumps there), a press anywhere else to pause,
+and a replay button at the end. The chapter times are `demoVideoChapters` in
+`src/content/demo-video.ts`; they follow the scene starts that `cut-demo-video.sh` prints, so update
+them after a re-cut. The loop loads
 when its step nears the viewport, plays only on screen, and never shows with reduced motion (the
 screenshot stays).
 
@@ -94,8 +99,8 @@ ffmpeg -ss 180 -t 70 -i media-source/video3.mp4 \
   public/videos/stridemon-walk-loop.mp4
 ```
 
-After a re-cut, update `durationSeconds` in `src/content/demo-video.ts` from what the script
-prints. Keep the demo under 8 MB and each loop under 1.5 MB.
+After a re-cut, update `durationSeconds` and `demoVideoChapters` in `src/content/demo-video.ts`
+from what the script prints. Keep the demo under 8 MB and each loop under 1.5 MB.
 
 ## Waitlist
 
