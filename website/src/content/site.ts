@@ -1,5 +1,5 @@
-// Site-wide facts. `siteUrl` is the one place the domain lives (D-035, D-040). `vercel.json`
-// redirects `www.stridemon.xyz` and the old `stridemon.yashmittal.xyz` here.
+// Site-wide facts. `siteUrl` is the one place the domain lives (D-035, D-040). Vercel's domain
+// redirects send `www.stridemon.xyz` and the old `stridemon.yashmittal.xyz` here.
 export const siteUrl = 'https://stridemon.xyz'
 
 /**

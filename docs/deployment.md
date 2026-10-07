@@ -2,7 +2,7 @@
 
 Every step to host the API at **`https://stridemon-api.yashmittal.xyz`** and build the demo app,
 in order, in one file (D-028, D-034). Step 11 moves everything to **`stridemon.xyz`** (D-040): the
-API also answers at `https://api.stridemon.xyz`. You run the steps yourself. Each one says what you should
+API moves to `https://api.stridemon.xyz`. You run the steps yourself. Each one says what you should
 see. If a step doesn't match, stop there and send the step number, the command and its output.
 
 How it fits on the instance, next to `meAsAgent` and the others:
@@ -249,14 +249,16 @@ list.
 ## 11. The `stridemon.xyz` domain (D-040)
 
 `stridemon.xyz` (Namecheap) becomes the main domain: the site at `https://stridemon.xyz`, the API
-also at `https://api.stridemon.xyz`. `www.stridemon.xyz` and `stridemon.yashmittal.xyz` redirect
-(308) to the site, path and `?source=` kept. The old API name keeps working for installed builds.
+at `https://api.stridemon.xyz`. `www.stridemon.xyz` and `stridemon.yashmittal.xyz` redirect
+(308) to the site, path and `?source=` kept. The old API name is removed once the new app build is
+out (11.6): builds made before then stop working.
 Do the steps in order: the API must accept the new origin before the site moves.
 
 - [X] (done 2026-10-07) `stridemon.xyz` and `www.stridemon.xyz` are domains of the `stridemon`
-      Vercel project (`vercel domains add <name> stridemon`). Keep `stridemon.yashmittal.xyz`
-      attached too, with no redirect set in the dashboard: `website/vercel.json` does all the
-      redirects.
+      Vercel project (`vercel domains add <name> stridemon`). `stridemon.yashmittal.xyz` stays
+      attached too.
+- [X] (done 2026-10-07) `www.stridemon.xyz` and `stridemon.yashmittal.xyz` are set to **Redirect
+      to `stridemon.xyz` (308)** (Project → Settings → Domains, or `vercel api` as in D-040).
 
 ### 11.1 DNS (Namecheap)
 
@@ -274,14 +276,19 @@ parking records (`URL Redirect Record @` and `CNAME www → parkingpage.namechea
 The first three are what `vercel domains verify stridemon.xyz` asked for on 2026-10-07. If Vercel
 shows other values later, use those.
 
-- [ ] `dig +short stridemon.xyz` prints the two Vercel IPs, `dig +short api.stridemon.xyz` prints
+- [X] `dig +short stridemon.xyz` prints the two Vercel IPs, `dig +short api.stridemon.xyz` prints
       `100.55.119.114`.
-- [ ] `vercel domains verify stridemon.xyz` and `vercel domains verify www.stridemon.xyz` say
-      `"ok": true`. Vercel then issues the HTTPS certificates on its own.
+- [X] `vercel domains verify stridemon.xyz` and `vercel domains verify www.stridemon.xyz` say
+      `"ok": true`.
+- [X] `https://stridemon.xyz` has a certificate. Vercel hadn't issued it on its own 20 minutes
+      after DNS was right (the browser said "Not secure"), so it was requested by hand:
+      `vercel certs issue stridemon.xyz www.stridemon.xyz`.
 
 ### 11.2 Email: `support@stridemon.xyz`
 
-Same page → **Mail Settings** → **Email Forwarding** → add `support` → `yashmittalmm@gmail.com`.
+Optional until the Play listing. Forwarding is free with BasicDNS; it's not Namecheap's paid
+Private Email. Same page → **Mail Settings** → **Email Forwarding** → add `support` →
+`yashmittalmm@gmail.com`.
 Namecheap adds its own `MX` and SPF `TXT` records. Add one more record in **Host Records** so no
 one can send mail as `@stridemon.xyz` (nothing sends from it; forwarding only receives):
 
@@ -298,14 +305,30 @@ If you later want Gmail to *send* as `support@stridemon.xyz`, change the DMARC p
 
 ### 11.3 The API at `api.stridemon.xyz`
 
-On the server, like step 5, a second server block next to the old one (which stays). Don't copy
-the old file: certbot added its certificate lines to it.
+Nothing that runs stops: the same PM2 process answers both names, and the old nginx file and
+certificate stay. On the server, a second nginx file. Don't copy the old one: certbot added its
+certificate lines to it.
 
 ```bash
 sudo vim /etc/nginx/sites-available/api.stridemon.xyz
 ```
 
-Paste step 5's block with `server_name api.stridemon.xyz;`. Then:
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name api.stridemon.xyz;
+
+    location / {
+        proxy_pass http://127.0.0.1:3020;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 2m;
+    }
+}
+```
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/api.stridemon.xyz /etc/nginx/sites-enabled/
@@ -313,7 +336,15 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d api.stridemon.xyz
 ```
 
-Then in `~/projects/stridemon/apps/api/.env`, allow the new site (keep the old origin):
+certbot asks whether to redirect HTTP to HTTPS: pick redirect. Then update the code (this also
+ships D-039's `DELETE /v1/me`) and allow the new site in `.env` (keep the old origin):
+
+```bash
+cd ~/projects/stridemon
+git pull
+~/.bun-1.4.2/bin/bun install --frozen-lockfile --filter '@stridemon/api'
+vim apps/api/.env
+```
 
 ```text
 WAITLIST_ALLOWED_ORIGINS=https://stridemon.xyz,https://stridemon.yashmittal.xyz
@@ -321,19 +352,22 @@ WAITLIST_ALLOWED_ORIGINS=https://stridemon.xyz,https://stridemon.yashmittal.xyz
 
 ```bash
 pm2 restart stridemon-api
+pm2 logs stridemon-api --lines 20
 ```
+
+Bun reads `.env` when the process starts, so the restart picks the change up.
 
 Leave `SIWE_DOMAIN` as it is until 11.5.
 
-- [ ] From your Mac: `curl -s https://api.stridemon.xyz/health` prints
-      `{"status":"ok","mongo":"connected"}`, and the old name still does too.
-- [ ] `curl -si -X OPTIONS https://api.stridemon.xyz/v1/waitlist -H 'Origin: https://stridemon.xyz' -H 'Access-Control-Request-Method: POST' | grep -i access-control-allow-origin`
+- [X] From your Mac: `curl -s https://api.stridemon.xyz/health` prints
+      `{"status":"ok","mongo":"connected"}` (2026-10-07).
+- [X] `curl -si -X OPTIONS https://api.stridemon.xyz/v1/waitlist -H 'Origin: https://stridemon.xyz' -H 'Access-Control-Request-Method: POST' | grep -i access-control-allow-origin`
       prints `https://stridemon.xyz`.
 
 ### 11.4 Deploy the website
 
-Push the change (`siteUrl`, the waitlist URL and the redirects in `website/vercel.json`). Vercel
-builds it like any other push.
+Push the change (`siteUrl` and the waitlist URL). Vercel builds it like any other push. (Pushed
+2026-10-07 before 11.3, so the waitlist fails until 11.3 is done.)
 
 - [ ] `https://stridemon.xyz` loads with a valid certificate, and the waitlist form accepts an
       email (then delete that row from `waitlistSignups`).
@@ -348,16 +382,45 @@ builds it like any other push.
 
 1. Build the `demo` profile (step 8). It now points at `https://api.stridemon.xyz`, links the
    privacy policy on `stridemon.xyz` and tells the wallet its site is `https://stridemon.xyz`.
-2. Install it. Then, on the server, set `SIWE_DOMAIN=stridemon.xyz` in the `.env` and
-   `pm2 restart stridemon-api`. Older builds still say `stridemon.com` to the wallet, which may
-   warn on their sign-in from now on (D-040), so swap the APK link in `README.md` at the same time.
-3. For development, set `EXPO_PUBLIC_API_BASE_URL=https://api.stridemon.xyz` in
-   `apps/mobile/.env`.
+2. Install it, and put its APK link in `README.md` (the two links to the old APK, under the
+   title and in "Try it").
+3. On the server, set `SIWE_DOMAIN=stridemon.xyz` in the `.env` and `pm2 restart stridemon-api`.
+   (Done 2026-10-07: `apps/mobile/.env` already points development at `https://api.stridemon.xyz`.)
 
 - [ ] Sign out, then sign in again on the phone: the wallet's sign-in request names
       `stridemon.xyz`, and Home loads.
 
-### 11.6 Search engines and links
+### 11.6 Remove the old API name
+
+Right after 11.5. From here, every build made before it stops working (D-040).
+
+On the server:
+
+```bash
+sudo rm /etc/nginx/sites-enabled/stridemon-api.yashmittal.xyz /etc/nginx/sites-available/stridemon-api.yashmittal.xyz
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot delete --cert-name stridemon-api.yashmittal.xyz
+vim ~/projects/stridemon/apps/api/.env
+```
+
+```text
+WAITLIST_ALLOWED_ORIGINS=https://stridemon.xyz
+```
+
+```bash
+pm2 restart stridemon-api
+```
+
+Then vercel.com → **Domains** → `yashmittal.xyz` → **DNS Records**: delete the `stridemon-api`
+`A` record. (Without it the name falls back to the `*.yashmittal.xyz` wildcard, which Vercel
+answers with a 404.)
+
+- [ ] `curl -s https://api.stridemon.xyz/health` still prints `{"status":"ok","mongo":"connected"}`.
+- [ ] `curl -s -m 5 https://stridemon-api.yashmittal.xyz/health` no longer prints it.
+- [ ] `sudo certbot certificates` no longer lists `stridemon-api.yashmittal.xyz`.
+- [ ] A waitlist sign-up on `https://stridemon.xyz` still works.
+
+### 11.7 Search engines and links
 
 1. **Google Search Console** (search.google.com/search-console) → **Add property** → **Domain** →
    `stridemon.xyz`. Copy the `google-site-verification=…` value and add it in Namecheap as a

@@ -160,9 +160,9 @@ The page has a **waitlist** (D-037): `#waitlist` posts an email to the API's `PO
 (`waitlistSignups`), the only route with CORS (`WAITLIST_ALLOWED_ORIGINS`). Email only, never a
 wallet; call it a waitlist, never a whitelist.
 **Domain (D-040, 2026-10-07):** **`stridemon.xyz`** (Namecheap DNS) is the main domain. The site is
-`https://stridemon.xyz`; `www` and the old `stridemon.yashmittal.xyz` 308-redirect to it from
-`website/vercel.json`. The API also answers at `https://api.stridemon.xyz` (new builds and the
-waitlist use it); the old API name stays up for installed builds. `SIWE_DOMAIN` and the AppKit
+`https://stridemon.xyz`; `www` and the old `stridemon.yashmittal.xyz` 308-redirect to it (Vercel
+domain redirects, not `vercel.json`, which missed the home page). The API is at `https://api.stridemon.xyz` (new builds and the
+waitlist use it); the old `stridemon-api.yashmittal.xyz` is removed once the new build ships (§11.6). `SIWE_DOMAIN` and the AppKit
 metadata are `stridemon.xyz`. The rollout steps are `docs/deployment.md` §11, run by Yash.
 The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy and docs. The contracts
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local

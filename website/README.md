@@ -135,9 +135,10 @@ TTF the same way at build time. IBM Plex Mono comes from `next/font/google`.
 1. New project from the repo. Root directory `website`, framework Next.js, install command
    `bun install`, build command `bun run build`.
 2. Domains (D-040): `stridemon.xyz` (the canonical one), `www.stridemon.xyz` and the old
-   `stridemon.yashmittal.xyz`, all on this project with no dashboard redirect. `vercel.json`
-   308-redirects the other two to `https://stridemon.xyz`, keeping the path and query string.
+   `stridemon.yashmittal.xyz`, all on this project. The other two are set to **Redirect to
+   `stridemon.xyz` (308)** in Project → Settings → Domains, which keeps the path and query string.
+   Don't move this into `vercel.json`: a `/:path*` rule there misses the home page.
    DNS for `stridemon.xyz` is on Namecheap (`docs/deployment.md` §11).
 
-`vercel.json` also serves the generated `opengraph-image`, `twitter-image` and `apple-icon` (which
+`vercel.json` serves the generated `opengraph-image`, `twitter-image` and `apple-icon` (which
 have no file extension in a static export) as `image/png`.

@@ -861,28 +861,32 @@ ours. Supersedes the domain parts of D-014, D-034 and D-035.
   2. **`www.stridemon.xyz`** and the old **`stridemon.yashmittal.xyz`** answer with a permanent
      (308) redirect to the same path on `https://stridemon.xyz`, query string kept, so posted
      `?source=x-…` links still credit their account and search engines move the old page's
-     signals to the new one. The redirects live in `website/vercel.json` (host-matched), not in
-     the Vercel dashboard. All three names are domains of the one Vercel project.
-  3. The hosted API also answers at **`https://api.stridemon.xyz`** (an `A` record to the same
-     instance, its own nginx server block and certificate, `deployment.md` §11). The old
-     `stridemon-api.yashmittal.xyz` keeps working for builds already installed. New builds
-     (`eas.json`) and the website's waitlist use the new name.
+     signals to the new one. They are Vercel **domain redirects** (Project → Domains), set with
+     `vercel api /v9/projects/stridemon/domains/<name> -X PATCH -F redirect=stridemon.xyz -F
+     redirectStatusCode=308`. A host-matched `/:path*` rule in `vercel.json` was tried first and
+     missed the home page (Vercel served the cached static `index.html` without matching it).
+     All three names are domains of the one Vercel project.
+  3. The hosted API moves to **`https://api.stridemon.xyz`** (an `A` record to the same
+     instance, its own nginx server block and certificate, `deployment.md` §11). New builds
+     (`eas.json`) and the website's waitlist use it. The old `stridemon-api.yashmittal.xyz` is
+     **removed completely** (nginx block, certificate, DNS record) as soon as the new `demo`
+     build is installed and linked from `README.md`, not kept for older builds (Yash,
+     2026-10-07).
   4. **`SIWE_DOMAIN`** and the AppKit metadata `url` become **`stridemon.xyz`**, a domain we can
      prove we own (wallets compare the two, and Reown can verify the domain).
   5. **DNS stays on Namecheap** (BasicDNS), unlike `yashmittal.xyz` on Vercel: Namecheap's free
      email forwarding needs its own DNS, and gives `support@stridemon.xyz` for Google Play and
      the privacy policy. Until that address forwards, `supportEmail` stays the Gmail address.
-  6. `WAITLIST_ALLOWED_ORIGINS` on the hosted API lists `https://stridemon.xyz` and keeps
-     `https://stridemon.yashmittal.xyz` (harmless, since that name now only redirects).
+  6. `WAITLIST_ALLOWED_ORIGINS` on the hosted API is `https://stridemon.xyz` only, once the old
+     API name is removed. The old site name keeps its redirect: that's what keeps posted links
+     and search results working.
   7. Posts already published, past decisions, `launch-video/FOOTAGE.md` and the briefs
      (`landing-page-prompt.md`, `waitlist-prompt.md`) keep the old names on purpose.
 - **Why:** a product domain is shorter to say and type than a subdomain of a personal one, and
   lets StrideMon own its SIWE domain, email and search presence. Redirecting instead of keeping
   both names live avoids duplicate pages in search.
-- **Trade-off:** one more DNS zone to manage, at a different provider from `yashmittal.xyz`. The
-  instance now serves the API under two names until the old builds are gone. Installed builds
-  still carry `stridemon.com` in their wallet metadata, so after the `SIWE_DOMAIN` switch their
-  sign-in message names a different domain than the app, and a wallet may warn on sign-in until
-  the new build is installed.
-- **Revisit when:** the instance moves, or the old builds are retired (drop the
-  `stridemon-api.yashmittal.xyz` server block then).
+- **Trade-off:** one more DNS zone to manage, at a different provider from `yashmittal.xyz`.
+  Every build made before the switch (the old README APK, anything already downloaded) stops
+  working when the old API name goes: it can't reach the API at all. Few copies exist, so a
+  clean cut beats running two names.
+- **Revisit when:** the instance moves.
