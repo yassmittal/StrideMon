@@ -64,3 +64,8 @@ export async function markUserReceivedGasDrip(
     { $set: { hasReceivedGasDrip: true, updatedAt: now } },
   )
 }
+
+/** Account deletion (D-039). */
+export async function deleteUserById(database: Db, userId: ObjectId): Promise<void> {
+  await getUsersCollection(database).deleteOne({ _id: userId })
+}

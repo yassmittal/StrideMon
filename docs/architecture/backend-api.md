@@ -111,6 +111,7 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | POST | `/v1/auth/refresh` | 2 | `{ refreshToken }` → the same shape as verify, with a rotated refresh token |
 | POST | `/v1/auth/sign-out` | 2 | 🔒 `{ refreshToken }` → 204. Revokes that auth session. The access token only carries the user, so the body names the auth session |
 | GET | `/v1/me` | 2 | 🔒 current user + onboarding state |
+| DELETE | `/v1/me` | 8 | 🔒 → 204. Deletes the player's off-chain data: user, auth sessions, activity sessions and their location samples. Keeps `chainTransactions` (D-039) |
 | POST | `/v1/onboarding/starter-sneaker` | 3 | 🔒 enqueue starter mint + gas drip (idempotent) |
 | GET | `/v1/onboarding/status` | 3 | 🔒 state of those transactions |
 | POST | `/v1/activity-sessions` | 4 | 🔒 `{ sneakerTokenId }` → start a session |

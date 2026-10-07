@@ -16,7 +16,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'com.stridemon.app',
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
+      // The brand mark's dark tile (design-system.md §2.2 `darkPanel`); scripts/build-app-icons.sh draws the layers.
+      backgroundColor: '#141515',
       foregroundImage: './assets/android-icon-foreground.png',
       backgroundImage: './assets/android-icon-background.png',
       monochromeImage: './assets/android-icon-monochrome.png',

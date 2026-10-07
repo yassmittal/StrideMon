@@ -1,8 +1,4 @@
-import { Modal, Pressable, StyleSheet, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { IconCircleButton } from '../../../components/ui/IconCircleButton'
-import { MetaLabel } from '../../../components/ui/MetaLabel'
-import { colors, layout, radii, spacing } from '../../../theme'
+import { BottomSheet } from '../../../components/ui/BottomSheet'
 import {
   isSneakerGameTransactionPending,
   type SneakerGameTransactionState,
@@ -49,51 +45,22 @@ export function SneakerTransactionSheet({
   onConfirmPress,
   onClosePress,
 }: SneakerTransactionSheetProps) {
-  const safeAreaInsets = useSafeAreaInsets()
-  const isPending = isSneakerGameTransactionPending(transactionState)
-
-  function handleRequestClose() {
-    if (!isPending) onClosePress()
-  }
-
   return (
-    <Modal
-      visible={confirmation !== null}
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={handleRequestClose}
+    <BottomSheet
+      isVisible={confirmation !== null}
+      metaItems={describeTransactionPhase(transactionState)}
+      isDismissible={!isSneakerGameTransactionPending(transactionState)}
+      onClosePress={onClosePress}
     >
-      <View style={styles.backdrop}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={handleRequestClose}
-          accessibilityLabel="Dismiss"
-          accessibilityRole="button"
-          disabled={isPending}
+      {confirmation !== null && (
+        <SheetStep
+          confirmation={confirmation}
+          transactionState={transactionState}
+          onConfirmPress={onConfirmPress}
+          onClosePress={onClosePress}
         />
-        <View
-          style={[styles.sheet, { paddingBottom: spacing.large + safeAreaInsets.bottom }]}
-          accessibilityViewIsModal
-        >
-          <View style={styles.handle} />
-          <View style={styles.header}>
-            <MetaLabel items={describeTransactionPhase(transactionState)} />
-            {!isPending && (
-              <IconCircleButton icon="close" accessibilityLabel="Close" onPress={onClosePress} />
-            )}
-          </View>
-          {confirmation !== null && (
-            <SheetStep
-              confirmation={confirmation}
-              transactionState={transactionState}
-              onConfirmPress={onConfirmPress}
-              onClosePress={onClosePress}
-            />
-          )}
-        </View>
-      </View>
-    </Modal>
+      )}
+    </BottomSheet>
   )
 }
 
@@ -175,33 +142,3 @@ function describeTransactionPhase(transactionState: SneakerGameTransactionState)
     }
   }
 }
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: colors.backdrop,
-  },
-  sheet: {
-    paddingTop: spacing.small,
-    paddingHorizontal: spacing.large,
-    borderTopLeftRadius: radii.card,
-    borderTopRightRadius: radii.card,
-    backgroundColor: colors.background,
-    gap: spacing.medium,
-  },
-  handle: {
-    alignSelf: 'center',
-    width: spacing.extraLarge + spacing.small,
-    height: spacing.extraSmall,
-    borderRadius: radii.pill,
-    backgroundColor: colors.overlayOnLight,
-  },
-  // Keeps its height when the close button hides, so the content doesn't jump.
-  header: {
-    minHeight: layout.iconCircleButtonSize,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-})

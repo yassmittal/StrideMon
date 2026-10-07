@@ -96,7 +96,8 @@ async function refreshAccessTokenOnce(): Promise<string | null> {
   }
 }
 
-async function endAuthSessionOnThisDevice(): Promise<void> {
+/** Forgets the auth session on this device only. Also used after the account is deleted. */
+export async function endAuthSessionOnThisDevice(): Promise<void> {
   await deleteStoredRefreshToken()
   setAuthSession({ status: 'signedOut' })
 }

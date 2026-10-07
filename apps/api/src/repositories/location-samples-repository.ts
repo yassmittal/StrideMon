@@ -68,3 +68,14 @@ export function listLocationSamplesOfActivitySession(
     .sort({ sequenceNumber: 1 })
     .toArray()
 }
+
+/** Account deletion (D-039). */
+export async function deleteLocationSamplesOfActivitySessions(
+  database: Db,
+  activitySessionIds: readonly ObjectId[],
+): Promise<void> {
+  if (activitySessionIds.length === 0) return
+  await getLocationSamplesCollection(database).deleteMany({
+    activitySessionId: { $in: [...activitySessionIds] },
+  })
+}

@@ -8,6 +8,7 @@ import { StatValue } from '../../../components/ui/StatValue'
 import { buildTransactionExplorerUrl } from '../../../lib/chain/explorer-urls'
 import { formatStrideAmountNumber } from '../../../lib/format/format-stride-amount'
 import { colors, readOpticalPullLeft, spacing, textStyles } from '../../../theme'
+import { STRIDE_VALUE_NOTICE } from '../../rewards/stride-value-notice'
 import { SummaryHeadline } from './SummaryHeadline'
 
 type SettlementHeroCardProps =
@@ -72,6 +73,7 @@ export function SettlementHeroCard(props: SettlementHeroCardProps) {
           </View>
           <Text style={styles.symbol}>STRIDE</Text>
         </View>
+        <Text style={styles.valueNotice}>{STRIDE_VALUE_NOTICE}</Text>
       </View>
       <Panel>
         <View style={styles.statRow}>
@@ -111,6 +113,10 @@ const styles = StyleSheet.create({
   symbol: {
     ...textStyles.title,
     color: colors.textPrimary,
+  },
+  valueNotice: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
   },
   statRow: {
     flexDirection: 'row',

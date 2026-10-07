@@ -10,7 +10,7 @@ const REQUEST_TIMEOUT_MILLISECONDS = 15_000
 const HTTP_STATUS_UNAUTHORIZED = 401
 
 type RequestJsonOptions<ResponseSchema extends z.ZodType> = {
-  method: 'GET' | 'POST'
+  method: 'GET' | 'POST' | 'DELETE'
   path: `/${string}`
   responseSchema: ResponseSchema
   body?: unknown

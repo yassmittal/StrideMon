@@ -1,32 +1,42 @@
 import { router } from 'expo-router'
 import { StyleSheet, Text, View } from 'react-native'
+import { BrandMark } from '../../src/components/ui/BrandMark'
 import { Button } from '../../src/components/ui/Button'
 import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Screen } from '../../src/components/ui/Screen'
 import { ApiHealthStatus } from '../../src/features/health/components/ApiHealthStatus'
 import { useApiHealth } from '../../src/features/health/hooks/useApiHealth'
-import { colors, readOpticalPullLeft, spacing, textStyles } from '../../src/theme'
+import {
+  buildFullDescenderLineStyle,
+  colors,
+  layout,
+  readOpticalPullLeft,
+  spacing,
+  textStyles,
+} from '../../src/theme'
 
 export default function WelcomeScreen() {
   const apiHealthQuery = useApiHealth()
 
   return (
     <Screen>
-      <MetaLabel items={['StrideMon', 'Move to earn', 'Monad']} />
+      <View style={styles.brand}>
+        <BrandMark size={layout.brandMarkSize} />
+        <MetaLabel items={['StrideMon', 'Move to earn', 'Monad']} />
+      </View>
       <View style={styles.hero}>
-        <Text style={styles.headline} accessibilityRole="header">
-          Walk.{'\n'}Earn.{'\n'}Upgrade.
-        </Text>
+        <View accessible accessibilityRole="header" accessibilityLabel="Walk. Earn. Upgrade.">
+          <Text style={styles.headline}>Walk.{'\n'}Earn.</Text>
+          <Text style={[styles.headline, styles.headlineLastLine]}>Upgrade.</Text>
+        </View>
         <Text style={styles.intro}>
           Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then spend STRIDE to
           repair and level it up.
         </Text>
       </View>
-      {/* Kept from Phase 0: a wrong LAN IP shows up here, before sign-in fails on it. */}
+      {/* Only when the API can't be reached: then sign-in would fail on it. */}
       <ApiHealthStatus
-        health={apiHealthQuery.data}
         error={apiHealthQuery.error}
-        isLoading={apiHealthQuery.isLoading}
         isRefetching={apiHealthQuery.isRefetching}
         onRetryPress={() => apiHealthQuery.refetch()}
       />
@@ -36,6 +46,9 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  brand: {
+    gap: spacing.large,
+  },
   hero: {
     flex: 1,
     justifyContent: 'center',
@@ -46,6 +59,8 @@ const styles = StyleSheet.create({
     marginLeft: readOpticalPullLeft(textStyles.displayLarge.fontSize),
     color: colors.textPrimary,
   },
+  // Keeps the g of "Upgrade." on Android.
+  headlineLastLine: buildFullDescenderLineStyle(textStyles.displayLarge),
   intro: {
     ...textStyles.intro,
     color: colors.textPrimary,

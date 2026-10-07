@@ -7,6 +7,7 @@ import {
   formatStrideAmountNumber,
 } from '../../../lib/format/format-stride-amount'
 import { colors, spacing, textStyles } from '../../../theme'
+import { STRIDE_VALUE_NOTICE } from '../stride-value-notice'
 
 type RewardBalanceCardProps = {
   rewardBalanceWei: bigint | undefined
@@ -36,6 +37,7 @@ export function RewardBalanceCard({
       />
       <Text style={styles.caption}>
         Earn STRIDE by walking and running with your Sneaker, then spend it on repairs and upgrades.
+        {` ${STRIDE_VALUE_NOTICE}`}
       </Text>
     </Panel>
   )

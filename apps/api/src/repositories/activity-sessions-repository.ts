@@ -261,3 +261,18 @@ export function listActivitySessionsOfUser(
     .limit(limit)
     .toArray()
 }
+
+/** Account deletion (D-039): the ids first, so their location samples can go too. */
+export async function listActivitySessionIdsOfUser(
+  database: Db,
+  userId: ObjectId,
+): Promise<ObjectId[]> {
+  const activitySessions = await getActivitySessionsCollection(database)
+    .find({ userId }, { projection: { _id: 1 } })
+    .toArray()
+  return activitySessions.map((activitySession) => activitySession._id)
+}
+
+export async function deleteActivitySessionsOfUser(database: Db, userId: ObjectId): Promise<void> {
+  await getActivitySessionsCollection(database).deleteMany({ userId })
+}

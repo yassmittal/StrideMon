@@ -5,4 +5,10 @@ export { motion } from './motion'
 export { MINIMUM_TOUCH_TARGET_SIZE, radii } from './radii'
 export { shadows } from './shadows'
 export { spacing } from './spacing'
-export { fontSizes, letterSpacings, lineHeights, textStyles } from './typography'
+export {
+  buildFullDescenderLineStyle,
+  fontSizes,
+  letterSpacings,
+  lineHeights,
+  textStyles,
+} from './typography'

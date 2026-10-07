@@ -109,8 +109,10 @@ Match the app: `docs/architecture/design-system.md`, a Lusion-style look. In sho
 The copy below is a starting draft. Keep it short, plain and confident, with no hype words
 ("revolutionary", "next-gen"), no exclamation marks and no price or earnings claims.
 
-1. **Header:** the `StrideMon` wordmark. Links: How it works, Rules, Fair play, On-chain, FAQ. A
-   small pill: **See it on Monad** (the `SneakerNft` explorer page).
+1. **Header:** the StrideMon mark and wordmark. Links: How it works, Rules, Fair play, On-chain,
+   Waitlist, FAQ. Two small pills: **Follow** with X's logo (icon only on a phone) and a dark
+   **Join waitlist** (D-039; it replaced the **See it on Monad** pill, since the hero already
+   links to the contracts).
 2. **Hero:**
    - Meta: `STRIDEMON • MOVE TO EARN • MONAD TESTNET`
    - Headline (the app's welcome screen): **Walk. Earn. Upgrade.**

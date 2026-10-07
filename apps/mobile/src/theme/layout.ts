@@ -18,6 +18,8 @@ export const layout = {
   /** The arrow button at the end of a text field. */
   textFieldArrowSize: 21,
   iconCircleButtonSize: 45,
+  /** Derived: the StrideMon mark at the top of the welcome screen, as tall as a pill. */
+  brandMarkSize: 45,
   /** Derived: the glyph inside an icon circle button, and its line width. */
   iconSize: 18,
   iconStrokeWidth: 1.5,

@@ -55,6 +55,26 @@ function buildTextStyle({
   }
 }
 
+/** Satoshi's own line height: ascent 1010 + descent 240 per 1000 units. */
+const satoshiNaturalLineHeight = 1.25
+
+/**
+ * For a Text that holds only the last line of a tight display headline. Android trims a line
+ * height below the font's own evenly above and below the glyphs (React Native's
+ * `CustomLineHeightSpan`), so the last line loses its descenders: "Upgrade." lost the foot of its
+ * g. This line gets Satoshi's full height back, and the negative margin keeps its baseline where
+ * the tight line put it.
+ */
+export function buildFullDescenderLineStyle(textStyle: TextStyle): TextStyle {
+  const fontSize = textStyle.fontSize ?? 0
+  const tightLineHeight = textStyle.lineHeight ?? fontSize
+  const naturalLineHeight = Math.round(fontSize * satoshiNaturalLineHeight)
+  return {
+    lineHeight: naturalLineHeight,
+    marginTop: -Math.round((naturalLineHeight - tightLineHeight) / 2),
+  }
+}
+
 /**
  * Each §3.3 row as one style to spread (`...textStyles.body`). Case stays with the
  * component: `MetaLabel` and the buttons uppercase their own text.

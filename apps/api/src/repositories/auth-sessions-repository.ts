@@ -72,3 +72,8 @@ export async function revokeAllAuthSessionsOfUser(
     { $set: { revokedAt: now, revocationReason: 'reuseDetected', updatedAt: now } },
   )
 }
+
+/** Account deletion (D-039): every auth session, revoked or not. */
+export async function deleteAuthSessionsOfUser(database: Db, userId: ObjectId): Promise<void> {
+  await getAuthSessionsCollection(database).deleteMany({ userId })
+}

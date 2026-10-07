@@ -154,7 +154,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-039.
+for it. The next free decision number is D-040.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -167,3 +167,8 @@ monetary value." StrideMon is entered in Monad's **Metropolis** hackathon (submi
 "Run your own stack", the session's transaction hashes), the dashboard copy and the submission post
 draft. Left: a recorded run with a repair and an upgrade on the new contracts (none exist yet), the
 ≤ 3-minute demo video, the dashboard itself, and the two `TODO(submission)` gaps in `README.md`.
+**UI polish and store readiness (D-039, 2026-10-07):** the app's own icon and splash (the website's
+line-Sneaker mark, drawn by `apps/mobile/scripts/build-app-icons.sh`), the website header's logo,
+X and waitlist pills, `/privacy` and `/delete-account`, `DELETE /v1/me` with Profile → Delete
+account, the `production` EAS profiles, and the testnet line under STRIDE amounts. Needs the API
+and website redeployed and a new app build, then a phone check.

@@ -817,3 +817,34 @@ Made 2026-10-06, during Phase 8.8. Supersedes the token half of D-014.
   until they're recaptured.
 - **Revisit when:** before any mainnet launch, when the trademark check D-014 asks for covers
   the token name too.
+
+## D-039 — Store readiness: the code half of the Play Store guide
+
+Made 2026-10-07, after the Metropolis submission work, from `play-store-release.md` Part B.
+
+- **Decision:** the code and config Play needs are built now; the account, listing and closed
+  test (Parts A, C, D of the guide) wait until Yash decides to ship.
+  1. **Privacy policy** at `/privacy` and **account deletion** at `/delete-account` on the
+     landing page, both linked from the footer and from the app's Profile tab. The public
+     contact is `supportEmail` in `website/src/content/site.ts`.
+  2. **`DELETE /v1/me`** (🔒, 204) deletes the player's off-chain data: the `users` record, their
+     `authSessions`, `activitySessions` and those sessions' `locationSamples`. It keeps
+     `chainTransactions`: they record public on-chain transactions, and their per-wallet keys are
+     what stop a deleted-and-returning wallet from getting a second starter Sneaker or gas drip.
+     Nothing on-chain changes: Sneakers and STRIDE stay in the wallet.
+  3. The app's Profile tab gets **Delete account** behind a confirmation sheet, then signs out.
+  4. `eas.json` gets a **`production`** build profile (an `.aab`, `autoIncrement`) and a submit
+     profile for the internal track. `google-play-service-account.json` is gitignored.
+  5. The **testnet line** ("Monad testnet. STRIDE has no monetary value.") sits under the STRIDE
+     balance on Home and under the reward on the run summary.
+  6. The app has its **own icon and splash**: the website's line-Sneaker mark, drawn by
+     `apps/mobile/scripts/build-app-icons.sh`.
+  7. The welcome screen no longer shows `API: OK • MongoDB: connected`. The health check stays,
+     but only speaks when the API can't be reached.
+- **Why:** Play rejects an app without a privacy policy URL or in-app and web account deletion.
+  Players don't need to see the API's status, and the default Expo icon looked unfinished.
+- **Trade-off:** account deletion is off-chain only, and an access token keeps working until it
+  expires (every route that reads the user then answers `UNAUTHENTICATED`). The hosted API needs
+  a redeploy before the app's Delete account works against it.
+- **Revisit when:** a crash SDK or analytics is added (the privacy policy and Data safety form
+  change), or on mainnet (Phase 10).

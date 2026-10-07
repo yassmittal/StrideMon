@@ -46,7 +46,7 @@ describe('UpgradePanel', () => {
     await renderUpgradePanel({ onConfirmPress: handleConfirmPress })
 
     await fireEvent.press(screen.getByRole('button', { name: 'Upgrade to level 2' }))
-    expect(screen.getByLabelText('STRIDE balance: 60 STRIDE to 10 STRIDE')).toBeTruthy()
+    expect(screen.getByLabelText('STRIDE balance: 60 to 10')).toBeTruthy()
     await fireEvent.press(screen.getByRole('button', { name: 'Confirm in wallet' }))
 
     expect(handleConfirmPress).toHaveBeenCalledTimes(1)

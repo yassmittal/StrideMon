@@ -4,8 +4,10 @@ Everything needed to put StrideMon on Google Play, from the developer account to
 rollout, in order. Written 2026-10-07 against the current app (`apps/mobile`, Expo SDK 57,
 React Native 0.86, `com.stridemon.app`) and Play's policies as of that date.
 
-This is **not a phase yet**. When Yash decides to ship, record it as a decision (next free number:
-D-039) and turn Part B into a phase spec, following the "doc first" rule.
+**Part B's code is built (D-039, 2026-10-07):** the privacy and delete-account pages, `DELETE /v1/me`
+and the app's Delete account, the `production` EAS profiles, the testnet line and the app icon.
+They go live when the website and the hosted API are redeployed. Parts A, C and D wait until Yash
+decides to ship.
 
 > **Timeline reality.** A personal developer account can't publish to production until a closed
 > test has run with **at least 12 testers, opted in for 14 days in a row** (step 7). Add account
@@ -388,10 +390,10 @@ Review takes up to about 7 days; a rejection explains what to fix, then you reap
 ## Checklist
 
 - [ ] 1. Developer account paid and verified
-- [ ] 2.1 Privacy policy page live
-- [ ] 2.2 Account deletion in the app and on the web
-- [ ] 2.3 `production` build and submit profiles in `eas.json`
-- [ ] 2.5 Testnet notice next to STRIDE amounts; reviewer path works from a fresh wallet
+- [ ] 2.1 Privacy policy page live (built, D-039; live after the website deploy)
+- [ ] 2.2 Account deletion in the app and on the web (built, D-039; needs the API redeploy and a phone check)
+- [x] 2.3 `production` build and submit profiles in `eas.json`
+- [ ] 2.5 Testnet notice next to STRIDE amounts (done, D-039); reviewer path works from a fresh wallet
 - [ ] 3. Game-server funded, Reown checked, API set to survive reboots
 - [ ] 4. Store listing complete with icon, feature graphic and screenshots
 - [ ] 5. Every App content section complete (including the foreground service video)

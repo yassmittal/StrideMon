@@ -32,6 +32,8 @@ apps/mobile/android/
 *.key
 *.mobileprovision
 *.orig.*
+# Play Console upload key for `eas submit` (play-store-release.md step 6.4)
+google-play-service-account.json
 
 # Tooling
 coverage/

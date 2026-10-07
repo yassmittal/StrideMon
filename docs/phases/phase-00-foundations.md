@@ -53,7 +53,8 @@ Auth, the wallet, contracts beyond the placeholder, and any game screen.
 - [ ] `bun run typecheck`, `bun run lint` and `bun run test` pass across all workspaces.
 - [ ] `forge build` and `forge test` pass.
 - [ ] `bun run db:start` → `bun run dev:api` → `/health` reports Mongo connected.
-- [ ] The dev build on a real phone shows "API: ok" through the LAN URL.
+- [ ] The dev build on a real phone shows "API: ok" through the LAN URL. (Since D-039 the
+  welcome screen shows nothing when the API answers, and only explains a failure.)
 - [ ] The API fails fast at boot with a clear message when an env var is missing.
 
 ## Demo check

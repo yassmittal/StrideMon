@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, fontFamilies, textStyles } from '../../../theme'
+import { colors, fontFamilies, spacing, textStyles } from '../../../theme'
 
 export type StatChange = {
   label: string
@@ -30,14 +30,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.medium,
   },
+  // The label wraps before the numbers do, so the two never run into each other.
   label: {
     ...textStyles.body,
+    flexShrink: 1,
     color: colors.textSecondary,
   },
   values: {
     ...textStyles.body,
     fontFamily: fontFamilies.monoRegular,
+    flexShrink: 0,
   },
   valueBefore: {
     color: colors.textSecondary,

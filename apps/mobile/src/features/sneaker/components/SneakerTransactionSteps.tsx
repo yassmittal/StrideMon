@@ -5,7 +5,10 @@ import {
   buildSneakerExplorerUrl,
   buildTransactionExplorerUrl,
 } from '../../../lib/chain/explorer-urls'
-import { formatStrideAmount } from '../../../lib/format/format-stride-amount'
+import {
+  formatStrideAmount,
+  formatStrideAmountNumber,
+} from '../../../lib/format/format-stride-amount'
 import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
 import { colors, layout, radii, spacing, textStyles } from '../../../theme'
 import {
@@ -58,10 +61,11 @@ function SpendConfirmationDetails({
           <StatChangeRow key={statChange.label} {...statChange} />
         ))}
         <View style={styles.divider} />
+        {/* The unit sits in the label: "45 STRIDE → 43.6 STRIDE" didn't fit a phone. */}
         <StatChangeRow
           label="STRIDE balance"
-          valueBefore={formatStrideAmount(rewardBalanceWei)}
-          valueAfter={formatStrideAmount(rewardBalanceWei - costWei)}
+          valueBefore={formatStrideAmountNumber(rewardBalanceWei)}
+          valueAfter={formatStrideAmountNumber(rewardBalanceWei - costWei)}
         />
       </View>
       <Text style={styles.caption}>
