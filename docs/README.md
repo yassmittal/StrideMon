@@ -34,6 +34,7 @@ these documents, and when a decision changes, the doc changes first.
 | 21 | [`social-plan.md`](social-plan.md) | Posting on X: the research, the two accounts, the calendar. The posts themselves live in `../social/` (D-036). |
 | 22 | [`hackathon-submission.md`](hackathon-submission.md) | Submitting to Metropolis: the track, and the final TODO before the 2026-10-14 09:29 IST deadline. |
 | 23 | [`play-store-release.md`](play-store-release.md) | Publishing the Android app on Google Play, from the developer account to the production rollout. |
+| 24 | [`founding-pass-brief.md`](founding-pass-brief.md) | The Founding Pass: 1,000 one-of-a-kind designs, minted gas-free as early access. Research, flow, architecture and build plan (not started). |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else
