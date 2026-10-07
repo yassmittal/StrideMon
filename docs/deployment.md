@@ -226,8 +226,8 @@ The `demo` profile in `eas.json` bundles the JavaScript and points at
 
 Turn the laptop off (or close it) and turn the phone's Wi-Fi off, so it uses mobile data.
 
-- [X] Open StrideMon. The welcome screen shows the API as healthy. No development launcher, no
-      Metro.
+- [X] Open StrideMon. The welcome screen shows the API as healthy (since D-039: no error panel
+      above Connect wallet). No development launcher, no Metro.
 - [X] Sign in with Account 1 (A): Home shows #2 at level 2. No "Minting your Sneaker…".
 - [X] Walk 3 minutes and STOP: the summary settles with a reward, and History lists the run.
 - [X] On the server, `pm2 logs stridemon-api` shows the requests and the settlement.
