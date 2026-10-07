@@ -49,6 +49,28 @@ D-039) and turn Part B into a phase spec, following the "doc first" rule.
 
 - [ ] Account shows as verified in Play Console.
 
+#### Option: publish from an existing account (e.g. a mentor's)
+
+Instead of steps 1.1–1.6, the owner of an existing Play Console account invites you:
+Play Console → **Users and permissions** → **Invite new users** → your Google email. They can give
+permissions for **this app only** (create and edit the app, manage testing tracks, release to
+production, manage store presence, app content), so you never see their other apps or payments.
+
+What changes:
+
+- **The listing shows their developer name and contact details**, not yours.
+- **They are legally responsible** for the app. A policy strike against StrideMon counts against
+  their whole account, and repeated strikes can terminate it along with all their other apps.
+  Crypto apps get extra review, so they should know what they're agreeing to.
+- **The 12-tester rule (step 7) may not apply.** It only applies to personal accounts created after
+  2023-11-13. If their account is older, or an organization account, you can skip step 7. Their
+  Play Console **Dashboard** shows whether production access is unlocked for a new app.
+- **The service account for `eas submit`** (step 6.4) is created in a Google Cloud project and
+  invited by them; or they invite yours with this app's permissions only.
+- **Moving the app later** to your own account is possible with Play's **app transfer** (the
+  package name `com.stridemon.app`, its installs and reviews move together). The new account must
+  exist and be verified first.
+
 ---
 
 ## Part B: Make the app store-ready
