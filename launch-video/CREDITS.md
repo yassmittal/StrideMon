@@ -5,47 +5,44 @@ Every audio file in the film, where it came from and under which licence. The fi
 
 ## Music
 
-**"Soft" by SolarFLEX**
+**"Futuristic" by NastelBom** (Yash's pick, 2026-10-07)
 
-- Page: https://pixabay.com/music/soft-house-soft-soft-music-589025/
-- File: `https://cdn.pixabay.com/download/audio/2026/08/20/audio_1637f601d3.mp3?filename=solarflex-soft-soft-music-589025.mp3` (1:48)
-- Licence: **Pixabay Content License**, as stated on the track page (checked 2026-10-07): free for
-  commercial use, no attribution required. **No "Content ID Registered"** badge, not marked "AI
-  generated", no "Vocal" genre, and the author links no outside store. Page tags: Soft, Soft Calm,
-  Quiet Music, Soft Ambient, Gentle, Soothing.
-- Used: 44.443 s → 89.443 s of the track (`MUSIC_START_SECONDS` in `scripts/fetch-audio.sh`),
-  levelled to −19 LUFS, and faded out over the end card from 0:39.
+- Page: https://pixabay.com/music/future-bass-futuristic-317718/
+- File: `https://cdn.pixabay.com/download/audio/2025/03/23/audio_d988639c74.mp3?filename=nastelbom-futuristic-317718.mp3` (1:25)
+- Licence: **Pixabay Content License** (free for commercial use, no attribution required). Genre:
+  Future Bass, Beats, Electronic; no "Vocal" tag; not AI generated.
+- **Content ID:** the page says **"Content ID Registered"**. Using it is allowed, but a YouTube
+  upload may get an automatic claim, which you clear by disputing it with the Pixabay licence. X
+  has no Content ID. Option C below is the clean alternative if that's a problem.
+- Used: 4.042 s → 49.042 s of the track (`MUSIC_START_SECONDS` in `scripts/fetch-audio.sh`),
+  levelled to −19 LUFS, faded out over the end card from 0:39.
 
-### Why this track
+### Why it fits
 
-Third pick. Yash didn't like the first two ("I Am Techno", dark techno; "Blue Coast", bright soft
-house) and asked for something "cool, calm". I checked about 675 more Pixabay pages (searches such
-as "calm ambient electronic", "chill ambient", "minimal lo-fi ambient", "soft pads", "calm
-downtempo"), dropped every one with a Content ID badge, an "AI generated" mark, a "Vocal" genre or
-an off-brief genre, and measured the 62 left. I couldn't listen, so this is analysis:
+- **Tempo:** 120.01 BPM and steady, the film's grid, so the picture didn't move.
+- **Shape:** a lighter intro under the intro and step 1, the full beat building in by 0:10 on
+  "Walk or run.", and a lighter section from 0:36, just before the end card.
+- Key: G minor (chroma), so the +10 STRIDE tone is a G.
 
-- **Tempo:** 120.01 BPM and steady (every 32-beat window 120.01), so the picture didn't move.
-- **Calm:** the warmest of the steady 120 BPM shortlist (spectral centroid about 900 Hz, against
-  2,200 for "Blue Coast"), in B major.
-- **Shape:** 26 bars of soft pads with no bass, one nearly silent bar, then a gentle groove at
-  54.443 s. Starting five bars before it puts pads under the intro and step 1, the quiet bar at
-  0:08–0:10 as step 1 ends, and **the groove on film frame 600**, the first beat of "Walk or run.".
-- The +10 STRIDE tone is a B, the track's key.
+### Options (4:5 previews in `out/previews/`)
 
-**The alternative, to listen to:** "Banyan Tree Calm Downtempo Naturistic" by MeditativeTiger
-(https://pixabay.com/music/beats-banyan-tree-calm-downtempo-naturistic-383677/), 120 BPM, sparser and
-more meditative, used from 50.042 s with a C tone. A 4:5 preview with it is in
-`out/previews/stridemon-launch-4x5-music-banyan-tree.mp4`. To switch, put its URL, file name, start
-and tone in `scripts/fetch-audio.sh` and re-render.
+All at 120 BPM, mixed the same way (−14 LUFS). Previews A–C use the beat-track effect levels; D and E
+were made with the softer, calm-track levels.
 
-Ruled out on the way: "Calm Ambient Dreamscape" by Bearstockmusic fit well, but its author sells
-the catalogue on AudioJungle and Envato Elements, which often register tracks for YouTube claims.
-Your two Downloads files (DesiFreeMusic's "Minimal Lo-Fi Ambient with Soft Pads" and Velario's
-"Lofi Relaxing") are lovely and calm, but they drift around 117.5 BPM and sit at 130 BPM, so the cuts
-wouldn't land on their beats without re-timing the film.
+| File | Track | Notes |
+|---|---|---|
+| `…-A-nastelbom-futuristic.mp4` | "Futuristic" by NastelBom | The final. Content ID registered |
+| `…-B-berrydeep-futuristic-minimal.mp4` | "Futuristic Minimal" by BerryDeep (https://pixabay.com/music/beats-futuristic-minimal-612990/), from 46.031 s, tone G | Calmer and sparser; its beat lands on the walk. Content ID registered |
+| `…-C-rockot-vibe-reactor-groove.mp4` | "Vibe Reactor Groove" by Rockot (https://pixabay.com/music/upbeat-vibe-reactor-groove-dancing-action-beat-315870/), from 0.031 s, tone C | Warm groove that lifts at 0:10 from its own start. **No Content ID** |
+| `…-D-solarflex-soft.mp4` | "Soft" by SolarFLEX (https://pixabay.com/music/soft-house-soft-soft-music-589025/), from 44.443 s, tone B | The calm pick before this one. No Content ID |
+| `…-E-banyan-tree.mp4` | "Banyan Tree Calm Downtempo Naturistic" by MeditativeTiger (https://pixabay.com/music/beats-banyan-tree-calm-downtempo-naturistic-383677/), from 50.042 s, tone C | Very calm, meditative. No Content ID. About 1 dB quieter (older preview) |
 
-Earlier picks, for the record: "I Am Techno" by DeltaX-Music (from 46.045 s) and "Blue Coast" by
-Loksii (from 6.031 s), both 120 BPM.
+To switch the final to any of them: put its URL, file name, start and tone in
+`scripts/fetch-audio.sh`, run it, then `bash scripts/render.sh <format> --audio-only` for each
+format. For D or E, also lower the effects to the calm levels noted in `src/soundtrack.ts`.
+
+Earlier picks Yash passed on: "I Am Techno" by DeltaX-Music (dark techno) and "Blue Coast" by
+Loksii (bright soft house).
 
 ## Sound effects
 
@@ -57,7 +54,7 @@ free to use in personal, educational and commercial projects"), except the tone,
 | `sfx-tick.wav` | each counter landing (walk callouts, durability, levels, owner) | Kenney **Interface Sounds** 1.0, `Audio/tick_004.ogg` (https://kenney.nl/assets/interface-sounds) | none |
 | `sfx-thump.wav` | each black ↔ off-white flip | Kenney **Impact Sounds** 1.0, `Audio/impactSoft_medium_002.ogg` (https://kenney.nl/assets/impact-sounds) | two 300 Hz low-pass passes, so it's muted |
 | `sfx-tap.wav` | the STOP tap | Kenney **UI Audio** 1.0, `Audio/click2.ogg` (https://kenney.nl/assets/ui-audio) | none |
-| `sfx-tone.wav` | +10 STRIDE landing | Generated by `scripts/fetch-audio.sh` with ffmpeg's `aevalsrc`: a sine in the track's key (B5) with a quiet octave under it, 5 ms attack, exponential decay. No third-party source | — |
+| `sfx-tone.wav` | +10 STRIDE landing | Generated by `scripts/fetch-audio.sh` with ffmpeg's `aevalsrc`: a sine in the track's key (G5) with a quiet octave under it, 5 ms attack, exponential decay. No third-party source | — |
 
 No whooshes, risers or coin sounds.
 
@@ -65,8 +62,8 @@ No whooshes, risers or coin sounds.
 
 - Cues: `src/sound-cues.ts`, derived from the same beats and scene timings as the picture.
 - The music is levelled to −19 LUFS by `scripts/fetch-audio.sh`, so the effect volumes in
-  `src/soundtrack.ts` hold for any track. The effects are soft, for a calm film: about 8–12 dB above
-  the music in their own band. The music ducks 4 dB under every thump, the tap and the tone.
+  `src/soundtrack.ts` hold for any track. The effects stand a few dB clear of the music in their own
+  band. The music ducks 4 dB under every thump, the tap and the tone.
 - Loudness: `scripts/render.sh` raises the mix by the measured gap to −14 LUFS, runs a limiter at
   −2 dBFS (4× oversampled) for the few peaks that need it, then a two-pass `loudnorm` to −14 LUFS
   integrated and −1 dBTP as one linear gain, then AAC 320 kbps at 48 kHz.

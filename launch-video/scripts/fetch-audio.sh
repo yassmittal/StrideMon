@@ -10,17 +10,17 @@ OUTPUT_DIRECTORY=public/audio
 DOWNLOAD_DIRECTORY=$OUTPUT_DIRECTORY/source
 SAMPLE_RATE=48000
 
-# "Soft" by SolarFLEX, Pixabay Content License (CREDITS.md). 120 BPM, B major.
-MUSIC_PAGE_URL=https://pixabay.com/music/soft-house-soft-soft-music-589025/
-MUSIC_URL='https://cdn.pixabay.com/download/audio/2026/08/20/audio_1637f601d3.mp3?filename=solarflex-soft-soft-music-589025.mp3'
-MUSIC_FILE_NAME=solarflex-soft-soft-music-589025.mp3
-# A downbeat in the soft-pad intro, five bars before the gentle groove comes in (54.443 s in the
-# track), so the groove lands on film frame 600: beat 20, the walk scene's first beat. The bar
-# before it is nearly silent, which falls as step 1 ends.
-MUSIC_START_SECONDS=44.443
-# The +10 STRIDE tone's two notes, in the track's key: B5 and B4.
-TONE_HIGH_HERTZ=987.77
-TONE_LOW_HERTZ=493.88
+# "Futuristic" by NastelBom, Pixabay Content License (CREDITS.md). 120 BPM, G minor. Yash's pick.
+MUSIC_PAGE_URL=https://pixabay.com/music/future-bass-futuristic-317718/
+MUSIC_URL='https://cdn.pixabay.com/download/audio/2025/03/23/audio_d988639c74.mp3?filename=nastelbom-futuristic-317718.mp3'
+MUSIC_FILE_NAME=nastelbom-futuristic-317718.mp3
+# A downbeat in the lighter intro, five bars before the full beat comes in (14.042 s in the track),
+# so it lands on film frame 600: beat 20, the walk scene's first beat. The track eases off again at
+# film 0:36, just before the end card.
+MUSIC_START_SECONDS=4.042
+# The +10 STRIDE tone's two notes, in the track's key: G5 and G4.
+TONE_HIGH_HERTZ=783.99
+TONE_LOW_HERTZ=392.00
 # The film is 45 s; keep a little extra so the fade, not the file, ends the music.
 MUSIC_DURATION_SECONDS=46
 

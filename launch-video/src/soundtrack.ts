@@ -22,15 +22,15 @@ export const soundEffectFileNames = {
 export type SoundEffectKind = keyof typeof soundEffectFileNames
 
 /**
- * Each effect's gain (0–1) over the levelled music (−19 LUFS, scripts/fetch-audio.sh). The music is
- * calm and warm, so the effects stay soft: about 8–12 dB above the music in their own band, enough
- * to feel, never to startle.
+ * Each effect's gain (0–1) over the levelled music (−19 LUFS, scripts/fetch-audio.sh), set for a
+ * beat-driven track: each effect stands a few dB clear of the music in its own band. A calm, sparse
+ * track wants them lower (about tick 0.09, thump 0.3, tap 0.45, tone 0.22).
  */
 export const soundEffectVolumes: Record<SoundEffectKind, number> = {
-  tick: 0.09,
-  thump: 0.3,
-  tap: 0.45,
-  tone: 0.22,
+  tick: 0.3,
+  thump: 0.5,
+  tap: 0.65,
+  tone: 0.25,
 }
 
 /** The music ducks under these effects (launch-video-prompt.md §5). */
