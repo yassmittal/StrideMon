@@ -82,10 +82,13 @@ Phase 10.
   hashed `sessionId` are settled.
 - `locationSamples` get a 30-day TTL (Phase 8).
 - The app explains location use before the OS prompt appears.
-- The landing page's waitlist (D-037) stores an email, an optional phone platform and the
-  page's `?source=`, never a wallet address, an IP address or a user agent. An email is deleted
-  on request (the form says so): `db.waitlistSignups.deleteOne({ email: '<lowercased email>' })`
-  against the Atlas `stridemon` database.
+- The landing page's waitlist (D-037) stores an email, an optional phone platform, the page's
+  `?source=` and `?ref=`, and from D-041 its place in the line, never a wallet address, an IP
+  address or a user agent. Brevo delivers the verification code, so it sees the email address.
+  An email is deleted on request (the form says so) with
+  `db.waitlistSignups.deleteOne({ email: '<lowercased email>' })` and
+  `db.waitlistVerificationCodes.deleteOne({ email: '<lowercased email>' })` against the Atlas
+  `stridemon` database.
 
 ## API hardening
 
@@ -97,11 +100,16 @@ Phase 10.
 - Stack traces are never returned to clients.
 - The gas drip is one per wallet, ever, recorded in `users.hasReceivedGasDrip`
   and the outbox idempotency key.
-- **CORS** is off everywhere except `POST /v1/waitlist`, which allows only the origins in
-  `WAITLIST_ALLOWED_ORIGINS` (the landing page, D-037). The app is native and sends no origin.
-- **The waitlist route** is public, so it has its own limit (5 a minute per IP) and a hidden
-  honeypot field: a filled-in honeypot answers `200` and stores nothing, so a bot learns nothing.
-  No CAPTCHA (Turnstile is the free next step if junk appears).
+- **CORS** is off everywhere except the three `/v1/waitlist` routes, which allow only the origins
+  in `WAITLIST_ALLOWED_ORIGINS` (the landing page, D-037). The app is native and sends no origin.
+- **The waitlist routes** are public, so each has its own limit (5 a minute per IP). Sign-up has
+  a hidden honeypot field: a filled-in honeypot answers `codeSent` and stores and sends nothing,
+  so a bot learns nothing. A code is emailed at most once a minute per address, so the route
+  can't flood an inbox or spend Brevo's daily 300 from one address.
+- **Verification codes** (D-041) are 6 digits from `crypto.randomInt`, stored only as a SHA-256
+  hash, valid for 10 minutes and 5 tries; every failure answers the same error. Only a verified
+  email enters the line or credits a referral. No CAPTCHA (Turnstile is the free next step if
+  junk appears).
 
 ## Smart contracts
 

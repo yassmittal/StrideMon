@@ -24,7 +24,7 @@ apps/api/src/
 │
 ├── plugins/                     cross-cutting setup, registered by hand in dependency order
 │   ├── env.ts                     validates process.env with zod → fastify.config
-│   ├── cors.ts                    browser access for /v1/waitlist only (D-037)
+│   ├── cors.ts                    browser access for the /v1/waitlist routes only (D-037, D-041)
 │   ├── mongo.ts                   connects, decorates fastify.mongo, closes on shutdown
 │   ├── mongo-indexes.ts           every index from data-model.md, created at boot
 │   ├── chain-clients.ts           viem publicClient + gameServerWalletClient → fastify.chain
@@ -119,7 +119,9 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | POST | `/v1/activity-sessions/:activitySessionId/finish` | 4/5 | 🔒 validate + enqueue settlement |
 | GET | `/v1/activity-sessions/:activitySessionId` | 4 | 🔒 one session (the app polls this while settling) |
 | GET | `/v1/activity-sessions` | 5 | 🔒 history, cursor-paginated |
-| POST | `/v1/waitlist` | 8.8 | `{ email, phonePlatform?, source? }` → `{ status: 'joined' }`. Called from the landing page (D-037) |
+| POST | `/v1/waitlist` | 8.8 | `{ email, phonePlatform?, source?, referralCode? }` → `{ status: 'codeSent' }`. Called from the landing page (D-037, D-041) |
+| POST | `/v1/waitlist/verify` | FP 1 | `{ email, verificationCode }` → `{ placeInLine, referralCode, referralCount }` (D-041) |
+| GET | `/v1/waitlist/place` | FP 1 | `?referralCode=` → the same shape, for a returning visitor (D-041) |
 
 There are deliberately **no endpoints** for Sneaker stats, balances, repair or
 upgrade: the app reads and writes those on-chain directly.
@@ -173,7 +175,9 @@ upgrade: the app reads and writes those on-chain directly.
 | `MONAD_CHAIN_ID` | `10143` | selects addresses from `@stridemon/chain` |
 | `GAME_SERVER_PRIVATE_KEY` | `0x…` | **testnet only**; KMS in Phase 10 |
 | `GAS_DRIP_AMOUNT_WEI` | `"100000000000000000"` | 0.1 testnet MON |
-| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.xyz` | comma-separated origins allowed to call `/v1/waitlist` from a browser (D-037, D-040) |
+| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.xyz` | comma-separated origins allowed to call the `/v1/waitlist` routes from a browser (D-037, D-040) |
+| `BREVO_API_KEY` | `xkeysib-…` | sends the waitlist's emails (D-041). Required in production; in development, when empty, codes are logged instead |
+| `EMAIL_SENDER_ADDRESS` | `hello@stridemon.xyz` | the From address, on a domain authenticated in Brevo |
 
 Contract addresses come from `@stridemon/chain` for `MONAD_CHAIN_ID`, and boot fails if
 that chain has none. API tests pass `buildServer({ contractAddresses })` instead, with the
@@ -290,23 +294,29 @@ Except the sample upload, which answers `{ newSampleCount, duplicateSampleCount 
   under its own lease. It marks every `active` session whose `updatedAt` is 30 minutes old as `abandoned`.
 - Sample uploads have their own rate-limit budget (security.md → API hardening).
 
-## The waitlist (Phase 8.8, D-037)
+## The waitlist (Phase 8.8, D-037; a verified line from Founding Pass part 1, D-041)
 
-The landing page is a static site, so its waitlist form posts straight to the API.
+The landing page is a static site, so its waitlist form posts straight to the API. The full
+rules are in [`founding-pass-plan.md`](../founding-pass-plan.md) §4.5.
 
-- **`POST /v1/waitlist`** takes `{ email, phonePlatform?, source?, website? }` and always
-  answers `200 { status: 'joined' }`, for a new email and a repeat one alike, so the response
-  never reveals who signed up. A malformed email is `VALIDATION_FAILED` 400.
-- `email` is trimmed and lowercased. A `source` that isn't 1–32 characters of `[a-z0-9-]` is
-  dropped, not refused.
+- **`POST /v1/waitlist`** takes `{ email, phonePlatform?, source?, referralCode?, website? }` and
+  always answers `200 { status: 'codeSent' }`, for a new, repeat or verified email alike, so the
+  response never reveals who signed up. A malformed email is `VALIDATION_FAILED` 400.
+- `email` is trimmed and lowercased. A `source` that isn't 1–32 characters of `[a-z0-9-]`, or a
+  `referralCode` that isn't 8 of the referral alphabet, is dropped, not refused.
+- The first sign-up is an upsert with `$setOnInsert` on the unique `email` index, so a repeat
+  changes nothing. Every sign-up then gets a new 6-digit code by email (`services/email-sender.ts`,
+  Brevo), at most once a minute per email.
 - `website` is a **honeypot**: the form hides it, so only a bot fills it in. When it's set the
-  handler answers `200` and stores nothing.
-- The repository upserts with `$setOnInsert` on the unique `email` index (`waitlistSignups`,
-  data-model.md), so a repeat is a no-op.
-- Its own rate limit: 5 requests a minute per IP.
-- **CORS** (`plugins/cors.ts`, `@fastify/cors`): only `/v1/waitlist` answers browser requests,
-  and only for an origin in `WAITLIST_ALLOWED_ORIGINS`. Every other route sends no CORS headers,
-  so browsers still can't call it. The mobile app sends no `Origin` and is unaffected.
+  handler answers `codeSent`, stores nothing and sends nothing.
+- **`POST /v1/waitlist/verify`** checks the code (hashed, 10 minutes, 5 tries). A bad one is
+  `VERIFICATION_CODE_INVALID` 400. The first verification gives the sign-up its place in the line
+  and a `referralCode`, and credits its referrer (once, never itself, at most 20 per referrer).
+- **`GET /v1/waitlist/place?referralCode=`** answers the same place, or `NOT_FOUND` 404.
+- Each route has its own rate limit: 5 requests a minute per IP.
+- **CORS** (`plugins/cors.ts`, `@fastify/cors`): only the three waitlist routes answer browser
+  requests, and only for an origin in `WAITLIST_ALLOWED_ORIGINS`. Every other route sends no CORS
+  headers, so browsers still can't call it. The mobile app sends no `Origin` and is unaffected.
 
 ## Logging
 

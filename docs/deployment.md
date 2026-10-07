@@ -290,7 +290,8 @@ Optional until the Play listing. Forwarding is free with BasicDNS; it's not Name
 Private Email. Same page → **Mail Settings** → **Email Forwarding** → add `support` →
 `yashmittalmm@gmail.com`.
 Namecheap adds its own `MX` and SPF `TXT` records. Add one more record in **Host Records** so no
-one can send mail as `@stridemon.xyz` (nothing sends from it; forwarding only receives):
+one can send mail as `@stridemon.xyz` without a valid signature (only Brevo sends from it, DKIM-signed
+for the domain, §12):
 
 | Type | Host | Value |
 |------|------|-------|
@@ -437,6 +438,38 @@ answers with a 404.)
 6. **Reown** (dashboard.reown.com → the project): if it has a domain set, change it to
    `stridemon.xyz` (and verify it if it offers to), so wallets don't flag a mismatch with the
    app's metadata.
+
+## 12. Brevo: the waitlist's emails (Founding Pass part 1, D-041)
+
+The waitlist emails each sign-up a 6-digit code from `hello@stridemon.xyz` through Brevo's free plan
+(300 emails a day). Brevo only sends from our domain once the domain is authenticated; without that
+it rewrites the sender to `@brevosend.com`.
+
+1. Create a free account at brevo.com (no card). **Settings → Senders, domains & dedicated IPs →
+   Domains → Add a domain** → `stridemon.xyz`, and choose to authenticate it yourself.
+2. Brevo lists the records to add: a `brevo-code` `TXT` on `@` and its DKIM records (copy the
+   type, host and value exactly as Brevo shows them). Add them in Namecheap → **Advanced DNS →
+   Host Records** (§11.1). **Don't** add Brevo's suggested DMARC record: `_dmarc` already exists
+   (§11.2), and `p=reject` still passes because Brevo's DKIM signs for `stridemon.xyz`.
+3. Back in Brevo, **Authenticate this email domain**. It can take a few minutes for DNS to show.
+4. **Senders → Add a sender**: name `StrideMon`, email `hello@stridemon.xyz`.
+5. **SMTP & API → API keys → Generate a new API key** (name it `stridemon-api`). It's shown once.
+6. On the instance, add to `apps/api/.env` (§4), then follow "Updating the API later":
+
+   ```bash
+   BREVO_API_KEY=xkeysib-…
+   EMAIL_SENDER_ADDRESS=hello@stridemon.xyz
+   ```
+
+- [ ] Brevo shows `stridemon.xyz` as authenticated.
+- [ ] A sign-up on `https://stridemon.xyz/#waitlist` with your Gmail brings the code within a
+      minute. In Gmail → ⋮ → **Show original**: `DKIM: 'PASS' with domain stridemon.xyz` and
+      `DMARC: 'PASS'`.
+- [ ] Entering the code shows "Your place in line". Then delete the test rows:
+      `db.waitlistSignups.deleteOne({ email: '<your email>' })`.
+
+`hello@` only sends; replies go nowhere unless you add a `hello` forward in §11.2. To watch the
+daily count, Brevo → **Transactional → Statistics**.
 
 ---
 

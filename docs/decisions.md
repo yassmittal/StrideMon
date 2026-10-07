@@ -890,3 +890,40 @@ ours. Supersedes the domain parts of D-014, D-034 and D-035.
   working when the old API name goes: it can't reach the API at all. Few copies exist, so a
   clean cut beats running two names.
 - **Revisit when:** the instance moves.
+
+## D-041 — The Founding Pass: a verified waitlist line, then a soulbound pass that gates early access
+
+Made 2026-10-07, from [`founding-pass-plan.md`](founding-pass-plan.md) (research and spec). Amends
+D-037 (the waitlist) and D-009 (the starter mint). Yash's answers, 2026-10-07: testnet, a real gate,
+1,000 passes, Brevo, and start now, alongside the Metropolis submission.
+
+- **Decision:**
+  1. The first **1,000** players get a free, numbered **Founding Pass**: a soulbound ERC-721
+     (ERC-5192) in its own `FoundingPass` contract on **Monad testnet**, minted by the game server
+     through the outbox. It's separate from `SneakerNft` and `SneakerGame`, so a game redeploy never
+     wipes who the founders are.
+  2. **The waitlist becomes a line.** A sign-up gets a 6-digit code by email and only counts once
+     it's verified. A verified email gets a place in line and a referral link. Each verified
+     friend moves the referrer up 10 places, for at most 20 friends.
+  3. **The website stays email only** (D-037.2 holds). The pass is claimed **in the app** after
+     wallet sign-in, with a claim code from a wave email or from another founder's invite.
+  4. **The gate:** while `EARLY_ACCESS_REQUIRED` is on, a wallet needs a pass before it gets a
+     starter Sneaker. Wallets that already own a Sneaker are never blocked, and a `judge` claim
+     code keeps the Metropolis path open. It's switched on after judging ends (2026-10-27).
+  5. A pass is **laced** after its holder's first settled walk (its on-chain art changes), and a
+     laced pass comes with 3 invite codes.
+  6. Email goes through **Brevo's free plan** (300 a day) from `stridemon.xyz`, authenticated with
+     Brevo's DKIM and verification records on Namecheap.
+  7. It's built in three parts, each checked before the next: (1) the verified line, (2) the
+     contract, claim and gate, (3) lacing, invites and waves.
+- **Why:** STEPN's activation codes and Robinhood's referral line are the proven shapes for a
+  pre-launch (research in the plan). Verification makes the line count real people, a pass that
+  can't be sold and invites earned by walking leave farmers little to take, and a claim in the app
+  keeps wallets off the website.
+- **Trade-off:** the API now sends email, so it depends on Brevo and on the domain's DNS records.
+  The line is public-facing, so its order must be explainable. A soulbound "early" NFT draws
+  airdrop questions however plainly we say no. Building it during the last week before the
+  submission competes with the demo video for time.
+- **Revisit when:** all 1,000 passes are out (the gate goes away), junk sign-ups appear (Cloudflare
+  Turnstile, free, was left out of part 1: verification already keeps unverified rows out of the
+  line), or Brevo's 300 a day isn't enough.

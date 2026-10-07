@@ -247,8 +247,9 @@ No extra indexes: every lookup is by `_id`.
 
 ## `waitlistSignups`
 
-Emails left on the landing page's waitlist (D-037). Not tied to a wallet or a user: the app
-gets the wallet when someone plays.
+Emails left on the landing page's waitlist (D-037), and from Founding Pass part 1 their place in
+the line (D-041, `founding-pass-plan.md` §4.5). Not tied to a wallet or a user: the app gets the
+wallet when someone plays.
 
 ```ts
 type WaitlistPhonePlatform = 'android' | 'ios'
@@ -258,13 +259,40 @@ type WaitlistSignupDocument = {
   email: string                                // trimmed and lowercased, unique
   phonePlatform: WaitlistPhonePlatform | null  // optional on the form
   source: string | null                        // the page's ?source=, at most 32 of [a-z0-9-]
+  referredByCode: string | null                // the page's ?ref= at the first sign-up
   createdAt: Date
+  // Set by the first verification; null (or absent, on sign-ups from before D-041) until then.
+  verifiedAt: Date | null
+  verificationOrder: number | null             // verified sign-ups before this one, plus one
+  lineScore: number | null                     // verificationOrder − 10 per credited referral
+  referralCode: string | null                  // 8 of ABCDEFGHJKMNPQRSTUVWXYZ23456789, unique
+  referralCount: number                        // credited referrals, at most 20
 }
 ```
 
-Index: `{ email: 1 }` unique.
+Indexes: `{ email: 1 }` unique; `{ referralCode: 1 }` unique where it's a string;
+`{ lineScore: 1, verifiedAt: 1 }` for the place in line.
 
-A sign-up is written once and never changed, so there's no `updatedAt`. A repeat email is an
-upsert with `$setOnInsert` only: the first sign-up's platform and source stay. No IP address
-or user agent is ever stored. An email is deleted by hand when its owner asks (security.md →
-Privacy).
+The first sign-up is an upsert with `$setOnInsert`: a repeat keeps the first platform, source and
+referrer. Verification and referral credits are the only later writes, so there's still no
+`updatedAt`. No IP address or user agent is ever stored. An email is deleted by hand when its
+owner asks (security.md → Privacy).
+
+## `waitlistVerificationCodes`
+
+The 6-digit code a waitlist sign-up must enter (D-041). At most one per email: a new sign-up
+replaces it, and a successful verification deletes it.
+
+```ts
+type WaitlistVerificationCodeDocument = {
+  _id: ObjectId
+  email: string            // unique
+  codeHash: string         // SHA-256 hex of `${email}:${code}`; the code itself is never stored
+  attemptCount: number     // wrong tries; the code stops working at 5
+  sentAt: Date             // a new code is sent at most once a minute per email
+  expiresAt: Date          // sentAt + 10 minutes
+}
+```
+
+Indexes: `{ email: 1 }` unique; `{ expiresAt: 1 }` TTL (`expireAfterSeconds: 0`).
+
