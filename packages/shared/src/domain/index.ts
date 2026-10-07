@@ -13,4 +13,10 @@ export {
   type ChainTransactionKind,
   type ChainTransactionStatus,
 } from './chain-transaction'
-export { WAITLIST_PHONE_PLATFORMS, type WaitlistPhonePlatform } from './waitlist'
+export {
+  REFERRAL_CODE_ALPHABET,
+  REFERRAL_CODE_LENGTH,
+  VERIFICATION_CODE_DIGIT_COUNT,
+  WAITLIST_PHONE_PLATFORMS,
+  type WaitlistPhonePlatform,
+} from './waitlist'

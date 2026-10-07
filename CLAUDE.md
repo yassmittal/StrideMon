@@ -168,7 +168,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-041.
+for it. The next free decision number is D-042.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -186,3 +186,12 @@ line-Sneaker mark, drawn by `apps/mobile/scripts/build-app-icons.sh`), the websi
 X and waitlist pills, `/privacy` and `/delete-account`, `DELETE /v1/me` with Profile → Delete
 account, the `production` EAS profiles, and the testnet line under STRIDE amounts. Needs the API
 and website redeployed and a new app build, then a phone check.
+**Founding Pass (D-041, 2026-10-07)**, alongside the submission: `docs/founding-pass-plan.md` is the
+research and the spec. The first 1,000 players get a free soulbound pass (testnet) that gates the
+starter Sneaker, claimed in the app with a code from a wave email or a founder's invite. Built in
+three parts. **Part 1 (the verified line)** is built and checked locally (2026-10-07): the waitlist
+emails a 6-digit code through Brevo, a verified email gets a place in line and a referral link
+(`/v1/waitlist/verify`, `/v1/waitlist/place`), and the site's form has the email, code and place
+steps. It needs Brevo set up (`deployment.md` §12), then the API and site redeployed. Parts 2
+(contract, claim, gate) and 3 (lacing, invites, waves) are next. Words: Founding Pass, waitlist,
+wave, invite code; never whitelist or airdrop.

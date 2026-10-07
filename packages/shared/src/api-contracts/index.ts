@@ -69,5 +69,11 @@ export {
   type JoinWaitlistResponse,
   joinWaitlistBodySchema,
   joinWaitlistResponseSchema,
+  type ReadWaitlistPlaceQuery,
+  readWaitlistPlaceQuerySchema,
+  type VerifyWaitlistEmailBody,
+  verifyWaitlistEmailBodySchema,
+  type WaitlistPlaceResponse,
+  waitlistPlaceResponseSchema,
 } from './waitlist'
 export { walletAddressSchema } from './wallet-address'

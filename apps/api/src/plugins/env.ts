@@ -77,6 +77,9 @@ const environmentVariablesSchema = z.object({
     .transform((privateKey) => privateKey as Hex),
   GAS_DRIP_AMOUNT_WEI: weiAmountStringSchema,
   WAITLIST_ALLOWED_ORIGINS: originListSchema,
+  // Empty means "no key": allowed outside production, where codes are logged instead (D-041).
+  BREVO_API_KEY: z.string().optional().default(''),
+  EMAIL_SENDER_ADDRESS: z.email(),
 })
 
 type SupportedChain = (typeof SUPPORTED_CHAINS)[number]
@@ -94,8 +97,12 @@ export type ApiConfig = {
   /** Never logged. Signs every outbox transaction. */
   gameServerPrivateKey: Hex
   gasDripAmountWei: bigint
-  /** The only browser origins that may call `POST /v1/waitlist` (D-037). */
+  /** The only browser origins that may call the `/v1/waitlist` routes (D-037). */
   waitlistAllowedOrigins: string[]
+  /** Never logged. `null` outside production means waitlist emails are logged, not sent (D-041). */
+  brevoApiKey: string | null
+  /** The From address of the waitlist's emails, on a domain authenticated in Brevo. */
+  emailSenderAddress: string
   contractAddresses: StrideMonContractAddresses
 }
 
@@ -118,6 +125,11 @@ export function parseApiConfig(
   }
 
   const variables = parseResult.data
+  if (variables.NODE_ENV === 'production' && variables.BREVO_API_KEY === '') {
+    throw new Error(
+      'Invalid environment variables (see apps/api/.env.example):\n  BREVO_API_KEY: is required in production',
+    )
+  }
   const contractAddresses =
     contractAddressesOverride ?? CONTRACT_ADDRESSES_BY_CHAIN_ID[variables.MONAD_CHAIN_ID.id]
   if (contractAddresses === undefined) {
@@ -139,6 +151,8 @@ export function parseApiConfig(
     gameServerPrivateKey: variables.GAME_SERVER_PRIVATE_KEY,
     gasDripAmountWei: variables.GAS_DRIP_AMOUNT_WEI,
     waitlistAllowedOrigins: variables.WAITLIST_ALLOWED_ORIGINS,
+    brevoApiKey: variables.BREVO_API_KEY === '' ? null : variables.BREVO_API_KEY,
+    emailSenderAddress: variables.EMAIL_SENDER_ADDRESS,
     contractAddresses,
   }
 }

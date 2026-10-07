@@ -6,6 +6,7 @@ import { getChainTransactionsCollection } from '../repositories/chain-transactio
 import { getLocationSamplesCollection } from '../repositories/location-samples-repository'
 import { getUsersCollection } from '../repositories/users-repository'
 import { getWaitlistSignupsCollection } from '../repositories/waitlist-signups-repository'
+import { getWaitlistVerificationCodesCollection } from '../repositories/waitlist-verification-codes-repository'
 
 const SECONDS_PER_DAY = 86_400
 const LOCATION_SAMPLE_RETENTION_SECONDS = 30 * SECONDS_PER_DAY
@@ -54,9 +55,21 @@ export const mongoIndexesPlugin = fastifyPlugin(
       // Raw GPS is kept for validation and dispute review, not forever (data-model.md).
       { key: { receivedAt: 1 }, expireAfterSeconds: LOCATION_SAMPLE_RETENTION_SECONDS },
     ])
-    // One sign-up per email, so a repeat is a no-op upsert (D-037).
+    // One sign-up per email, so a repeat is a no-op upsert (D-037). Only verified sign-ups have a
+    // referral code and a line score (D-041).
     await getWaitlistSignupsCollection(database).createIndexes([
       { key: { email: 1 }, unique: true },
+      {
+        key: { referralCode: 1 },
+        unique: true,
+        partialFilterExpression: { referralCode: { $type: 'string' } },
+      },
+      { key: { lineScore: 1, verifiedAt: 1 } },
+    ])
+    // One code per email: the unique index is what enforces the once-a-minute resend limit.
+    await getWaitlistVerificationCodesCollection(database).createIndexes([
+      { key: { email: 1 }, unique: true },
+      { key: { expiresAt: 1 }, expireAfterSeconds: 0 },
     ])
   },
   { name: 'mongo-indexes', dependencies: ['mongo'] },

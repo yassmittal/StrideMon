@@ -2,6 +2,7 @@ import type { StrideMonContractAddresses } from '@stridemon/chain'
 import type { FastifyInstance } from 'fastify'
 import { MongoNotConnectedError } from 'mongodb'
 import { buildServer } from '../build-server'
+import type { EmailSender } from '../services/email-sender'
 import { ANVIL_GAME_SERVER_PRIVATE_KEY } from './deploy-test-contracts'
 
 // Requires the project-local mongod: `bun run db:start`.
@@ -28,19 +29,23 @@ export const TEST_ENVIRONMENT_VARIABLES = {
   GAME_SERVER_PRIVATE_KEY: ANVIL_GAME_SERVER_PRIVATE_KEY,
   GAS_DRIP_AMOUNT_WEI: TEST_GAS_DRIP_AMOUNT_WEI.toString(),
   WAITLIST_ALLOWED_ORIGINS: TEST_WAITLIST_ALLOWED_ORIGIN,
+  EMAIL_SENDER_ADDRESS: 'hello@stridemon.test',
 }
 
 /**
  * A server on its own throwaway database, so tests never see each other's data.
  * Pass the RPC URL of a `startTestChain()` Anvil when the test touches the chain,
- * and the addresses from `deployTestContracts()` when it uses the contracts.
+ * and the addresses from `deployTestContracts()` when it uses the contracts. Pass a
+ * `createRecordingEmailSender()` sender to read the emails the server sends.
  */
 export async function buildTestServer({
   monadRpcUrl = UNUSED_RPC_URL,
   contractAddresses,
+  emailSender,
 }: {
   monadRpcUrl?: string
   contractAddresses?: StrideMonContractAddresses
+  emailSender?: EmailSender
 } = {}): Promise<FastifyInstance> {
   const server = await buildServer({
     environmentVariables: {
@@ -49,6 +54,7 @@ export async function buildTestServer({
       MONAD_RPC_URL: monadRpcUrl,
     },
     ...(contractAddresses === undefined ? {} : { contractAddresses }),
+    ...(emailSender === undefined ? {} : { emailSender }),
   })
   server.addHook('onClose', async () => {
     try {

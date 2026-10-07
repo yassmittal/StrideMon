@@ -10,6 +10,7 @@ import { authenticationPlugin } from './plugins/authentication'
 import { backgroundJobsPlugin } from './plugins/background-jobs'
 import { chainClientsPlugin } from './plugins/chain-clients'
 import { corsPlugin } from './plugins/cors'
+import { emailSenderPlugin } from './plugins/email-sender'
 import { type ApiConfig, envPlugin, parseApiConfig } from './plugins/env'
 import { errorHandlerPlugin } from './plugins/error-handler'
 import { mongoPlugin } from './plugins/mongo'
@@ -21,11 +22,14 @@ import { healthRoutes } from './routes/health'
 import { meRoutes } from './routes/me'
 import { onboardingRoutes } from './routes/onboarding'
 import { waitlistRoutes } from './routes/waitlist'
+import type { EmailSender } from './services/email-sender'
 
 type BuildServerOptions = {
   environmentVariables: Record<string, string | undefined>
   /** Tests only: the contracts they deployed to their Anvil (D-019). */
   contractAddresses?: StrideMonContractAddresses
+  /** Tests only: records the waitlist's emails instead of sending them. */
+  emailSender?: EmailSender
 }
 
 /**
@@ -35,6 +39,7 @@ type BuildServerOptions = {
 export async function buildServer({
   environmentVariables,
   contractAddresses,
+  emailSender,
 }: BuildServerOptions): Promise<FastifyInstance> {
   const apiConfig = parseApiConfig(environmentVariables, contractAddresses)
 
@@ -55,6 +60,10 @@ export async function buildServer({
   await fastify.register(mongoPlugin)
   await fastify.register(mongoIndexesPlugin)
   await fastify.register(chainClientsPlugin)
+  await fastify.register(
+    emailSenderPlugin,
+    emailSender === undefined ? {} : { emailSenderOverride: emailSender },
+  )
   await fastify.register(authenticationPlugin)
   await fastify.register(backgroundJobsPlugin)
   if (apiConfig.nodeEnvironment === 'development') {

@@ -22,4 +22,5 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
   INSUFFICIENT_ACTIVITY_DATA: 'There wasn’t enough GPS data to count this run.',
   SNEAKER_TRANSFERRED_DURING_SESSION:
     'The Sneaker changed owner during this run, so it can’t earn rewards.',
+  VERIFICATION_CODE_INVALID: 'That code is wrong or has expired. Ask for a new one.',
 }

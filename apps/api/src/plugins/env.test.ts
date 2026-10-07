@@ -15,6 +15,7 @@ const VALID_ENVIRONMENT_VARIABLES = {
   GAME_SERVER_PRIVATE_KEY: `0x${'ab'.repeat(32)}`,
   GAS_DRIP_AMOUNT_WEI: '100000000000000000',
   WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.xyz, http://localhost:3000',
+  EMAIL_SENDER_ADDRESS: 'hello@stridemon.xyz',
 }
 
 const DEPLOYED_CONTRACT_ADDRESSES = CONTRACT_ADDRESSES_BY_CHAIN_ID[10143]
@@ -42,6 +43,8 @@ describe('parseApiConfig', () => {
       gameServerPrivateKey: `0x${'ab'.repeat(32)}`,
       gasDripAmountWei: 100_000_000_000_000_000n,
       waitlistAllowedOrigins: ['https://stridemon.xyz', 'http://localhost:3000'],
+      brevoApiKey: null,
+      emailSenderAddress: 'hello@stridemon.xyz',
       contractAddresses: DEPLOYED_CONTRACT_ADDRESSES,
     })
   })
@@ -101,5 +104,18 @@ describe('parseApiConfig', () => {
         WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.xyz/',
       }),
     ).toThrow(/WAITLIST_ALLOWED_ORIGINS/)
+  })
+
+  it('requires a Brevo key in production only', () => {
+    expect(() =>
+      parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, NODE_ENV: 'production' }),
+    ).toThrow(/BREVO_API_KEY/)
+    expect(
+      parseApiConfig({
+        ...VALID_ENVIRONMENT_VARIABLES,
+        NODE_ENV: 'production',
+        BREVO_API_KEY: 'xkeysib-test',
+      }).brevoApiKey,
+    ).toBe('xkeysib-test')
   })
 })
