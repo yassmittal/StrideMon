@@ -33,6 +33,15 @@ Everything targets **Monad testnet** until Phase 10.
 - Mobile rules (`docs/architecture/mobile-app.md`): `app/` screens are thin, features own their logic, and only `lib/api-client` calls `fetch`.
 - A change is done when typecheck, lint and tests pass (plus `forge test` for contract changes).
 
+## DeltaV updates
+
+StrideMon has a DeltaV profile (`https://deltav.monad.xyz/startup/stridemon`). After meaningful
+progress (a feature, a milestone, real traction, a launch), remind Yash to post a short weekly
+update, at most about once a week. Post it only with his ok: `POST
+https://deltav.monad.xyz/api/v1/weekly-updates` with `Authorization: Bearer $DELTAV_API_KEY` and
+`{"content": "...", "xLink": "<optional X post>"}`. Keep it short and factual, in his voice. The key
+lives only in the `DELTAV_API_KEY` env var: never write it into the repo.
+
 ## Toolchain gotchas
 
 - **`mongodb` is pinned to v6.** v7 pulls `bson@7`, which crashes at import time on Bun (D-015).

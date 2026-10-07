@@ -2,9 +2,9 @@
 // Sources and licences: CREDITS.md.
 
 /**
- * "I Am Techno" by DeltaX-Music (Pixabay), 120 BPM, trimmed by fetch-audio.sh so a downbeat is
- * at 0 s. The breakdown's last five bars play under the intro and step 1, and the kick comes back
- * on frame 600, the walk's first beat.
+ * "Blue Coast" by Loksii (Pixabay), 120 BPM, trimmed by fetch-audio.sh so a downbeat is at 0 s.
+ * Its intro builds under the intro and step 1, a one-bar break falls as step 1 ends, and the drop
+ * lands on frame 600, the walk's first beat.
  */
 export const MUSIC_FILE_NAME = 'music.wav'
 
@@ -22,15 +22,15 @@ export const soundEffectFileNames = {
 export type SoundEffectKind = keyof typeof soundEffectFileNames
 
 /**
- * Each effect's gain (0–1) before the final loudness pass. Set so every effect stands 4–10 dB
- * above the music in its own band, while the mix's peaks stay low enough for loudnorm to reach
- * −14 LUFS at −1 dBTP with a linear gain (no limiting).
+ * Each effect's gain (0–1) over the levelled music (−19 LUFS, scripts/fetch-audio.sh). The music is
+ * calm and warm, so the effects stay soft: about 8–12 dB above the music in their own band, enough
+ * to feel, never to startle.
  */
 export const soundEffectVolumes: Record<SoundEffectKind, number> = {
-  tick: 0.22,
-  thump: 0.45,
-  tap: 0.4,
-  tone: 0.35,
+  tick: 0.09,
+  thump: 0.3,
+  tap: 0.45,
+  tone: 0.22,
 }
 
 /** The music ducks under these effects (launch-video-prompt.md §5). */

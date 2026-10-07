@@ -49,14 +49,14 @@ bunx remotion render Launch4x5 out/work/4x5-picture.mp4 \
   --codec h264 --crf 16 --pixel-format yuv420p --color-space bt709 --muted
 bunx remotion render Launch4x5 out/work/4x5-mix.wav --codec wav
 # Measure, raise by the gap to −14 LUFS, and limit the few peaks that land on a kick.
-ffmpeg -i out/work/4x5-mix.wav -af loudnorm=I=-14:TP=-1:LRA=11:print_format=json -f null -
+ffmpeg -i out/work/4x5-mix.wav -af loudnorm=I=-14:TP=-1:LRA=20:print_format=json -f null -
 ffmpeg -i out/work/4x5-mix.wav \
-  -af "volume=<−14 − input_i>dB,aresample=192000,alimiter=limit=0.841:attack=1:release=60:level=false,aresample=48000" \
+  -af "volume=<−14 − input_i>dB,aresample=192000,alimiter=limit=0.794:attack=1:release=60:level=false,aresample=48000" \
   out/work/4x5-mix-limited.wav
 # Two-pass loudnorm on that: measure again, then apply as one linear gain to −14 LUFS, −1 dBTP.
-ffmpeg -i out/work/4x5-mix-limited.wav -af loudnorm=I=-14:TP=-1:LRA=11:print_format=json -f null -
+ffmpeg -i out/work/4x5-mix-limited.wav -af loudnorm=I=-14:TP=-1:LRA=20:print_format=json -f null -
 ffmpeg -i out/work/4x5-mix-limited.wav \
-  -af "loudnorm=I=-14:TP=-1:LRA=11:measured_I=…:measured_TP=…:measured_LRA=…:measured_thresh=…:offset=…:linear=true,aresample=48000" \
+  -af "loudnorm=I=-14:TP=-1:LRA=20:measured_I=…:measured_TP=…:measured_LRA=…:measured_thresh=…:offset=…:linear=true,aresample=48000" \
   out/work/4x5-mix-normalised.wav
 # Mux: the picture copied, BT.709 written into the stream and the container, AAC 320 kbps 48 kHz.
 ffmpeg -i out/work/4x5-picture.mp4 -i out/work/4x5-mix-normalised.wav -map 0:v:0 -map 1:a:0 -c:v copy \
@@ -82,8 +82,9 @@ ffmpeg -i out/work/thumbnail-1920.png -vf scale=1280:720:flags=lanczos out/strid
 
 ## Swap the music
 
-1. Put the new track's URL, file name and start point in `scripts/fetch-audio.sh`
-   (`MUSIC_URL`, `MUSIC_FILE_NAME`, `MUSIC_START_SECONDS`). The start must be a downbeat, chosen so
+1. Put the new track's URL, file name, start point and key in `scripts/fetch-audio.sh`
+   (`MUSIC_URL`, `MUSIC_FILE_NAME`, `MUSIC_START_SECONDS`, and `TONE_HIGH_HERTZ`/`TONE_LOW_HERTZ` for
+   the +10 STRIDE tone). The script levels every track to −19 LUFS, so the effects stay balanced. The start must be a downbeat, chosen so
    the track's big hit lands where you want it (it's on frame 600, the walk, today).
 2. Set `BEATS_PER_MINUTE` in `src/beats.ts` to the track's tempo (next section).
 3. Run `bash scripts/fetch-audio.sh`, preview, and record the track and why in `CREDITS.md`.

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Renders one format of the film and its delivery files into out/.
 # Run from launch-video/: `bash scripts/render.sh 4x5` (or 16x9, 9x16). Needs ffmpeg and jq.
+# `bash scripts/render.sh 4x5 --audio-only` keeps the last picture render and redoes only the sound
+# (after a music or mix change).
 #
 #   1. The picture: H.264, CRF 16, yuv420p, BT.709 (launch-video-prompt.md §7), no audio.
 #   2. The mix (music and sound effects) as a 48 kHz WAV.
@@ -10,7 +12,8 @@
 #   5. The poster: the end card's last frame. For 4:5, also a silent copy for autoplay embeds.
 set -euo pipefail
 
-FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16}
+FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16 [--audio-only]}
+IS_AUDIO_ONLY=$([ "${2:-}" = --audio-only ] && echo yes || echo no)
 case "$FORMAT" in
   4x5) COMPOSITION_ID=Launch4x5 ;;
   16x9) COMPOSITION_ID=Launch16x9 ;;
@@ -23,9 +26,11 @@ WORK_DIRECTORY=out/work
 LAST_FRAME=2699
 TARGET_LOUDNESS_LUFS=-14
 TARGET_TRUE_PEAK_DBTP=-1
-TARGET_LOUDNESS_RANGE_LU=11
-# −1.5 dBFS: half a dB under the true-peak target, for the AAC encode's overshoot.
-LIMITER_CEILING_LINEAR=0.841
+# Wide enough for the calm intro, so loudnorm stays one linear gain (it goes dynamic when the
+# mix's range is over the target, which would squash the intro).
+TARGET_LOUDNESS_RANGE_LU=20
+# −2 dBFS: a dB under the true-peak target, for inter-sample peaks and the AAC encode's overshoot.
+LIMITER_CEILING_LINEAR=0.794
 
 PICTURE_FILE=$WORK_DIRECTORY/$FORMAT-picture.mp4
 MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix.wav
@@ -36,8 +41,10 @@ POSTER_FILE=$OUTPUT_DIRECTORY/stridemon-launch-$FORMAT-poster.png
 
 mkdir -p "$WORK_DIRECTORY"
 
-bunx remotion render "$COMPOSITION_ID" "$PICTURE_FILE" \
-  --codec h264 --crf 16 --pixel-format yuv420p --color-space bt709 --muted
+if [ "$IS_AUDIO_ONLY" = no ] || [ ! -s "$PICTURE_FILE" ]; then
+  bunx remotion render "$COMPOSITION_ID" "$PICTURE_FILE" \
+    --codec h264 --crf 16 --pixel-format yuv420p --color-space bt709 --muted
+fi
 bunx remotion render "$COMPOSITION_ID" "$MIX_FILE" --codec wav
 
 LOUDNORM_TARGET="I=$TARGET_LOUDNESS_LUFS:TP=$TARGET_TRUE_PEAK_DBTP:LRA=$TARGET_LOUDNESS_RANGE_LU"
@@ -48,7 +55,7 @@ measure_loudness() {
 
 # A few effects land on a kick, and those peaks would pass −1 dBTP once the mix is brought up to
 # −14 LUFS. So: bring it up by the measured gap, let a limiter catch only those transients (at
-# −1.5 dBFS, with 4× oversampling for true peak), then the two-pass loudnorm as one linear gain.
+# −2 dBFS, with 4× oversampling for true peak), then the two-pass loudnorm as one linear gain.
 first_measurement=$(measure_loudness "$MIX_FILE")
 gain_decibels=$(jq -r "$TARGET_LOUDNESS_LUFS - (.input_i | tonumber)" <<<"$first_measurement")
 ffmpeg -nostdin -v error -y -i "$MIX_FILE" \
@@ -74,7 +81,9 @@ if [ "$FORMAT" = 4x5 ]; then
     "$OUTPUT_DIRECTORY/stridemon-launch-4x5-silent.mp4"
 fi
 
-bunx remotion still "$COMPOSITION_ID" "$POSTER_FILE" --frame="$LAST_FRAME" --image-format=png
+if [ "$IS_AUDIO_ONLY" = no ]; then
+  bunx remotion still "$COMPOSITION_ID" "$POSTER_FILE" --frame="$LAST_FRAME" --image-format=png
+fi
 
 echo
 echo "$FILM_FILE"

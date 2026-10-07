@@ -10,13 +10,17 @@ OUTPUT_DIRECTORY=public/audio
 DOWNLOAD_DIRECTORY=$OUTPUT_DIRECTORY/source
 SAMPLE_RATE=48000
 
-# "I Am Techno" by DeltaX-Music, Pixabay Content License (CREDITS.md). 120 BPM.
-MUSIC_PAGE_URL=https://pixabay.com/music/techno-trance-i-am-techno-539800/
-MUSIC_URL='https://cdn.pixabay.com/download/audio/2026/05/23/audio_14fb5a2082.mp3?filename=deltax-music-i-am-techno-539800.mp3'
-MUSIC_FILE_NAME=deltax-music-i-am-techno-539800.mp3
-# A downbeat in the breakdown, five bars before the kick comes back (56.045 s in the track), so
-# the kick lands on film frame 600: beat 20, the walk scene's first beat.
-MUSIC_START_SECONDS=46.045
+# "Soft" by SolarFLEX, Pixabay Content License (CREDITS.md). 120 BPM, B major.
+MUSIC_PAGE_URL=https://pixabay.com/music/soft-house-soft-soft-music-589025/
+MUSIC_URL='https://cdn.pixabay.com/download/audio/2026/08/20/audio_1637f601d3.mp3?filename=solarflex-soft-soft-music-589025.mp3'
+MUSIC_FILE_NAME=solarflex-soft-soft-music-589025.mp3
+# A downbeat in the soft-pad intro, five bars before the gentle groove comes in (54.443 s in the
+# track), so the groove lands on film frame 600: beat 20, the walk scene's first beat. The bar
+# before it is nearly silent, which falls as step 1 ends.
+MUSIC_START_SECONDS=44.443
+# The +10 STRIDE tone's two notes, in the track's key: B5 and B4.
+TONE_HIGH_HERTZ=987.77
+TONE_LOW_HERTZ=493.88
 # The film is 45 s; keep a little extra so the fade, not the file, ends the music.
 MUSIC_DURATION_SECONDS=46
 
@@ -44,9 +48,17 @@ for pack in interface-sounds ui-audio impact-sounds; do
   unzip -q -o "$DOWNLOAD_DIRECTORY/kenney_$pack.zip" -d "$DOWNLOAD_DIRECTORY/kenney_$pack"
 done
 
-# The music, trimmed so a downbeat is at 0 s.
+# The music, trimmed so a downbeat is at 0 s, then levelled (two-pass loudnorm, one linear gain) to
+# MUSIC_LOUDNESS_LUFS. Every track then sits at the same level under the sound effects, so
+# src/soundtrack.ts's effect volumes hold whichever track is in.
+MUSIC_LOUDNESS_LUFS=-19
+TRIM_FILTER="atrim=start=$MUSIC_START_SECONDS:duration=$MUSIC_DURATION_SECONDS,asetpts=PTS-STARTPTS"
+music_measurement=$(ffmpeg -nostdin -hide_banner -i "$DOWNLOAD_DIRECTORY/$MUSIC_FILE_NAME" \
+  -af "$TRIM_FILTER,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1:LRA=20:print_format=json" -f null - 2>&1 |
+  sed -n '/^{/,/^}/p')
+read_music_measurement() { sed -n "s/.*\"$1\" : \"\(.*\)\".*/\1/p" <<<"$music_measurement"; }
 ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/$MUSIC_FILE_NAME" \
-  -af "atrim=start=$MUSIC_START_SECONDS:duration=$MUSIC_DURATION_SECONDS,asetpts=PTS-STARTPTS" \
+  -af "$TRIM_FILTER,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1:LRA=20:measured_I=$(read_music_measurement input_i):measured_TP=$(read_music_measurement input_tp):measured_LRA=$(read_music_measurement input_lra):measured_thresh=$(read_music_measurement input_thresh):offset=$(read_music_measurement target_offset):linear=true" \
   "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/music.wav"
 
 # Counter landings: a 50 ms tick.
@@ -58,10 +70,10 @@ ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/kenney_impact-sounds/Audio/i
 # The STOP and Confirm taps: a short, dry click.
 ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/kenney_ui-audio/Audio/click2.ogg" \
   "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/sfx-tap.wav"
-# +10 SOLE: one clean tone, generated here (no third-party source). C6 with a quiet C5 under it,
-# a 5 ms attack and a 1.2 s exponential decay. C is the track's tonic (chroma analysis, CREDITS.md).
+# +10 STRIDE: one clean tone, generated here (no third-party source): the high note with a quiet
+# low note under it, a 5 ms attack and a 1.2 s exponential decay.
 ffmpeg -nostdin -v error -y -f lavfi \
-  -i "aevalsrc='(0.8*sin(2*PI*1046.5*t)+0.2*sin(2*PI*523.25*t))*min(t/0.005\,1)*exp(-t/0.35)':s=$SAMPLE_RATE:d=1.4" \
+  -i "aevalsrc='(0.8*sin(2*PI*$TONE_HIGH_HERTZ*t)+0.2*sin(2*PI*$TONE_LOW_HERTZ*t))*min(t/0.005\,1)*exp(-t/0.35)':s=$SAMPLE_RATE:d=1.4" \
   "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/sfx-tone.wav"
 
 ls -1 "$OUTPUT_DIRECTORY"/*.wav

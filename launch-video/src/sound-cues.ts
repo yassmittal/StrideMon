@@ -9,18 +9,7 @@ import type { SoundEffectKind } from './soundtrack'
 // Every sound effect in the film, in film frames. Each one comes from the same timing the picture
 // uses (beats.ts and the scenes), so re-timing the grid moves the sounds with it.
 
-export type SoundCue = {
-  kind: SoundEffectKind
-  frame: number
-  /** Multiplies the effect's usual volume for this one cue. */
-  gain?: number
-}
-
-/**
- * The STOP tap lands on a kick (earn beat 1), and the two transients add up. This keeps the
- * mix's true peak low enough for a linear loudness pass.
- */
-const STOP_TAP_GAIN = 0.65
+export type SoundCue = { kind: SoundEffectKind; frame: number }
 
 /** Ticks closer than this to the previous tick are dropped, so the 6× walk doesn't rattle. */
 const MINIMUM_TICK_GAP_FRAMES = 6
@@ -56,11 +45,7 @@ function buildSoundCues(): SoundCue[] {
       upgradeStart,
       ownItStart,
     ].map((frame) => ({ kind: 'thump' as const, frame })),
-    {
-      kind: 'tap',
-      frame: earnStart + toSceneBeatFrame('earn', earnSceneBeats.stopTap),
-      gain: STOP_TAP_GAIN,
-    },
+    { kind: 'tap', frame: earnStart + toSceneBeatFrame('earn', earnSceneBeats.stopTap) },
     { kind: 'tone', frame: earnStart + toSceneBeatFrame('earn', earnSceneBeats.rewardLanding) },
   ]
   return cues.sort((first, second) => first.frame - second.frame)

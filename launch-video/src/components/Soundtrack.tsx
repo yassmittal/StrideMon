@@ -11,9 +11,9 @@ import {
   soundEffectVolumes,
 } from '../soundtrack'
 
-// The music's gain before the final loudness pass (scripts/deliver.sh normalises the mix to
-// −14 LUFS). Below 1 so the effects have headroom on top of it.
-const MUSIC_GAIN = 0.5
+// music.wav is already levelled to −19 LUFS by scripts/fetch-audio.sh, so the effects sit the same
+// way over any track; scripts/render.sh then brings the whole mix to −14 LUFS.
+const MUSIC_GAIN = 1
 const FADE_IN_FRAMES = 3
 /** The music fades from the end card's beat 2 ("Upgrade.") to silence on the last frame. */
 const FADE_OUT_START_BEAT = 2
@@ -50,7 +50,7 @@ export function Soundtrack() {
         >
           <Audio
             src={staticFile(`audio/${soundEffectFileNames[cue.kind]}`)}
-            volume={soundEffectVolumes[cue.kind] * (cue.gain ?? 1)}
+            volume={soundEffectVolumes[cue.kind]}
           />
         </Sequence>
       ))}

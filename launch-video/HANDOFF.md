@@ -45,8 +45,8 @@ Everything below is done and delivered. After STOP 4 Yash asked for two changes:
 as simple as possible (nobody knows StrideMon yet), and rename the token SOLE → STRIDE. The film
 is now an intro, four numbered steps, "It's really yours." and the end card (`SCRIPT.md`,
 revision 2; `FACTS.md` §1 and §9). Footage that shows the old name is out; the walk uses the
-vector run-screen rebuild. Music: "I Am Techno", 120 BPM, trimmed from 46.045 s so the kick lands
-on the walk (`CREDITS.md`). Render with `bash scripts/render.sh <format>`; see `README.md`.
+vector run-screen rebuild. Music (2026-10-07, third pick, after Yash asked for something "cool, calm"): "Soft" by
+SolarFLEX, 120 BPM, trimmed from 44.443 s so its groove lands on the walk (`CREDITS.md`). Render with `bash scripts/render.sh <format>`; see `README.md`.
 The list below is the original plan, kept for reference.
 
 ## What's left
