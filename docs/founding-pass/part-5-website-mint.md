@@ -79,4 +79,10 @@ against it. `website/README.md` → Founding Pass has the flags and the phone ch
 - Lighthouse on `/pass` stays ≥ 90 on mobile.
 - Screenshots are taken.
 
+**As done (2026-10-09, Yash):** everything above was checked with an injected test wallet on the
+local stack (D-045), and the screenshots are in `website/media-source/pass-mint-screenshots/`. The
+first mints with a real wallet (MetaMask on a phone and the laptop extension) move to Part 9, whose
+personas 1 and 2 do exactly that, together with the two checks only the live site can do: Reown's
+domain list and a real Turnstile token against the hosted API's secret.
+
 Mark Part 5 **Done**, then stop.

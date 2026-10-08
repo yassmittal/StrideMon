@@ -1226,7 +1226,12 @@ It fills in D-041's website mint and the brief's §5.3, §6 and §10.3. The API 
      Wallets are always given the public RPC, even when a local run reads from its own Anvil.
   5. **Turnstile** loads on demand (explicit rendering) with the `interaction-only` look, so most
      people never see it. Each Send code and each Mint uses a fresh token. The site key is public
-     and lives in `site.ts`; a local run uses Cloudflare's always-pass test key.
+     and lives in `site.ts` (`0x4AAAAAAFRleBaVJ9eZuqBJ`, the `stridemon.xyz` widget); a local run
+     uses Cloudflare's always-pass test key. The API now also checks what siteverify says the
+     token is for, as Cloudflare's Turnstile Spin guide asks: the route's action (`send-code` or
+     `mint`) and a hostname from `WAITLIST_ALLOWED_ORIGINS` (the site's own origins, so the
+     server's `.env` gains nothing). Answers from Cloudflare's test keys carry neither, so they
+     count on `success` alone; production refuses test keys at boot (D-043).
   6. **The reveal reads the minted card from the chain** (`FoundingPass.imageSvg`, through a viem
      client on Monad's public RPC), so it shows exactly what wallets and MonadVision show:
      `FOUNDER 042`, and the gold frame if it rolled. A dark card back turns over to it, and

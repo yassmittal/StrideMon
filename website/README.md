@@ -158,10 +158,9 @@ times), because joining after that doesn't get anyone into the window (D-043).
 - **Public settings** in `src/content/site.ts`, each with an override for a local run:
   `reownProjectId` (`NEXT_PUBLIC_REOWN_PROJECT_ID`), `monadRpcUrl` (`NEXT_PUBLIC_MONAD_RPC_URL`),
   `turnstileSiteKey` (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`), and `foundingPassContract.address` in
-  `src/content/contracts.ts` (`NEXT_PUBLIC_FOUNDING_PASS_ADDRESS`). **Before deploying, put the real
-  Turnstile site key in `site.ts`** (or set it in Vercel): without it the robot check can't run,
-  and the page says so. Reown's dashboard must allow `stridemon.xyz`. "Get the app" is
-  `appDownloadUrl`.
+  `src/content/contracts.ts` (`NEXT_PUBLIC_FOUNDING_PASS_ADDRESS`). The Turnstile site key is the
+  `stridemon.xyz` widget's (`0x4AAAAAAFRleBaVJ9eZuqBJ`); its secret lives only in the hosted API's
+  `.env`. Reown's dashboard must allow `stridemon.xyz`. "Get the app" is `appDownloadUrl`.
 
 ### Try the mint locally
 

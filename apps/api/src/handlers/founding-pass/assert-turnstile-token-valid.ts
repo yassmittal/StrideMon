@@ -1,5 +1,5 @@
 import { ApiError } from '../../common/api-error'
-import type { TurnstileVerifier } from '../../services/turnstile-verifier'
+import type { TurnstileAction, TurnstileVerifier } from '../../services/turnstile-verifier'
 
 const HTTP_STATUS_FORBIDDEN = 403
 
@@ -8,11 +8,18 @@ export async function assertTurnstileTokenValid({
   turnstileVerifier,
   turnstileToken,
   remoteIpAddress,
+  expectedAction,
 }: {
   turnstileVerifier: TurnstileVerifier
   turnstileToken: string
   remoteIpAddress: string
+  /** The widget's action for this route: a Send code token can't be spent on a mint. */
+  expectedAction: TurnstileAction
 }): Promise<void> {
-  const isValid = await turnstileVerifier.isTurnstileTokenValid({ turnstileToken, remoteIpAddress })
+  const isValid = await turnstileVerifier.isTurnstileTokenValid({
+    turnstileToken,
+    remoteIpAddress,
+    expectedAction,
+  })
   if (!isValid) throw new ApiError('TURNSTILE_FAILED', HTTP_STATUS_FORBIDDEN)
 }

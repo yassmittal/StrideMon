@@ -219,12 +219,13 @@ landing page's Founding Pass section. The site's art and design table are genera
 never edit them by hand. The live state comes from `GET /v1/pass/collection`, which the hosted API
 only has after its redeploy; until then `/pass` says the minted state is unavailable. The planned
 times in `website/src/content/founding-pass.ts` must match the API's `PASS_*` settings.
-**Part 5 (website mint) is built** (2026-10-08, D-045): "Get ready", the mint dialog, the reveal
+**Part 5 (website mint) is done** (2026-10-09, D-045): "Get ready", the mint dialog, the reveal
 from the chain's own card, and a plain next step for every error, on Reown AppKit web + wagmi 2,
 loaded only after "Connect wallet" (`next/dynamic`, `ssr: false`: keep it so). Test it on the
-local stack, never testnet: `cd apps/api && bun run pass:local-stack` (`website/README.md`). It
-waits for Yash's real-wallet mint on a phone and a laptop, and the Turnstile site key goes in
-`website/src/content/site.ts` before deploying (`deployment.md` §12.1). The idea is in `docs/founding-pass-brief.md`, the art in
+local stack, never testnet: `cd apps/api && bun run pass:local-stack` (`website/README.md`). The
+Turnstile site key is in `website/src/content/site.ts`; the API checks each token's action and
+hostname too. The first real-wallet mints happen in Part 9 (personas 1 and 2). **Next: Part 6
+(app).** The idea is in `docs/founding-pass-brief.md`, the art in
 `packages/contracts/art/founding-pass/`, rebuilt with
 `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
 data is generated: never edit it by hand.
