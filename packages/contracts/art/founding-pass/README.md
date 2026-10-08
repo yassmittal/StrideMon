@@ -1,10 +1,12 @@
 # Founding Pass art (Part 1a)
 
 The art system for the 1,000 Founding Passes, as a TypeScript sketch with previews
-([`docs/founding-pass-brief.md`](../../../../docs/founding-pass-brief.md) §4.4). Once Yash approves the
-look, Part 1b ports the renderer to Solidity (`FoundingPassArtRenderer`), and from then on the
-Solidity renderer is the only implementation of the art. The generator stays in TypeScript: it
-writes the design table that becomes `FoundingPassDesigns.sol`.
+([`docs/founding-pass-brief.md`](../../../../docs/founding-pass-brief.md) §4.4). **Yash approved the
+look on 2026-10-08.** Next,
+[Part 1b](../../../../docs/founding-pass/part-1b-art-on-chain.md) ports the renderer to Solidity
+(`FoundingPassArtRenderer`), and from then on the Solidity renderer is the only implementation of
+the art. The generator stays in TypeScript: it writes the design table that becomes
+`FoundingPassDesigns.sol`. The Founder Sneaker (Part 2) reuses the same shoe drawing.
 
 ## Rebuild
 
