@@ -23,14 +23,19 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | Path | What |
 |---|---|
 | `src/content/` | Every piece of copy, number, link and address, as typed data |
-| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `githubRepositoryUrl`, `waitlistApiUrl`, `supportEmail` and the legal page paths |
+| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `apiBaseUrl` and the API routes, `githubRepositoryUrl`, `supportEmail`, the legal and pass page paths |
 | `src/content/legal/` | The privacy policy (`/privacy`) and account deletion (`/delete-account`) pages Google Play asks for (D-039). Keep them true to the app and API |
 | `src/content/waitlist.ts` | The waitlist section's copy and error lines |
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
+| `src/content/founding-pass.ts` | The Founding Pass page's copy, the planned schedule, the match quiz and the questions (D-044) |
+| `src/content/founding-pass-designs.ts` | **Generated**: the 1,000 designs and their layer labels. Never edit it by hand |
+| `public/pass-art/` | **Generated**: each design's card (`cards/0137.svg`) and laced Sneaker (`laced/0137.svg`) |
+| `src/lib/founding-pass/` | The design table's helpers, the gallery's filters and quiz, the schedule, and the live state and favourites stores |
+| `src/components/founding-pass/` | The gallery, cards, detail sheet, finder and schedule panel |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
-| `src/app/` | Layout, home page, `privacy/` and `delete-account/`, Open Graph image, icons, sitemap, robots |
+| `src/app/` | Layout, home page, `pass/` and `pass/[number]/` (with their Open Graph images), `privacy/` and `delete-account/`, icons, sitemap, robots |
 
 A contract redeploy or a rule change must update `src/content/` too (D-035).
 
@@ -102,6 +107,38 @@ ffmpeg -ss 180 -t 70 -i media-source/video3.mp4 \
 After a re-cut, update `durationSeconds` and `demoVideoChapters` in `src/content/demo-video.ts`
 from what the script prints. Keep the demo under 8 MB and each loop under 1.5 MB.
 
+## Founding Pass
+
+`/pass` is the gallery of the 1,000 Founding Passes (D-041, D-044), and `/pass/137` is one pass's
+page (1,000 static pages, each with its own Open Graph image, made by `next/og` at build time: the
+whole build takes about 15 seconds). There's no wallet yet: Part 5 of `docs/founding-pass/` adds
+the mint.
+
+**The art and the design table are generated.** After any change to the art (a new renderer),
+export them again from the repo root:
+
+```bash
+bun run website:export-pass-art
+```
+
+It runs the Solidity renderer in a simulation (`RenderPassArt.s.sol`'s `exportWebsiteArt()`), so
+the cards are exactly the on-chain images, and checks every name against the cards.
+
+**The live state** (which passes are minted, the last mints, the schedule) comes from the API's
+`GET /v1/pass/collection`, fetched in the browser. If it can't be reached, the gallery still works,
+says so, and offers a retry, and the countdown runs on the planned times in
+`src/content/founding-pass.ts` (`plannedPassScheduleTimes`): **keep them equal to the API's
+`PASS_*` settings.** To try other states locally, point the site at a stand-in API:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 bun run dev
+```
+
+**Favourites** stay in the visitor's browser (`localStorage`), never sent anywhere.
+
+**The waitlist form** gives way to a short note once the waitlist window opens (by the planned
+times), because joining after that doesn't get anyone into the window (D-043).
+
 ## Waitlist
 
 The `#waitlist` section (D-037) posts `{ email, phonePlatform?, source?, website? }` to the
@@ -111,10 +148,11 @@ page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a li
 
 The API only answers browsers from the origins in its `WAITLIST_ALLOWED_ORIGINS`. To try the form
 locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port, and
-point the site at it for that run:
+point the site at it for that run (`NEXT_PUBLIC_API_BASE_URL` moves every API route; the older
+`NEXT_PUBLIC_WAITLIST_API_URL` still moves the waitlist alone):
 
 ```bash
-NEXT_PUBLIC_WAITLIST_API_URL=http://localhost:3001/v1/waitlist bun run dev
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 bun run dev
 ```
 
 Count the sign-ups by source (against Atlas, with `mongosh`):
@@ -141,4 +179,4 @@ TTF the same way at build time. IBM Plex Mono comes from `next/font/google`.
    DNS for `stridemon.xyz` is on Namecheap (`docs/deployment.md` §11).
 
 `vercel.json` serves the generated `opengraph-image`, `twitter-image` and `apple-icon` (which
-have no file extension in a static export) as `image/png`.
+have no file extension in a static export) as `image/png`, the pass pages' ones included.

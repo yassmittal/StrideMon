@@ -42,6 +42,22 @@ export const deployedContracts: readonly DeployedContract[] = [
   },
 ]
 
+/**
+ * The Founding Pass (D-041, D-042), from `deployments/10143.json`. It isn't in the footer's list
+ * until the hosted API moves to these contracts. Part 10 deploys a fresh one: update it then.
+ */
+export const foundingPassContract: DeployedContract = {
+  name: 'FoundingPass',
+  standard: 'ERC-721',
+  role: 'The Founding Pass: one of one, can’t be sent or sold',
+  address: '0xAA2b4891a5057aBafD645986ff5493A4F1027080',
+}
+
+/** A token's page on MonadVision, which shows its owner and picture. */
+export function buildExplorerTokenUrl(contractAddress: ContractAddress, tokenId: number): string {
+  return `https://testnet.monadvision.com/nft/${contractAddress}/${tokenId}`
+}
+
 export function buildExplorerAddressUrl(address: ContractAddress): string {
   return `https://testnet.monadvision.com/address/${address}`
 }

@@ -1137,3 +1137,63 @@ It fills in D-041's API. The routes, shapes and error codes are in
   Mints confirmed in the last 3 seconds are counted as pending, not minted, in the collection.
 - **Revisit when:** Part 5 builds the website's mint (it may want more from the API), the
   waitlist outgrows Brevo's 300 a day (move to SES), or mainnet.
+
+## D-044 — How the Founding Pass gallery works on the website
+
+Made 2026-10-08 in Part 4 of the Founding Pass build ([`founding-pass/part-4-website-gallery.md`](founding-pass/part-4-website-gallery.md)).
+It fills in D-041's gallery and the brief's §5.2 and §8.
+
+- **Decision:**
+  1. **The export.** `bun packages/contracts/art/founding-pass/export-website-art.ts` (from the
+     repo root) has the Solidity renderer draw, in a simulation (`RenderPassArt.s.sol`'s
+     `exportWebsiteArt()`), every design's gallery card (`renderDesignPreviewSvg`, exactly the
+     on-chain image) and its laced Sneaker (`renderSneakerMarkup`, laced, alone in its
+     1000 × 600 space). It copies them to `website/public/pass-art/cards/` and
+     `website/public/pass-art/laced/`, and writes the design table with every label to
+     `website/src/content/founding-pass-designs.ts` (generated, one compact row per design). It
+     checks each row's name against `designs.json`. The site still never imports `@stridemon/*`
+     (D-035).
+  2. **The grid shows the card cropped to the shoe** (CSS, no second file), with the number,
+     name and rarity as text below it: the card's own text is too small to read at two cards a
+     row. The detail sheet shows the whole card, so it's already loaded when the sheet opens.
+  3. **The laced look shows the real lace colour** (Yash, 2026-10-08). The art README said laces
+     don't show in the gallery, and D-042 keeps them out of the token's attributes until it's
+     laced. The gallery shows them anyway, so every rarity label has a reason you can see (80
+     Uncommons are Uncommon only for their lime laces). Lacing still changes the pass on-chain.
+  4. **The grid draws 48 cards at a time** and more as you scroll, so the page stays light on a
+     phone. Filters, sort, search, "Surprise me" and the match quiz are views over the table that
+     ships with the page.
+  5. **The live state** comes from `GET /v1/pass/collection`, fetched once and again every 15
+     seconds while minting is open and the tab is visible (every 2 minutes otherwise). If it
+     can't be reached, the gallery still works, says the minted state is unavailable, and offers
+     a retry.
+  6. **The schedule's planned times** (D-041) ship with the page in `src/content/founding-pass.ts`,
+     so the countdown works before the API answers or when it can't. The API's schedule replaces
+     them as soon as it answers. Part 10 sets the exact times in both places.
+  7. **"Minted by 0x3f…a1"** shows for the mints the collection lists (the last 10). Any other
+     minted pass says "Minted" and links to its page on MonadVision, which shows the owner. The
+     site makes no chain calls of its own.
+  8. **Each pass page** (`/pass/137`, 1,000 static pages) gets an Open Graph image from
+     `next/og` at build time: the card cropped to the shoe, with the name and number in Satoshi.
+     Measured 2026-10-08: the whole build takes about 14 seconds (4.7 before), so the images
+     needn't be rendered ahead.
+  9. **The match quiz** maps its answers onto layers: when you walk picks colourways (morning:
+     Dawn, Frost, Haze; daytime: Day, Flare, Drift; evening: Dusk, Storm; night: Night,
+     Eclipse), the colour picks families, and the style picks templates (everyday: Runner,
+     Court, Sock; fast: Racer, Spike; outdoors: Trail, Hiker; street: Hoop, Chunky, Skate). A
+     design scores 3 for the colour, 2 for the style and 1 for the time, and the six best
+     available come first, so the quiz always finds six.
+  10. **Favourites** live in the browser's `localStorage`, every read and write in try/catch.
+  11. **Help:** until Part 7 builds `/help`, "Read the full help" goes to the questions at the
+      foot of `/pass` (`passHelpPath` in `src/content/site.ts`).
+- **Why:** the shoe is the part people choose by, and the on-chain card stays the one picture
+  of a pass. Drawing a few cards at a time keeps Lighthouse's DOM and hydration costs down
+  without hiding anything. One collection route keeps the site free of chain code until Part 5
+  brings the wallet.
+- **Trade-off:** `public/pass-art/` holds 2,000 generated SVGs (about 5 MB), and the planned
+  times live in two places until the API answers. The built site grows to about 8,000 files and
+  260 MB (each pass page is about 10 KB gzipped, and its image 70 KB). Vercel sets no limit on a
+  build's output, only on uploaded source, and these are built on Vercel. The owner of an older mint is one click away
+  (MonadVision), not on the card.
+- **Revisit when:** Part 5 adds the mint, Part 7 adds `/help`, or the art changes (a new
+  renderer means a new export).

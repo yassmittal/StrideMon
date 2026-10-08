@@ -64,7 +64,16 @@ Mono, taken from the app's `node_modules` through a temporary fontconfig file, o
 monospace without it. After a rebuild, run `forge test` from `packages/contracts`: it checks every
 design in the new table.
 
-`rendered/designs/` holds the frozen designs' cards: Part 4 exports them to the website.
+`rendered/designs/` holds the frozen designs' cards. The website gets its own copy from
+`export-website-art.ts` (Part 4, D-044), which needs neither this build nor `rendered/`:
+
+```bash
+bun packages/contracts/art/founding-pass/export-website-art.ts
+```
+
+It runs `RenderPassArt.s.sol`'s `exportWebsiteArt()` (a simulation, like the rest), so the
+Solidity renderer draws every card and laced Sneaker into `rendered/website/`, then copies them to
+`website/public/pass-art/` and writes the site's design table, `website/src/content/founding-pass-designs.ts`.
 
 The folder is outside Biome's checks (`packages/contracts` is excluded), but it is formatted and
 linted with the repo's Biome config and typechecks under `tsconfig.base.json` (strict, with
@@ -270,9 +279,11 @@ clear steps. The colourway is also the last word of the name.
   to the lace line, reaching into the shoe and 12 units past its top edge. The generator computes
   them from each template's lace line, and the generated data stores them as fixed shapes.
 - **Lace colour** is a layer of its own: Cream, Ink, Tonal (the family shade two steps from the
-  eyestay's) or Lime (uncommon). It only shows once a pass is laced, which makes lacing a small
-  reveal too. Ink laces only go on a light or mid eyestay (black slats on a dark one hid the
-  lacing), Prism always gets cream, and Lime never gets lime.
+  eyestay's) or Lime (uncommon). It only shows on the card once a pass is laced, which makes
+  lacing a small reveal too. The website's gallery shows each design's laced look, lace colour
+  included, so every rarity label has a reason you can see (D-044). Ink laces only go on a
+  light or mid eyestay (black slats on a dark one hid the lacing), Prism always gets cream, and
+  Lime never gets lime.
 
 ### The pass card
 

@@ -269,6 +269,63 @@
   }
 }
 
+/* ---------- Founding Pass detail sheet: a bottom sheet on a phone, a panel on a desktop ---------- */
+
+.pass-sheet {
+  margin: auto auto 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 92dvh;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background-color: var(--color-page);
+  color: var(--color-ink);
+}
+
+.pass-sheet[open] {
+  display: flex;
+  animation: pass-sheet-rise 400ms var(--ease-standard);
+}
+
+.pass-sheet::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: pass-sheet-fade 400ms var(--ease-standard);
+}
+
+.pass-sheet-scroll {
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (width >= 48rem) {
+  .pass-sheet {
+    margin: auto;
+    width: min(1120px, calc(100% - 80px));
+    max-height: calc(100dvh - 80px);
+    border-radius: var(--radius-card);
+  }
+}
+
+/* The page behind an open sheet stays put. */
+html:has(.pass-sheet[open]) {
+  overflow: hidden;
+}
+
+@keyframes pass-sheet-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes pass-sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 /* ---------- Reduced motion: everything is simply there ---------- */
 
 @media (prefers-reduced-motion: reduce) {

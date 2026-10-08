@@ -16,7 +16,9 @@ the one they love, read how it all works, and join the waitlist. No wallet yet: 
 1. **Export the collection** into the website: the 1,000 frozen designs' SVGs in
    `website/public/pass-art/`, and the design table (number, name, layers, rarity) in
    `website/src/content/`, written by a script from the contracts package. The site never imports
-   `@stridemon/*` (D-035).
+   `@stridemon/*` (D-035). **As built (D-044):** `bun packages/contracts/art/founding-pass/export-website-art.ts`
+   writes each design's card (`pass-art/cards/`) and its laced Sneaker (`pass-art/laced/`), both
+   drawn by the Solidity renderer, and `src/content/founding-pass-designs.ts`.
 2. **`/pass`:**
    - **Header:** the phase and its countdown. In preview it counts down to the waitlist window,
      during the window to the open mint, and during the open mint it reads "612 of 1,000 minted".
@@ -26,14 +28,15 @@ the one they love, read how it all works, and join the waitlist. No wallet yet: 
    - **Grid:** the art as it scrolls into view (lazy, fixed sizes so nothing jumps). Two a row on
      a phone, 5 or 6 on a desktop.
    - **Detail sheet:** the art large, its layers and rarity, the laced look, and 3 similar
-     designs.
+     designs. The laced look shows the real lace colour (Yash, 2026-10-08, D-044).
    - **Favourites:** kept in the browser, every read and write wrapped in try/catch.
    - The minted state comes from the API's collection route. Everything else ships with the page.
+     The planned times ship too, so the countdown works before the API answers (D-044).
 3. **`/pass/[number]`:** 1,000 static pages, each with its own Open Graph image. Check the build
    time; if the images make it too slow, render them once from the exported art.
 4. **"How it works"** on `/pass`, in four short steps: join the waitlist, mint in the waitlist
    window, get the app with the same wallet, run in your Founder Sneaker. Link to the full help
-   (Part 7).
+   (Part 7). Until `/help` exists, the link goes to the questions at the foot of `/pass` (D-044).
 5. **The landing page:** a Founding Pass section linking to `/pass`, and the waitlist form's copy
    becomes "Join the waitlist to mint 48 hours before everyone else". Keep its promise: one email,
    when the waitlist window opens, and nothing else.

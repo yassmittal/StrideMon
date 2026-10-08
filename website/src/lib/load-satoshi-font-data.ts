@@ -19,7 +19,15 @@ function findTrueTypeUrl(css: string, weight: SatoshiFont['weight']): string | u
   return undefined
 }
 
-export async function loadSatoshiFontData(): Promise<SatoshiFont[]> {
+let satoshiFontDataPromise: Promise<SatoshiFont[]> | undefined
+
+/** Fetched once per build worker: the 1,000 pass images share it (D-044). */
+export function loadSatoshiFontData(): Promise<SatoshiFont[]> {
+  satoshiFontDataPromise ??= fetchSatoshiFontData()
+  return satoshiFontDataPromise
+}
+
+async function fetchSatoshiFontData(): Promise<SatoshiFont[]> {
   try {
     const css = await (await fetch(fontshareCssUrl)).text()
     const weights: SatoshiFont['weight'][] = [400, 500]

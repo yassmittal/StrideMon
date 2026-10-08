@@ -7,7 +7,7 @@ export const privacyPolicyContent: LegalPageContent = {
   title: 'Privacy policy',
   description:
     'What the StrideMon app and website collect, what goes on the Monad blockchain, and how to delete your data.',
-  lastUpdated: '2026-10-07',
+  lastUpdated: '2026-10-08',
   intro: `${siteName} is a move-to-earn game on Monad testnet, built by Yash Mittal. This page says what the app and this website collect, why, and how to delete it. In short: your GPS points stay on our server for at most 30 days, your route never goes on-chain, and we don’t sell data or show ads.`,
   sections: [
     {
@@ -22,6 +22,7 @@ export const privacyPolicyContent: LegalPageContent = {
             'Sign-in sessions: a hashed token that keeps you signed in, and when it expires.',
             'On the website, if you join the waitlist: your email, the phone you said you use (optional), and which link brought you.',
             'On the website: anonymous page-view counts from Vercel Analytics, with no cookies.',
+            'On the website’s Founding Pass page, the passes you heart are saved in your own browser only. They never reach us.',
             'Like most servers, ours logs requests (IP address, time, address requested) for security and debugging.',
           ],
         },
@@ -32,7 +33,7 @@ export const privacyPolicyContent: LegalPageContent = {
       blocks: [
         {
           kind: 'paragraph',
-          text: 'To measure your walks and runs, to check that a run was done on foot (not in a car or with a faked location), to pay out STRIDE and keep your history, and to write to you once when StrideMon opens if you joined the waitlist.',
+          text: 'To measure your walks and runs, to check that a run was done on foot (not in a car or with a faked location), to pay out STRIDE and keep your history, and to write to you once, when the Founding Pass waitlist window opens, if you joined the waitlist.',
         },
       ],
     },

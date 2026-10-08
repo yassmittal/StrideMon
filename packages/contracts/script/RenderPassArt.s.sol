@@ -56,7 +56,8 @@ struct SneakerPictureRequest {
 /// @dev Run by `art/founding-pass/build-founding-pass-art.ts`. Writes every design's gallery card
 /// to `designs/`, then the extra cards, Sneakers and Sneaker pictures listed in
 /// `render-requests.json` (written by the same build, for the sheets) to `cards/`, `sneakers/`
-/// and `sneaker-pictures/`.
+/// and `sneaker-pictures/`. `exportWebsiteArt()` is the website's export (D-044), run by
+/// `art/founding-pass/export-website-art.ts`.
 contract RenderPassArt is Script {
     string private constant CARD_REQUEST_TYPE =
         "CardRequest(string fileName,uint256 designNumber,bool isMinted,uint256 founderNumber,bool hasGoldFrame,bool isLaced)";
@@ -113,6 +114,26 @@ contract RenderPassArt is Script {
         console.log("Requested Sneakers written:", sneakerRequests.length);
         console.log("Requested Sneaker pictures written:", sneakerPictureRequests.length);
     }
+
+    /// @notice The website's gallery art (D-044): every design's card to `website/cards/` and its
+    /// laced Sneaker to `website/laced/`. It needs no render requests.
+    function exportWebsiteArt() external {
+        PassArtFileWriter fileWriter = new PassArtFileWriter(
+            new FoundingPassArtRenderer(),
+            PreviewFoundingPass(address(0)),
+            SneakerArtRenderer(address(0))
+        );
+        vm.createDir(string.concat(RENDERED_DIRECTORY, "website/cards/"), true);
+        vm.createDir(string.concat(RENDERED_DIRECTORY, "website/laced/"), true);
+        for (
+            uint256 designNumber = 1;
+            designNumber <= FoundingPassDesigns.DESIGN_COUNT;
+            designNumber++
+        ) {
+            fileWriter.writeWebsiteDesign(designNumber);
+        }
+        console.log("Website designs written:", FoundingPassDesigns.DESIGN_COUNT);
+    }
 }
 
 /// @notice Stands in for `FoundingPass` in the previews, so a Founder Sneaker can be drawn with
@@ -165,6 +186,29 @@ contract PassArtFileWriter is Script {
         vm.writeFile(
             string.concat(RENDERED_DIRECTORY, "designs/", formatDesignNumber(designNumber), ".svg"),
             RENDERER.renderDesignPreviewSvg(designNumber)
+        );
+    }
+
+    /// @notice `website/cards/0137.svg`, the card exactly as `designs/` has it, and
+    /// `website/laced/0137.svg`, the Sneaker alone after the first walk, in its lace colour.
+    function writeWebsiteDesign(uint256 designNumber) external {
+        string memory paddedDesignNumber = formatDesignNumber(designNumber);
+        vm.writeFile(
+            string.concat(RENDERED_DIRECTORY, "website/cards/", paddedDesignNumber, ".svg"),
+            RENDERER.renderDesignPreviewSvg(designNumber)
+        );
+        string memory lacedMarkup = RENDERER.renderSneakerMarkup(
+            RENDERER.readDesignLayers(designNumber),
+            true,
+            string.concat("laced", paddedDesignNumber)
+        );
+        vm.writeFile(
+            string.concat(RENDERED_DIRECTORY, "website/laced/", paddedDesignNumber, ".svg"),
+            string.concat(
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">',
+                lacedMarkup,
+                "</svg>"
+            )
         );
     }
 

@@ -24,7 +24,8 @@
     "chain:export-abis": "bun run contracts:build && bun packages/chain/scripts/export-abis.ts",
     "demo:prepare-wallets": "./scripts/prepare-demo-wallets",
     "demo:energy": "./scripts/demo-energy-config",
-    "pass:recover": "./scripts/recover-founding-pass"
+    "pass:recover": "./scripts/recover-founding-pass",
+    "website:export-pass-art": "bun packages/contracts/art/founding-pass/export-website-art.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14"

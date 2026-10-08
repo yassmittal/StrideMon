@@ -1,5 +1,6 @@
 import { FairPlaySection } from '@/components/sections/fair-play-section'
 import { FaqSection } from '@/components/sections/faq-section'
+import { FoundingPassSection } from '@/components/sections/founding-pass-section'
 import { HeroSection } from '@/components/sections/hero-section'
 import { HowItWorksSection } from '@/components/sections/how-it-works-section'
 import { OnChainSection } from '@/components/sections/on-chain-section'
@@ -29,6 +30,7 @@ export default function HomePage() {
       </div>
       <main>
         <HeroSection hasDemoVideo={hasDemoVideo} />
+        <FoundingPassSection />
         <HowItWorksSection />
         <RulesSection />
         <FairPlaySection />

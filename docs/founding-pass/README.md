@@ -52,7 +52,7 @@ Everyone after the 1,000 gets a **normal Sneaker**: free, today's look, and it c
 | [1b](part-1b-art-on-chain.md) | Art on-chain: the Solidity renderer, the review of all 1,000, the freeze | XL | **Done** (2026-10-08, all ten sheets approved by Yash, designs frozen) |
 | [2](part-2-contracts.md) | Contracts: `FoundingPass`, Founder Sneakers in the game, the deploy | L | **Done** (2026-10-08, Founder Sneaker look approved by Yash, deployed and verified, D-042) |
 | [3](part-3-api.md) | API: email codes, mints, the waitlist window, the gate, Founder Sneakers, lacing | L | **Done** (2026-10-08, D-043; a real code email reached Gmail's inbox from `hello@stridemon.xyz`) |
-| [4](part-4-website-gallery.md) | Website: the gallery, the 1,000 pass pages, preview mode | L | Not started |
+| [4](part-4-website-gallery.md) | Website: the gallery, the 1,000 pass pages, preview mode | L | **Done** (2026-10-08, D-044; checked on Yash's phone) |
 | [5](part-5-website-mint.md) | Website: "Get ready", the mint, the reveal, sharing | L | Not started |
 | [6](part-6-app.md) | App: the gate, the Founder Sneaker, the pass on Profile, laced | M | Not started |
 | [7](part-7-help.md) | Help: plain-words guides and a next step everywhere | M | Not started |

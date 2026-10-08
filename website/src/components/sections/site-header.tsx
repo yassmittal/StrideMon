@@ -3,7 +3,12 @@ import { BrandMark } from '../ui/brand-mark'
 import { buildPillClassName, PillButton } from '../ui/pill-button'
 import { XLogoIcon } from '../ui/x-logo-icon'
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  /** The waitlist pill's target: the landing page's form, or the one on the current page. */
+  waitlistHref?: string
+}
+
+export function SiteHeader({ waitlistHref = `/#${sectionIds.waitlist}` }: SiteHeaderProps) {
   return (
     <header className="page-gutter page-container flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-4 sm:gap-x-6 md:pt-6">
       <a
@@ -45,11 +50,7 @@ export function SiteHeader() {
             {headerContent.followLabel}
           </span>
         </a>
-        <PillButton
-          href={`/#${sectionIds.waitlist}`}
-          label={headerContent.waitlistLabel}
-          size="compact"
-        />
+        <PillButton href={waitlistHref} label={headerContent.waitlistLabel} size="compact" />
       </div>
     </header>
   )
