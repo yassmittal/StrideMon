@@ -1,16 +1,20 @@
 # Founding Pass: the brief
 
-Version 3, 2026-10-08. Written for a fresh start on `main`. **This file is self-contained**: nothing
-from the first attempt (a verified waitlist line with waves, §15) exists on `main`.
+Version 4, 2026-10-08. Written for a fresh start on `main`. **This file is self-contained**: nothing
+from the first attempt (a verified waitlist line with waves, §15) or from the art experiments
+(§4.3) exists on this branch.
 
 - **v1 (dropped):** a place in a line and a wait. Nothing to own, nothing to choose.
 - **v2 (replaced the same day):** 100 designs with 10 copies each.
-- **v3 (this file):** **1,000 one-of-a-kind Founding Passes.** Every pass is a different design,
+- **v3:** **1,000 one-of-a-kind Founding Passes.** Every pass is a different design,
   and each can be minted once. The player browses them, finds the one they love, and mints it in
   about a second.
+- **v4 (this file, 2026-10-08): the art style is decided** (§4.3): flat-panel Sneakers built from templates,
+  in the spirit of STEPN's everyday sneakers. Claude designs the final art in one go (Part 1a).
 
-**How to use it:** start a new Claude Code session in the repo root and say: *"Read
-`docs/founding-pass-brief.md`, ask me the open questions in §13, then plan Part 1 and wait."*
+**How to use it:** start a new Claude Code session in the repo root. For the art, say: *"Read
+`docs/founding-pass-brief.md` and do Part 1a (§4.4)."* For the rest, say: *"Read
+`docs/founding-pass-brief.md`, ask me the open questions in §13, then plan the next part and wait."*
 Follow `CLAUDE.md` as always: docs first (a new decision, the next free number, D-041 on `main`),
 one part at a time with a check after each, never git.
 
@@ -18,9 +22,9 @@ one part at a time with a check after each, never git.
 
 ## 1. The idea in one paragraph
 
-StrideMon opens with **1,000 Founding Passes, every one a different design**: a Sneaker scene drawn
-on-chain from layers (time of day, sneaker shape, colors, pattern, extras), each with its own number
-and name. Before minting opens, the whole gallery goes up so people can browse, pick favorites
+StrideMon opens with **1,000 Founding Passes, every one a different design**: a bold, flat-panel
+Sneaker drawn on-chain from a template, a colour family and a few options (§3.2, §4.3), each with its
+own number and name. Before minting opens, the whole gallery goes up so people can browse, pick favorites
 and talk about them. On mint day, a player finds the pass they want, verifies their email, connects
 a wallet, and mints it in about a second on Monad, gas-free. **Once it's minted, it's theirs and
 nobody else can have it.** The reveal shows their founder number and sometimes a rare gold frame.
@@ -38,7 +42,7 @@ minted, the game opens to everyone.
 | **Scarcity you can see** | "612 of 1,000 minted", and each pass in the gallery turns to "Minted by 0x3f…a1" the moment someone takes it. On mint day, the live show is the gallery filling up. |
 | **Instant mint** | Monad confirms in about a second, and the server pays the gas. The reward lands right after the click, and the user feels Monad's speed. |
 | **Reveal** | The card turns, the founder number counts up ("Founder 42 of 1,000", the mint order), and about 1 in 10 passes gets a **gold frame** at random. It's cosmetic and the pass can't be sold, so it's a flex, not a lottery prize. |
-| **Share** | Every pass has its own page and preview image. "I got #0137 Midnight Racer, one of one" sells the next mint. |
+| **Share** | Every pass has its own page and preview image. "I got #0137 Ember Runner, one of one" sells the next mint. |
 | **It changes after you walk** | The first settled walk **laces** the pass (the on-chain art changes). This pulls people from "minted" to "played". |
 
 **Tone:** the user prefers a calm, quiet UI. Make each moment well, in the site's Lusion look (a
@@ -63,34 +67,30 @@ a racier mint day for the most-wanted designs (§5.3, §9).
 
 ### 3.2 Anatomy of a design
 
-Every design is a combination of **layers** drawn in the same line-art style as the Sneaker
-(D-030: plain paths, rects and text, no filters, gradients or CSS, so the app's `react-native-svg`
-draws it exactly like a browser). 1,000 different designs need more variety than a small set
-would. A proposal, designed for real in Part 1:
+Every design is a **flat-panel Sneaker** (the style is in §4.3): a **template** (the shoe's
+silhouette, cut into named panels), a **colour family** that fills the panels, and a few
+**options** that change details. The exact lists are Part 1a's call (§4.4). A starting shape:
 
-| Layer | Options (proposal) | Count |
+| Layer | What it is | Rough count |
 |---|---|---|
-| **Family** (the scene and time of day) | Dawn, Noon, Dusk, Midnight, Storm | 5 |
-| **Sky detail** | Sun, Moon, Clouds, Stars field | 4 |
-| **Silhouette** | Runner, Trail, High-top, Racer, Walker, Slip-on | 6 |
-| **Palette** (upper, sole, accent) | 12 named palettes, two of them rare (Gold, Prism) | 12 |
-| **Pattern** on the upper | Plain, Stripes, Dots, Grid, Zigzag, Panels, Waves, Checks | 8 |
-| **Sole** | Flat, Chunky, Spiked | 3 |
-| **Laces** | Flat, Round, Speed, Loop | 4 |
-| **Extra** | None, Wings, Flames, Speed lines, Stars, Leaves, Lightning, Trail dust | 8 |
+| **Template** | The silhouette and its panels: runner, high-top, trail, racer, court, slip-on, chunky "dad shoe", sock runner… | 8 to 12 |
+| **Colour family** | 5 shades, light to dark, that the panels take by role. Two or three rare families (for example Gold, Chrome, Prism) | 10 to 14 |
+| **Colourway seed** | Which shade each panel gets, within the family (light shades swap with light, dark with dark) | many |
+| **Options** | Per-template details: shard shapes on the side, a strap or not, a heel cage, sole style (flat, chunky, lugged), lace colour, a toe bumper | 3 to 6 slots |
 
-That's about 1.1 million possible combinations. A generator picks 1,000 under rules (§4.2), and
-Yash reviews them in sheets of 100.
+That's far more than 1,000 combinations. A generator picks 1,000 under rules (§4.2), and Yash reviews
+them in sheets of 100.
 
-- **200 designs per family**, so the gallery can be browsed by family.
-- **Every design has a name** built from its layers ("Midnight Racer · Lightning"). With 1,000
-  designs, hand-naming every one is too much, so names are generated. Hand-picked names for the
-  rare ones are optional (§13).
-- **Rarity comes from layers.** A design's rare layers (Gold or Prism palette, Wings, Lightning)
-  give it a label: Common, Uncommon, Rare or Legendary, with about 10 Legendaries. The label is
-  cosmetic and shown, never "worth more".
-- **Two stages:** *Unlaced* at mint, *Laced* after the holder's first settled walk (the laces
-  appear, and a "LACED" line).
+- **The colour family is the "family"** for browsing and for "a family a day" on X.
+- **Every design has a name** built from its layers ("Ember Runner · Strap"). **Names must not
+  repeat:** a first prototype's "family + shape + extra" names gave only 293 different names for 1,000
+  designs. Either add a word until each name is unique, or put the number in the name.
+- **Rarity comes from layers.** Rare families and rare options give a label: Common, Uncommon, Rare
+  or Legendary, with about 10 Legendaries. A Legendary may also be a **one-off template**, drawn by
+  hand in the same style (STEPN's top tier is hand-made too). The label is cosmetic and shown, never
+  "worth more".
+- **Two stages:** *Unlaced* at mint (empty eyelets), *Laced* after the holder's first settled walk
+  (the lace slats appear, and a "LACED" line).
 - **Gold frame:** about 1 in 10 passes, decided at random at mint (§2).
 - The pass shows `FOUNDING PASS`, its name, `#0137`, and after minting `FOUNDER 42`, the way the
   Sneaker card shows `STRIDEMON` and `#0004`.
@@ -101,29 +101,33 @@ Yash reviews them in sheets of 100.
 
 | Option | For | Against |
 |---|---|---|
-| **Layers drawn on-chain by a Solidity renderer (recommended)** | Same approach as the Sneaker (D-030): no IPFS and no image hosting, the app, explorer and website all show the same picture, and it can be improved later with one `setArtRenderer` call. 1,000 designs are 1,000 rows of layer numbers (~8 KB). | The art is vector line art, not painted. Drawing good layers takes real design time (Part 1 is the biggest part). |
+| **Layers drawn on-chain by a Solidity renderer (recommended)** | Same approach as the Sneaker (D-030): no IPFS and no image hosting, the app, explorer and website all show the same picture, and it can be improved later with one `setArtRenderer` call. 1,000 designs are 1,000 rows of layer numbers (~8 KB). | The art is flat vector panels, not painted. Designing good templates takes real design time (Part 1 is the biggest part). |
 | Hand-drawn SVGs, stored on-chain | Full artistic freedom. | 1,000 hand-drawn pieces is impossible for one person, and they'd never fit in a contract. |
 | AI-generated images on IPFS | Rich pictures, quick to make. | Off-chain hosting (pinning) to keep alive, an inconsistent style, unclear licensing, and the Monad community spots AI art and mocks it. Against D-030. |
 
-**Size check:** Monad allows contracts up to **128 KB** (Ethereum: 24 KB) [17]. The layer drawings
-are a few KB each, and the design table is ~8 KB. Names come from the layer words, so they cost
+**Size check:** Monad allows contracts up to **128 KB** (Ethereum: 24 KB) [17]. A flat-panel
+template is a few hundred numbers, a rendered Sneaker 2 to 3 KB of SVG, and the design table ~8 KB. Names come from the layer words, so they cost
 almost nothing. If the renderer still doesn't fit, it splits into a layer-drawing contract and a
 design-table contract.
 
 ### 4.2 The pipeline
 
-1. **Design the layers** (Part 1). Sketch them in Figma first if that's easier (the Figma tools are
-   available), then write them as Solidity drawing functions in `FoundingPassArtRenderer`.
+1. **Design the art system** (Part 1a, §4.4): templates, colour families and options, sketched
+   as a TypeScript generator for fast iteration, then ported to Solidity drawing functions in
+   `FoundingPassArtRenderer` (Part 1b).
 2. **Generate the 1,000:** a seeded script picks combinations under rules, for example:
-   - 200 per family, and every palette, pattern and silhouette used a fair number of times
-   - the rare layers in fixed, small counts (Gold 15, Prism 10, Wings 30, Lightning 30), so about
-     10 designs end up Legendary
-   - **no two designs share more than 5 of their 8 layers**, so neighbors in the gallery never look
-     like copies (the script checks this and tunes the rules if it can't be met)
-   - no clashing pairs (for example a palette that disappears on the Midnight background)
+   - every template and colour family used a fair number of times, so the gallery can be browsed by
+     either
+   - the rare families and options in fixed, small counts, so about 10 designs end up Legendary
+     (rare layers must go only where they stay readable: in the prototype, a gold palette vanished
+     on a light background, so assign rare layers to compatible slots first)
+   - **no two designs share too many layers** (for example more than 5 of 8), so neighbours in the
+     gallery never look like copies. The script checks this and tunes the rules if it can't be met
+   - **names unique** (§3.2)
 
-   It writes `designs.json`: number, layers, generated name, rarity.
-3. **Render previews from the renderer itself:** a `forge script` (simulation only, never
+   It writes `designs.json`: number, layers, generated name, rarity. (A prototype met rules like
+   these for 1,000 designs in well under a second.)
+3. **Render previews from the renderer itself** (once ported): a `forge script` (simulation only, never
    broadcast) calls the renderer, writes every SVG to disk with `vm.writeFile`, and builds **10
    contact sheets of 100**. **The Solidity renderer is the only implementation of the art**, so the
    preview is exactly what goes on-chain.
@@ -136,6 +140,84 @@ design-table contract.
 6. **Export for the website:** the same script writes the 1,000 preview SVGs (about 4 MB in total)
    to `website/public/pass-art/` (it needs a `fs_permissions` write entry in `foundry.toml`).
 
+### 4.3 Art direction (decided 2026-10-08)
+
+Yash picked this after comparing three directions on 2026-10-08. They are saved on the branch
+`feat/nft-pass-experiment`, but a session here can't read it (never git), so everything needed is
+written here:
+- a detailed, near-real single Sneaker (liked, but one drawing doesn't make 1,000)
+- line-art scenes with times of day (dropped)
+- **flat-panel templates (chosen)**
+
+**The style: flat-panel Sneakers, in the spirit of STEPN's everyday sneakers.** How STEPN does it
+(studied from its public marketplace API and image CDN):
+- Each everyday sneaker is a **base design** (about 80 of them) **plus a colourway**, rendered once on
+  its servers to a PNG (about 1000 × 600) and served from a CDN.
+- The look: angular panels with straight edges, **solid colours only, no shading or gradients**, a
+  **thick black outline** around the shoe, thinner black lines between panels, a cream base and sole,
+  a ladder of cream lace slats, and one small constant mark on the heel (theirs is a green tag).
+- Each shoe stays inside **one colour family** (all blues, all teals), which is why every colourway
+  looks designed rather than random.
+- Their top tiers are **hand-painted one-offs** (a sneaker made of grass, a pixel-art one). The
+  everyday ones are the system.
+- Their art is off-chain (JSON and images on their servers). **Ours is drawn on-chain** (§4.1).
+
+**What a quick prototype showed** (3 templates × 6 colour families, built in a few hours):
+- One template in six families already reads as a varied collection. The shared frame (outline,
+  cream, slats, tag) makes them one brand.
+- Each rendered Sneaker was 2 to 3 KB of SVG: only polygons, solid fills and one `<clipPath>`.
+- Panels drawn back to front and **clipped to the silhouette** can overshoot it, which makes
+  templates quick to draw.
+- **Shuffle shades within a tier:** let the seed swap the light shades among the light roles and the
+  dark ones among the dark roles. Then the collar and sole always stay dark and ground the shoe.
+  Fully random shades looked messy.
+- **The constant tag needs contrast in every family.** A lime tag vanished on the lime family. Give
+  it an outline in a contrasting colour, or pick its colour per family.
+- **Lace slats point into the shoe**, perpendicular to the lace line, and need to be chunky (about
+  20 × 58 units on a 1000-wide shoe) to read at thumbnail size.
+- **Avoid trademark lookalikes.** Three parallel slanted bars read as a famous brand's stripes, and
+  swoosh-like curves as another brand's logo. Use triangles, zigzags and shards instead.
+
+**Rules for the final art:**
+- **Our own designs.** Learn from STEPN's approach, but copy none of their art, shapes or their
+  green tag. The heel mark is StrideMon's own (for example a small lime tag with a mark).
+- **D-030 parity:** polygons and paths with solid fills. No gradients, filters or CSS. One
+  `<clipPath>` per Sneaker is expected. Check that `react-native-svg` (`SvgXml`) draws it exactly like
+  a browser before the Solidity port relies on it.
+- **Reads at thumbnail size:** the gallery shows 2 cards a row on a phone. Bold shapes beat detail.
+- **Fits the site:** the website and app use a calm Lusion look (cream, ink, lime `#C1FF00`). The
+  Sneaker can be loud. The card around it (labels, background, gold frame) should be quiet.
+
+### 4.4 Part 1a: design the art (Claude, in one go)
+
+Yash leaves the design to Claude's own taste, done in **one pass** with no design questions asked
+first. Make the calls, show the result, and then Yash reacts.
+
+**Deliver, in `packages/contracts/art/founding-pass/`:**
+1. **`build-founding-pass-art.ts`**, a Bun script (no new dependencies). It holds the templates,
+   colour families, options and the renderer, and writes SVGs plus PNG previews (`rsvg-convert`;
+   `brew install librsvg` if it's missing).
+   - Run it as `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`.
+   - The folder sits outside Biome's checks (`packages/contracts` is excluded), but follow the
+     coding standards anyway.
+2. **The art system:**
+   - **8 to 12 templates.** Each should be a clearly different silhouette, with its own panel
+     layout and character.
+   - **10 to 14 colour families**, including 2 or 3 rare ones.
+   - **Per-template options**, and both stages: Unlaced and Laced.
+3. **The pass card:** the Sneaker on the Founding Pass card (square, for the NFT image), with
+   `FOUNDING PASS`, the name, `#0137`, `FOUNDER 042` once minted, and the gold-frame version. Choose
+   the background yourself (quiet, so the shoe carries the image).
+4. **Previews:**
+   - one sheet with every template in one family
+   - one sheet with one template in every family
+   - a sheet of 100 seeded designs (as the generator would pick them)
+   - the card in its states (available, minted, laced, gold frame)
+5. **`README.md`:** the system, every template and family, how to rebuild, and anything left open.
+
+Then **stop** and show Yash the sheets. Once he approves, Part 1b ports the renderer to Solidity
+(§4.2). After that, the Solidity renderer is the only implementation of the art.
+
 ## 5. The gallery and the flow
 
 ### 5.1 Before mint day: the preview week (recommended)
@@ -146,7 +228,7 @@ countdown to a set time (for example Saturday 20:00 IST, 14:30 UTC).
 - People browse, take the match quiz, **heart favorites** (kept in the browser, no account), and
   share pass pages.
 - "Remind me" posts to the existing waitlist (`POST /v1/waitlist`, D-037): one email when minting opens.
-- X gets **a family a day**: Dawn on Monday, Noon on Tuesday, and so on (200 designs each), plus a
+- X gets **a colour family a day** (for example Ember on Monday, Ocean on Tuesday), plus a
   "Legendary of the day". That's a week of posts from the collection itself (`social/`, D-036).
 
 ### 5.2 The page
@@ -155,13 +237,13 @@ countdown to a set time (for example Saturday 20:00 IST, 14:30 UTC).
 stridemon.xyz/pass
 
 HEADER     "612 of 1,000 minted"   [countdown before mint day]
-           A live line: "#0137 Midnight Racer · minted just now"
+           A live line: "#0137 Ember Runner · minted just now"
 
 FIND       [Find your match]  3 questions → 6 available passes that fit you
            [Surprise me]      one random available pass
            Search: #____      jump to a pass by number
 
-FILTERS    Family · Silhouette · Palette · Extra · Rarity
+FILTERS    Template · Colour family · Options · Rarity
            [Available only]  [Favorites]      Sort: number · rarity · recently minted
 
 GRID       Cards loaded as you scroll (2 a row on a phone, 5–6 on a desktop). Each: the art,
@@ -183,7 +265,7 @@ DETAIL     Tap a card → a sheet with the art large, its layers and rarity, and
 2. EMAIL     email → 6-digit code → verified          (one pass per email)
 3. WALLET    connect (MetaMask etc.) → sign a free message   (one pass per wallet; no gas, ever)
 4. MINT      the server mints through the outbox → ~1 s
-5. REVEAL    the card turns: #0137 MIDNIGHT RACER · FOUNDER 42 (+ gold frame for some)
+5. REVEAL    the card turns: #0137 EMBER RUNNER · FOUNDER 42 (+ gold frame for some)
              Link to the transaction on MonadVision
 6. SHARE     "Post on X" (the pass page)   "Get the app" (the APK / Play)
 
@@ -225,7 +307,7 @@ slower but never fails.
 - **In the app:** the pass on Profile, the gate's "Mint your Founding Pass at stridemon.xyz/pass"
   screen, and the laced moment after the first walk.
 - **Later, honest perks only:** a Founder badge, the first Google Play closed-test seats, invite
-  codes after the first walk (STEPN's mechanic), and maybe a starter Sneaker in your pass's palette
+  codes after the first walk (STEPN's mechanic), and maybe a starter Sneaker in your pass's colour family
   (a new Sneaker renderer could read the pass, with no `SneakerNft` redeploy). Never tokens or money.
 
 ## 8. Share pages (the website is a static export)
@@ -238,7 +320,7 @@ own page at build time**:
   images are rendered once by the art export script and reused.
 - The page shows the pass, its layers and rarity, and (from the API, in the browser) whether it's
   minted and by whom. While it's available, it has the Mint button.
-- The share text: "I minted #0137 Midnight Racer, a one-of-one Founding Pass for @stridemon. Founder
+- The share text: "I minted #0137 Ember Runner, a one-of-one Founding Pass for @stridemon. Founder
   42 of 1,000." The link carries `?source=x-share` (D-037's `source`).
 
 ## 9. Guardrails
@@ -273,7 +355,7 @@ redeploy never wipes the founders. Name "StrideMon Founding Pass", symbol `PASS`
 | `setLaced(uint256 tokenId)` | `MINTER_ROLE`, once. Emits ERC-4906 `MetadataUpdate` |
 | `passOf(tokenId) → (founderNumber, hasGoldFrame, isLaced)` | the per-mint record (the design itself comes from the renderer's table) |
 | `mintedBitmap() → uint256[4]` | which of the 1,000 are minted, in one call (1,024 bits), for the gallery |
-| `tokenURI`, `imageSvg` | through the swappable renderer, with attributes (family, silhouette, palette, pattern, extra, rarity, founder number, frame, stage) |
+| `tokenURI`, `imageSvg` | through the swappable renderer, with attributes (template, colour family, options, rarity, founder number, frame, stage) |
 | transfers and approvals | revert `FoundingPassIsSoulbound()`. `locked()` is always true, and `Locked` is emitted at mint |
 
 **`FoundingPassArtRenderer`**: `renderPassSvg(tokenId, passRecord)` and `renderDesignPreviewSvg(designNumber)`
@@ -328,14 +410,16 @@ Each part ends with a check and a stop for Yash's go-ahead.
 | Part | What | Size | Done when |
 |---|---|---|---|
 | **0. Decide** | Answer §13. A new decision (D-041 on `main`) and the docs: `smart-contracts.md`, `backend-api.md`, `data-model.md`, `security.md`, the privacy page, `CLAUDE.md` | S | The docs say what will be built |
-| **1. Art** | The layer drawings in `FoundingPassArtRenderer`, the generator and its rules, the preview script and 10 contact sheets, then Yash's review and re-rolls | **XL**, plus a few hours of Yash's review | Yash approves all 10 sheets; every design renders the same in a browser and in `react-native-svg`; no two are the same |
+| **1a. Art design** | §4.4: Claude designs the templates, colour families, options and the pass card in one go, as a TypeScript sketch with previews | L | Yash approves the look from the preview sheets |
+| **1b. Art on-chain** | The port to `FoundingPassArtRenderer` (Solidity), the generator and its rules, the preview script and 10 contact sheets, then Yash's review and re-rolls | **XL**, plus a few hours of Yash's review | Yash approves all 10 sheets; every design renders the same in a browser and in `react-native-svg`; no two are the same |
 | **2. Contract** | `FoundingPass`, the frozen design table, tests, the deploy to testnet, verification, `chain:export-abis`, the website export | M | `forge test` passes, and both contracts are verified on MonadVision with a test mint from the deployer |
 | **3. API** | Brevo (`deployment.md`: account, DKIM records, key), Turnstile keys, email codes, email proof, mints, the collection endpoint, CORS, the gate flag (off), lacing | L | API tests pass, and a real code arrives at Gmail with DKIM and DMARC passing |
 | **4. Website** | `/pass`, the quiz, filters, the 1,000 pass pages, wallet sign-in, "Get ready", mint, the reveal, share, preview mode with countdown | **XL** | A full mint on a phone browser against the local API and the testnet contract, a race for the same pass handled, Lighthouse, screenshots |
 | **5. App** | The pass card, the gate screen, laced | M | Checked on the Android phone: mint on the web → sign in to the app → starter Sneaker → walk → laced |
-| **6. Launch** | Preview week, a family a day on X (`social/`), mint day, the waitlist's "minting is open" email, a DeltaV update with Yash's ok | S, plus calendar time | Mint day happens |
+| **6. Launch** | Preview week, a colour family a day on X (`social/`), mint day, the waitlist's "minting is open" email, a DeltaV update with Yash's ok | S, plus calendar time | Mint day happens |
 
-About 4 weeks of focused work before the preview week, mostly Parts 1 and 4.
+About 4 weeks of focused work before the preview week, mostly Parts 1 and 4. Part 1a can start
+any time: it touches nothing else.
 
 ## 12. Metrics (no analytics added)
 
@@ -346,21 +430,20 @@ email → verified → minted drop-off, races lost (a design taken first), minte
 
 ## 13. Open questions for Yash (answer these first)
 
-1. **Art:** layers drawn on-chain (recommended), or something else (§4.1)? And will you sketch the
-   layers yourself in Figma, or should Claude draft them in code for you to react to?
-2. **Theme:** families by time of day (Dawn, Noon, Dusk, Midnight, Storm) and the layer list in
-   §3.2, or another theme?
-3. **Names:** generated from layers (recommended), plus hand-picked names for the ~10 Legendaries?
+1. ~~**Art:**~~ **Decided 2026-10-08:** flat-panel templates drawn on-chain (§4.3), designed by
+   Claude in one go (§4.4).
+2. ~~**Theme:**~~ **Decided:** colour families, not times of day. The final lists are Part 1a's call.
+3. **Names:** generated from layers and unique (§3.2), plus hand-picked names for the ~10 Legendaries?
 4. **Gold frame** at random on about 1 in 10 passes? Recommended: yes.
 5. **Mint on the website (A)?** Recommended: yes.
 6. **Keep the email step, and add Turnstile on the mint button?** Recommended: yes to both.
 7. **The match quiz?** Recommended: yes. It's the best answer to 1,000 choices.
-8. **Preview week, then mint at a set time?** Recommended: yes, with a family a day on X.
+8. **Preview week, then mint at a set time?** Recommended: yes, with a colour family a day on X.
 9. **Gate:** on after judging ends (2026-10-27)? Recommended: yes.
 10. **Timing:** start after the Metropolis submission (deadline **2026-10-14 09:29 IST**)? Still
     left there: the recorded repair and upgrade, the ≤ 3-minute demo video and the dashboard
-    (`docs/hackathon-submission.md`). Part 1 (art) could start in parallel, since it touches nothing
-    the submission uses.
+    (`docs/hackathon-submission.md`). Part 1a (art design) can start in parallel, since it touches
+    nothing the submission uses.
 
 ## 14. Research (2026-10-07 and 08)
 
