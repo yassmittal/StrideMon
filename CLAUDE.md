@@ -57,7 +57,10 @@ lives only in the `DELTAV_API_KEY` env var: never write it into the repo.
   helper starts, so Foundry's `anvil` must be on the `PATH` (D-018). Outbox tests deploy the
   contracts to that Anvil from `packages/contracts/out/`, so run `bun run contracts:build` first.
   **Never broadcast `DeployGame.s.sol` to a local Anvil:** it shares chain id 10143 with the
-  testnet and would overwrite `deployments/10143.json` (D-019).
+  testnet and would overwrite `deployments/10143.json` (D-019). The same goes for
+  `DeployFoundingPass.s.sol`. The test Anvil runs with Monad's 128 KB contract size limit
+  (`--code-size-limit`), because the pass art renderer is about 66 KB, and its contract deploy
+  takes about 7 s, so `beforeAll` passes `TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS` (D-042).
 - **The API's game-server key** (`GAME_SERVER_PRIVATE_KEY` in `apps/api/.env`) is the same key as
   in `packages/contracts/.env`. The outbox sends every mint and gas drip with it (about 0.13 MON
   per new player), so keep it funded from the faucet.
@@ -191,9 +194,17 @@ as early access, each with a Founder Sneaker (neither can be sent or sold). It's
 `docs/founding-pass/`, **one part per session**: paste the prompt in its `README.md`, do the
 first part that isn't done, and stop at its "Done when". Parts 0 (decide, D-041), 1a (art) and
 1b (the art on-chain) are done (2026-10-08). `FoundingPassArtRenderer` is the only implementation
-of the art (not deployed yet: Part 2 deploys it), and **the 1,000 designs are frozen**
+of the art, and **the 1,000 designs are frozen**
 (`DESIGNS_FROZEN_ON`, approved by Yash): the build refuses new review rounds, and no design changes
-without his say. **Next: Part 2 (contracts).** The idea is
+without his say. The Chunky Legendary (#0542) is **Nacreous**, not Steve (Yash, 2026-10-08).
+**Part 2 (contracts) is done** (2026-10-08, D-042): `FoundingPass`, Founder Sneakers in
+`SneakerNft`/`SneakerGame`, and Founder Sneaker art in `SneakerArtRenderer`, deployed and verified
+on testnet (`packages/contracts/README.md`), with test pass #0137 and Founder Sneaker #1 minted to the
+deployer. Deploy order: `DeployFoundingPass.s.sol`, then `DeployGame.s.sol` with
+`FOUNDING_PASS_ADDRESS` (a fresh pass means a fresh game too). **The hosted API and the current
+APK still use the D-038 contracts** until the API is redeployed from this tree, together with a
+new app build. The lost-wallet move is `scripts/recover-founding-pass` (ask Yash first: it sends
+testnet transactions). **Next: Part 3 (API).** The idea is
 in `docs/founding-pass-brief.md`, the art in `packages/contracts/art/founding-pass/`, rebuilt with
 `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
 data is generated: never edit it by hand.
