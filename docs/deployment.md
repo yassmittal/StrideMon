@@ -438,6 +438,42 @@ answers with a 404.)
    `stridemon.xyz` (and verify it if it offers to), so wallets don't flag a mismatch with the
    app's metadata.
 
+## 12. The Founding Pass settings (Part 3, D-043)
+
+The API built from Part 3 on refuses to boot without these. Add them to the server's `.env`
+**before** `pm2 restart stridemon-api` (`vim ~/projects/stridemon/apps/api/.env`):
+
+| Variable | Value on the server |
+|---|---|
+| `EARLY_ACCESS_REQUIRED` | `false` until Metropolis judging ends (2026-10-27). `true` when the preview week starts (Part 10) |
+| `PASS_WAITLIST_WINDOW_STARTS_AT` | `2026-11-28T14:30:00Z` for now. Part 10 sets the real time |
+| `PASS_WAITLIST_WINDOW_HOURS` | `48` |
+| `PASS_BACKUP_OPENING_AT` | `2026-12-14T14:30:00Z` for now (14 days after the open mint starts) |
+| `TURNSTILE_SECRET_KEY` | the secret from Cloudflare → Turnstile → the `stridemon.xyz` site. Production refuses Cloudflare's test secrets |
+| `EMAIL_PROOF_SECRET` | a new `openssl rand -hex 64`, not the JWT secret |
+| `EMAIL_SENDER_ADDRESS` | `hello@stridemon.xyz` |
+| `BREVO_API_KEY` | the Brevo key (the same one as the laptop's `apps/api/.env`) |
+
+- [ ] `pm2 logs stridemon-api` shows no `Invalid environment variables` after the restart.
+- [ ] `curl -s https://api.stridemon.xyz/v1/pass/collection | head -c 300` prints the schedule.
+
+**Email DNS (Namecheap):** Brevo's `brevo-code` TXT and its two DKIM CNAMEs (`brevo1._domainkey`,
+`brevo2._domainkey`) are in. The brief's §15 said to keep `_dmarc` at `p=reject` (§11.2) and not add
+Brevo's DMARC record. On 2026-10-08 `_dmarc` read `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com`.
+Brevo's mail passes DMARC either way, because its DKIM signs for `stridemon.xyz`. `p=none` only
+stops other servers rejecting forged mail that claims to be from `stridemon.xyz`. To go back:
+`v=DMARC1; p=reject; rua=mailto:rua@dmarc.brevo.com`.
+
+**Brevo's authorised IPs:** this Brevo account only takes API calls from listed IPs
+(<https://app.brevo.com/security/authorised_ips>). Add the instance's IP, `100.55.119.114`, or
+every code email from the hosted API fails with `EMAIL_SEND_FAILED` (Brevo answers `401 unrecognised
+IP address`). The instance's IP is fixed. The laptop's isn't: the home connection goes out through
+more than one public IP (Brevo saw two on 2026-10-08), so a send from the laptop can need another
+entry. Brevo's error names the IP to add.
+
+**The deliverability check:** from the laptop, `cd apps/api && bun run pass:send-test-email
+you@gmail.com`. In Gmail, open it → ⋮ → **Show original**: DKIM and DMARC must say `PASS`.
+
 ---
 
 ## Updating the API later

@@ -2,6 +2,9 @@ import type { Db, MongoClient } from 'mongodb'
 import type { AuthenticatedUser } from '../plugins/authentication'
 import type { ChainClients } from '../plugins/chain-clients'
 import type { ApiConfig } from '../plugins/env'
+import type { CachedFoundingPassCollectionReader } from '../services/cached-founding-pass-collection-reader'
+import type { EmailSender } from '../services/email-sender'
+import type { TurnstileVerifier } from '../services/turnstile-verifier'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -9,6 +12,9 @@ declare module 'fastify' {
     mongo: { client: MongoClient; database: Db }
     chain: ChainClients
     authenticate: (request: FastifyRequest) => Promise<void>
+    emailSender: EmailSender
+    turnstileVerifier: TurnstileVerifier
+    foundingPassCollectionReader: CachedFoundingPassCollectionReader
   }
 
   interface FastifyRequest {

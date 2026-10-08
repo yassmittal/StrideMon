@@ -14,9 +14,11 @@ import { type ApiConfig, envPlugin, parseApiConfig } from './plugins/env'
 import { errorHandlerPlugin } from './plugins/error-handler'
 import { mongoPlugin } from './plugins/mongo'
 import { mongoIndexesPlugin } from './plugins/mongo-indexes'
+import { type PassServicesPluginOptions, passServicesPlugin } from './plugins/pass-services'
 import { rateLimitPlugin } from './plugins/rate-limit'
 import { activitySessionRoutes } from './routes/activity-sessions'
 import { authRoutes } from './routes/auth'
+import { foundingPassRoutes } from './routes/founding-pass'
 import { healthRoutes } from './routes/health'
 import { meRoutes } from './routes/me'
 import { onboardingRoutes } from './routes/onboarding'
@@ -26,6 +28,8 @@ type BuildServerOptions = {
   environmentVariables: Record<string, string | undefined>
   /** Tests only: the contracts they deployed to their Anvil (D-019). */
   contractAddresses?: StrideMonContractAddresses
+  /** Tests only: a fake email sender and Turnstile check (D-043). */
+  passServices?: PassServicesPluginOptions
 }
 
 /**
@@ -35,6 +39,7 @@ type BuildServerOptions = {
 export async function buildServer({
   environmentVariables,
   contractAddresses,
+  passServices = {},
 }: BuildServerOptions): Promise<FastifyInstance> {
   const apiConfig = parseApiConfig(environmentVariables, contractAddresses)
 
@@ -56,6 +61,7 @@ export async function buildServer({
   await fastify.register(mongoIndexesPlugin)
   await fastify.register(chainClientsPlugin)
   await fastify.register(authenticationPlugin)
+  await fastify.register(passServicesPlugin, passServices)
   await fastify.register(backgroundJobsPlugin)
   if (apiConfig.nodeEnvironment === 'development') {
     await fastify.register(apiDocsPlugin)
@@ -67,6 +73,7 @@ export async function buildServer({
   await fastify.register(onboardingRoutes, { prefix: '/v1' })
   await fastify.register(activitySessionRoutes, { prefix: '/v1' })
   await fastify.register(waitlistRoutes, { prefix: '/v1' })
+  await fastify.register(foundingPassRoutes, { prefix: '/v1' })
 
   return fastify
 }

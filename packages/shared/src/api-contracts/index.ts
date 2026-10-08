@@ -42,6 +42,32 @@ export {
   type VerifyAuthSignatureBody,
   verifyAuthSignatureBodySchema,
 } from './auth'
+export { emailAddressSchema } from './email-address'
+export {
+  designNumberSchema,
+  type FoundingPassCollectionResponse,
+  type FoundingPassMint,
+  type FoundingPassMintParams,
+  type FoundingPassMintResponse,
+  foundingPassCollectionResponseSchema,
+  foundingPassMintParamsSchema,
+  foundingPassMintResponseSchema,
+  foundingPassMintSchema,
+  type PassSchedule,
+  passScheduleSchema,
+  type RecentFoundingPassMint,
+  type RequestFoundingPassMintBody,
+  recentFoundingPassMintSchema,
+  requestFoundingPassMintBodySchema,
+  type SendPassEmailCodeBody,
+  type SendPassEmailCodeResponse,
+  sendPassEmailCodeBodySchema,
+  sendPassEmailCodeResponseSchema,
+  type VerifyPassEmailCodeBody,
+  type VerifyPassEmailCodeResponse,
+  verifyPassEmailCodeBodySchema,
+  verifyPassEmailCodeResponseSchema,
+} from './founding-pass'
 export {
   type HealthResponse,
   healthResponseSchema,

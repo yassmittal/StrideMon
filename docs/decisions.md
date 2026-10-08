@@ -1054,3 +1054,86 @@ It fills in D-041's contracts. The full interface is in
   `SneakerNft` keeps the links.
 - **Revisit when:** mainnet (a multisig holds `RECOVERY_ROLE`, D-041), or a Sneaker needs art
   that isn't the pass's.
+
+## D-043 — How the Founding Pass API works
+
+Made 2026-10-08 in Part 3 of the Founding Pass build ([`founding-pass/part-3-api.md`](founding-pass/part-3-api.md)).
+It fills in D-041's API. The routes, shapes and error codes are in
+[`architecture/backend-api.md`](architecture/backend-api.md) → The Founding Pass.
+
+- **Decision:**
+  1. **The schedule is three settings:** `PASS_WAITLIST_WINDOW_STARTS_AT`,
+     `PASS_WAITLIST_WINDOW_HOURS` (48) and `PASS_BACKUP_OPENING_AT`. The open mint starts when the
+     window ends. One pure function (`lib/founding-pass/pass-schedule.ts`) turns them, the clock
+     and the on-chain minted count into the phase: `preview`, `waitlistWindow`, `openMint`,
+     `allMinted` or `openToAll`, with the time of the next change. Minting is open in the
+     window and the open mint only: after the backup opening date, no new passes (D-041).
+  2. **The gate** is on while `EARLY_ACCESS_REQUIRED=true` and the phase is `preview`,
+     `waitlistWindow` or `openMint`. `POST /v1/onboarding/starter-sneaker` then refuses a wallet
+     without a pass (`FOUNDING_PASS_REQUIRED`), and the onboarding status tells the app
+     (`isFoundingPassRequired`). A pass holder always gets a Founder Sneaker, gate or not.
+  3. **A mint's outbox key is its mint id** (`mintFoundingPass:<mintId>`), not the design
+     number. A mint that fails (a simulated revert) frees its design, and a later mint of that
+     design needs its own transaction. The database's partial unique indexes on
+     `foundingPassMints` (design, email, wallet, over mints that haven't failed) are what stop
+     two mints of one design.
+  4. **A repeated mint request** from the same wallet for the same design answers that mint
+     again (200), so a double tap or a retry after a dropped connection never shows an error.
+  5. **Email codes** are stored as HMAC-SHA-256 of the email and code, keyed with
+     `EMAIL_PROOF_SECRET`, so a copy of the database can't be brute-forced through the million
+     possible codes. The **email proof** is a JWT signed with that secret (never the access-token
+     secret), good for 6 hours.
+  6. **Development never sends email:** it logs the code. Only production sends, through Brevo,
+     and it refuses to boot without `BREVO_API_KEY`. The deliverability check uses
+     `bun run pass:send-test-email <address>`, which sends one sample code email and touches
+     neither Mongo nor the chain.
+  7. **Turnstile** is checked first on Send code and Mint, before anything else, with
+     Cloudflare's siteverify. Development and tests use Cloudflare's always-pass test secret, and
+     production refuses Cloudflare's test secrets at boot.
+  8. **CORS** also opens `/v1/auth/refresh` to the site: "Get ready" can happen long before the
+     mint, the access token lasts 15 minutes, and a new wallet signature at the moment of the
+     mint would cost the one-tap mint. So the browser routes are `/v1/waitlist`,
+     `/v1/auth/nonce`, `/v1/auth/verify`, `/v1/auth/refresh` and every `/v1/pass/*` route, from
+     `WAITLIST_ALLOWED_ORIGINS` (the same list, kept under its old name so the server's `.env`
+     needs no rename).
+  9. **The collection** lists minted designs as numbers (decoded from `mintedBitmap()`), not as
+     the raw bitmap. The chain read is cached for 3 seconds. Mints confirmed since that read
+     are listed as pending, so a design never looks free in between.
+  10. **"3 similar passes"** come from the frozen design table, which `chain:export-abis` now
+      copies into `@stridemon/chain/founding-pass-designs` (a subpath, so the app never bundles
+      it by accident). Similar means the same template first, then the same family, colourway,
+      options and rarity, then the nearest number.
+  11. **The waitlist email** is a command run by hand on the server:
+      `bun run pass:send-waitlist-emails --limit <n> --send` (without `--send` it only counts).
+      It emails the oldest sign-ups that joined before the window opened and were never emailed,
+      marks each address **before** it sends (at most once, never twice), and prints what it
+      sent. Sign-ups from after the window opened get no email.
+  12. **Lacing:** when a `settleSession` confirms, the outbox job reads the wallet's pass from the
+      chain and, if it isn't laced, queues `laceFoundingPass:<passTokenId>`. Every later
+      settlement finds it laced (or the key already queued) and adds nothing.
+  13. **The testnet MON budget** (measured 2026-10-08 on Anvil, and checked with `eth_estimateGas`
+      on testnet; Monad charges the gas limit, at about 102 gwei today):
+
+      | Per founder, from the game-server key | Gas | MON |
+      |---|---|---|
+      | `mintFoundingPass` | ~246,000 | ~0.025 |
+      | `mintFounderSneaker` | ~363,000 | ~0.037 |
+      | `sendGasDrip` (the transfer) | 21,000 | ~0.002 |
+      | `laceFoundingPass` | ~52,000 | ~0.005 |
+      | the drip itself (`GAS_DRIP_AMOUNT_WEI`) | | 0.1 |
+      | **Total** | ~682,000 | **~0.17** |
+
+      So 1,000 founders need about **170 MON** (about 70 in fees and 100 in drips), and every
+      settled walk after that costs about 0.02 MON (`settleSession`, ~190,000 gas). A player's
+      own repair or upgrade is ~110,000–125,000 gas (~0.013 MON), so a 0.05 MON drip still pays
+      for about 3 of them and brings the total to about 120 MON. **Yash keeps the drip at 0.1 MON
+      (2026-10-08)**, so plan on about 170 MON in the game-server key before the launch.
+- **Why:** one source of truth per fact (the schedule in config, ownership on the chain, the
+  claim on a design in the unique index), and no user-facing step that can fail for a reason the
+  user can't act on. Every refusal has its own code, so the website can say what happened and
+  what to do next.
+- **Trade-off:** the website keeps a refresh token in the browser (a stolen one is limited to
+  this API, and rotating tokens detect reuse). The waitlist email is a manual step on launch day.
+  Mints confirmed in the last 3 seconds are counted as pending, not minted, in the collection.
+- **Revisit when:** Part 5 builds the website's mint (it may want more from the API), the
+  waitlist outgrows Brevo's 300 a day (move to SES), or mainnet.

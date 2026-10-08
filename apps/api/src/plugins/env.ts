@@ -6,9 +6,21 @@ import {
 import fastifyPlugin from 'fastify-plugin'
 import type { Hex } from 'viem'
 import { z } from 'zod'
+import type { PassScheduleTimes } from '../lib/founding-pass/pass-schedule'
 
 // 64 random bytes as hex is 128 characters; anything under 64 is too weak for HS256.
 const MINIMUM_JWT_SECRET_LENGTH = 64
+// Cloudflare's published Turnstile test secrets (always pass, always fail, already spent) all
+// start like this. Fine for development and tests; production refuses them (D-043).
+const TURNSTILE_TEST_SECRET_PATTERN = /^[123]x0{20,}/
+
+const MILLISECONDS_PER_HOUR = 3_600_000
+
+const booleanStringSchema = z.enum(['true', 'false']).transform((text) => text === 'true')
+
+// An ISO 8601 time with its offset (`2026-11-28T14:30:00Z`), so the schedule never depends on
+// the server's time zone.
+const isoDateTimeSchema = z.iso.datetime({ offset: true }).transform((text) => new Date(text))
 
 const positiveIntegerStringSchema = z
   .string()
@@ -77,6 +89,20 @@ const environmentVariablesSchema = z.object({
     .transform((privateKey) => privateKey as Hex),
   GAS_DRIP_AMOUNT_WEI: weiAmountStringSchema,
   WAITLIST_ALLOWED_ORIGINS: originListSchema,
+  EARLY_ACCESS_REQUIRED: booleanStringSchema,
+  PASS_WAITLIST_WINDOW_STARTS_AT: isoDateTimeSchema,
+  PASS_WAITLIST_WINDOW_HOURS: positiveIntegerStringSchema,
+  PASS_BACKUP_OPENING_AT: isoDateTimeSchema,
+  TURNSTILE_SECRET_KEY: z.string().min(1, 'must be the Turnstile secret key'),
+  EMAIL_PROOF_SECRET: z
+    .string()
+    .min(
+      MINIMUM_JWT_SECRET_LENGTH,
+      `must be at least ${MINIMUM_JWT_SECRET_LENGTH} characters (use 64 random bytes as hex)`,
+    ),
+  EMAIL_SENDER_ADDRESS: z.email(),
+  // Optional outside production: development logs codes instead of sending them (D-043).
+  BREVO_API_KEY: z.string().min(1).optional(),
 })
 
 type SupportedChain = (typeof SUPPORTED_CHAINS)[number]
@@ -94,8 +120,18 @@ export type ApiConfig = {
   /** Never logged. Signs every outbox transaction. */
   gameServerPrivateKey: Hex
   gasDripAmountWei: bigint
-  /** The only browser origins that may call `POST /v1/waitlist` (D-037). */
+  /** The only browser origins that may call the website's routes (D-037, D-043). */
   waitlistAllowedOrigins: string[]
+  /** The early-access gate's switch (D-041). The schedule turns it off by itself. */
+  isEarlyAccessRequired: boolean
+  passScheduleTimes: PassScheduleTimes
+  /** Never logged. Checks Turnstile tokens with Cloudflare. */
+  turnstileSecretKey: string
+  /** Never logged. Signs email proofs and keys the email-code hashes (D-043). */
+  emailProofSecret: string
+  emailSenderAddress: string
+  /** Never logged. `null` outside production, where codes are logged instead of sent. */
+  brevoApiKey: string | null
   contractAddresses: StrideMonContractAddresses
 }
 
@@ -118,6 +154,8 @@ export function parseApiConfig(
   }
 
   const variables = parseResult.data
+  const passScheduleTimes = buildPassScheduleTimes(variables)
+  assertProductionSecrets(variables)
   const contractAddresses =
     contractAddressesOverride ?? CONTRACT_ADDRESSES_BY_CHAIN_ID[variables.MONAD_CHAIN_ID.id]
   if (contractAddresses === undefined) {
@@ -139,7 +177,50 @@ export function parseApiConfig(
     gameServerPrivateKey: variables.GAME_SERVER_PRIVATE_KEY,
     gasDripAmountWei: variables.GAS_DRIP_AMOUNT_WEI,
     waitlistAllowedOrigins: variables.WAITLIST_ALLOWED_ORIGINS,
+    isEarlyAccessRequired: variables.EARLY_ACCESS_REQUIRED,
+    passScheduleTimes,
+    turnstileSecretKey: variables.TURNSTILE_SECRET_KEY,
+    emailProofSecret: variables.EMAIL_PROOF_SECRET,
+    emailSenderAddress: variables.EMAIL_SENDER_ADDRESS,
+    brevoApiKey: variables.BREVO_API_KEY ?? null,
     contractAddresses,
+  }
+}
+
+type EnvironmentVariables = z.infer<typeof environmentVariablesSchema>
+
+function buildPassScheduleTimes(variables: EnvironmentVariables): PassScheduleTimes {
+  const waitlistWindowStartsAt = variables.PASS_WAITLIST_WINDOW_STARTS_AT
+  const openMintStartsAt = new Date(
+    waitlistWindowStartsAt.getTime() + variables.PASS_WAITLIST_WINDOW_HOURS * MILLISECONDS_PER_HOUR,
+  )
+  const backupOpeningAt = variables.PASS_BACKUP_OPENING_AT
+  if (backupOpeningAt.getTime() <= openMintStartsAt.getTime()) {
+    throw new Error(
+      `Invalid environment variables (see apps/api/.env.example):\n  PASS_BACKUP_OPENING_AT: must be after the waitlist window ends (${openMintStartsAt.toISOString()})`,
+    )
+  }
+  return { waitlistWindowStartsAt, openMintStartsAt, backupOpeningAt }
+}
+
+/** Production must send real email and check real Turnstile tokens, with its own proof secret. */
+function assertProductionSecrets(variables: EnvironmentVariables): void {
+  if (variables.NODE_ENV !== 'production') return
+  const problems = [
+    variables.BREVO_API_KEY === undefined
+      ? '  BREVO_API_KEY: required in production (codes are only logged without it)'
+      : null,
+    TURNSTILE_TEST_SECRET_PATTERN.test(variables.TURNSTILE_SECRET_KEY)
+      ? "  TURNSTILE_SECRET_KEY: is one of Cloudflare's test secrets; use the site's real one"
+      : null,
+    variables.EMAIL_PROOF_SECRET === variables.JWT_ACCESS_TOKEN_SECRET
+      ? '  EMAIL_PROOF_SECRET: must differ from JWT_ACCESS_TOKEN_SECRET'
+      : null,
+  ].filter((problem) => problem !== null)
+  if (problems.length > 0) {
+    throw new Error(
+      `Invalid environment variables (see apps/api/.env.example):\n${problems.join('\n')}`,
+    )
   }
 }
 

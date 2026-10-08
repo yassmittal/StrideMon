@@ -3,6 +3,10 @@ export const CHAIN_TRANSACTION_KINDS = [
   'mintStarterSneaker',
   'sendGasDrip',
   'settleSession',
+  // The Founding Pass (D-043)
+  'mintFoundingPass',
+  'mintFounderSneaker',
+  'laceFoundingPass',
 ] as const
 
 export type ChainTransactionKind = (typeof CHAIN_TRANSACTION_KINDS)[number]

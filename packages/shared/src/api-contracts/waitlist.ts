@@ -1,16 +1,12 @@
 import { z } from 'zod'
 import { WAITLIST_PHONE_PLATFORMS } from '../domain/waitlist'
-
-// RFC 5321's limit on a whole address.
-const MAX_EMAIL_LENGTH = 254
+import { emailAddressSchema } from './email-address'
 
 /** The landing page's `?source=`: which link brought the sign-up (D-037). */
 const WAITLIST_SOURCE_PATTERN = /^[a-z0-9-]{1,32}$/
 
-const waitlistEmailSchema = z.string().trim().toLowerCase().pipe(z.email().max(MAX_EMAIL_LENGTH))
-
 export const joinWaitlistBodySchema = z.object({
-  email: waitlistEmailSchema,
+  email: emailAddressSchema,
   phonePlatform: z.enum(WAITLIST_PHONE_PLATFORMS).optional(),
   /** Dropped, not refused, when it isn't 1–32 characters of `[a-z0-9-]`. */
   source: z.string().regex(WAITLIST_SOURCE_PATTERN).optional().catch(undefined),

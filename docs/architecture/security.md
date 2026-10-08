@@ -98,8 +98,9 @@ Phase 10.
 - Stack traces are never returned to clients.
 - The gas drip is one per wallet, ever, recorded in `users.hasReceivedGasDrip`
   and the outbox idempotency key.
-- **CORS** is off everywhere except `POST /v1/waitlist`, which allows only the origins in
-  `WAITLIST_ALLOWED_ORIGINS` (the landing page, D-037). The app is native and sends no origin.
+- **CORS** is off everywhere except the website's routes (`POST /v1/waitlist`, the Founding Pass
+  routes below), which allow only the origins in `WAITLIST_ALLOWED_ORIGINS` (D-037, D-043). The
+  app is native and sends no origin.
 - **The waitlist route** is public, so it has its own limit (5 a minute per IP) and a hidden
   honeypot field: a filled-in honeypot answers `200` and stores nothing, so a bot learns nothing.
   No CAPTCHA (Turnstile is the free next step if junk appears).
@@ -129,14 +130,15 @@ Phase 10.
 
 ## The Founding Pass (D-041)
 
-The contracts are built (Part 2, D-042). Parts 3 and 5 of
-[`../founding-pass/`](../founding-pass/README.md) build the rest, from the brief's §9, §10 and §15 ([`../founding-pass-brief.md`](../founding-pass-brief.md)).
+The contracts are built (Part 2, D-042) and the API (Part 3, D-043). Part 5 of
+[`../founding-pass/`](../founding-pass/README.md) builds the website's side, from the brief's §9, §10 and §15 ([`../founding-pass-brief.md`](../founding-pass-brief.md)).
 The website becomes a second client of the API, with a wallet on `/pass` only.
 
 **Email codes** (the first attempt's rules, brief §15):
 - 6 digits, not magic links, because mail scanners open links and use them up.
-- Stored only as a SHA-256 hash, valid for 10 minutes and 5 tries, and sent at most once a minute
-  per email.
+- Stored only as a hash (HMAC-SHA-256 keyed with `EMAIL_PROOF_SECRET`, so a database copy can't
+  be brute-forced through the million codes), valid for 10 minutes and 5 tries, and sent at most
+  once a minute per email.
 - The same answer for a new email and a known one, so the route never reveals who's there.
 - A verified code gives a signed **email proof** that lasts a few hours. It has its own secret,
   not the access-token one.
@@ -151,8 +153,10 @@ The website becomes a second client of the API, with a wallet on `/pass` only.
 - One pass per email (the API) and per wallet (the API and the contract). One-of-ones give bots a
   reason to snipe the Legendaries the moment minting opens, so these are on from the start.
 
-**CORS:** the `/v1/pass/*` routes and SIWE's `/v1/auth/nonce` and `/v1/auth/verify` accept the
-site's origins (the same list as the waitlist). Every other route stays closed to browsers.
+**CORS:** the `/v1/pass/*` routes and SIWE's `/v1/auth/nonce`, `/v1/auth/verify` and
+`/v1/auth/refresh` accept the site's origins (the same list as the waitlist). Refresh is on the
+list so "Get ready" survives until the mint without a second wallet signature (D-043). Every
+other route stays closed to browsers.
 
 **Who holds which role:**
 
@@ -175,8 +179,10 @@ The deploy scripts wire exactly this, and `DeployGame.t.sol` checks it (D-042).
   a Founder Sneaker to whoever holds its pass, so even `RECOVERY_ROLE` can't send a Sneaker
   anywhere else (D-042).
 
-**Secrets** (API env only, like the others): `BREVO_API_KEY`, the Turnstile secret key and the
-email-proof secret. The Turnstile **site** key is public and lives in the website.
+**Secrets** (API env only, like the others): `BREVO_API_KEY`, `TURNSTILE_SECRET_KEY` and
+`EMAIL_PROOF_SECRET`. The Turnstile **site** key is public and lives in the website. Production
+refuses Cloudflare's Turnstile test secrets, and an email-proof secret equal to the access-token
+one.
 
 **Privacy:** the website now collects an email and, for minting, a wallet. The mint record links
 the two. The privacy page names Brevo and Turnstile and says so (Part 5). Showing "Minted by

@@ -48,8 +48,9 @@
    with the usual gas drip), even if they already own a normal Sneaker. After opening day,
    everyone else gets today's normal starter Sneaker.
 7. **Lacing:** after a wallet's first settlement confirms, queue `setLaced` for its pass.
-8. **CORS and limits:** the `/v1/pass/*` routes and SIWE's nonce and verify routes accept the
-   site's origin only, and every public route has a per-IP rate limit. In `bun test`, give each
+8. **CORS and limits:** the `/v1/pass/*` routes and SIWE's nonce, verify and refresh routes
+   accept the site's origin only (refresh too, so "Get ready" lasts until the mint: D-043), and
+   every public route has a per-IP rate limit. In `bun test`, give each
    injected request its own `remoteAddress`.
 9. **The waitlist email**, built now and sent in Part 10. The site promises "one email when it opens,
    nothing else", so each waitlist address gets **exactly one** email: "Your 48 hours start now",

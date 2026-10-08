@@ -24,7 +24,8 @@ apps/api/src/
 │
 ├── plugins/                     cross-cutting setup, registered by hand in dependency order
 │   ├── env.ts                     validates process.env with zod → fastify.config
-│   ├── cors.ts                    browser access for /v1/waitlist only (D-037)
+│   ├── cors.ts                    browser access for the website's routes only (D-037, D-043)
+│   ├── pass-services.ts           the email sender, the Turnstile check and the collection's chain cache
 │   ├── mongo.ts                   connects, decorates fastify.mongo, closes on shutdown
 │   ├── mongo-indexes.ts           every index from data-model.md, created at boot
 │   ├── chain-clients.ts           viem publicClient + gameServerWalletClient → fastify.chain
@@ -120,7 +121,7 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | GET | `/v1/activity-sessions/:activitySessionId` | 4 | 🔒 one session (the app polls this while settling) |
 | GET | `/v1/activity-sessions` | 5 | 🔒 history, cursor-paginated |
 | POST | `/v1/waitlist` | 8.8 | `{ email, phonePlatform?, source? }` → `{ status: 'joined' }`. Called from the landing page (D-037) |
-| — | `/v1/pass/*` | Founding Pass | planned: see "The Founding Pass" below (D-041) |
+| POST/GET | `/v1/pass/*` | Founding Pass | email codes, mints and the collection: see "The Founding Pass" below (D-041, D-043) |
 
 There are deliberately **no endpoints** for Sneaker stats, balances, repair or
 upgrade: the app reads and writes those on-chain directly.
@@ -174,7 +175,15 @@ upgrade: the app reads and writes those on-chain directly.
 | `MONAD_CHAIN_ID` | `10143` | selects addresses from `@stridemon/chain` |
 | `GAME_SERVER_PRIVATE_KEY` | `0x…` | **testnet only**; KMS in Phase 10 |
 | `GAS_DRIP_AMOUNT_WEI` | `"100000000000000000"` | 0.1 testnet MON |
-| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.xyz` | comma-separated origins allowed to call `/v1/waitlist` from a browser (D-037, D-040) |
+| `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.xyz` | comma-separated origins allowed to call the browser routes: `/v1/waitlist`, `/v1/pass/*` and SIWE's nonce, verify and refresh (D-037, D-040, D-043) |
+| `EARLY_ACCESS_REQUIRED` | `false` | `true` turns the early-access gate on (D-041). Off until Metropolis judging ends |
+| `PASS_WAITLIST_WINDOW_STARTS_AT` | `2026-11-28T14:30:00Z` | when the waitlist window opens (ISO 8601) |
+| `PASS_WAITLIST_WINDOW_HOURS` | `48` | the window's length; the open mint starts when it ends |
+| `PASS_BACKUP_OPENING_AT` | `2026-12-14T14:30:00Z` | the backup opening date: after the window ends |
+| `TURNSTILE_SECRET_KEY` | Cloudflare's | production refuses Cloudflare's test secrets |
+| `EMAIL_PROOF_SECRET` | 64 random bytes | signs email proofs and keys the code hashes; not the access-token secret |
+| `EMAIL_SENDER_ADDRESS` | `hello@stridemon.xyz` | the From of every email |
+| `BREVO_API_KEY` | Brevo's | required in production; development logs codes instead of sending |
 
 Contract addresses come from `@stridemon/chain` for `MONAD_CHAIN_ID`, and boot fails if
 that chain has none. API tests pass `buildServer({ contractAddresses })` instead, with the
@@ -305,49 +314,151 @@ The landing page is a static site, so its waitlist form posts straight to the AP
 - The repository upserts with `$setOnInsert` on the unique `email` index (`waitlistSignups`,
   data-model.md), so a repeat is a no-op.
 - Its own rate limit: 5 requests a minute per IP.
-- **CORS** (`plugins/cors.ts`, `@fastify/cors`): only `/v1/waitlist` answers browser requests,
-  and only for an origin in `WAITLIST_ALLOWED_ORIGINS`. Every other route sends no CORS headers,
-  so browsers still can't call it. The mobile app sends no `Origin` and is unaffected.
+- **CORS** (`plugins/cors.ts`, `@fastify/cors`): `/v1/waitlist` answers browser requests, but
+  only for an origin in `WAITLIST_ALLOWED_ORIGINS`. The Founding Pass adds its own routes to the
+  list (below). Every other route sends no CORS headers, so browsers still can't call it. The
+  mobile app sends no `Origin` and is unaffected.
 
-## The Founding Pass (planned, D-041)
+## The Founding Pass (Part 3, D-041, D-043)
 
-Not built yet: Part 3 of [`../founding-pass/`](../founding-pass/README.md) builds it, and the
-brief's §10.2 ([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the detail. Route
-names and error codes settle there, and this section then describes what was built.
+The website's `/pass` page is the second client of these routes. The brief's §10.2
+([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the why, D-043 the choices.
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| POST | `/v1/pass/email-code` | `{ email, turnstileToken }`: emails a 6-digit code through Brevo. Same answer for new and known emails |
-| POST | `/v1/pass/email-verify` | checks the code, returns a signed **email proof** that lasts a few hours ("Get ready" before mint day) |
-| POST | `/v1/pass/mints` | 🔒 (the website's SIWE sign-in) `{ designNumber, emailProof, turnstileToken }` → queues `mintFoundingPass` in the outbox. A taken design answers `PASS_ALREADY_MINTED` with 3 similar available designs |
-| GET | `/v1/pass/mints/:mintId` | 🔒 the mint's state; once confirmed, the founder number, gold frame and transaction hash (the reveal) |
-| GET | `/v1/pass/collection` | the minted bitmap (cached a few seconds), mints still queued, the total, the last 10 mints, and the schedule's phase with its next time |
+| POST | `/v1/pass/email-code` | `{ email, turnstileToken }` → `{ status: 'sent' }`. Emails a 6-digit code. The same answer for new and known emails |
+| POST | `/v1/pass/email-verify` | `{ email, code }` → `{ emailProof, emailProofExpiresAt }`, a signed proof good for 6 hours ("Get ready" before mint day) |
+| POST | `/v1/pass/mints` | 🔒 `{ designNumber, emailProof, turnstileToken }` → `201 { mint }` (or `200` with the same mint, for a repeat from the same wallet for the same design). Queues `mintFoundingPass` in the outbox |
+| GET | `/v1/pass/mints/:mintId` | 🔒 `{ mint }`; 404 for another wallet's mint. The website polls it for the reveal |
+| GET | `/v1/pass/collection` | the minted designs, the pending ones, the counts, the last 10 mints, the schedule and the gate |
 
-- **The schedule** comes from config: the waitlist window's start (48 hours long) and the backup
-  opening date (14 days after the open mint starts). One pure function in `lib/` turns those and
-  the minted count into the phase (preview, waitlist window, open mint, all minted, open to all),
-  so every route and both clients agree. During the window, a mint needs an email that joined
-  the waitlist before the window opened (`waitlistSignups.createdAt`, data-model.md).
-- **The early-access gate:** while `EARLY_ACCESS_REQUIRED` is on, the starter-Sneaker route gives
-  a Sneaker only to a wallet that holds a pass (read from the chain), and that Sneaker is its
-  Founder Sneaker. The gate goes off by itself when all 1,000 are minted or the backup date
-  passes. It stays off until Metropolis judging ends (2026-10-27) and goes on when the preview
-  week starts. The app learns the gate's state from the API.
-- **Founder Sneakers:** a pass holder without one gets one (with the usual gas drip), even if it
-  already owns a normal Sneaker. After opening day, everyone else gets today's starter Sneaker.
-- **Lacing:** when a wallet's first `settleSession` confirms and its pass isn't laced, the outbox
-  job queues `setLaced`.
-- **New outbox kinds:** `mintFoundingPass`, `mintFounderSneaker`, `laceFoundingPass`, each with
-  its own idempotency key (by design number, by pass, by pass).
-- **CORS:** the `/v1/pass/*` routes and SIWE's `/v1/auth/nonce` and `/v1/auth/verify` also
-  accept the site's origins. Every public pass route has its own per-IP rate limit.
-- **The waitlist email:** each waitlist address gets exactly one email, when the waitlist window
-  opens, within Brevo's 300 a day.
-- **The lost-wallet move** (D-041) isn't an API route. Support checks the email by hand and runs
-  `RecoverFoundingPass.s.sol` from the deployer key.
-- **New configuration** (names settle in Part 3): the window's start, the backup opening date,
-  `EARLY_ACCESS_REQUIRED`, `BREVO_API_KEY` (the API refuses to boot without it in production,
-  and logs codes instead in development), the Turnstile secret, and the email-proof secret.
+A mint, as both mint routes answer it:
+
+```json
+{
+  "mint": {
+    "mintId": "6705…",
+    "designNumber": 137,
+    "status": "confirmed",
+    "transactionHash": "0x…",
+    "founderNumber": 42,
+    "hasGoldFrame": false,
+    "failureCode": null,
+    "createdAt": "2026-11-28T14:30:02.000Z",
+    "mintedAt": "2026-11-28T14:30:03.000Z"
+  }
+}
+```
+
+`status` is `queued` (until the receipt), `confirmed` or `failed`. `transactionHash` is set once
+the outbox signs it, so the reveal can link to MonadVision while it waits. `founderNumber` and
+`hasGoldFrame` come from the `FoundingPassMinted` event. A failed mint names why in
+`failureCode` (`PASS_ALREADY_MINTED`, `PASS_WALLET_ALREADY_USED` or `PASS_MINT_FAILED`), and
+nothing was minted.
+
+The collection:
+
+```json
+{
+  "designCount": 1000,
+  "mintedCount": 612,
+  "mintedDesignNumbers": [3, 7, 137],
+  "pendingDesignNumbers": [212],
+  "recentMints": [
+    { "designNumber": 137, "walletAddress": "0x3f…a1", "founderNumber": 612, "mintedAt": "…" }
+  ],
+  "schedule": {
+    "phase": "openMint",
+    "nextPhaseAt": "2026-12-14T14:30:00.000Z",
+    "waitlistWindowStartsAt": "2026-11-28T14:30:00.000Z",
+    "openMintStartsAt": "2026-11-30T14:30:00.000Z",
+    "backupOpeningAt": "2026-12-14T14:30:00.000Z"
+  },
+  "isEarlyAccessGateOn": true
+}
+```
+
+- `mintedCount` and `mintedDesignNumbers` are the chain's (`mintedCount()`, `mintedBitmap()`),
+  read at most every 3 seconds. `pendingDesignNumbers` are mints still queued, plus any confirmed
+  since that read, so a design never looks free in between. `recentMints` are the last 10
+  confirmed, newest first (the live line), with the wallet checksummed.
+- `nextPhaseAt` is when the phase changes by the clock (`null` once it's `allMinted` or
+  `openToAll`), for the countdowns.
+
+**Errors** (every refusal has its own code, so the site can say what to do next):
+
+| Route | Errors |
+|-------|--------|
+| `email-code` | `TURNSTILE_FAILED` 403, `EMAIL_CODE_RECENTLY_SENT` 429 (`details.retryAfterSeconds`), `EMAIL_SEND_FAILED` 503 |
+| `email-verify` | `EMAIL_CODE_INCORRECT` 400 (`details.attemptsLeft`), `EMAIL_CODE_EXPIRED` 400 (none pending, expired or used), `EMAIL_CODE_TOO_MANY_ATTEMPTS` 429 |
+| `POST mints` | `TURNSTILE_FAILED` 403, `EMAIL_PROOF_INVALID` 401, `PASS_MINT_NOT_OPEN` 409 (`details.opensAt`), `PASS_WAITLIST_WINDOW_ONLY` 403 (`details.openMintStartsAt`), `PASS_ALL_MINTED` 409, `PASS_MINT_CLOSED` 409, `PASS_EMAIL_ALREADY_USED` 409 (`details.designNumber`), `PASS_WALLET_ALREADY_USED` 409 (`details.designNumber`, and `details.mintId` when the API minted it), `PASS_ALREADY_MINTED` 409 (`details.similarAvailableDesignNumbers`: 3 similar designs still free) |
+
+The mint checks run in that order: Turnstile, the email proof, the phase, the waitlist window,
+the email, the wallet (in Mongo, then `balanceOf` on the chain), the design (the chain's bitmap,
+then the unique index on insert). Racing mints of one design: the database lets the first insert
+through, and the second gets `PASS_ALREADY_MINTED`.
+
+**Email codes** (brief §15): 6 digits from `crypto.randomInt`, stored in `passEmailCodes` only as
+an HMAC-SHA-256 hash, valid for 10 minutes and 5 tries, one email a minute per address. Each try
+counts, the right code included; the right code deletes the record, so it works once. Sending a
+code answers `sent` whether or not the email is on the waitlist or already has a pass.
+A failed send deletes the record, so the person can try again at once.
+
+**The schedule** (`lib/founding-pass/pass-schedule.ts`): from `PASS_WAITLIST_WINDOW_STARTS_AT`,
+`PASS_WAITLIST_WINDOW_HOURS` and `PASS_BACKUP_OPENING_AT`, the clock and the minted count:
+
+| Phase | When | Minting | Gate (if `EARLY_ACCESS_REQUIRED`) |
+|-------|------|---------|------|
+| `preview` | before the window | no (`PASS_MINT_NOT_OPEN`) | on |
+| `waitlistWindow` | the window's 48 hours | waitlist emails that joined **before** it opened | on |
+| `openMint` | from the window's end to the backup opening date | anyone | on |
+| `allMinted` | all 1,000 minted (whatever the date) | no (`PASS_ALL_MINTED`) | off |
+| `openToAll` | from the backup opening date, not all minted | no (`PASS_MINT_CLOSED`) | off |
+
+**The early-access gate and Founder Sneakers** (`POST /v1/onboarding/starter-sneaker`): the
+handler reads the wallet's pass from the chain (`balanceOf`, `tokenOfOwnerByIndex`) and the
+pass's Founder Sneaker (`SneakerNft.founderSneakerTokenIdOf`).
+- **Holds a pass, no Founder Sneaker yet:** queues `mintFounderSneaker` and the gas drip, even
+  when the wallet already owns a normal Sneaker.
+- **No pass, gate on:** `FOUNDING_PASS_REQUIRED` 403 (`details.phase`).
+- **No pass, gate off:** today's starter Sneaker and gas drip.
+
+The onboarding status adds `starterSneakerKind` (`founder` or `normal`: which free Sneaker this
+wallet gets) and `isFoundingPassRequired` (the gate is on and the wallet holds no pass), so the
+app knows which screen to show. The gate stays off until Metropolis judging ends (2026-10-27).
+
+**Lacing:** when a `settleSession` confirms, the outbox job reads the wallet's pass. If it holds
+one that isn't laced, it queues `laceFoundingPass` (`setLaced`). A 0-minute run sends no
+transaction, so it laces nothing.
+
+**New outbox kinds:** `mintFoundingPass` (key `mintFoundingPass:<mintId>`), `mintFounderSneaker`
+(key `mintFounderSneaker:<passTokenId>`) and `laceFoundingPass` (key
+`laceFoundingPass:<passTokenId>`). A confirmed `mintFoundingPass` writes the founder number, frame
+and hash to its mint. A failed one (simulated or on-chain revert) marks its mint `failed`, which
+frees the design, email and wallet. A confirmed `mintFounderSneaker` sets
+`users.hasReceivedStarterSneaker`. `FoundingPass` has no pause, so a paused game holds only
+`mintFounderSneaker` (D-032).
+
+**CORS and limits:** the `/v1/pass/*` routes and `/v1/auth/nonce`, `/v1/auth/verify` and
+`/v1/auth/refresh` answer the origins in `WAITLIST_ALLOWED_ORIGINS` (D-043). Per IP and minute:
+`email-code` 5, `email-verify` 10, `POST mints` 10, `GET mints/:mintId` 60, `collection` 60. In
+`bun test`, each injected request gets its own `remoteAddress`.
+
+**The waitlist email** (`jobs/send-waitlist-window-emails.ts`, run by hand with
+`bun run pass:send-waitlist-emails`): each sign-up from before the window opened gets exactly
+one email, "Your 48 hours start now" (or, if it goes out before the window, when it starts), with
+the window's open and close times. Oldest sign-ups first, `--limit` per run (Brevo's free plan
+sends 300 a day). It stamps `windowEmailSentAt` before sending, so an address is never emailed
+twice, and prints what it sent. A run stops at the first failed send: a refusal from Brevo (the
+daily limit, say) gives that address back for the next run, while an unknown outcome (a timeout)
+keeps the stamp, since that email may have gone out. Without `--send` it only counts, and `--send`
+runs only with `NODE_ENV=production`.
+
+**The deliverability check:** `cd apps/api && bun run pass:send-test-email <address>` sends one
+sample code email through Brevo, reading only `BREVO_API_KEY` and `EMAIL_SENDER_ADDRESS`.
+
+**The lost-wallet move** (D-041) isn't an API route. Support checks the email by hand and runs
+`scripts/recover-founding-pass` from the deployer key.
 
 ## Logging
 

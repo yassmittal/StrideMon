@@ -15,6 +15,20 @@ const VALID_ENVIRONMENT_VARIABLES = {
   GAME_SERVER_PRIVATE_KEY: `0x${'ab'.repeat(32)}`,
   GAS_DRIP_AMOUNT_WEI: '100000000000000000',
   WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.xyz, http://localhost:3000',
+  EARLY_ACCESS_REQUIRED: 'false',
+  PASS_WAITLIST_WINDOW_STARTS_AT: '2026-11-28T14:30:00Z',
+  PASS_WAITLIST_WINDOW_HOURS: '48',
+  PASS_BACKUP_OPENING_AT: '2026-12-14T14:30:00Z',
+  TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
+  EMAIL_PROOF_SECRET: 'b'.repeat(128),
+  EMAIL_SENDER_ADDRESS: 'hello@stridemon.xyz',
+}
+
+const PRODUCTION_ENVIRONMENT_VARIABLES = {
+  ...VALID_ENVIRONMENT_VARIABLES,
+  NODE_ENV: 'production',
+  TURNSTILE_SECRET_KEY: '0x4AAAAAAA-real-looking-secret',
+  BREVO_API_KEY: 'xkeysib-test',
 }
 
 const DEPLOYED_CONTRACT_ADDRESSES = CONTRACT_ADDRESSES_BY_CHAIN_ID[10143]
@@ -43,8 +57,55 @@ describe('parseApiConfig', () => {
       gameServerPrivateKey: `0x${'ab'.repeat(32)}`,
       gasDripAmountWei: 100_000_000_000_000_000n,
       waitlistAllowedOrigins: ['https://stridemon.xyz', 'http://localhost:3000'],
+      isEarlyAccessRequired: false,
+      passScheduleTimes: {
+        waitlistWindowStartsAt: new Date('2026-11-28T14:30:00Z'),
+        openMintStartsAt: new Date('2026-11-30T14:30:00Z'),
+        backupOpeningAt: new Date('2026-12-14T14:30:00Z'),
+      },
+      turnstileSecretKey: '1x0000000000000000000000000000000AA',
+      emailProofSecret: 'b'.repeat(128),
+      emailSenderAddress: 'hello@stridemon.xyz',
+      brevoApiKey: null,
       contractAddresses: DEPLOYED_CONTRACT_ADDRESSES,
     })
+  })
+
+  it('accepts a complete production config', () => {
+    expect(parseApiConfig(PRODUCTION_ENVIRONMENT_VARIABLES).brevoApiKey).toBe('xkeysib-test')
+  })
+
+  it('refuses to start in production without the Brevo key', () => {
+    const { BREVO_API_KEY: _omitted, ...withoutBrevoKey } = PRODUCTION_ENVIRONMENT_VARIABLES
+
+    expect(() => parseApiConfig(withoutBrevoKey)).toThrow(/BREVO_API_KEY/)
+  })
+
+  it("refuses Cloudflare's Turnstile test secret in production", () => {
+    expect(() =>
+      parseApiConfig({
+        ...PRODUCTION_ENVIRONMENT_VARIABLES,
+        TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
+      }),
+    ).toThrow(/TURNSTILE_SECRET_KEY/)
+  })
+
+  it('refuses a backup opening date inside the waitlist window', () => {
+    expect(() =>
+      parseApiConfig({
+        ...VALID_ENVIRONMENT_VARIABLES,
+        PASS_BACKUP_OPENING_AT: '2026-11-29T14:30:00Z',
+      }),
+    ).toThrow(/PASS_BACKUP_OPENING_AT/)
+  })
+
+  it('refuses a schedule time without its time zone', () => {
+    expect(() =>
+      parseApiConfig({
+        ...VALID_ENVIRONMENT_VARIABLES,
+        PASS_WAITLIST_WINDOW_STARTS_AT: '2026-11-28 20:00',
+      }),
+    ).toThrow(/PASS_WAITLIST_WINDOW_STARTS_AT/)
   })
 
   it('uses the contract addresses it is given instead of the deployed ones', () => {

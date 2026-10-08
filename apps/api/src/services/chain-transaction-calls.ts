@@ -1,7 +1,10 @@
-import { type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
+import { foundingPassAbi, type StrideMonContractAddresses, sneakerGameAbi } from '@stridemon/chain'
 import type { ChainTransactionKind } from '@stridemon/shared/domain'
 import { type Abi, type Address, getAddress, type Hex } from 'viem'
 import {
+  laceFoundingPassPayloadSchema,
+  mintFounderSneakerPayloadSchema,
+  mintFoundingPassPayloadSchema,
   mintStarterSneakerPayloadSchema,
   sendGasDripPayloadSchema,
   settleSessionPayloadSchema,
@@ -57,6 +60,42 @@ export function buildChainTransactionCall(
               distanceMeters: settlement.distanceMeters,
             },
           ],
+        },
+      }
+    }
+    case 'mintFoundingPass': {
+      const { walletAddress, designNumber } = mintFoundingPassPayloadSchema.parse(payload)
+      return {
+        to: contractAddresses.foundingPass,
+        valueWei: 0n,
+        contractCall: {
+          abi: foundingPassAbi,
+          functionName: 'mint',
+          args: [getAddress(walletAddress), BigInt(designNumber)],
+        },
+      }
+    }
+    case 'mintFounderSneaker': {
+      const { foundingPassTokenId } = mintFounderSneakerPayloadSchema.parse(payload)
+      return {
+        to: contractAddresses.sneakerGame,
+        valueWei: 0n,
+        contractCall: {
+          abi: sneakerGameAbi,
+          functionName: 'mintFounderSneaker',
+          args: [BigInt(foundingPassTokenId)],
+        },
+      }
+    }
+    case 'laceFoundingPass': {
+      const { foundingPassTokenId } = laceFoundingPassPayloadSchema.parse(payload)
+      return {
+        to: contractAddresses.foundingPass,
+        valueWei: 0n,
+        contractCall: {
+          abi: foundingPassAbi,
+          functionName: 'setLaced',
+          args: [BigInt(foundingPassTokenId)],
         },
       }
     }

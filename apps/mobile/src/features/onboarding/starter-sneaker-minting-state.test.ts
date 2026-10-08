@@ -14,6 +14,8 @@ function buildOnboardingStatus(
   return {
     starterSneaker: { status: starterSneakerStatus, transactionHash: TRANSACTION_HASH },
     gasDrip: { status: gasDripStatus, transactionHash: null },
+    starterSneakerKind: 'normal',
+    isFoundingPassRequired: false,
   }
 }
 

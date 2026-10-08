@@ -194,7 +194,9 @@ Every transaction the **game server** sends. Player-signed transactions
 (repair, upgrade, transfer) never appear here.
 
 ```ts
-type ChainTransactionKind = 'mintStarterSneaker' | 'settleSession' | 'sendGasDrip'
+type ChainTransactionKind =
+  | 'mintStarterSneaker' | 'settleSession' | 'sendGasDrip'
+  | 'mintFoundingPass' | 'mintFounderSneaker' | 'laceFoundingPass'   // Founding Pass (D-043)
 
 type ChainTransactionStatus =
   | 'queued'      // written, not yet signed
@@ -271,10 +273,8 @@ Privacy).
 
 ---
 
-## Founding Pass collections (planned, D-041)
+## Founding Pass collections (Part 3, D-041, D-043)
 
-Not built yet: Part 3 of [`../founding-pass/`](../founding-pass/README.md) adds them, from the
-brief's §10.2 ([`../founding-pass-brief.md`](../founding-pass-brief.md)). Field names settle there.
 **The chain stays the truth** for who holds which pass and Sneaker. These collections hold the
 email side, which the chain never sees, and the bookkeeping for our own mints.
 
@@ -282,27 +282,59 @@ email side, which the chain never sees, and the bookkeeping for our own mints.
 
 One pending 6-digit code per email, for the website's email step.
 
-- The code is stored only as a **SHA-256 hash**, never as it was sent.
-- It's valid for 10 minutes and 5 tries, and a new one can be sent at most once a minute per
-  email.
-- `expiresAt` has a TTL index, so used and stale codes delete themselves.
-- The email is trimmed and lowercased, as in `waitlistSignups`.
+```ts
+type PassEmailCodeDocument = {
+  _id: ObjectId
+  email: string            // trimmed and lowercased, unique
+  codeHash: string         // HMAC-SHA-256 of "<email>:<code>", keyed with EMAIL_PROOF_SECRET (D-043)
+  attemptCount: number     // tries so far, the right one included; at most 5
+  sentAt: Date             // a new code waits a minute after this
+  expiresAt: Date          // sentAt + 10 minutes; TTL index deletes it
+  createdAt: Date
+}
+```
 
-A verified code becomes a signed **email proof** (a token, not a document), so nothing more is
-stored for it.
+Indexes: `{ email: 1 }` unique, `{ expiresAt: 1 }` TTL (`expireAfterSeconds: 0`).
+
+- The code itself is never stored. A new code replaces the record (and resets the tries) once
+  the minute has passed. The right code deletes it, so a code works once.
+- The unique email makes "one a minute" safe against two requests at once: the second can't
+  insert a second record.
+
+A verified code becomes a signed **email proof** (a JWT, D-043), so nothing more is stored for it.
 
 ### `foundingPassMints`
 
-One document per mint request: the design number, the email, the wallet (lowercase), the state
-(`queued`, `confirmed` or `failed`), and its `chainTransactions` id. Once the mint confirms, it
-also holds the founder number, the gold frame and the transaction hash, copied from the mint's
-event for the reveal.
+One document per mint request.
 
-- **Unique by design number, by email and by wallet** (partial unique indexes that skip
-  `failed` records). So two racing requests can't both take #0137, and an email or wallet can't
-  get two passes.
-- It links an email to a wallet: personal data, named on the privacy page (Part 5). It's how
-  support checks a lost-wallet request (D-041).
+```ts
+type FoundingPassMintStatus = 'queued' | 'confirmed' | 'failed'
+
+type FoundingPassMintDocument = {
+  _id: ObjectId                 // the mintId
+  designNumber: number          // 1 to 1,000, the pass's token id
+  email: string                 // from the email proof, lowercased
+  walletAddress: string         // lowercase, from the access token
+  status: FoundingPassMintStatus  // its outbox record is keyed mintFoundingPass:<_id>
+  founderNumber: number | null  // from FoundingPassMinted, once confirmed
+  hasGoldFrame: boolean | null  // likewise
+  transactionHash: string | null
+  failureCode: 'PASS_ALREADY_MINTED' | 'PASS_WALLET_ALREADY_USED' | 'PASS_MINT_FAILED' | null
+  mintedAt: Date | null         // when the confirmation was recorded (updatedAt then too)
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+Indexes:
+- **Unique by design number, by email and by wallet**, each a partial index over
+  `status: { $in: ['queued', 'confirmed'] }` (MongoDB 6.0 or later). So two racing requests
+  can't both take #0137, an email or wallet can't get two passes, and a failed mint frees all
+  three.
+- `{ status: 1, updatedAt: -1 }` for the queued mints and the last 10 confirmed.
+
+It links an email to a wallet: personal data, named on the privacy page (Part 5). It's how
+support checks a lost-wallet request (D-041).
 
 ### How the waitlist counts for the window
 
@@ -310,11 +342,13 @@ During the 48-hour waitlist window, a mint's verified email must be in `waitlist
 `createdAt` **before** the window opened. Nothing is copied: the mint looks the email up. After
 the window, the waitlist no longer matters for minting.
 
-`waitlistSignups` gains one field: the time its one email ("Your 48 hours start now") was sent,
-so the sender never emails an address twice. That makes it the one change to a sign-up after
-it's written.
+`waitlistSignups` gains one field, `windowEmailSentAt: Date` (absent until then): the time its one
+email ("Your 48 hours start now") was sent. The sender sets it before sending, so it never emails
+an address twice. It's the one change to a sign-up after it's written. Index:
+`{ createdAt: 1 }`, for the sender's oldest-first order.
 
 ### New `chainTransactions` kinds
 
-`mintFoundingPass` (key by design number), `mintFounderSneaker` (key by pass) and
-`laceFoundingPass` (key by pass), all sent by the game-server key through the outbox.
+`mintFoundingPass` (key `mintFoundingPass:<mintId>`), `mintFounderSneaker` (key
+`mintFounderSneaker:<passTokenId>`) and `laceFoundingPass` (key `laceFoundingPass:<passTokenId>`),
+all sent by the game-server key through the outbox (D-043).
