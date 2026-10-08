@@ -1,10 +1,13 @@
 /**
- * Builds the Founding Pass art previews (docs/founding-pass-brief.md §4.4, Part 1a): picks the
- * 1,000 designs, checks them against the rules, and draws the review sheets into previews/ as
- * SVG and PNG.
+ * Builds the Founding Pass art (docs/founding-pass/part-1b-art-on-chain.md):
+ * 1. picks the 1,000 designs, applies Yash's review rounds (re-rolls) and checks the rules
+ * 2. writes the generated Solidity: the art data and the design table (`src/founding-pass-art/`)
+ * 3. runs `script/RenderPassArt.s.sol` (simulation only), so the Solidity renderer draws every
+ *    design and every preview cell into `rendered/`
+ * 4. lays the drawings out as the review sheets in previews/, as SVG and PNG
  *
  * Run from the repo root: `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`
- * Needs rsvg-convert for the PNGs (`brew install librsvg`). Text uses IBM Plex Mono from the
+ * Needs Foundry and rsvg-convert (`brew install librsvg`). Text uses IBM Plex Mono from the
  * app's node_modules when it's there, and a fallback monospace otherwise.
  */
 import { existsSync } from 'node:fs'
@@ -12,9 +15,14 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { Design } from './art-system/types'
 import { checkDesigns } from './generator/check-designs'
 import { generateDesigns } from './generator/generate-designs'
-import { buildPreviewFiles, type PreviewFile } from './sheets/build-preview-files'
+import { applyReviewRounds } from './generator/reroll-designs'
+import { DESIGNS_FROZEN_ON, REVIEW_ROUNDS } from './generator/review-rounds'
+import { type PreviewPlan, planPreviewFiles, type ReviewStatus } from './sheets/build-preview-files'
+import { RENDERED_DIRECTORY, renderedArt } from './sheets/rendered-art'
+import { runInContracts, writeSoliditySources } from './solidity/write-solidity-sources'
 
 const PREVIEWS_DIRECTORY = fileURLToPath(new URL('previews/', import.meta.url))
 const PLEX_MONO_FONT_DIRECTORY = fileURLToPath(
@@ -26,25 +34,83 @@ const SATOSHI_FONT_DIRECTORY = fileURLToPath(
 )
 const SYSTEM_FONTCONFIG_FILE = '/opt/homebrew/etc/fonts/fonts.conf'
 
-const designs = generateDesigns()
+const generatedDesigns = generateDesigns()
+const designs = applyReviewRounds(generatedDesigns)
 for (const reportLine of checkDesigns(designs)) console.log(reportLine)
+const reviewStatus = describeReviewStatus(generatedDesigns, designs)
+console.log(
+  `review: ${reviewStatus.roundCount} rounds, ${reviewStatus.rerolledInLatestRound.size} re-rolled in the latest`,
+)
+
 await mkdir(PREVIEWS_DIRECTORY, { recursive: true })
 await writeFile(join(PREVIEWS_DIRECTORY, 'designs.json'), `${JSON.stringify(designs, null, 2)}\n`)
-const previewFiles = buildPreviewFiles(designs)
-for (const previewFile of previewFiles) {
-  await writeFile(join(PREVIEWS_DIRECTORY, `${previewFile.fileName}.svg`), previewFile.svg)
-}
-await renderPngs(previewFiles)
-console.log(`previews: ${previewFiles.length} SVGs and PNGs in ${PREVIEWS_DIRECTORY}`)
+await writeSoliditySources({
+  designs,
+  statusLine:
+    DESIGNS_FROZEN_ON === null
+      ? `A draft under review (Part 1b), after ${REVIEW_ROUNDS.length} review rounds: not frozen yet.`
+      : `Frozen on ${DESIGNS_FROZEN_ON}, after ${REVIEW_ROUNDS.length} review rounds: approved by Yash.`,
+})
 
-async function renderPngs(previewFiles: readonly PreviewFile[]): Promise<void> {
+const previewPlans = planPreviewFiles(designs, reviewStatus)
+await renderWithSolidity(previewPlans)
+for (const previewPlan of previewPlans) {
+  await writeFile(
+    join(PREVIEWS_DIRECTORY, `${previewPlan.fileName}.svg`),
+    previewPlan.composeSvg(renderedArt),
+  )
+}
+await renderPngs(previewPlans)
+console.log(`previews: ${previewPlans.length} SVGs and PNGs in ${PREVIEWS_DIRECTORY}`)
+
+/** Which designs the latest round changed, so the sheets can point Yash at them. */
+function describeReviewStatus(
+  generated: readonly Design[],
+  reviewed: readonly Design[],
+): ReviewStatus {
+  const beforeLatestRound = applyReviewRounds(generated, REVIEW_ROUNDS.slice(0, -1))
+  const rerolledInLatestRound = new Set(
+    reviewed
+      .filter(
+        (design, index) => JSON.stringify(design) !== JSON.stringify(beforeLatestRound[index]),
+      )
+      .map((design) => design.designNumber),
+  )
+  return { roundCount: REVIEW_ROUNDS.length, rerolledInLatestRound, frozenOn: DESIGNS_FROZEN_ON }
+}
+
+/** Writes the previews' requests, then has the Solidity renderer draw them (no broadcast). */
+async function renderWithSolidity(previewPlans: readonly PreviewPlan[]): Promise<void> {
+  for (const renderedFolder of ['designs', 'cards', 'sneakers']) {
+    await rm(join(RENDERED_DIRECTORY, renderedFolder), { recursive: true, force: true })
+  }
+  await mkdir(RENDERED_DIRECTORY, { recursive: true })
+  const renderRequests = {
+    cards: previewPlans.flatMap((previewPlan) => previewPlan.cardRequests),
+    sneakers: previewPlans.flatMap((previewPlan) => previewPlan.sneakerRequests),
+  }
+  await writeFile(
+    join(RENDERED_DIRECTORY, 'render-requests.json'),
+    `${JSON.stringify(renderRequests, null, 2)}\n`,
+  )
+  const scriptOutput = runInContracts([
+    'forge',
+    'script',
+    'script/RenderPassArt.s.sol:RenderPassArt',
+  ])
+  for (const outputLine of scriptOutput.split('\n')) {
+    if (outputLine.includes('written')) console.log(`solidity: ${outputLine.trim()}`)
+  }
+}
+
+async function renderPngs(previewPlans: readonly PreviewPlan[]): Promise<void> {
   if (Bun.which('rsvg-convert') === null) {
     throw new Error('rsvg-convert is missing: brew install librsvg (the SVGs are written already)')
   }
   const fontconfigDirectory = await mkdtemp(join(tmpdir(), 'founding-pass-fonts-'))
   try {
     const environment = await buildFontEnvironment(fontconfigDirectory)
-    for (const { fileName, pngWidthPixels } of previewFiles) {
+    for (const { fileName, pngWidthPixels } of previewPlans) {
       const conversion = Bun.spawnSync(
         [
           'rsvg-convert',

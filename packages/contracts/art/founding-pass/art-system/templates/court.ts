@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const COURT: SneakerTemplate = {
   key: 'court',
   label: 'Court',
+  legendaryName: 'Fire Rainbow',
   description: 'A clean, low court classic on a tall flat cupsole.',
   silhouette: parseShape(
     '80 520, 64 506, 60 480, 60 430, 60 390, 64 350, 74 314, 88 288, 116 276, 160 280, ' +

@@ -9,6 +9,7 @@ const PLATE_POINTS =
 export const RACER: SneakerTemplate = {
   key: 'racer',
   label: 'Racer',
+  legendaryName: 'Afterglow',
   description: 'A race-day shoe: a tall rocker sole with a plate, a bevelled heel, a pointed toe.',
   silhouette: parseShape(
     '220 520, 150 512, 96 494, 62 466, 54 440, 60 414, 70 404, 78 350, 88 302, 100 268, ' +

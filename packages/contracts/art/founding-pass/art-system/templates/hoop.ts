@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const HOOP: SneakerTemplate = {
   key: 'hoop',
   label: 'Hoop',
+  legendaryName: 'Glory',
   description: 'A basketball high-top: a padded ankle collar, a long lace run, a thick cupsole.',
   silhouette: parseShape(
     '90 520, 70 508, 62 484, 64 446, 58 400, 56 340, 60 270, 66 200, 76 140, 92 112, ' +

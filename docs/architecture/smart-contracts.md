@@ -195,11 +195,12 @@ Custom errors, not revert strings: `SessionAlreadySettled(bytes32)`,
 `StarterSneakerAlreadyClaimed(address)`, `NothingToRepair(uint256)`,
 `InvalidGameConfig()`.
 
-## The Founding Pass (planned, D-041)
+## The Founding Pass (D-041)
 
-Not built yet. Parts 1b and 2 of [`../founding-pass/`](../founding-pass/README.md) build it, and
-the brief's §10.1 ([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the full
-interface. When they land, this section replaces the plan with what was built.
+Parts 1b and 2 of [`../founding-pass/`](../founding-pass/README.md) build it, and the brief's
+§10.1 ([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the full interface. The art
+renderer is built (Part 1b). `FoundingPass` and the Founder Sneakers are still planned (Part 2),
+and when they land this section replaces the plan with what was built.
 
 **`FoundingPass`** (new, its own contract and its own deploy script, so a game redeploy never
 touches it): ERC-721 + ERC-5192 (soulbound) + AccessControl, `StrideMon Founding Pass` / `PASS`.
@@ -214,10 +215,26 @@ touches it): ERC-721 + ERC-5192 (soulbound) + AccessControl, `StrideMon Founding
 | Transfers and approvals | revert. `locked()` is always true |
 | `tokenURI`, `imageSvg` | drawn by a swappable `FoundingPassArtRenderer`, like D-030 |
 
-**`FoundingPassArtRenderer`** (new): the gallery's preview card, the minted card (founder number,
-laced, gold frame), and the shoe on its own for the Founder Sneaker. It holds the frozen design
-table and the name words, including the ten Legendaries' hand-picked names. If one contract
-passes Monad's 128 KB, the drawing, the art data and the design table split.
+**`FoundingPassArtRenderer`** (built in Part 1b, not deployed yet): the only implementation of
+the pass art. Pure functions, no storage, about 56 KB (under Monad's 128 KB, so nothing split).
+
+| Function | Returns |
+|----------|---------|
+| `renderDesignPreviewSvg(designNumber)` | The gallery's card: available, unlaced, no founder number, no frame |
+| `renderPassSvg(tokenId, PassRecord)` | A minted pass: `FOUNDER 042`, laced, gold frame, as its record says |
+| `renderSneakerMarkup(DesignLayers, isLaced, clipPathId)` | The shoe alone in its 1000 × 600 space, for the Founder Sneaker's picture to place |
+| `readDesignLayers`, `readDesignName`, `readDesignRarity` | A design's row, its name (a Legendary's hand-picked one), its rarity |
+
+Errors: `InvalidDesignNumber(designNumber)` outside 1 to 1,000, `InvalidDesignLayers()` for
+layers the art data doesn't have. `PassRecord` is `(uint32 founderNumber, bool hasGoldFrame,
+bool isLaced)`, the record `FoundingPass` keeps per token.
+
+The data is generated from the art system in `packages/contracts/art/founding-pass` by its build
+script, and never edited by hand: `founding-pass-art/FoundingPassArtData.sol` (each template's
+shapes, the colours, the name words) and `founding-pass-art/FoundingPassDesigns.sol` (the design
+table, 8 bytes per design). Both are libraries compiled into the renderer.
+`FoundingPassArtTypes.sol` holds the shared enums and structs. A card costs at most about 100,000
+gas to draw. The same SVG rules as D-030 apply.
 
 **Founder Sneakers** (the game contracts are redeployed for them; there are no users yet):
 
@@ -243,16 +260,21 @@ packages/contracts/
 │   ├── StrideToken.sol
 │   ├── SneakerGame.sol
 │   ├── SneakerArtRenderer.sol    the on-chain SVG (D-030)
+│   ├── FoundingPassArtRenderer.sol  the Founding Pass art (D-041)
+│   ├── founding-pass-art/        its types, and its generated data and design table
 │   └── libraries/
 │       └── GameMath.sol          pure functions: energy, reward, costs
+├── art/founding-pass/            the pass art system, generator and review sheets (TypeScript)
 ├── deployments/
 │   └── <chainId>.json            chain id, addresses, deployer, game server (written by DeployGame)
 ├── script/
 │   ├── DeployGame.s.sol          deploys all three, wires roles, writes addresses JSON
+│   ├── RenderPassArt.s.sol       draws the pass art to art/founding-pass/rendered (simulation only)
 │   └── UpdateGameConfig.s.sol    (added the first time the config is retuned)
 └── test/
     ├── SneakerNft.t.sol
     ├── SneakerArtRenderer.t.sol
+    ├── FoundingPassArtRenderer.t.sol  every design renders, states, names, gas, size
     ├── StrideToken.t.sol
     ├── SneakerGame.t.sol         starter mint, settlement, views, config, pause
     ├── SneakerGameRepairUpgrade.t.sol

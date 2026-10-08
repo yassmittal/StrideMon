@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const RUNNER: SneakerTemplate = {
   key: 'runner',
   label: 'Runner',
+  legendaryName: 'Earthshine',
   description: 'The everyday trainer: a medium sole, a padded collar and a rounded toe.',
   silhouette: parseShape(
     '100 520, 76 510, 64 488, 62 460, 66 420, 58 380, 60 330, 70 282, 86 240, 110 224, ' +

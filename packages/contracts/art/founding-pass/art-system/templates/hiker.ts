@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const HIKER: SneakerTemplate = {
   key: 'hiker',
   label: 'Hiker',
+  legendaryName: 'Sun Pillar',
   description: 'A mid hiking boot: an ankle shaft, deep lugs and a rubber toe bumper.',
   silhouette: parseShape(
     '128 520, 98 512, 78 500, 66 476, 62 440, 58 390, 60 330, 66 260, 74 200, 86 156, ' +

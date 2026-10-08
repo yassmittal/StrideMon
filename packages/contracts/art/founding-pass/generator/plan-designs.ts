@@ -106,6 +106,6 @@ function planEverydayFamilies(designCount: number, templateIndex: number): Color
   })
 }
 
-function isColorwayReadable(colorway: Colorway, colorFamily: ColorFamily): boolean {
+export function isColorwayReadable(colorway: Colorway, colorFamily: ColorFamily): boolean {
   return colorFamily.sheenColor === null || !PALE_COLORWAY_KEYS.has(colorway.key)
 }

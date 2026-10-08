@@ -1,19 +1,19 @@
 import { readColorFamily } from '../art-system/color-families'
 import { readColorway } from '../art-system/colorways'
-import { readLaceColor } from '../art-system/lace-colors'
-import { resolveSneakerArtwork } from '../art-system/resolve-design'
-import type {
-  ColorFamilyKey,
-  Design,
-  LacingStage,
-  OptionValue,
-  SneakerTemplate,
-} from '../art-system/types'
-import type { PassCard } from '../render-pass-card'
-import type { SneakerArtwork } from '../render-sneaker'
+import type { ColorFamilyKey, DesignLayers, SneakerTemplate } from '../art-system/types'
+import type { CardRequest, RenderedArt, SneakerRequest } from './rendered-art'
 
-/** One file in previews/: the SVG, and how wide its PNG should be. */
-export type PreviewFile = { fileName: string; svg: string; pngWidthPixels: number }
+/**
+ * One file in previews/: what it asks the Solidity renderer to draw, and how it lays that out
+ * once drawn.
+ */
+export type PreviewPlan = {
+  fileName: string
+  pngWidthPixels: number
+  cardRequests: readonly CardRequest[]
+  sneakerRequests: readonly SneakerRequest[]
+  composeSvg: (renderedArt: RenderedArt) => string
+}
 
 /** The family and colourway the template and option sheets use, so only the shapes change. */
 const SHOWCASE_FAMILY_KEY: ColorFamilyKey = 'ember'
@@ -22,59 +22,34 @@ export const SHOWCASE_COLORWAY_KEY = 'day'
 const DESIGN_NUMBER_DIGITS = 4
 
 /** A Sneaker in the showcase family and colourway, with each slot's first value and cream laces. */
-export function buildShowcaseArtwork({
+export function buildShowcaseLayers({
   template,
-  lacingStage,
   colorFamilyKey = SHOWCASE_FAMILY_KEY,
   colorwayKey = SHOWCASE_COLORWAY_KEY,
-  optionValues = template.optionSlots.map((optionSlot) => readFirstValue(optionSlot.values)),
+  optionValueKeys = readFirstValueKeys(template),
 }: {
   template: SneakerTemplate
-  lacingStage: LacingStage
   colorFamilyKey?: ColorFamilyKey
   colorwayKey?: string
-  optionValues?: readonly OptionValue[]
-}): SneakerArtwork {
+  optionValueKeys?: Readonly<Record<string, string>>
+}): DesignLayers {
   return {
-    template,
-    colorFamily: readColorFamily(colorFamilyKey),
-    colorway: readColorway(colorwayKey),
-    optionValues,
-    laceColor: readLaceColor('cream'),
-    lacingStage,
+    templateKey: template.key,
+    colorFamilyKey,
+    colorwayKey,
+    optionValueKeys,
+    laceColorKey: 'cream',
   }
 }
 
-export function buildPassCard({
-  design,
-  lacingStage,
-  founderNumber,
-  hasGoldFrame,
-}: {
-  design: Design
-  lacingStage: LacingStage
-  founderNumber: number | null
-  hasGoldFrame: boolean
-}): PassCard {
-  return {
-    designNumber: design.designNumber,
-    name: design.name,
-    rarity: design.rarity,
-    artwork: resolveSneakerArtwork(design.layers, lacingStage),
-    founderNumber,
-    hasGoldFrame,
-  }
-}
-
-/** How the gallery shows a design that nobody has minted yet. */
-export function buildAvailablePassCard(design: Design): PassCard {
-  return buildPassCard({ design, lacingStage: 'unlaced', founderNumber: null, hasGoldFrame: false })
-}
-
-export function readFirstValue(values: readonly OptionValue[]): OptionValue {
-  const [firstValue] = values
-  if (firstValue === undefined) throw new Error('An option slot needs at least one value')
-  return firstValue
+export function readFirstValueKeys(template: SneakerTemplate): Record<string, string> {
+  return Object.fromEntries(
+    template.optionSlots.map((optionSlot) => {
+      const [firstValue] = optionSlot.values
+      if (firstValue === undefined) throw new Error(`${template.key}.${optionSlot.key} is empty`)
+      return [optionSlot.key, firstValue.key]
+    }),
+  )
 }
 
 export function formatDesignNumber(designNumber: number): string {

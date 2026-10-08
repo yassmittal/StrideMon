@@ -79,6 +79,11 @@ export type SneakerTemplate = {
   key: TemplateKey
   /** The word in a design's name: "Ember Runner Dusk". */
   label: string
+  /**
+   * The hand-picked name of this template's one Legendary (D-041): a rare light in the sky. It
+   * lives on the template, so a re-roll never separates a name from its shoe.
+   */
+  legendaryName: string
   /** One line on what the shoe is, for the README and the gallery. */
   description: string
   silhouette: Shape
@@ -151,8 +156,6 @@ export type DesignLayers = {
   optionValueKeys: Readonly<Record<string, string>>
   laceColorKey: LaceColorKey
 }
-
-export type LacingStage = 'unlaced' | 'laced'
 
 /** One row of the collection: what the frozen design table will hold for each number. */
 export type Design = {

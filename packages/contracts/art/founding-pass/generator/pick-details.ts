@@ -53,7 +53,7 @@ export function pickTemplateDetails(
  * Lists every option combination the draft's rarity allows, keeps the ones that leave it
  * distinct from the template's other designs, and takes the least used.
  */
-function pickDetails({
+export function pickDetails({
   draft,
   templateDesigns,
   usageCounts,

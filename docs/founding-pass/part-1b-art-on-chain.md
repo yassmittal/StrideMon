@@ -54,3 +54,21 @@ freezes all 1,000 designs.
 - Yash has approved all 10 sheets, and the designs are frozen.
 
 Update the art README, since it now describes the Solidity renderer. Mark 1b **Done**, then stop.
+
+## Status (2026-10-08)
+
+This part waits on Yash's review of the sheets, so it runs over more than one session. The art
+README has the details.
+
+| Step | State |
+|---|---|
+| 1. The renderer | **Done.** One contract, about 56 KB, so nothing split. `renderSneakerMarkup` takes any layers, for Part 2 |
+| 2. One source for the data | **Done.** `art/founding-pass/solidity/` writes `FoundingPassArtData.sol` and `FoundingPassDesigns.sol` |
+| 3. Prove the port | **Done.** 5,800 files byte-identical, then the TypeScript renderers were deleted |
+| 4. The ten contact sheets | **Done.** `previews/3-designs-*.png`, drawn by the renderer |
+| 5. The phone check | **Done** (2026-10-08). 19 cards matched on the Android phone and in a browser, and the temporary screen was deleted |
+| 6. Review and re-roll | **Ready, waiting for Yash.** Rounds go in `art/founding-pass/generator/review-rounds.ts` |
+| 7. Freeze | Not started: set `DESIGNS_FROZEN_ON` once all ten sheets are approved |
+
+The next session on 1b: add Yash's marked numbers as a round, rebuild, run `forge test`, and send
+him the new sheets. When he approves all ten, freeze (step 7) and mark 1b **Done**.

@@ -1,32 +1,19 @@
-import type { SneakerArtwork } from '../render-sneaker'
 import { readColorFamily } from './color-families'
 import { readColorway } from './colorways'
 import { readLaceColor } from './lace-colors'
 import { readSneakerTemplate } from './templates'
-import type { DesignLayers, LacingStage, OptionValue, Rarity, SneakerTemplate } from './types'
+import type { DesignLayers, OptionValue, Rarity, SneakerTemplate } from './types'
 
 const RARITY_ORDER: readonly Rarity[] = ['common', 'uncommon', 'rare', 'legendary']
 
-/** Turns a design's layer keys into everything the renderer draws. */
-export function resolveSneakerArtwork(
-  layers: DesignLayers,
-  lacingStage: LacingStage,
-): SneakerArtwork {
-  const template = readSneakerTemplate(layers.templateKey)
-  return {
-    template,
-    colorFamily: readColorFamily(layers.colorFamilyKey),
-    colorway: readColorway(layers.colorwayKey),
-    optionValues: readOptionValues(template, layers.optionValueKeys),
-    laceColor: readLaceColor(layers.laceColorKey),
-    lacingStage,
-  }
-}
-
-/** "Ember Runner Dusk". Unique because no two designs share a template, family and colourway. */
+/**
+ * "Ember Runner Dusk". Unique because no two designs share a template, family and colourway. A
+ * Legendary (Prism, one per template) takes its template's hand-picked name instead (D-041).
+ */
 export function buildDesignName(layers: DesignLayers): string {
   const template = readSneakerTemplate(layers.templateKey)
   const colorFamily = readColorFamily(layers.colorFamilyKey)
+  if (colorFamily.rarity === 'legendary') return template.legendaryName
   const colorway = readColorway(layers.colorwayKey)
   return `${colorFamily.label} ${template.label} ${colorway.label}`
 }

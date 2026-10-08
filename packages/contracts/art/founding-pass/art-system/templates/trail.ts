@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const TRAIL: SneakerTemplate = {
   key: 'trail',
   label: 'Trail',
+  legendaryName: 'Fogbow',
   description: 'Built for dirt: a lugged outsole, a rubber toe bumper and a tough upper.',
   silhouette: parseShape(
     '124 516, 96 506, 76 490, 66 466, 62 430, 60 390, 64 330, 76 280, 92 240, 118 222, ' +

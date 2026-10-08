@@ -1,30 +1,39 @@
 import type { Design } from '../art-system/types'
 import {
-  buildColorwaysSheet,
-  buildFamiliesSheet,
-  buildOptionsSheet,
-  buildTemplatesSheet,
+  planColorwaysSheet,
+  planFamiliesSheet,
+  planOptionsSheet,
+  planTemplatesSheet,
 } from './art-system-sheets'
 import {
-  buildCardStateFiles,
-  buildFirstDesignsSheet,
-  buildLegendariesSheet,
+  planCardStateFiles,
+  planContactSheets,
+  planLegendariesSheet,
+  type ReviewStatus,
 } from './collection-sheets'
-import type { PreviewFile } from './showcase'
-import { buildXTeaserFile } from './x-teaser'
+import type { PreviewPlan } from './showcase'
+import { planXTeaserFile } from './x-teaser'
 
-export type { PreviewFile } from './showcase'
+export type { ReviewStatus } from './collection-sheets'
+export type { PreviewPlan } from './showcase'
 
-/** Every file previews/ gets: the four sheets the brief asks for, three for the review, one for X. */
-export function buildPreviewFiles(designs: readonly Design[]): PreviewFile[] {
+/**
+ * Every file previews/ gets: the ten contact sheets for the review, the art-system sheets, the
+ * card states, the Legendaries, and the X teaser. All of them lay out the Solidity renderer's
+ * own drawings.
+ */
+export function planPreviewFiles(
+  designs: readonly Design[],
+  reviewStatus: ReviewStatus,
+): PreviewPlan[] {
   return [
-    buildTemplatesSheet(),
-    buildFamiliesSheet(),
-    buildFirstDesignsSheet(designs),
-    ...buildCardStateFiles(designs),
-    buildColorwaysSheet(),
-    buildOptionsSheet(),
-    buildLegendariesSheet(designs),
-    buildXTeaserFile(),
+    planTemplatesSheet(),
+    planFamiliesSheet(),
+    ...planContactSheets(designs, reviewStatus),
+    ...planCardStateFiles(designs),
+    planColorwaysSheet(),
+    planOptionsSheet(),
+    planLegendariesSheet(designs),
+    planXTeaserFile(),
   ]
 }

@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const SOCK: SneakerTemplate = {
   key: 'sock',
   label: 'Sock',
+  legendaryName: 'Moonbow',
   description: 'A knit sock runner: a tall stretch cuff and no separate tongue.',
   silhouette: parseShape(
     '100 520, 76 508, 64 486, 62 452, 60 400, 62 340, 70 270, 80 200, 92 150, 120 140, ' +

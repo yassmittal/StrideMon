@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const SKATE: SneakerTemplate = {
   key: 'skate',
   label: 'Skate',
+  legendaryName: 'Airglow',
   description: 'A skate shoe: a puffy collar, a fat tongue and a flat sole that wraps the toe.',
   silhouette: parseShape(
     '80 520, 64 506, 60 480, 60 440, 58 390, 62 330, 72 280, 86 250, 108 232, 150 228, ' +

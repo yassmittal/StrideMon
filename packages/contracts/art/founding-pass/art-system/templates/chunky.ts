@@ -8,6 +8,7 @@ const OUTSOLE_POINTS = '0 492, 1000 488, 1000 600, 0 600'
 export const CHUNKY: SneakerTemplate = {
   key: 'chunky',
   label: 'Chunky',
+  legendaryName: 'Steve',
   description: 'The "dad shoe": a tall layered midsole, a bulky upper, overlays on overlays.',
   silhouette: parseShape(
     '110 520, 84 512, 66 492, 58 460, 60 420, 62 380, 58 320, 64 270, 80 226, 110 208, ' +

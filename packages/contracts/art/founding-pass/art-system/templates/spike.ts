@@ -5,6 +5,7 @@ import type { SneakerTemplate } from '../types'
 export const SPIKE: SneakerTemplate = {
   key: 'spike',
   label: 'Spike',
+  legendaryName: 'Heat Lightning',
   description: 'A track spike: low and pointed, with a spike plate under the forefoot.',
   silhouette: parseShape(
     '100 516, 80 508, 70 490, 68 460, 66 420, 70 370, 80 320, 94 286, 120 274, 160 278, ' +

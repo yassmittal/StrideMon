@@ -190,5 +190,9 @@ and website redeployed and a new app build, then a phone check.
 as early access, each with a Founder Sneaker (neither can be sent or sold). It's built from
 `docs/founding-pass/`, **one part per session**: paste the prompt in its `README.md`, do the
 first part that isn't done, and stop at its "Done when". Parts 0 (decide, D-041) and 1a (art) are
-done (2026-10-08); next is Part 1b (the art on-chain). The idea is in
-`docs/founding-pass-brief.md`, the art in `packages/contracts/art/founding-pass/`.
+done (2026-10-08). **Part 1b (the art on-chain) is in progress:** `FoundingPassArtRenderer` is built
+and matches the sketch byte for byte, the TypeScript renderers are gone, and the phone check passed.
+It waits on Yash's review of the ten contact sheets (its part file has the status). The idea is
+in `docs/founding-pass-brief.md`, the art in `packages/contracts/art/founding-pass/`, rebuilt with
+`bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
+data is generated: never edit it by hand.

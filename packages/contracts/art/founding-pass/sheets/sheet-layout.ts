@@ -1,15 +1,19 @@
-import { INK, SNEAKER_HEIGHT_UNITS, SNEAKER_WIDTH_UNITS } from '../art-system/frame'
-import { type PassCard, renderPassCardSvg } from '../render-pass-card'
-import { renderSneakerMarkup, type SneakerArtwork } from '../render-sneaker'
+import { SNEAKER_HEIGHT_UNITS, SNEAKER_WIDTH_UNITS } from '../art-system/frame'
 
 /**
  * Review sheets: many Sneakers or cards on one page, under a title. Every cell is a nested
- * `<svg>`, so one page can hold a hundred designs, each with its own clip path id.
+ * `<svg>` holding what the Solidity renderer drew, so one page can hold a hundred designs, each
+ * with its own clip path id.
  */
-export type SneakerCell = { artwork: SneakerArtwork; caption: string }
-/** `caption` is `null` on sheets where the card says it all. */
-type CardCell = { card: PassCard; caption: string | null; clipPathId: string }
+type SneakerCell = {
+  /** The Sneaker's markup in its 1000 × 600 space, from `renderSneakerMarkup`. */
+  markup: string
+  caption: string
+}
+/** `caption` is `null` on cells where the card says it all. */
+type CardCell = { svg: string; caption: string | null }
 
+const INK = '#141515'
 const SHEET_BACKGROUND = '#FFFFFF'
 const SNEAKER_CELL_BACKGROUND = '#F0F1FA'
 const SHEET_MARGIN_UNITS = 80
@@ -47,13 +51,13 @@ export function buildSneakerSheet({
     columnCount,
     cellWidth: SNEAKER_WIDTH_UNITS,
     cellHeight: SNEAKER_HEIGHT_UNITS + CAPTION_HEIGHT_UNITS,
-    cellMarkups: cells.map((cell, cellIndex) =>
+    cellMarkups: cells.map((cell) =>
       cell === null
         ? ''
         : [
             `<rect width="${SNEAKER_WIDTH_UNITS}" height="${SNEAKER_HEIGHT_UNITS}" fill="${SNEAKER_CELL_BACKGROUND}"/>`,
             `<svg width="${SNEAKER_WIDTH_UNITS}" height="${SNEAKER_HEIGHT_UNITS}" viewBox="0 0 ${SNEAKER_WIDTH_UNITS} ${SNEAKER_HEIGHT_UNITS}">`,
-            renderSneakerMarkup(cell.artwork, `sheet${cellIndex}`),
+            cell.markup,
             '</svg>',
             renderCaption(cell.caption, SNEAKER_HEIGHT_UNITS),
           ].join(''),
@@ -79,12 +83,9 @@ export function buildCardSheet({
     columnCount,
     cellWidth: CARD_SIZE_UNITS,
     cellHeight: CARD_SIZE_UNITS + (hasCaptions ? CAPTION_HEIGHT_UNITS : 0),
-    cellMarkups: cells.map(({ card, caption, clipPathId }) =>
+    cellMarkups: cells.map(({ svg, caption }) =>
       [
-        renderPassCardSvg(card, clipPathId).replace(
-          '<svg ',
-          `<svg width="${CARD_SIZE_UNITS}" height="${CARD_SIZE_UNITS}" `,
-        ),
+        svg.replace('<svg ', `<svg width="${CARD_SIZE_UNITS}" height="${CARD_SIZE_UNITS}" `),
         caption === null ? '' : renderCaption(caption, CARD_SIZE_UNITS),
       ].join(''),
     ),
