@@ -8,9 +8,9 @@ a TypeScript sketch (**look approved by Yash on 2026-10-08**).
 art system as data, the generator that picks and re-rolls the 1,000 designs, and the sheets that
 lay out what the renderer draws.
 
-**Status (2026-10-08):** the renderer is built and matches the sketch byte for byte, and the phone
-check passed (both below). Yash's review of the ten contact sheets is still to do, so the designs
-are a draft and not frozen yet.
+**Status (2026-10-08): done.** The renderer matches the sketch byte for byte, the phone check
+passed, and Yash approved all ten contact sheets, so **the 1,000 designs are frozen** (all
+below).
 
 ## How the pieces fit
 
@@ -61,7 +61,7 @@ Mono, taken from the app's `node_modules` through a temporary fontconfig file, o
 monospace without it. After a rebuild, run `forge test` from `packages/contracts`: it checks every
 design in the new table.
 
-`rendered/designs/` is what Part 4 exports to the website once the designs are frozen.
+`rendered/designs/` holds the frozen designs' cards: Part 4 exports them to the website.
 
 The folder is outside Biome's checks (`packages/contracts` is excluded), but it is formatted and
 linted with the repo's Biome config and typechecks under `tsconfig.base.json` (strict, with
@@ -97,6 +97,9 @@ renderers gone, the comparison can't run again, and the Solidity output is the r
 
 ## Review and re-rolls
 
+**Done (2026-10-08):** Yash approved all ten sheets as first drawn, so no design was re-rolled
+and `REVIEW_ROUNDS` is empty. This is how a review round worked:
+
 Yash reviews the ten contact sheets (`previews/3-designs-*.png`) and lists the numbers he wants
 drawn again. Each list becomes a round in `generator/review-rounds.ts`:
 
@@ -123,9 +126,10 @@ It never brings back a look Yash marked before, and a colour he marked only come
 options. The options and laces follow the generator's own rules: the least used combination that
 stays distinct from the template's other designs (4 of 6 visible layers at most).
 
-**The freeze:** when Yash approves all ten sheets, set `DESIGNS_FROZEN_ON` in
-`generator/review-rounds.ts` and rebuild. `FoundingPassDesigns.sol` then says it's frozen, and the
-build refuses any round marked after that day.
+**The freeze (2026-10-08):** `DESIGNS_FROZEN_ON` in `generator/review-rounds.ts` is
+`2026-10-08`. `FoundingPassDesigns.sol` and the sheets say "Frozen on 2026-10-08", and the build
+refuses any round marked after that day. Freezing changed no design: `designs.json`, the art data
+and every row of the table are byte for byte what the approved sheets show.
 
 ## The phone check (passed 2026-10-08)
 
@@ -150,7 +154,7 @@ cards as `<img>` in a browser, and they matched. The screen was deleted afterwar
 | `6-options` | Every option value of every template, one slot changed at a time |
 | `7-legendaries` | The 10 Legendaries, with their hand-picked names |
 | `x-founding-pass-teaser` | The first X post's image (1080 × 1350, `social/posts/2026-10-10-founding-pass-first-look.md`): six silhouettes, no pass numbers |
-| `designs.json` | All 1,000 designs: number, layers, name, rarity. A draft until the freeze |
+| `designs.json` | All 1,000 designs: number, layers, name, rarity. Frozen on 2026-10-08 |
 
 ## The system
 
@@ -322,14 +326,16 @@ These were all Part 1a's call. Once the look is approved, they can be folded int
 
 ## Left open
 
-1. **The review of all 1,000** (Part 1b): the ten contact sheets are ready, re-rolls work, and no
-   round has been marked yet. `designs.json` and the design table are a draft until the freeze.
+1. **The review of all 1,000** (Part 1b): closed. Yash approved all ten sheets, and the designs
+   were frozen on 2026-10-08.
 2. **A one-off Legendary template** drawn by hand is still possible later. It would be an eleventh
-   template used once.
+   template used once, and it would mean reopening the freeze.
 3. **"Gold" is both a family and the frame.** A Gold pass with a gold frame is a nice double, but if
    the shared word confuses, the family can take another name.
-4. **"Steve"** (the Chunky Legendary) is the playful name in the set. D-041 says to swap it for
-   another sky light (for example "Belt of Venus") before the freeze if it reads as a joke on the
-   card. It's one line: `legendaryName` in `art-system/templates/chunky.ts`.
+4. **"Steve"** (the Chunky Legendary, #0542) is the playful name in the set. D-041 said to swap it
+   for another sky light (for example "Belt of Venus") before the freeze if it read as a joke on
+   the card. It stays: it's on sheet 6, which Yash approved. The name is art data
+   (`legendaryName` in `art-system/templates/chunky.ts`), not a row of the frozen table, so a
+   later swap would change the name only, never a design.
 5. **`previews/` is generated output.** Keep it in the repo for review, or ignore it: Yash's call.
    `rendered/` is ignored (`.gitignore`).

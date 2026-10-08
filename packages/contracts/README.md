@@ -42,9 +42,10 @@ deployed initial config to that file's `gameConfig`.
 ## Founding Pass art (D-041)
 
 `FoundingPassArtRenderer` draws the 1,000 Founding Pass designs on-chain (built in Part 1b, not
-deployed yet: Part 2 deploys it with `FoundingPass`). Its data in `src/founding-pass-art/` is
-generated, never edited by hand. The art system, the generator, the review rounds and the
-rebuild are in [`art/founding-pass/README.md`](art/founding-pass/README.md):
+deployed yet: Part 2 deploys it with `FoundingPass`). The designs were frozen on 2026-10-08,
+after Yash approved them. Its data in `src/founding-pass-art/` is generated, never edited by hand.
+The art system, the generator, the review rounds and the rebuild are in
+[`art/founding-pass/README.md`](art/founding-pass/README.md):
 
 ```bash
 bun packages/contracts/art/founding-pass/build-founding-pass-art.ts   # from the repo root

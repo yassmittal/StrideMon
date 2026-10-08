@@ -15,4 +15,4 @@ export const REVIEW_ROUNDS: readonly ReviewRound[] = []
  * Set to the day Yash approves all ten sheets. From then on the design table is final: the
  * build writes it as frozen, and no round may follow.
  */
-export const DESIGNS_FROZEN_ON: string | null = null
+export const DESIGNS_FROZEN_ON: string | null = '2026-10-08'

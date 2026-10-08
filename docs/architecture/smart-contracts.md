@@ -199,7 +199,8 @@ Custom errors, not revert strings: `SessionAlreadySettled(bytes32)`,
 
 Parts 1b and 2 of [`../founding-pass/`](../founding-pass/README.md) build it, and the brief's
 §10.1 ([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the full interface. The art
-renderer is built (Part 1b). `FoundingPass` and the Founder Sneakers are still planned (Part 2),
+renderer is built and its 1,000 designs are frozen (Part 1b, 2026-10-08). `FoundingPass` and the
+Founder Sneakers are still planned (Part 2),
 and when they land this section replaces the plan with what was built.
 
 **`FoundingPass`** (new, its own contract and its own deploy script, so a game redeploy never

@@ -5,7 +5,7 @@ pragma solidity 0.8.37;
 
 /// @title FoundingPassDesigns
 /// @notice The 1,000 Founding Pass designs, by design number (the token id).
-/// A draft under review (Part 1b), after 0 review rounds: not frozen yet.
+/// Frozen on 2026-10-08, after 0 review rounds: approved by Yash.
 library FoundingPassDesigns {
     uint256 internal constant DESIGN_COUNT = 1000;
     uint256 internal constant ROW_LENGTH = 8;

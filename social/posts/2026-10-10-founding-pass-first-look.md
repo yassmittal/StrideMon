@@ -30,10 +30,9 @@ results: {}
 - [ ] Check the 4:5 crop in the composer
 - [ ] Stay for the first hour and answer every reply (answers below)
 
-     Claims, checked: "drawn by a contract" is how the passes are built (brief §4.1). The art in
-     the image is Part 1a's TypeScript sketch, which Part 1b ports to Solidity byte for byte,
-     before minting opens. The image shows no pass numbers: Part 1b's review can still re-roll
-     any design, so nothing here promises a specific pass.
+     Claims, checked: "drawn by a contract" is how the passes are built (brief §4.1). The image
+     is drawn by the Solidity renderer itself (Part 1b), and the designs are frozen (2026-10-08).
+     It still shows no pass numbers, so nothing here promises a specific pass.
 
      Don't say the waitlist mints first (the 48-hour window) yet: the waitlist section on the site
      doesn't say so until Part 4. That gets its own post (ideas.md). -->
@@ -75,6 +74,5 @@ The image is generated with the rest of the art previews, from the repo root (ne
 bun packages/contracts/art/founding-pass/build-founding-pass-art.ts
 ```
 
-It writes `packages/contracts/art/founding-pass/previews/x-founding-pass-teaser.png` (1080 × 1350).
-Part 1b replaces the TypeScript renderer with the Solidity one, so post before then, or rebuild the
-image from the Solidity output.
+It writes `packages/contracts/art/founding-pass/previews/x-founding-pass-teaser.png` (1080 × 1350),
+from the Solidity renderer's output.

@@ -49,7 +49,7 @@ Everyone after the 1,000 gets a **normal Sneaker**: free, today's look, and it c
 |---|---|---|---|
 | [0](part-0-decide.md) | Decide: the last open questions, D-041, the docs | S | **Done** (2026-10-08, D-041 confirmed by Yash) |
 | 1a | Art design: templates, families, the pass card ([`art/founding-pass`](../../packages/contracts/art/founding-pass/README.md)) | L | **Done** (2026-10-08, look approved by Yash) |
-| [1b](part-1b-art-on-chain.md) | Art on-chain: the Solidity renderer, the review of all 1,000, the freeze | XL | **In progress** (2026-10-08: renderer built and proven, phone check passed; waiting for Yash's sheet review) |
+| [1b](part-1b-art-on-chain.md) | Art on-chain: the Solidity renderer, the review of all 1,000, the freeze | XL | **Done** (2026-10-08, all ten sheets approved by Yash, designs frozen) |
 | [2](part-2-contracts.md) | Contracts: `FoundingPass`, Founder Sneakers in the game, the deploy | L | Not started |
 | [3](part-3-api.md) | API: email codes, mints, the waitlist window, the gate, Founder Sneakers, lacing | L | Not started |
 | [4](part-4-website-gallery.md) | Website: the gallery, the 1,000 pass pages, preview mode | L | Not started |

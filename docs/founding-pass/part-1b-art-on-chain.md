@@ -55,10 +55,11 @@ freezes all 1,000 designs.
 
 Update the art README, since it now describes the Solidity renderer. Mark 1b **Done**, then stop.
 
-## Status (2026-10-08)
+## Status: Done (2026-10-08)
 
-This part waits on Yash's review of the sheets, so it runs over more than one session. The art
-README has the details.
+Every step is done, and so is the "Done when" list: `forge test` passes (105 tests, the
+renderer's 14 among them), the port matched the sketch, the phone check passed, and Yash approved
+all ten sheets, so the designs are frozen. The art README has the details.
 
 | Step | State |
 |---|---|
@@ -67,8 +68,7 @@ README has the details.
 | 3. Prove the port | **Done.** 5,800 files byte-identical, then the TypeScript renderers were deleted |
 | 4. The ten contact sheets | **Done.** `previews/3-designs-*.png`, drawn by the renderer |
 | 5. The phone check | **Done** (2026-10-08). 19 cards matched on the Android phone and in a browser, and the temporary screen was deleted |
-| 6. Review and re-roll | **Ready, waiting for Yash.** Rounds go in `art/founding-pass/generator/review-rounds.ts` |
-| 7. Freeze | Not started: set `DESIGNS_FROZEN_ON` once all ten sheets are approved |
+| 6. Review and re-roll | **Done** (2026-10-08). Yash approved all ten sheets as first drawn, so no design was re-rolled and `REVIEW_ROUNDS` is empty |
+| 7. Freeze | **Done** (2026-10-08). `DESIGNS_FROZEN_ON` is `2026-10-08`. `FoundingPassDesigns.sol` and the sheets say "Frozen on 2026-10-08", and the build refuses any later round. Every design is byte for byte the one Yash approved |
 
-The next session on 1b: add Yash's marked numbers as a round, rebuild, run `forge test`, and send
-him the new sheets. When he approves all ten, freeze (step 7) and mark 1b **Done**.
+Next is [Part 2](part-2-contracts.md): it deploys this renderer with `FoundingPass`.
