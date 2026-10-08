@@ -14,11 +14,11 @@ failures included, before launch, and every stuck point is fixed.
 - The API is deployed with the Part 3 config (`docs/deployment.md`).
 - The website is deployed to a preview URL.
 - An app build has the founder flow (EAS, `docs/device-testing.md`).
-- **Carried over from Part 5 (D-045):** these are the first mints with a real wallet. Persona 1
-  mints from MetaMask on the phone (its own browser, or a phone browser through WalletConnect),
-  persona 2 from the MetaMask laptop extension. Check on the deployed site that Reown's domain
-  list allows it (wallets refuse to connect otherwise), and that a real Turnstile token passes the
-  hosted API once (Send code works) and a replayed one doesn't.
+- **Carried over from Part 5 (D-045):** the first mints on the deployed site. Check that Reown's
+  domain list allows `stridemon.xyz` (wallets refuse to connect otherwise; a phone browser through
+  WalletConnect is the path Part 5 didn't try), and that a real Turnstile token passes the hosted
+  API once (Send code works) and a replayed one doesn't. Real-wallet mints already worked on the
+  local stack (MetaMask extension and MetaMask's phone browser, 2026-10-09).
 - **Rehearsal mints take real designs.** Every pass minted here is gone for good on that contract,
   so Part 10 deploys a fresh `FoundingPass`, and resets the pass collections, before launch.
 

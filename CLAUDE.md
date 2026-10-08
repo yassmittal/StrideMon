@@ -224,8 +224,8 @@ from the chain's own card, and a plain next step for every error, on Reown AppKi
 loaded only after "Connect wallet" (`next/dynamic`, `ssr: false`: keep it so). Test it on the
 local stack, never testnet: `cd apps/api && bun run pass:local-stack` (`website/README.md`). The
 Turnstile site key is in `website/src/content/site.ts`; the API checks each token's action and
-hostname too. The first real-wallet mints happen in Part 9 (personas 1 and 2). **Next: Part 6
-(app).** The idea is in `docs/founding-pass-brief.md`, the art in
+hostname too. Yash minted with his real MetaMask on the laptop and the phone (local stack through
+Cloudflare quick tunnels, 2026-10-09). **Next: Part 6 (app).** The idea is in `docs/founding-pass-brief.md`, the art in
 `packages/contracts/art/founding-pass/`, rebuilt with
 `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
 data is generated: never edit it by hand.
