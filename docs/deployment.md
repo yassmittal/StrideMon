@@ -474,6 +474,24 @@ entry. Brevo's error names the IP to add.
 **The deliverability check:** from the laptop, `cd apps/api && bun run pass:send-test-email
 you@gmail.com`. In Gmail, open it → ⋮ → **Show original**: DKIM and DMARC must say `PASS`.
 
+### 12.1 The website's mint (Part 5, D-045)
+
+The mint on `stridemon.xyz/pass` needs the API above (redeployed from this tree) and three public
+settings on the website side:
+
+- [ ] **Turnstile site key:** Cloudflare → Turnstile → the `stridemon.xyz` site → the **site key**
+  (public, not the secret). Put it in `website/src/content/site.ts` (`turnstileSiteKey`) or set
+  `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in Vercel. The site's hostname list must include
+  `stridemon.xyz` (and `www.stridemon.xyz` if it's ever served there).
+- [ ] **Reown:** <https://cloud.reown.com> → the app's project → **Domain**. If the allowlist has
+  entries, add `stridemon.xyz`; otherwise wallets refuse to connect from the website.
+- [ ] **The pass contract:** `foundingPassContract` in `website/src/content/contracts.ts` must be
+  the `foundingPass` address the hosted API uses (`deployments/10143.json`). Part 10 deploys a
+  fresh one.
+- [ ] Deploy the website after the API, then on the live site: Get ready → mint is only open in the
+  waitlist window and the open mint, so check the steps, and leave the mint itself to the
+  rehearsal (Part 9) or the window.
+
 ---
 
 ## Updating the API later

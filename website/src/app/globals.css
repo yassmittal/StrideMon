@@ -313,6 +313,75 @@ html:has(.pass-sheet[open]) {
   overflow: hidden;
 }
 
+/* The mint sheet is narrower than the pass sheet on a desktop. */
+@media (width >= 48rem) {
+  .pass-mint-sheet {
+    width: min(960px, calc(100% - 80px));
+  }
+}
+
+/* ---------- The reveal: the card turns from its dark back to the minted pass (D-045) ---------- */
+
+.pass-reveal-card {
+  perspective: 1600px;
+}
+
+.pass-reveal-card-inner {
+  position: relative;
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+  transition: transform 1100ms var(--ease-emphasized);
+}
+
+.pass-reveal-card[data-turned="true"] .pass-reveal-card-inner {
+  transform: rotateY(180deg);
+}
+
+.pass-reveal-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-panel);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.pass-reveal-face-front {
+  transform: rotateY(180deg);
+}
+
+/* The minting dot breathes, slowly. */
+.pass-mint-pulse {
+  animation: pass-mint-pulse 1600ms ease-in-out infinite;
+}
+
+@keyframes pass-mint-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ---------- Wallet layer: AppKit's own modal, raised above the sheets (D-045) ---------- */
+
+/* A full-screen, see-through modal <dialog> around AppKit's `<w3m-modal>`. AppKit draws its
+   backdrop and card itself; this only lifts them into the top layer, above any open sheet. */
+.wallet-layer {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.wallet-layer::backdrop {
+  background: transparent;
+}
+
 @keyframes pass-sheet-rise {
   from {
     opacity: 0;

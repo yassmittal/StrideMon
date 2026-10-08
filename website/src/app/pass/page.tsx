@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { GetReadySection } from '@/components/founding-pass/get-ready-section'
 import { PassGallery } from '@/components/founding-pass/pass-gallery'
+import { PassMintRoot } from '@/components/founding-pass/pass-mint-root'
 import { PassHeroSection } from '@/components/sections/pass-hero-section'
 import { PassHowItWorksSection } from '@/components/sections/pass-how-it-works-section'
 import { PassQuestionsSection } from '@/components/sections/pass-questions-section'
@@ -26,19 +28,21 @@ export const metadata: Metadata = {
   },
 }
 
-/** The Founding Pass gallery (Part 4, D-044): preview mode, no wallet yet. */
+/** The Founding Pass gallery (Part 4, D-044) and its mint (Part 5, D-045). */
 export default function PassGalleryPage() {
   return (
     <>
       <SiteHeader waitlistHref={`#${sectionIds.waitlist}`} />
       <main>
         <PassHeroSection />
+        <GetReadySection />
         <PassGallery />
         <PassHowItWorksSection />
         <WaitlistSection />
         <PassQuestionsSection />
       </main>
       <SiteFooter />
+      <PassMintRoot />
       <RevealObserver />
     </>
   )

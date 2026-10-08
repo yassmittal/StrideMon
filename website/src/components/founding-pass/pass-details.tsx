@@ -24,12 +24,14 @@ import {
   passRarityLabels,
   readPassDesign,
 } from '@/lib/founding-pass/pass-design'
+import { isMintingPhase } from '@/lib/founding-pass/pass-schedule'
 import { retryPassCollection, usePassCollection } from '@/lib/founding-pass/use-pass-collection'
 import { usePassSchedule } from '@/lib/founding-pass/use-pass-schedule'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { MetaLabel } from '../ui/meta-label'
 import { XLogoIcon } from '../ui/x-logo-icon'
 import { FavouriteButton } from './favourite-button'
+import { MintPassButton } from './mint-pass-button'
 import { PassArt } from './pass-art'
 import { PassAvailabilityText } from './pass-availability-text'
 import { PassRarityBadge } from './pass-rarity-badge'
@@ -119,6 +121,9 @@ export function PassDetails({
                 </a>
               ) : null}
             </p>
+          ) : null}
+          {position !== null && isMintingPhase(position.phase) && !isTaken ? (
+            <MintPassButton designNumber={design.designNumber} />
           ) : null}
           <div className="flex flex-wrap gap-2">
             <FavouriteButton designNumber={design.designNumber} appearance="pill" />

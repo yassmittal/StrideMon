@@ -457,6 +457,14 @@ runs only with `NODE_ENV=production`.
 **The deliverability check:** `cd apps/api && bun run pass:send-test-email <address>` sends one
 sample code email through Brevo, reading only `BREVO_API_KEY` and `EMAIL_SENDER_ADDRESS`.
 
+**The local stack** (D-045): `cd apps/api && bun run pass:local-stack` runs the whole Founding Pass
+backend on the laptop for testing the website's mint: its own Anvil on port 8546 (chain 10143,
+Monad's contract size limit), the contracts deployed by the tests' `deployTestContracts`, the
+throwaway database `stridemon-pass-local` (dropped at start), and the API on port 3001. It builds
+the API's environment itself (Anvil's keys, Cloudflare's test Turnstile secrets, codes printed
+instead of sent) and never reads `.env`. Flags pick the phase, add waitlist emails, mint passes
+ahead, fail Turnstile, slow the blocks and allow another site origin (`website/README.md`).
+
 **The lost-wallet move** (D-041) isn't an API route. Support checks the email by hand and runs
 `scripts/recover-founding-pass` from the deployer key.
 

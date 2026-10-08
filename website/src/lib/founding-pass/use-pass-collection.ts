@@ -94,6 +94,11 @@ function unsubscribeFromCollection(listener: () => void): void {
   window.clearTimeout(refreshTimeoutId)
 }
 
+/** The last answer, for code outside React (the mint's similar passes). */
+export function readLatestPassCollection(): PassCollection | null {
+  return state.collection
+}
+
 /** Asks again now, for the "Try again" buttons. */
 export function retryPassCollection(): void {
   void requestCollection()

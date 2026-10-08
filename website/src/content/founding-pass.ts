@@ -91,6 +91,7 @@ export const passScheduleContent = {
   mintedCountLabel: 'minted',
   liveLinePrefix: 'Latest',
   joinWaitlistLabel: 'Join the waitlist',
+  getAppLabel: 'Get the app',
   browseLabel: 'Browse all 1,000',
   openMintUntilPrefix: 'Open until all 1,000 are minted, or until',
   steps: [
@@ -278,7 +279,7 @@ export const passDetailContent = {
   takenNextStep: 'This one is taken. These look like it and nobody has minted them yet.',
 } as const
 
-/** What a pass page or the detail sheet says to do next, by phase. Part 5 adds the mint. */
+/** What a pass page or the detail sheet says to do next, by phase. Minting phases add the mint. */
 export const passNextStepContent: Record<PassSchedulePhase, string> = {
   preview:
     'Minting hasn’t started. Heart it, and join the waitlist to mint 48 hours before everyone else.',
@@ -360,7 +361,37 @@ export const passQuestions: readonly PassQuestion[] = [
   {
     question: 'Do I need a wallet now?',
     answer:
-      'Not to browse, heart passes or join the waitlist. To mint, you’ll need a wallet such as MetaMask with Monad Testnet added.',
+      'Not to browse, heart passes or join the waitlist. To mint, you need a wallet such as MetaMask. You sign a free message to prove it’s yours: there’s no gas to pay.',
+  },
+  {
+    question: 'Which wallet should I use?',
+    answer:
+      'The one you’ll use in the app. The app knows you’re a founder by the wallet that holds your pass. MetaMask works on Android and as a laptop extension.',
+  },
+  {
+    question: 'The code didn’t arrive.',
+    answer:
+      'Look in spam and promotions for an email from hello@stridemon.xyz. You can ask for a new code after a minute, and only the newest code works.',
+  },
+  {
+    question: 'My wallet won’t switch to Monad Testnet.',
+    answer:
+      'Add it by hand in your wallet: network name Monad Testnet, RPC URL https://testnet-rpc.monad.xyz, chain ID 10143, currency MON. Then switch to it. You can sign in and mint without it, but the app needs it.',
+  },
+  {
+    question: 'The robot check won’t load.',
+    answer:
+      'It’s Cloudflare Turnstile. Content blockers can stop it: allow stridemon.xyz, or try another browser, then reload the page.',
+  },
+  {
+    question: 'Someone minted the pass I wanted.',
+    answer:
+      'Each pass exists once, and the first mint wins. Nothing is minted for you, and you see three similar passes nobody has yet, each one tap away.',
+  },
+  {
+    question: 'I lost the wallet that holds my pass.',
+    answer:
+      'Write to us from the email you minted with. Once a code sent to that email checks out, we can move your pass and your Founder Sneaker to a new wallet, by hand. That’s the one way a pass ever moves.',
   },
   {
     question: 'What do rarity and the gold frame mean?',

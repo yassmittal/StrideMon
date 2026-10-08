@@ -491,7 +491,8 @@ same SVG), and fuzzing on the design number.
   images).
 - Wallet code (Reown AppKit web + wagmi + viem) loaded **only** on `/pass`, after "Get ready" or
   "Mint", with the existing Reown project id. The site still never imports `@stridemon/*` (D-035):
-  ABIs and the design table are copied into `website/src/content/` by the export script.
+  the design table is copied into `website/src/content/` by the export script, and the four read
+  functions the site calls are copied there by hand (D-045).
 - The landing page gets a Founding Pass section that links to `/pass`, and the waitlist copy
   becomes "Remind me when minting opens".
 - `/pass` gets its own targets: Lighthouse ≥ 90 on mobile, with art loaded as it scrolls and the

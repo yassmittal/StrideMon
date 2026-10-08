@@ -29,9 +29,12 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
 | `src/content/founding-pass.ts` | The Founding Pass page's copy, the planned schedule, the match quiz and the questions (D-044) |
 | `src/content/founding-pass-designs.ts` | **Generated**: the 1,000 designs and their layer labels. Never edit it by hand |
+| `src/content/founding-pass-mint.ts` | The mint's copy: "Get ready", the steps, the reveal, and one plain message per problem (D-045) |
+| `src/content/founding-pass-abi.ts` | The four `FoundingPass` reads the site makes, copied by hand (D-045) |
 | `public/pass-art/` | **Generated**: each design's card (`cards/0137.svg`) and laced Sneaker (`laced/0137.svg`) |
-| `src/lib/founding-pass/` | The design table's helpers, the gallery's filters and quiz, the schedule, and the live state and favourites stores |
-| `src/components/founding-pass/` | The gallery, cards, detail sheet, finder and schedule panel |
+| `src/lib/founding-pass/` | The design table's helpers, the gallery's filters and quiz, the schedule, the live state and favourites stores, and the mint: its API calls, "Get ready" store, mint flow, Turnstile and chain reads |
+| `src/lib/founding-pass/wallet/` | The wallet code (AppKit + wagmi), loaded on demand only (D-045) |
+| `src/components/founding-pass/` | The gallery, cards, detail sheet, finder, schedule panel, "Get ready", the mint dialog and the reveal |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
@@ -111,8 +114,7 @@ from what the script prints. Keep the demo under 8 MB and each loop under 1.5 MB
 
 `/pass` is the gallery of the 1,000 Founding Passes (D-041, D-044), and `/pass/137` is one pass's
 page (1,000 static pages, each with its own Open Graph image, made by `next/og` at build time: the
-whole build takes about 15 seconds). There's no wallet yet: Part 5 of `docs/founding-pass/` adds
-the mint.
+whole build takes about 18 seconds). Both mint, in the waitlist window and the open mint (D-045).
 
 **The art and the design table are generated.** After any change to the art (a new renderer),
 export them again from the repo root:
@@ -138,6 +140,55 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 bun run dev
 
 **The waitlist form** gives way to a short note once the waitlist window opens (by the planned
 times), because joining after that doesn't get anyone into the window (D-043).
+
+### The mint (Part 5, D-045)
+
+- **"Get ready"** (`#get-ready`) and the mint dialog share two steps: the email check (Turnstile, a
+  6-digit code, a proof good for 6 hours) and the app's sign-in (connect a wallet, the network step,
+  one free SIWE signature). Both stay in the browser (`localStorage`: `stridemon:pass-email-check`,
+  `stridemon:pass-sign-in`, plus `stridemon:pass-mint-in-progress` while a mint is queued), so a
+  mint is one tap with no wallet prompt. Every error's words are in `src/content/founding-pass-mint.ts`.
+- **The wallet code** (Reown AppKit 1.8 + wagmi 2 + viem, `src/lib/founding-pass/wallet/`) loads
+  through `next/dynamic` with `ssr: false`, only after "Connect wallet". It must stay that way: it
+  doesn't build for the server (a connector's optional modules), and the gallery stays light.
+  AppKit's modal lives in our own `<dialog class="wallet-layer">`, so it opens above the sheets.
+- **The reveal** reads the minted card from the chain (`FoundingPass.imageSvg`, through
+  `src/lib/founding-pass/pass-chain-reads.ts`), as do the "already a founder" checks. The four
+  read functions are copied by hand into `src/content/founding-pass-abi.ts`.
+- **Public settings** in `src/content/site.ts`, each with an override for a local run:
+  `reownProjectId` (`NEXT_PUBLIC_REOWN_PROJECT_ID`), `monadRpcUrl` (`NEXT_PUBLIC_MONAD_RPC_URL`),
+  `turnstileSiteKey` (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`), and `foundingPassContract.address` in
+  `src/content/contracts.ts` (`NEXT_PUBLIC_FOUNDING_PASS_ADDRESS`). **Before deploying, put the real
+  Turnstile site key in `site.ts`** (or set it in Vercel): without it the robot check can't run,
+  and the page says so. Reown's dashboard must allow `stridemon.xyz`. "Get the app" is
+  `appDownloadUrl`.
+
+### Try the mint locally
+
+Never against testnet: the local stack runs its own Anvil, contracts, database and API (D-045).
+From the repo root, once: `bun run db:start` and `bun run contracts:build`. Then:
+
+```bash
+cd apps/api && bun run pass:local-stack            # prints the website command below
+cd website && NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 \
+  NEXT_PUBLIC_MONAD_RPC_URL=http://127.0.0.1:8546 \
+  NEXT_PUBLIC_FOUNDING_PASS_ADDRESS=0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 \
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA bun run dev
+```
+
+Email codes print in the stack's terminal. Its flags set up each state to check:
+`--phase preview|waitlistWindow|openMint|openToAll`, `--waitlist-email <email>` (repeatable, joined
+before the window), `--premint 999` (about 3 minutes; the last pass is #0001, for "all minted"),
+`--turnstile fail`, and `--slow-blocks` (a block every 15 seconds). Each run starts from a fresh
+chain and database. Wallets connect to their usual Monad Testnet: only the free signature touches
+the wallet, and the mint happens on the stack's Anvil.
+
+**On a phone** (MetaMask's browser, or a phone browser with WalletConnect): a phone can't reach
+`localhost`, and wallets want `https`. Give the site and the API public `https` addresses with a
+free tunnel (for example `cloudflared tunnel --url http://localhost:3000` and the same for `3001`
+and `8546`), start the stack with `--origin <the site's tunnel address>` (it allows that origin and
+signs in for its domain), and start the website with the three tunnel addresses in place of the
+`localhost` ones. Or check on the real site once the API is redeployed and minting is open.
 
 ## Waitlist
 

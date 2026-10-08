@@ -14,16 +14,23 @@ laptop, and always knows what to do next.
 
 1. **The wallet**, on `/pass` only. Reown AppKit for web, wagmi and viem, with the existing Reown
    project id, loaded only when someone taps "Get ready" or "Mint", so the gallery stays fast.
-   Sign in with the same SIWE flow as the app.
+   Sign in with the same SIWE flow as the app. **As built (D-045):** AppKit 1.8.24 with wagmi 2,
+   through `next/dynamic` (`ssr: false`), and its modal inside a `<dialog>` of our own so it opens
+   above the pass sheet.
 2. **The network step:** if the wallet isn't on Monad Testnet, add it or switch to it in one tap.
-   If the wallet can't, explain how in plain words and link the help guide.
+   If the wallet can't, explain how in plain words and link the help guide. **As built (D-045):**
+   connecting already asks for the switch; the step only shows when the wallet stayed elsewhere,
+   and it lets the person sign in anyway (the mint doesn't use the wallet's network).
 3. **"Get ready"** at the top of `/pass`: verify the email (Turnstile, then a 6-digit code) and
-   connect the wallet ahead of time. Afterwards, one tap on a pass mints it.
+   connect the wallet ahead of time. Afterwards, one tap on a pass mints it. **As built (D-045):**
+   the email proof and the app's sign-in stay in the browser, so the mint itself needs no wallet.
 4. **The mint:**
    - pick a design, pass Turnstile, mint
    - a calm pending state, then the **reveal**: the card turns, the founder number counts up,
      and the gold frame shows if it rolled
    - link the transaction on MonadVision
+   - **As built (D-045):** the minted card is read from the chain (`imageSvg`), so the reveal is
+     the on-chain picture
 5. **The schedule:**
    - **Waitlist window:** someone whose email isn't on the waitlist sees when the open mint
      starts and can set a reminder or keep picking favourites. Never a dead "not allowed".
@@ -58,6 +65,10 @@ and a help link. At least these:
 Test against a local Anvil chain, with its own deployment that never touches
 `deployments/10143.json`, and the local API. Or test against the hosted API once Yash has
 deployed it. **Never** run the local API against testnet.
+
+**As built (D-045):** `cd apps/api && bun run pass:local-stack` starts all of it (Anvil, the
+contracts, a throwaway database and the API) and prints the command that starts the website
+against it. `website/README.md` → Founding Pass has the flags and the phone check.
 
 ## Done when
 

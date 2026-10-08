@@ -1197,3 +1197,73 @@ It fills in D-041's gallery and the brief's §5.2 and §8.
   (MonadVision), not on the card.
 - **Revisit when:** Part 5 adds the mint, Part 7 adds `/help`, or the art changes (a new
   renderer means a new export).
+
+## D-045 — How the website mints a Founding Pass
+
+Made 2026-10-08 in Part 5 of the Founding Pass build ([`founding-pass/part-5-website-mint.md`](founding-pass/part-5-website-mint.md)).
+It fills in D-041's website mint and the brief's §5.3, §6 and §10.3. The API is unchanged (D-043).
+
+- **Decision:**
+  1. **The wallet stack** is Reown AppKit for web 1.8.24 with its wagmi adapter, `@wagmi/core`
+     2.22.1 (wagmi 2.19.5, the app's major) and viem 2.57.4, in the website's own install (D-035),
+     with the app's Reown project id. External wallets only, as in the app (D-010). It loads through
+     `next/dynamic` with `ssr: false`, and only after someone taps "Connect wallet" (in "Get ready"
+     or in the mint), so the gallery never downloads it. (`ssr: false` is also what lets it build:
+     a wallet connector's optional modules don't resolve for the server.)
+  2. **AppKit's modal opens in a `<dialog>` of our own** (`.wallet-layer`). The pass sheet and the
+     mint are modal dialogs, which make the rest of the page inert, so AppKit's modal has to be in
+     the top layer too. AppKit reuses a `<w3m-modal>` that's already in the page, so ours lives in
+     that dialog.
+  3. **"Get ready" is two things kept in the browser** (`localStorage`, every read and write in
+     try/catch): the **email proof** (6 hours, D-043) and the **app's sign-in** (the access and
+     refresh tokens, D-043's trade-off), plus the mint in progress. With both, minting needs no
+     wallet at all: one tap runs Turnstile and posts the mint. The wallet is only for connecting
+     and the one free signature. "Use another email" and "Use another wallet" forget them here.
+  4. **The network step.** Connecting already asks the wallet to switch to Monad Testnet, adding it
+     if needed. If the wallet is still on another network, the step says so with one tap to
+     switch; if the wallet can't, it explains how in plain words, links the help, and lets the
+     person sign in anyway: the mint itself never uses the wallet's network, but the app does.
+     Wallets are always given the public RPC, even when a local run reads from its own Anvil.
+  5. **Turnstile** loads on demand (explicit rendering) with the `interaction-only` look, so most
+     people never see it. Each Send code and each Mint uses a fresh token. The site key is public
+     and lives in `site.ts`; a local run uses Cloudflare's always-pass test key.
+  6. **The reveal reads the minted card from the chain** (`FoundingPass.imageSvg`, through a viem
+     client on Monad's public RPC), so it shows exactly what wallets and MonadVision show:
+     `FOUNDER 042`, and the gold frame if it rolled. A dark card back turns over to it, and
+     "Founder 42 of 1,000" counts up. If the read fails, the gallery card stands in and the frame
+     is said in words. Reduced motion skips the turn.
+  7. **Already a founder:** after signing in, the site reads the wallet's pass from the chain
+     (`balanceOf`, `tokenOfOwnerByIndex`, `passOf`) and shows it with the next step. A mint
+     refused with `PASS_EMAIL_ALREADY_USED` or `PASS_WALLET_ALREADY_USED` shows that pass too, and
+     resumes its reveal when the API still has it in the queue (`details.mintId`).
+  8. **The race:** `PASS_ALREADY_MINTED` shows the API's three similar passes, each minted with
+     one tap. A mint in progress survives a reload: the page resumes polling it.
+  9. **Outside the waitlist in the window** (`PASS_WAITLIST_WINDOW_ONLY`): the open mint's time in
+     the visitor's own time zone, with **"Add to calendar"** (a Google Calendar link and an `.ics`
+     file) as the reminder, since joining the waitlist after the window opens sends nothing
+     (D-043). The pass can be hearted meanwhile.
+  10. **Every error has a plain message, a next step and a help link** (`passHelpPath` until Part 7
+      builds `/help`), from one table in `src/content/founding-pass-mint.ts`: every Part 3 code,
+      plus a refused signature, a wallet that won't connect or switch, a Turnstile that won't
+      load, the API out of reach, and a slow mint.
+  11. **The site's chain reads** use four read functions copied by hand into
+      `src/content/founding-pass-abi.ts`, not generated: they're standard ERC-721 reads plus
+      `passOf` and `imageSvg`. A local run points them elsewhere with `NEXT_PUBLIC_MONAD_RPC_URL`
+      and `NEXT_PUBLIC_FOUNDING_PASS_ADDRESS`.
+  12. **A local stack for testing** (`cd apps/api && bun run pass:local-stack`): its own Anvil
+      (chain 10143 with Monad's contract size limit, port 8546), the contracts deployed by the API
+      tests' helper (never `forge script`, so `deployments/10143.json` is never touched, D-019), a
+      throwaway database (`stridemon-pass-local`, dropped at start), and the API on port 3001 with
+      an environment the script builds itself: Anvil's keys, Cloudflare's test Turnstile secret,
+      codes in the log. It never reads `apps/api/.env`. Flags pick the phase, add waitlist
+      emails, mint passes ahead (up to all 1,000) and slow the blocks down.
+  13. **"Get the app"** links to the current APK (`appDownloadUrl` in `site.ts`). Part 6's build
+      replaces it.
+- **Why:** the brief's one-tap mint on mint day, without a wallet prompt at that moment, and no
+  wallet code for anyone who only browses. The chain stays the source of truth for the picture
+  and for who already holds a pass. A local stack keeps every test off testnet (`CLAUDE.md`).
+- **Trade-off:** the browser holds a refresh token and an email proof (both limited to this API).
+  The page makes chain reads of its own now (D-044 had none). The wallet libraries are large, but
+  only someone minting downloads them. Four read functions are copied by hand.
+- **Revisit when:** Part 7 builds `/help` (deep links per error), Part 6 ships the founder app
+  build (the APK link), or mainnet (embedded wallets, D-041).

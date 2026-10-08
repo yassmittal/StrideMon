@@ -171,7 +171,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-045.
+for it. The next free decision number is D-046.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -218,8 +218,13 @@ landing page's Founding Pass section. The site's art and design table are genera
 `bun run website:export-pass-art` (`website/public/pass-art/`, `website/src/content/founding-pass-designs.ts`):
 never edit them by hand. The live state comes from `GET /v1/pass/collection`, which the hosted API
 only has after its redeploy; until then `/pass` says the minted state is unavailable. The planned
-times in `website/src/content/founding-pass.ts` must match the API's `PASS_*` settings. **Next:
-Part 5 (website mint).** The idea is in `docs/founding-pass-brief.md`, the art in
+times in `website/src/content/founding-pass.ts` must match the API's `PASS_*` settings.
+**Part 5 (website mint) is built** (2026-10-08, D-045): "Get ready", the mint dialog, the reveal
+from the chain's own card, and a plain next step for every error, on Reown AppKit web + wagmi 2,
+loaded only after "Connect wallet" (`next/dynamic`, `ssr: false`: keep it so). Test it on the
+local stack, never testnet: `cd apps/api && bun run pass:local-stack` (`website/README.md`). It
+waits for Yash's real-wallet mint on a phone and a laptop, and the Turnstile site key goes in
+`website/src/content/site.ts` before deploying (`deployment.md` §12.1). The idea is in `docs/founding-pass-brief.md`, the art in
 `packages/contracts/art/founding-pass/`, rebuilt with
 `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
 data is generated: never edit it by hand.

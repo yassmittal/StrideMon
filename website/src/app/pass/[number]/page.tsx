@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { PassDetails } from '@/components/founding-pass/pass-details'
+import { PassMintRoot } from '@/components/founding-pass/pass-mint-root'
 import { PassHowItWorksSection } from '@/components/sections/pass-how-it-works-section'
 import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
@@ -80,6 +81,7 @@ export default async function PassPage({ params }: PassPageProps) {
         <WaitlistSection />
       </main>
       <SiteFooter />
+      <PassMintRoot />
       <RevealObserver />
     </>
   )

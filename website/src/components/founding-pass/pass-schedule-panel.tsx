@@ -1,7 +1,7 @@
 'use client'
 
 import { passPhaseContent, passScheduleContent, passSectionIds } from '@/content/founding-pass'
-import { sectionIds } from '@/content/site'
+import { appDownloadUrl, sectionIds } from '@/content/site'
 import { formatPassNumber, readPassDesign } from '@/lib/founding-pass/pass-design'
 import {
   type CountdownParts,
@@ -36,6 +36,7 @@ export function PassSchedulePanel() {
   const latestMintDesign =
     latestMint === undefined ? undefined : readPassDesign(latestMint.designNumber)
   const isMinting = phase !== null && isMintingPhase(phase)
+  const isOver = phase === 'allMinted' || phase === 'openToAll'
 
   return (
     <div className="relative flex flex-col gap-8 rounded-panel bg-dark-panel p-6 text-on-dark md:p-[30px]">
@@ -99,10 +100,15 @@ export function PassSchedulePanel() {
               <PillContent label={passScheduleContent.joinWaitlistLabel} />
             </a>
           ) : null}
+          {isOver ? (
+            <a href={appDownloadUrl} className={buildPillClassName('callToAction', 'regular')}>
+              <PillContent label={passScheduleContent.getAppLabel} />
+            </a>
+          ) : null}
           <a
             href={`#${passSectionIds.find}`}
             className={buildPillClassName(
-              phase === null || phase === 'preview' ? 'secondary' : 'callToAction',
+              phase === null || phase === 'preview' || isOver ? 'secondary' : 'callToAction',
               'regular',
             )}
           >
