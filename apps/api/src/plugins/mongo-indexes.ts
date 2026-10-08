@@ -3,7 +3,12 @@ import { getActivitySessionsCollection } from '../repositories/activity-sessions
 import { getAuthNoncesCollection } from '../repositories/auth-nonces-repository'
 import { getAuthSessionsCollection } from '../repositories/auth-sessions-repository'
 import { getChainTransactionsCollection } from '../repositories/chain-transactions-repository'
+import {
+  getFoundingPassMintsCollection,
+  LIVE_FOUNDING_PASS_MINT_STATUSES,
+} from '../repositories/founding-pass-mints-repository'
 import { getLocationSamplesCollection } from '../repositories/location-samples-repository'
+import { getPassEmailCodesCollection } from '../repositories/pass-email-codes-repository'
 import { getUsersCollection } from '../repositories/users-repository'
 import { getWaitlistSignupsCollection } from '../repositories/waitlist-signups-repository'
 
@@ -57,6 +62,37 @@ export const mongoIndexesPlugin = fastifyPlugin(
     // One sign-up per email, so a repeat is a no-op upsert (D-037).
     await getWaitlistSignupsCollection(database).createIndexes([
       { key: { email: 1 }, unique: true },
+      // The waitlist email goes oldest sign-ups first (D-043).
+      { key: { createdAt: 1 } },
+    ])
+    await getPassEmailCodesCollection(database).createIndexes([
+      // One pending code per email: also what makes "one a minute" safe against a race.
+      { key: { email: 1 }, unique: true },
+      { key: { expiresAt: 1 }, expireAfterSeconds: 0 },
+    ])
+    // One live mint per design, email and wallet: the database, not a read-then-check, decides a
+    // race. A failed mint drops out of all three (D-043). `$in` needs MongoDB 6.0 or later.
+    const liveMintFilter = { status: { $in: [...LIVE_FOUNDING_PASS_MINT_STATUSES] } }
+    await getFoundingPassMintsCollection(database).createIndexes([
+      {
+        key: { designNumber: 1 },
+        unique: true,
+        partialFilterExpression: liveMintFilter,
+        name: 'oneLiveMintPerDesign',
+      },
+      {
+        key: { email: 1 },
+        unique: true,
+        partialFilterExpression: liveMintFilter,
+        name: 'oneLiveMintPerEmail',
+      },
+      {
+        key: { walletAddress: 1 },
+        unique: true,
+        partialFilterExpression: liveMintFilter,
+        name: 'oneLiveMintPerWallet',
+      },
+      { key: { status: 1, updatedAt: -1 } },
     ])
   },
   { name: 'mongo-indexes', dependencies: ['mongo'] },

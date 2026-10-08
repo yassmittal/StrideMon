@@ -7,7 +7,7 @@ export const privacyPolicyContent: LegalPageContent = {
   title: 'Privacy policy',
   description:
     'What the StrideMon app and website collect, what goes on the Monad blockchain, and how to delete your data.',
-  lastUpdated: '2026-10-07',
+  lastUpdated: '2026-10-08',
   intro: `${siteName} is a move-to-earn game on Monad testnet, built by Yash Mittal. This page says what the app and this website collect, why, and how to delete it. In short: your GPS points stay on our server for at most 30 days, your route never goes on-chain, and we don’t sell data or show ads.`,
   sections: [
     {
@@ -22,6 +22,9 @@ export const privacyPolicyContent: LegalPageContent = {
             'Sign-in sessions: a hashed token that keeps you signed in, and when it expires.',
             'On the website, if you join the waitlist: your email, the phone you said you use (optional), and which link brought you.',
             'On the website: anonymous page-view counts from Vercel Analytics, with no cookies.',
+            'On the website’s Founding Pass page, the passes you heart are saved in your own browser only. They never reach us.',
+            'If you mint a Founding Pass on the website: your email, which you check with a 6-digit code, and your wallet address, from a free sign-in signature. The mint record keeps them together.',
+            'While you mint, your browser keeps your email check (for 6 hours), your sign-in and the mint in progress, so minting is one tap. “Use another email” and “Use another wallet” remove them.',
             'Like most servers, ours logs requests (IP address, time, address requested) for security and debugging.',
           ],
         },
@@ -32,7 +35,7 @@ export const privacyPolicyContent: LegalPageContent = {
       blocks: [
         {
           kind: 'paragraph',
-          text: 'To measure your walks and runs, to check that a run was done on foot (not in a car or with a faked location), to pay out STRIDE and keep your history, and to write to you once when StrideMon opens if you joined the waitlist.',
+          text: 'To measure your walks and runs, to check that a run was done on foot (not in a car or with a faked location), to pay out STRIDE and keep your history, and to write to you once, when the Founding Pass waitlist window opens, if you joined the waitlist. For the Founding Pass, the email and wallet together make sure it’s one pass per person and per wallet, and let us check it’s you if you lose that wallet and ask us to move your pass.',
         },
       ],
     },
@@ -49,6 +52,7 @@ export const privacyPolicyContent: LegalPageContent = {
             'Which wallet owns which Sneaker, and each Sneaker’s level, stats, energy and durability.',
             'Your STRIDE balance and transfers.',
             'Each settled run: the Sneaker, your wallet, the rewarded minutes, the distance in meters and the STRIDE earned.',
+            'Your Founding Pass, if you mint one: which pass it is, its founder number and frame, and the wallet that holds it. Your email never goes on-chain.',
           ],
         },
         {
@@ -69,7 +73,9 @@ export const privacyPolicyContent: LegalPageContent = {
           items: [
             'MongoDB Atlas stores the data listed above.',
             'Our server host runs the StrideMon API, and Vercel hosts this website.',
-            'Reown (WalletConnect) relays the connection between the app and your wallet app. It sees your wallet address, never your keys.',
+            'Reown (WalletConnect) relays the connection between the app or the website and your wallet. It sees your wallet address, never your keys.',
+            'Brevo sends our emails: the Founding Pass codes and the one waitlist email. It sees your email address.',
+            'Cloudflare Turnstile checks that a person, not a robot, is asking when you send a code or mint. Cloudflare sees your browser’s details for that check.',
             'The Monad testnet, which anyone can read.',
           ],
         },
@@ -85,6 +91,8 @@ export const privacyPolicyContent: LegalPageContent = {
             'Sign-in sessions: deleted automatically when they expire, after 30 days.',
             'Your account and runs: until you delete your account.',
             'Waitlist emails: until you ask us to delete yours.',
+            'Email codes: deleted after 10 minutes, or as soon as they’re used. We only ever keep a scrambled version.',
+            'Founding Pass mint records (your email and wallet): until you ask us to delete them. The pass itself stays on-chain.',
           ],
         },
       ],
@@ -98,7 +106,7 @@ export const privacyPolicyContent: LegalPageContent = {
         },
         {
           kind: 'paragraph',
-          text: `To remove your waitlist email, write to ${supportEmail} from that address.`,
+          text: `To remove your waitlist email or your Founding Pass mint record, write to ${supportEmail} from that address.`,
         },
       ],
     },

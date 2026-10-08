@@ -201,6 +201,26 @@ from `SneakerGame.currentEnergy`; the countdown to the next point is computed on
 the device from the on-chain `energyUpdatedAt`, and the value is read again when
 it reaches zero.
 
+## The Founding Pass (planned, D-041)
+
+Not built yet: Part 6 of [`../founding-pass/`](../founding-pass/README.md) builds it, from the
+brief's §7 and §10.4 ([`../founding-pass-brief.md`](../founding-pass-brief.md)). Passes are minted
+on the website, never in the app. The app shows them and gives the Founder Sneaker.
+
+- **`features/founding-pass/`** (new): `useFoundingPass` reads the wallet's pass from the chain
+  with wagmi (whether it holds one, which one, `passOf`, `imageSvg`), and `FoundingPassCard`
+  draws it with `SvgXml`, like `SneakerCard`.
+- **The gate:** while early access is on (the API says so), a wallet with no pass and no Sneaker
+  sees "Mint a Founding Pass to get in early" where the minting screen is today. It links to
+  `stridemon.xyz/pass` and the help page.
+- **The Founder Sneaker:** a pass holder gets it through the existing minting screen. Home shows
+  it like any Sneaker, and the picker (D-027) lists it beside any normal ones.
+- **Profile** shows the pass.
+- **Laced:** after the first settled walk, a quiet "Your shoe is laced" moment with a haptic.
+- **Transfer:** a Founder Sneaker's transfer is disabled with a plain reason ("Founder Sneakers
+  can't be sent or sold"). Normal Sneakers transfer as today.
+- Every blocked state says what's happening, what to do next and where to get help (Part 7).
+
 ## Auth on the device
 
 - The access token lives **in memory only**.

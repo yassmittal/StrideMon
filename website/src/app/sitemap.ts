@@ -1,11 +1,13 @@
 import type { MetadataRoute } from 'next'
-import { legalPagePaths, siteUrl } from '@/content/site'
+import { legalPagePaths, passGalleryPath, siteUrl } from '@/content/site'
+import { buildPassPagePath, passDesigns } from '@/lib/founding-pass/pass-design'
 
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: siteUrl, changeFrequency: 'monthly', priority: 1 },
+    { url: `${siteUrl}${passGalleryPath}`, changeFrequency: 'daily', priority: 0.9 },
     {
       url: `${siteUrl}${legalPagePaths.privacyPolicy}`,
       changeFrequency: 'yearly',
@@ -16,5 +18,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+    ...passDesigns.map((design) => ({
+      url: `${siteUrl}${buildPassPagePath(design.designNumber)}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    })),
   ]
 }

@@ -890,3 +890,380 @@ ours. Supersedes the domain parts of D-014, D-034 and D-035.
   working when the old API name goes: it can't reach the API at all. Few copies exist, so a
   clean cut beats running two names.
 - **Revisit when:** the instance moves.
+
+## D-041 — The Founding Pass: 1,000 one-of-one passes as early access, each with a Founder Sneaker
+
+Made 2026-10-08 with Yash, in Part 0 of the Founding Pass build. The idea, flow and research are
+in [`founding-pass-brief.md`](founding-pass-brief.md), the art in
+[`packages/contracts/art/founding-pass`](../packages/contracts/art/founding-pass/README.md), and
+the build plan in [`founding-pass/`](founding-pass/README.md), one part per session. Overturns
+D-037's "never a wallet" for the `/pass` page only.
+
+- **Decision:**
+  1. **1,000 Founding Passes, each a different design.** Each design can be minted once, and the
+     token id is the design number. Minting is free (the game server pays the gas), on the website
+     at `stridemon.xyz/pass`, after an email check (a 6-digit code) and a wallet sign-in (the
+     app's SIWE flow). One pass per email and per wallet. The art is Part 1a's system, drawn
+     on-chain by a swappable `FoundingPassArtRenderer`, as D-030 did for the Sneaker.
+  2. **Two linked NFTs.** The **Founding Pass** is the membership card: soulbound (ERC-5192), in
+     its own `FoundingPass` contract, so a game redeploy never touches it. The **Founder
+     Sneaker** is the shoe its holder runs in: one per pass, in `SneakerNft`, drawn in the pass's
+     design. Neither can be sent or sold. Normal Sneakers still can (Phase 7). The game contracts
+     are redeployed for this: there are no users yet.
+  3. **Names.** Designs are named "Family Template Colourway" ("Ember Runner Dusk"). The ten
+     Legendaries (the Prism family, one per template) get hand-picked names instead, after ten
+     rare lights in the sky. A name belongs to its template's Legendary, not to a number, so
+     Part 1b's re-rolls can't separate them:
+
+     | Template | Name | Why it fits |
+     |---|---|---|
+     | Runner | **Earthshine** | the glow our planet casts on the moon: the everyday shoe, for walks on Earth |
+     | Racer | **Afterglow** | the glow after sunset, and the feeling after a race |
+     | Trail | **Fogbow** | the white rainbow seen in morning fog on a trail |
+     | Court | **Fire Rainbow** | a flat band of colour low in the sky, like the court's flat cupsole |
+     | Hoop | **Glory** | rings of colour around a shadow on mist, like a rim, and the glory |
+     | Chunky | **Nacreous** | nacreous (mother-of-pearl) clouds: a rare polar sky light that shimmers in many colours, and nacre builds up in layers like the Chunky's stacked midsole |
+     | Sock | **Moonbow** | a rainbow by moonlight: soft and quiet, like the knit |
+     | Skate | **Airglow** | the night sky's own faint light, and skaters catch air |
+     | Spike | **Heat Lightning** | a silent flash on a summer night: the fastest shoe |
+     | Hiker | **Sun Pillar** | a tall column of light in cold air, like the boot's shaft |
+
+     The card shows the hand-picked name. The attributes still list Prism, the template and the
+     colourway.
+
+     **Changed 2026-10-08 (Yash, during Part 2):** the Chunky's Legendary (#0542) was first
+     named **Steve**, after the purple-and-green ribbon aurora watchers named in 2016, as a dad
+     name for the dad shoe. It read as a joke beside the other nine, so it's **Nacreous** now.
+     "Nacreous" is no shoe model's name (checked like the others; "Nacre" only appears as a
+     colourway nickname, never a model). The name is art data, not a row of the frozen design
+     table, so the swap changed no design: only #0542's name and its comment in the table.
+  4. **Gold frame** on about 1 in 10 passes, rolled at random on-chain at mint. It's cosmetic,
+     and nobody says it's worth more.
+  5. **The schedule.** A **preview week** (the gallery and a countdown, no minting), then a
+     **48-hour waitlist window** (only emails that joined the waitlist before it opened can
+     mint), then the **open mint** (anyone, until all 1,000 are minted). Rough dates: the
+     preview week from Sat 2026-11-21, the waitlist window from Sat 2026-11-28 20:00 IST
+     (14:30 UTC), the open mint from Mon 2026-11-30 20:00 IST. Part 10 sets the exact times,
+     which live in the API's config.
+  6. **Early access (the gate).** While `EARLY_ACCESS_REQUIRED` is on, the API gives a Sneaker
+     only to a wallet that holds a pass (on-chain), and that Sneaker is its Founder Sneaker. The
+     gate goes on when the preview week starts, never before Metropolis judging ends
+     (2026-10-27). It goes off by itself when all 1,000 are minted, or on the **backup opening
+     date: 14 days after the open mint starts** (about Mon 2026-12-14 20:00 IST). From then on,
+     everyone without a pass gets a free normal Sneaker in today's look. No new passes, ever.
+  7. **The website asks for a wallet on `/pass` only.** Reown AppKit for web and wagmi load on
+     that page alone, after "Get ready" or "Mint". The landing page and the waitlist stay email
+     only, and joining the waitlist is how someone gets into the waitlist window.
+  8. **Bots.** The email step, a per-IP rate limit on every public pass route, and
+     **Cloudflare Turnstile** (free) on both **Send code** and **Mint**. On Send code it also
+     guards Brevo's free plan (300 emails a day) from being used up.
+  9. **The match quiz** in the gallery: three questions, then six available passes that fit.
+  10. **A lost wallet.** Support may move a pass to a new wallet, by hand, when its founder asks
+      and a code sent to the pass's email checks out. An admin-only action (`RECOVERY_ROLE`, held
+      by the deployer key, never the game-server key) moves the pass **and its Founder Sneaker**
+      together. They keep the design, founder number, frame, laced state and the Sneaker's
+      stats. The new wallet must not hold a pass.
+  11. **Lacing.** The holder's first settled walk laces the pass and its Founder Sneaker (both
+      pictures change), once.
+  12. **Words.** Founding Pass, founder, waitlist, waitlist window, open mint, one of one. Never
+      *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Every
+      surface with the pass says it's free and can't be sent or sold, in those plain words, not
+      "soulbound".
+- **Why:** a pass someone picks and owns gives a reward on mint day, where a place in a line only
+  gives a wait (the brief's v1). Two NFTs, because a soulbound record and a game item that's
+  repaired and upgraded are different things, and a pass that could be traded would turn the
+  1,000 early spots into things to flip. Hand-picked names: the Legendaries are the passes people
+  share most. Names that stick describe the look or tell a story (sneaker nicknames like "Bred"
+  and "Infrared"), and a set with one theme reads as a collection (Pokémon's Legendary birds and
+  beasts). Every Prism design is many colours, and each sky light is a rare sight with colour in
+  it. Each name was checked against shoe model names: Aurora (Brooks), Green Flash (Dunlop),
+  Alpenglow (The North Face), Halo (Nike's Kobe line), Mirage (Puma), Meteor and Shooting Star
+  (adidas) are taken, and Sundog is a sports sunglasses brand, so all were dropped. Turnstile is
+  free, and one-of-ones give bots a reason to snipe the Legendaries. The backup date keeps the
+  app from staying half-closed: 14 days is long enough for word to spread, short enough that
+  nobody waits a month. A lost phone shouldn't mean a founder loses their place for good, and
+  keeping the move manual and admin-only keeps it rare.
+- **Trade-off:**
+  - The website gains wallet code, an email provider (Brevo) and Turnstile. The API gains
+    public routes, CORS for the site on more routes, and personal data (the mint record links an
+    email to a wallet).
+  - While the gate is on, nobody new can play without a pass.
+  - The lost-wallet move means the pass isn't strictly soulbound: the admin can move it, and the
+    help page says so.
+  - The game-server key pays for every pass mint, Founder Sneaker and gas drip, so 1,000 founders
+    need a large testnet MON budget (Part 3 measures it).
+  - ~~"Steve" is the playful name in the set. If it reads as a joke on the card, swap it for
+    another sky light before Part 1b's freeze (for example "Belt of Venus").~~ Swapped for
+    "Nacreous" on 2026-10-08 (see item 3).
+- **Revisit when:** the dates slip (Part 10 moves them), all 1,000 are minted, or mainnet
+  (Phase 10: embedded wallets, a multisig for `RECOVERY_ROLE`).
+
+## D-042 — How the Founding Pass and the Founder Sneaker link on-chain
+
+Made 2026-10-08 in Part 2 of the Founding Pass build ([`founding-pass/part-2-contracts.md`](founding-pass/part-2-contracts.md)).
+It fills in D-041's contracts. The full interface is in
+[`architecture/smart-contracts.md`](architecture/smart-contracts.md).
+
+- **Decision:**
+  1. **Lacing lives on the pass only.** `FoundingPass.setLaced` is the one call. The Founder
+     Sneaker's picture reads the pass's laced state (and its gold frame) live, so one
+     transaction laces both pictures and the two can never disagree.
+  2. **The link lives in `SneakerNft`**, the permanent contract: `foundingPassTokenIdOf(sneaker)`
+     and `founderSneakerTokenIdOf(pass)`, and `SneakerNft` refuses a second Founder Sneaker for
+     a pass. A later `SneakerGame` can't forget which passes already have one.
+  3. **`SneakerGame.mintFounderSneaker(passTokenId)`** (game server) mints to whoever holds the
+     pass, with starter stats, and marks that wallet's starter as claimed: a founder's Founder
+     Sneaker is their free Sneaker. A founder who already got a normal starter (before the gate)
+     still gets their Founder Sneaker.
+  4. **Founder Sneakers refuse `transferFrom`, `safeTransferFrom` and `approve`** with
+     `FounderSneakerNotTransferable(tokenId)`. Normal Sneakers work as in Phase 7.
+  5. **The lost-wallet move** is two calls, run together by `RecoverFoundingPass.s.sol` from the
+     deployer key: `FoundingPass.recoverFoundingPass(passTokenId, newOwner)`, then
+     `SneakerGame.recoverFounderSneaker(passTokenId)`, which can only move the Founder Sneaker
+     **to whoever holds the pass now**, never to an address of the caller's choice. Both work
+     while the game is paused: it's support, not play. The script skips a step that's already
+     done, so a half-finished run can be run again.
+  6. **One renderer for every Sneaker.** `SneakerArtRenderer.renderImageSvg` also takes the
+     Sneaker's pass token id (0 for a normal Sneaker). Normal Sneakers keep D-030's art byte for
+     byte. A Founder Sneaker is drawn by the pass's own art renderer (read from `FoundingPass`,
+     so a pass-art swap changes both) on the same dark square, with a light rim round the shoe
+     so its ink outline shows on the dark panel.
+  7. **The gold frame** rolls from `keccak256(prevrandao, the previous block hash, design,
+     founder number, wallet)`, 1 in 10. Someone could predict it, but only the game server
+     mints, it's cosmetic, and nobody can buy a re-roll.
+  8. **`mintedBitmap()`** is four words, and bit *n* is design *n* (bit 0 is never set), so a
+     client checks a design without an off-by-one.
+  9. **The pass's attributes** name the template, family, colourway, each option ("Side: Wedge"),
+     rarity, founder number, frame and stage, and the lace colour once laced (it's the lacing's
+     small reveal). The option and lace labels are added to the generated art data, which
+     changes no design.
+  10. **Deploy order:** `DeployFoundingPass.s.sol` first (its own script: the pass art renderer
+      and `FoundingPass`), then `DeployGame.s.sol` with `FOUNDING_PASS_ADDRESS`. Both write to
+      `deployments/<chainId>.json` without dropping each other's keys.
+  11. **The API's test Anvil** runs with Monad's 128 KB contract size limit
+      (`--code-size-limit`), since the pass art renderer is about 56 KB and Anvil's default is
+      Ethereum's 24 KB.
+- **Why:** one source of truth for each fact (the laced state on the pass, the link in the
+  permanent NFT), and the recovery can't be turned into a way to send someone's Sneaker
+  anywhere. One renderer keeps a single `setArtRenderer` for every Sneaker picture.
+- **Trade-off:** `SneakerArtRenderer` now depends on `FoundingPass`, and a Founder Sneaker's
+  picture costs a few hundred thousand gas to draw (fine for `eth_call`). Lacing doesn't emit an
+  ERC-4906 event on the Sneaker: wallets that cache metadata refresh it on the next stat change
+  (every settled walk emits one). A fresh `FoundingPass` (Part 10 deploys one after the
+  rehearsal) means a fresh game too, since the game is wired to one pass contract and
+  `SneakerNft` keeps the links.
+- **Revisit when:** mainnet (a multisig holds `RECOVERY_ROLE`, D-041), or a Sneaker needs art
+  that isn't the pass's.
+
+## D-043 — How the Founding Pass API works
+
+Made 2026-10-08 in Part 3 of the Founding Pass build ([`founding-pass/part-3-api.md`](founding-pass/part-3-api.md)).
+It fills in D-041's API. The routes, shapes and error codes are in
+[`architecture/backend-api.md`](architecture/backend-api.md) → The Founding Pass.
+
+- **Decision:**
+  1. **The schedule is three settings:** `PASS_WAITLIST_WINDOW_STARTS_AT`,
+     `PASS_WAITLIST_WINDOW_HOURS` (48) and `PASS_BACKUP_OPENING_AT`. The open mint starts when the
+     window ends. One pure function (`lib/founding-pass/pass-schedule.ts`) turns them, the clock
+     and the on-chain minted count into the phase: `preview`, `waitlistWindow`, `openMint`,
+     `allMinted` or `openToAll`, with the time of the next change. Minting is open in the
+     window and the open mint only: after the backup opening date, no new passes (D-041).
+  2. **The gate** is on while `EARLY_ACCESS_REQUIRED=true` and the phase is `preview`,
+     `waitlistWindow` or `openMint`. `POST /v1/onboarding/starter-sneaker` then refuses a wallet
+     without a pass (`FOUNDING_PASS_REQUIRED`), and the onboarding status tells the app
+     (`isFoundingPassRequired`). A pass holder always gets a Founder Sneaker, gate or not.
+  3. **A mint's outbox key is its mint id** (`mintFoundingPass:<mintId>`), not the design
+     number. A mint that fails (a simulated revert) frees its design, and a later mint of that
+     design needs its own transaction. The database's partial unique indexes on
+     `foundingPassMints` (design, email, wallet, over mints that haven't failed) are what stop
+     two mints of one design.
+  4. **A repeated mint request** from the same wallet for the same design answers that mint
+     again (200), so a double tap or a retry after a dropped connection never shows an error.
+  5. **Email codes** are stored as HMAC-SHA-256 of the email and code, keyed with
+     `EMAIL_PROOF_SECRET`, so a copy of the database can't be brute-forced through the million
+     possible codes. The **email proof** is a JWT signed with that secret (never the access-token
+     secret), good for 6 hours.
+  6. **Development never sends email:** it logs the code. Only production sends, through Brevo,
+     and it refuses to boot without `BREVO_API_KEY`. The deliverability check uses
+     `bun run pass:send-test-email <address>`, which sends one sample code email and touches
+     neither Mongo nor the chain.
+  7. **Turnstile** is checked first on Send code and Mint, before anything else, with
+     Cloudflare's siteverify. Development and tests use Cloudflare's always-pass test secret, and
+     production refuses Cloudflare's test secrets at boot.
+  8. **CORS** also opens `/v1/auth/refresh` to the site: "Get ready" can happen long before the
+     mint, the access token lasts 15 minutes, and a new wallet signature at the moment of the
+     mint would cost the one-tap mint. So the browser routes are `/v1/waitlist`,
+     `/v1/auth/nonce`, `/v1/auth/verify`, `/v1/auth/refresh` and every `/v1/pass/*` route, from
+     `WAITLIST_ALLOWED_ORIGINS` (the same list, kept under its old name so the server's `.env`
+     needs no rename).
+  9. **The collection** lists minted designs as numbers (decoded from `mintedBitmap()`), not as
+     the raw bitmap. The chain read is cached for 3 seconds. Mints confirmed since that read
+     are listed as pending, so a design never looks free in between.
+  10. **"3 similar passes"** come from the frozen design table, which `chain:export-abis` now
+      copies into `@stridemon/chain/founding-pass-designs` (a subpath, so the app never bundles
+      it by accident). Similar means the same template first, then the same family, colourway,
+      options and rarity, then the nearest number.
+  11. **The waitlist email** is a command run by hand on the server:
+      `bun run pass:send-waitlist-emails --limit <n> --send` (without `--send` it only counts).
+      It emails the oldest sign-ups that joined before the window opened and were never emailed,
+      marks each address **before** it sends (at most once, never twice), and prints what it
+      sent. Sign-ups from after the window opened get no email.
+  12. **Lacing:** when a `settleSession` confirms, the outbox job reads the wallet's pass from the
+      chain and, if it isn't laced, queues `laceFoundingPass:<passTokenId>`. Every later
+      settlement finds it laced (or the key already queued) and adds nothing.
+  13. **The testnet MON budget** (measured 2026-10-08 on Anvil, and checked with `eth_estimateGas`
+      on testnet; Monad charges the gas limit, at about 102 gwei today):
+
+      | Per founder, from the game-server key | Gas | MON |
+      |---|---|---|
+      | `mintFoundingPass` | ~246,000 | ~0.025 |
+      | `mintFounderSneaker` | ~363,000 | ~0.037 |
+      | `sendGasDrip` (the transfer) | 21,000 | ~0.002 |
+      | `laceFoundingPass` | ~52,000 | ~0.005 |
+      | the drip itself (`GAS_DRIP_AMOUNT_WEI`) | | 0.1 |
+      | **Total** | ~682,000 | **~0.17** |
+
+      So 1,000 founders need about **170 MON** (about 70 in fees and 100 in drips), and every
+      settled walk after that costs about 0.02 MON (`settleSession`, ~190,000 gas). A player's
+      own repair or upgrade is ~110,000–125,000 gas (~0.013 MON), so a 0.05 MON drip still pays
+      for about 3 of them and brings the total to about 120 MON. **Yash keeps the drip at 0.1 MON
+      (2026-10-08)**, so plan on about 170 MON in the game-server key before the launch.
+- **Why:** one source of truth per fact (the schedule in config, ownership on the chain, the
+  claim on a design in the unique index), and no user-facing step that can fail for a reason the
+  user can't act on. Every refusal has its own code, so the website can say what happened and
+  what to do next.
+- **Trade-off:** the website keeps a refresh token in the browser (a stolen one is limited to
+  this API, and rotating tokens detect reuse). The waitlist email is a manual step on launch day.
+  Mints confirmed in the last 3 seconds are counted as pending, not minted, in the collection.
+- **Revisit when:** Part 5 builds the website's mint (it may want more from the API), the
+  waitlist outgrows Brevo's 300 a day (move to SES), or mainnet.
+
+## D-044 — How the Founding Pass gallery works on the website
+
+Made 2026-10-08 in Part 4 of the Founding Pass build ([`founding-pass/part-4-website-gallery.md`](founding-pass/part-4-website-gallery.md)).
+It fills in D-041's gallery and the brief's §5.2 and §8.
+
+- **Decision:**
+  1. **The export.** `bun packages/contracts/art/founding-pass/export-website-art.ts` (from the
+     repo root) has the Solidity renderer draw, in a simulation (`RenderPassArt.s.sol`'s
+     `exportWebsiteArt()`), every design's gallery card (`renderDesignPreviewSvg`, exactly the
+     on-chain image) and its laced Sneaker (`renderSneakerMarkup`, laced, alone in its
+     1000 × 600 space). It copies them to `website/public/pass-art/cards/` and
+     `website/public/pass-art/laced/`, and writes the design table with every label to
+     `website/src/content/founding-pass-designs.ts` (generated, one compact row per design). It
+     checks each row's name against `designs.json`. The site still never imports `@stridemon/*`
+     (D-035).
+  2. **The grid shows the card cropped to the shoe** (CSS, no second file), with the number,
+     name and rarity as text below it: the card's own text is too small to read at two cards a
+     row. The detail sheet shows the whole card, so it's already loaded when the sheet opens.
+  3. **The laced look shows the real lace colour** (Yash, 2026-10-08). The art README said laces
+     don't show in the gallery, and D-042 keeps them out of the token's attributes until it's
+     laced. The gallery shows them anyway, so every rarity label has a reason you can see (80
+     Uncommons are Uncommon only for their lime laces). Lacing still changes the pass on-chain.
+  4. **The grid draws 48 cards at a time** and more as you scroll, so the page stays light on a
+     phone. Filters, sort, search, "Surprise me" and the match quiz are views over the table that
+     ships with the page.
+  5. **The live state** comes from `GET /v1/pass/collection`, fetched once and again every 15
+     seconds while minting is open and the tab is visible (every 2 minutes otherwise). If it
+     can't be reached, the gallery still works, says the minted state is unavailable, and offers
+     a retry.
+  6. **The schedule's planned times** (D-041) ship with the page in `src/content/founding-pass.ts`,
+     so the countdown works before the API answers or when it can't. The API's schedule replaces
+     them as soon as it answers. Part 10 sets the exact times in both places.
+  7. **"Minted by 0x3f…a1"** shows for the mints the collection lists (the last 10). Any other
+     minted pass says "Minted" and links to its page on MonadVision, which shows the owner. The
+     site makes no chain calls of its own.
+  8. **Each pass page** (`/pass/137`, 1,000 static pages) gets an Open Graph image from
+     `next/og` at build time: the card cropped to the shoe, with the name and number in Satoshi.
+     Measured 2026-10-08: the whole build takes about 14 seconds (4.7 before), so the images
+     needn't be rendered ahead.
+  9. **The match quiz** maps its answers onto layers: when you walk picks colourways (morning:
+     Dawn, Frost, Haze; daytime: Day, Flare, Drift; evening: Dusk, Storm; night: Night,
+     Eclipse), the colour picks families, and the style picks templates (everyday: Runner,
+     Court, Sock; fast: Racer, Spike; outdoors: Trail, Hiker; street: Hoop, Chunky, Skate). A
+     design scores 3 for the colour, 2 for the style and 1 for the time, and the six best
+     available come first, so the quiz always finds six.
+  10. **Favourites** live in the browser's `localStorage`, every read and write in try/catch.
+  11. **Help:** until Part 7 builds `/help`, "Read the full help" goes to the questions at the
+      foot of `/pass` (`passHelpPath` in `src/content/site.ts`).
+- **Why:** the shoe is the part people choose by, and the on-chain card stays the one picture
+  of a pass. Drawing a few cards at a time keeps Lighthouse's DOM and hydration costs down
+  without hiding anything. One collection route keeps the site free of chain code until Part 5
+  brings the wallet.
+- **Trade-off:** `public/pass-art/` holds 2,000 generated SVGs (about 5 MB), and the planned
+  times live in two places until the API answers. The built site grows to about 8,000 files and
+  260 MB (each pass page is about 10 KB gzipped, and its image 70 KB). Vercel sets no limit on a
+  build's output, only on uploaded source, and these are built on Vercel. The owner of an older mint is one click away
+  (MonadVision), not on the card.
+- **Revisit when:** Part 5 adds the mint, Part 7 adds `/help`, or the art changes (a new
+  renderer means a new export).
+
+## D-045 — How the website mints a Founding Pass
+
+Made 2026-10-08 in Part 5 of the Founding Pass build ([`founding-pass/part-5-website-mint.md`](founding-pass/part-5-website-mint.md)).
+It fills in D-041's website mint and the brief's §5.3, §6 and §10.3. The API is unchanged (D-043).
+
+- **Decision:**
+  1. **The wallet stack** is Reown AppKit for web 1.8.24 with its wagmi adapter, `@wagmi/core`
+     2.22.1 (wagmi 2.19.5, the app's major) and viem 2.57.4, in the website's own install (D-035),
+     with the app's Reown project id. External wallets only, as in the app (D-010). It loads through
+     `next/dynamic` with `ssr: false`, and only after someone taps "Connect wallet" (in "Get ready"
+     or in the mint), so the gallery never downloads it. (`ssr: false` is also what lets it build:
+     a wallet connector's optional modules don't resolve for the server.)
+  2. **AppKit's modal opens in a `<dialog>` of our own** (`.wallet-layer`). The pass sheet and the
+     mint are modal dialogs, which make the rest of the page inert, so AppKit's modal has to be in
+     the top layer too. AppKit reuses a `<w3m-modal>` that's already in the page, so ours lives in
+     that dialog.
+  3. **"Get ready" is two things kept in the browser** (`localStorage`, every read and write in
+     try/catch): the **email proof** (6 hours, D-043) and the **app's sign-in** (the access and
+     refresh tokens, D-043's trade-off), plus the mint in progress. With both, minting needs no
+     wallet at all: one tap runs Turnstile and posts the mint. The wallet is only for connecting
+     and the one free signature. "Use another email" and "Use another wallet" forget them here.
+  4. **The network step.** Connecting already asks the wallet to switch to Monad Testnet, adding it
+     if needed. If the wallet is still on another network, the step says so with one tap to
+     switch; if the wallet can't, it explains how in plain words, links the help, and lets the
+     person sign in anyway: the mint itself never uses the wallet's network, but the app does.
+     Wallets are always given the public RPC, even when a local run reads from its own Anvil.
+  5. **Turnstile** loads on demand (explicit rendering) with the `interaction-only` look, so most
+     people never see it. Each Send code and each Mint uses a fresh token. The site key is public
+     and lives in `site.ts`; a local run uses Cloudflare's always-pass test key.
+  6. **The reveal reads the minted card from the chain** (`FoundingPass.imageSvg`, through a viem
+     client on Monad's public RPC), so it shows exactly what wallets and MonadVision show:
+     `FOUNDER 042`, and the gold frame if it rolled. A dark card back turns over to it, and
+     "Founder 42 of 1,000" counts up. If the read fails, the gallery card stands in and the frame
+     is said in words. Reduced motion skips the turn.
+  7. **Already a founder:** after signing in, the site reads the wallet's pass from the chain
+     (`balanceOf`, `tokenOfOwnerByIndex`, `passOf`) and shows it with the next step. A mint
+     refused with `PASS_EMAIL_ALREADY_USED` or `PASS_WALLET_ALREADY_USED` shows that pass too, and
+     resumes its reveal when the API still has it in the queue (`details.mintId`).
+  8. **The race:** `PASS_ALREADY_MINTED` shows the API's three similar passes, each minted with
+     one tap. A mint in progress survives a reload: the page resumes polling it.
+  9. **Outside the waitlist in the window** (`PASS_WAITLIST_WINDOW_ONLY`): the open mint's time in
+     the visitor's own time zone, with **"Add to calendar"** (a Google Calendar link and an `.ics`
+     file) as the reminder, since joining the waitlist after the window opens sends nothing
+     (D-043). The pass can be hearted meanwhile.
+  10. **Every error has a plain message, a next step and a help link** (`passHelpPath` until Part 7
+      builds `/help`), from one table in `src/content/founding-pass-mint.ts`: every Part 3 code,
+      plus a refused signature, a wallet that won't connect or switch, a Turnstile that won't
+      load, the API out of reach, and a slow mint.
+  11. **The site's chain reads** use four read functions copied by hand into
+      `src/content/founding-pass-abi.ts`, not generated: they're standard ERC-721 reads plus
+      `passOf` and `imageSvg`. A local run points them elsewhere with `NEXT_PUBLIC_MONAD_RPC_URL`
+      and `NEXT_PUBLIC_FOUNDING_PASS_ADDRESS`.
+  12. **A local stack for testing** (`cd apps/api && bun run pass:local-stack`): its own Anvil
+      (chain 10143 with Monad's contract size limit, port 8546), the contracts deployed by the API
+      tests' helper (never `forge script`, so `deployments/10143.json` is never touched, D-019), a
+      throwaway database (`stridemon-pass-local`, dropped at start), and the API on port 3001 with
+      an environment the script builds itself: Anvil's keys, Cloudflare's test Turnstile secret,
+      codes in the log. It never reads `apps/api/.env`. Flags pick the phase, add waitlist
+      emails, mint passes ahead (up to all 1,000) and slow the blocks down.
+  13. **"Get the app"** links to the current APK (`appDownloadUrl` in `site.ts`). Part 6's build
+      replaces it.
+- **Why:** the brief's one-tap mint on mint day, without a wallet prompt at that moment, and no
+  wallet code for anyone who only browses. The chain stays the source of truth for the picture
+  and for who already holds a pass. A local stack keeps every test off testnet (`CLAUDE.md`).
+- **Trade-off:** the browser holds a refresh token and an email proof (both limited to this API).
+  The page makes chain reads of its own now (D-044 had none). The wallet libraries are large, but
+  only someone minting downloads them. Four read functions are copied by hand.
+- **Revisit when:** Part 7 builds `/help` (deep links per error), Part 6 ships the founder app
+  build (the APK link), or mainnet (embedded wallets, D-041).

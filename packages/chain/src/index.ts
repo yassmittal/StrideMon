@@ -1,3 +1,4 @@
+export { foundingPassAbi } from './abis/founding-pass-abi'
 export { sneakerGameAbi } from './abis/sneaker-game-abi'
 export { sneakerNftAbi } from './abis/sneaker-nft-abi'
 export { strideTokenAbi } from './abis/stride-token-abi'

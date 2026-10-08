@@ -23,6 +23,8 @@ describe('StarterSneakerMinting', () => {
       onboardingStatus: {
         starterSneaker: { status: 'pending', transactionHash: TRANSACTION_HASH },
         gasDrip: { status: 'pending', transactionHash: null },
+        starterSneakerKind: 'normal',
+        isFoundingPassRequired: false,
       },
     })
 
@@ -42,6 +44,8 @@ describe('StarterSneakerMinting', () => {
       onboardingStatus: {
         starterSneaker: { status: 'confirmed', transactionHash: TRANSACTION_HASH },
         gasDrip: { status: 'confirmed', transactionHash: TRANSACTION_HASH },
+        starterSneakerKind: 'normal',
+        isFoundingPassRequired: false,
       },
     })
 
@@ -68,6 +72,8 @@ describe('StarterSneakerMinting', () => {
       onboardingStatus: {
         starterSneaker: { status: 'failed', transactionHash: null },
         gasDrip: { status: 'confirmed', transactionHash: TRANSACTION_HASH },
+        starterSneakerKind: 'normal',
+        isFoundingPassRequired: false,
       },
     })
 

@@ -18,6 +18,8 @@ packages/contracts/deployments/31337.json
 # Demo tooling runs (D-033) are routine admin calls, not deployments worth keeping.
 packages/contracts/broadcast/PrepareDemoWallets.s.sol/
 packages/contracts/broadcast/DemoEnergyConfig.s.sol/
+# The Founding Pass art as RenderPassArt.s.sol draws it (rebuilt by build-founding-pass-art.ts).
+packages/contracts/art/founding-pass/rendered/
 
 # Expo / React Native
 .expo/

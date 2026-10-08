@@ -194,7 +194,9 @@ Every transaction the **game server** sends. Player-signed transactions
 (repair, upgrade, transfer) never appear here.
 
 ```ts
-type ChainTransactionKind = 'mintStarterSneaker' | 'settleSession' | 'sendGasDrip'
+type ChainTransactionKind =
+  | 'mintStarterSneaker' | 'settleSession' | 'sendGasDrip'
+  | 'mintFoundingPass' | 'mintFounderSneaker' | 'laceFoundingPass'   // Founding Pass (D-043)
 
 type ChainTransactionStatus =
   | 'queued'      // written, not yet signed
@@ -268,3 +270,85 @@ A sign-up is written once and never changed, so there's no `updatedAt`. A repeat
 upsert with `$setOnInsert` only: the first sign-up's platform and source stay. No IP address
 or user agent is ever stored. An email is deleted by hand when its owner asks (security.md →
 Privacy).
+
+---
+
+## Founding Pass collections (Part 3, D-041, D-043)
+
+**The chain stays the truth** for who holds which pass and Sneaker. These collections hold the
+email side, which the chain never sees, and the bookkeeping for our own mints.
+
+### `passEmailCodes`
+
+One pending 6-digit code per email, for the website's email step.
+
+```ts
+type PassEmailCodeDocument = {
+  _id: ObjectId
+  email: string            // trimmed and lowercased, unique
+  codeHash: string         // HMAC-SHA-256 of "<email>:<code>", keyed with EMAIL_PROOF_SECRET (D-043)
+  attemptCount: number     // tries so far, the right one included; at most 5
+  sentAt: Date             // a new code waits a minute after this
+  expiresAt: Date          // sentAt + 10 minutes; TTL index deletes it
+  createdAt: Date
+}
+```
+
+Indexes: `{ email: 1 }` unique, `{ expiresAt: 1 }` TTL (`expireAfterSeconds: 0`).
+
+- The code itself is never stored. A new code replaces the record (and resets the tries) once
+  the minute has passed. The right code deletes it, so a code works once.
+- The unique email makes "one a minute" safe against two requests at once: the second can't
+  insert a second record.
+
+A verified code becomes a signed **email proof** (a JWT, D-043), so nothing more is stored for it.
+
+### `foundingPassMints`
+
+One document per mint request.
+
+```ts
+type FoundingPassMintStatus = 'queued' | 'confirmed' | 'failed'
+
+type FoundingPassMintDocument = {
+  _id: ObjectId                 // the mintId
+  designNumber: number          // 1 to 1,000, the pass's token id
+  email: string                 // from the email proof, lowercased
+  walletAddress: string         // lowercase, from the access token
+  status: FoundingPassMintStatus  // its outbox record is keyed mintFoundingPass:<_id>
+  founderNumber: number | null  // from FoundingPassMinted, once confirmed
+  hasGoldFrame: boolean | null  // likewise
+  transactionHash: string | null
+  failureCode: 'PASS_ALREADY_MINTED' | 'PASS_WALLET_ALREADY_USED' | 'PASS_MINT_FAILED' | null
+  mintedAt: Date | null         // when the confirmation was recorded (updatedAt then too)
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+Indexes:
+- **Unique by design number, by email and by wallet**, each a partial index over
+  `status: { $in: ['queued', 'confirmed'] }` (MongoDB 6.0 or later). So two racing requests
+  can't both take #0137, an email or wallet can't get two passes, and a failed mint frees all
+  three.
+- `{ status: 1, updatedAt: -1 }` for the queued mints and the last 10 confirmed.
+
+It links an email to a wallet: personal data, named on the privacy page (Part 5). It's how
+support checks a lost-wallet request (D-041).
+
+### How the waitlist counts for the window
+
+During the 48-hour waitlist window, a mint's verified email must be in `waitlistSignups` with a
+`createdAt` **before** the window opened. Nothing is copied: the mint looks the email up. After
+the window, the waitlist no longer matters for minting.
+
+`waitlistSignups` gains one field, `windowEmailSentAt: Date` (absent until then): the time its one
+email ("Your 48 hours start now") was sent. The sender sets it before sending, so it never emails
+an address twice. It's the one change to a sign-up after it's written. Index:
+`{ createdAt: 1 }`, for the sender's oldest-first order.
+
+### New `chainTransactions` kinds
+
+`mintFoundingPass` (key `mintFoundingPass:<mintId>`), `mintFounderSneaker` (key
+`mintFounderSneaker:<passTokenId>`) and `laceFoundingPass` (key `laceFoundingPass:<passTokenId>`),
+all sent by the game-server key through the outbox (D-043).

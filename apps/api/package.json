@@ -7,7 +7,10 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "pass:send-test-email": "bun src/cli/send-test-pass-email.ts",
+    "pass:send-waitlist-emails": "bun src/cli/send-waitlist-window-emails.ts",
+    "pass:local-stack": "bun src/cli/start-local-pass-stack.ts"
   },
   "dependencies": {
     "@fastify/cors": "11.3.0",

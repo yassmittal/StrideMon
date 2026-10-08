@@ -18,6 +18,7 @@ import { buildTestServer } from '../test-support/build-test-server'
 import {
   ANVIL_DEPLOYER_PRIVATE_KEY,
   deployTestContracts,
+  TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS,
 } from '../test-support/deploy-test-contracts'
 import { runOutboxJob } from '../test-support/run-outbox-job'
 import { startTestChain, type TestChain } from '../test-support/start-test-chain'
@@ -30,7 +31,7 @@ let playerAccount: PrivateKeyAccount
 beforeAll(async () => {
   testChain = await startTestChain()
   contractAddresses = await deployTestContracts(testChain.rpcUrl)
-})
+}, TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS)
 
 afterAll(() => {
   testChain.stop()

@@ -104,6 +104,44 @@ export const sneakerNftAbi = [
   },
   {
     "type": "function",
+    "name": "founderSneakerTokenIdOf",
+    "inputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "sneakerTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "foundingPassTokenIdOf",
+    "inputs": [
+      {
+        "name": "sneakerTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getApproved",
     "inputs": [
       {
@@ -320,6 +358,80 @@ export const sneakerNftAbi = [
         "internalType": "uint256"
       }
     ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "mintFounderSneaker",
+    "inputs": [
+      {
+        "name": "to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "attributes",
+        "type": "tuple",
+        "internalType": "struct SneakerAttributes",
+        "components": [
+          {
+            "name": "level",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "efficiency",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "durability",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "storedEnergy",
+            "type": "uint16",
+            "internalType": "uint16"
+          },
+          {
+            "name": "energyUpdatedAt",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      },
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "moveFounderSneaker",
+    "inputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
     "stateMutability": "nonpayable"
   },
   {
@@ -731,6 +843,50 @@ export const sneakerNftAbi = [
   },
   {
     "type": "event",
+    "name": "FounderSneakerMinted",
+    "inputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "FounderSneakerMoved",
+    "inputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "MetadataUpdate",
     "inputs": [
       {
@@ -1087,7 +1243,45 @@ export const sneakerNftAbi = [
   },
   {
     "type": "error",
+    "name": "FounderSneakerAlreadyMinted",
+    "inputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "FounderSneakerNotTransferable",
+    "inputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "InvalidArtRenderer",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidFoundingPassTokenId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotFounderSneaker",
+    "inputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   }
 ] as const

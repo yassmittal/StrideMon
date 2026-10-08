@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import {
+  foundingPassAbi,
   type StrideMonContractAddresses,
   sneakerGameAbi,
   sneakerNftAbi,
@@ -27,6 +28,7 @@ import {
   toHex,
 } from 'viem'
 import { generatePrivateKey, type PrivateKeyAccount, privateKeyToAccount } from 'viem/accounts'
+import { enqueueFoundingPassLacingIfDue } from '../../jobs/enqueue-founding-pass-lacing'
 import type { ValidationSample } from '../../lib/activity-validation/validation-sample'
 import { buildSessionSettlementIdempotencyKey } from '../../lib/chain-transactions/chain-transaction-payloads'
 import { getActivitySessionsCollection } from '../../repositories/activity-sessions-repository'
@@ -37,8 +39,10 @@ import { buildTestServer } from '../../test-support/build-test-server'
 import {
   ANVIL_DEPLOYER_PRIVATE_KEY,
   deployTestContracts,
+  TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS,
 } from '../../test-support/deploy-test-contracts'
 import { giveTestPlayerSneaker } from '../../test-support/give-test-player-sneaker'
+import { mintFoundingPassOnChain } from '../../test-support/mint-test-founding-pass'
 import { runOutboxJob } from '../../test-support/run-outbox-job'
 import { signInTestPlayer } from '../../test-support/sign-in-test-player'
 import { startTestChain, type TestChain } from '../../test-support/start-test-chain'
@@ -64,7 +68,7 @@ let sneakerTokenId: bigint
 beforeAll(async () => {
   testChain = await startTestChain()
   contractAddresses = await deployTestContracts(testChain.rpcUrl)
-})
+}, TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS)
 
 afterAll(() => {
   testChain.stop()
@@ -440,6 +444,52 @@ describe('settlement', () => {
       rejectionReason: 'SNEAKER_TRANSFERRED_DURING_SESSION',
       settlement: null,
     })
+  })
+})
+
+describe('lacing (the Founding Pass)', () => {
+  it('laces the player’s pass after their first settled walk, once', async () => {
+    const designNumber = 1
+    await mintFoundingPassOnChain(server, { walletAddress: playerAccount.address, designNumber })
+    const activitySession = await startBackdatedWalk()
+    await finishActivitySession(activitySession.activitySessionId)
+
+    // One run settles the walk, queues the lacing and sends it.
+    await runOutboxJob(server)
+    await enqueueFoundingPassLacingIfDue({
+      database: server.mongo.database,
+      publicClient: server.chain.publicClient,
+      contractAddresses,
+      walletAddress: playerAccount.address,
+      now: new Date(),
+    })
+
+    const passRecord = await server.chain.publicClient.readContract({
+      address: contractAddresses.foundingPass,
+      abi: foundingPassAbi,
+      functionName: 'passOf',
+      args: [BigInt(designNumber)],
+    })
+    expect(passRecord.isLaced).toBe(true)
+    expect(
+      await getChainTransactionsCollection(server.mongo.database).countDocuments({
+        kind: 'laceFoundingPass',
+      }),
+    ).toBe(1)
+  })
+
+  it('laces nothing for a walker without a pass', async () => {
+    const activitySession = await startBackdatedWalk()
+    await finishActivitySession(activitySession.activitySessionId)
+
+    await runOutboxJob(server)
+
+    expect((await readActivitySession(activitySession.activitySessionId)).status).toBe('settled')
+    expect(
+      await getChainTransactionsCollection(server.mongo.database).countDocuments({
+        kind: 'laceFoundingPass',
+      }),
+    ).toBe(0)
   })
 })
 

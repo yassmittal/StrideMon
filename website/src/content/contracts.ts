@@ -42,8 +42,38 @@ export const deployedContracts: readonly DeployedContract[] = [
   },
 ]
 
+/**
+ * The Founding Pass (D-041, D-042), from `deployments/10143.json`. It isn't in the footer's list
+ * until the hosted API moves to these contracts. Part 10 deploys a fresh one: update it then.
+ */
+export const foundingPassContract: DeployedContract = {
+  name: 'FoundingPass',
+  standard: 'ERC-721',
+  role: 'The Founding Pass: one of one, can’t be sent or sold',
+  // A local run points the site at its own Anvil's pass (D-045, `pass:local-stack`).
+  address:
+    readContractAddress(process.env.NEXT_PUBLIC_FOUNDING_PASS_ADDRESS) ??
+    '0xAA2b4891a5057aBafD645986ff5493A4F1027080',
+}
+
+function readContractAddress(addressText: string | undefined): ContractAddress | null {
+  return addressText !== undefined && /^0x[0-9a-fA-F]{40}$/.test(addressText)
+    ? (addressText as ContractAddress)
+    : null
+}
+
+/** A token's page on MonadVision, which shows its owner and picture. */
+export function buildExplorerTokenUrl(contractAddress: ContractAddress, tokenId: number): string {
+  return `https://testnet.monadvision.com/nft/${contractAddress}/${tokenId}`
+}
+
 export function buildExplorerAddressUrl(address: ContractAddress): string {
   return `https://testnet.monadvision.com/address/${address}`
+}
+
+/** A transaction on MonadVision: the mint, from the moment it's signed (D-045). */
+export function buildExplorerTransactionUrl(transactionHash: `0x${string}`): string {
+  return `https://testnet.monadvision.com/tx/${transactionHash}`
 }
 
 export function shortenAddress(address: ContractAddress): string {

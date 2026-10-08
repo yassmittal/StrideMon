@@ -5,6 +5,7 @@ export type StrideMonContractAddresses = {
   sneakerNft: Address
   strideToken: Address
   sneakerGame: Address
+  foundingPass: Address
 }
 
 /**
@@ -15,8 +16,9 @@ export const CONTRACT_ADDRESSES_BY_CHAIN_ID: Partial<
   Record<SupportedChainId, StrideMonContractAddresses>
 > = {
   10143: {
-    sneakerNft: '0x6A9B08943f60F0bb779Bd229f907f92CB8002062',
-    strideToken: '0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3',
-    sneakerGame: '0x846cd7B8D213Bf516020f22343A69168B81fDE52',
+    sneakerNft: '0x6BE031Ff15F944c226832b6D0B99C03662b29337',
+    strideToken: '0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5',
+    sneakerGame: '0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D',
+    foundingPass: '0xAA2b4891a5057aBafD645986ff5493A4F1027080',
   },
 }

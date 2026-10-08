@@ -1,13 +1,15 @@
 # @stridemon/contracts
 
-The three StrideMon contracts on Monad (Foundry, Solidity 0.8.37, OpenZeppelin 5.7):
+The StrideMon contracts on Monad (Foundry, Solidity 0.8.37, OpenZeppelin 5.7):
 
 | Contract | Is | Holds |
 |----------|----|-------|
-| `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` with an SVG `image` | every Sneaker's level, efficiency, durability and energy |
-| `SneakerArtRenderer` | draws the Sneaker's SVG (D-030), swappable by the admin | nothing |
+| `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` with an SVG `image` | every Sneaker's level, efficiency, durability and energy, and which pass a Founder Sneaker belongs to |
+| `SneakerArtRenderer` | draws the Sneaker's SVG (D-030), a Founder Sneaker in its pass's design (D-042), swappable by the admin | nothing |
 | `StrideToken` | ERC-20 + Permit, 18 decimals (`Stride` / `STRIDE`) | rewards |
-| `SneakerGame` | the rules: starter mint, settlement, repair, upgrade | `GAME_ROLE` on the NFT, `MINTER_ROLE` + `BURNER_ROLE` on the token |
+| `SneakerGame` | the rules: starter and Founder Sneaker mints, settlement, repair, upgrade, the lost-wallet move | `GAME_ROLE` on the NFT, `MINTER_ROLE` + `BURNER_ROLE` on the token |
+| `FoundingPass` | ERC-721 + ERC-5192 (can't be sent), the 1,000 one-of-one passes (D-041) | each pass's founder number, gold frame and laced state |
+| `FoundingPassArtRenderer` | draws the pass art, swappable by the admin | nothing (the 1,000 frozen designs are constants) |
 
 Design: [`docs/architecture/smart-contracts.md`](../../docs/architecture/smart-contracts.md).
 Formulas and numbers: [`docs/architecture/game-rules.md`](../../docs/architecture/game-rules.md).
@@ -39,21 +41,43 @@ build cache has been seen to skip a changed file.
 the same vectors the TypeScript mirror tests. `test/DeployGame.t.sol` pins the
 deployed initial config to that file's `gameConfig`.
 
+## Founding Pass art (D-041)
+
+`FoundingPassArtRenderer` draws the 1,000 Founding Pass designs on-chain (built in Part 1b,
+deployed with `FoundingPass` in Part 2). The designs were frozen on 2026-10-08,
+after Yash approved them. Its data in `src/founding-pass-art/` is generated, never edited by hand.
+The art system, the generator, the review rounds and the rebuild are in
+[`art/founding-pass/README.md`](art/founding-pass/README.md):
+
+```bash
+bun packages/contracts/art/founding-pass/build-founding-pass-art.ts   # from the repo root
+```
+
+It runs `script/RenderPassArt.s.sol`, which only simulates: it never broadcasts.
+
 ## Deploy (Monad testnet)
 
 Keys live in `.env` (gitignored; see `.env.example`). Fund both addresses from
-<https://faucet.monad.xyz>. Monad charges the full gas limit, and the deploy uses
-about 7.5M gas, so give the deployer about 1.5 MON.
+<https://faucet.monad.xyz>. Monad charges the full gas limit. The Founding Pass deploy uses about
+23M gas (its art renderer is about 66 KB) and the game about 8M, so give the deployer about 6 MON
+for both.
+
+The Founding Pass goes first, and the game is wired to it (D-042). A game redeploy alone reuses
+the pass already in `deployments/10143.json`:
 
 ```bash
 set -a && source .env && set +a
-forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast \
-  --verify --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/
+VERIFY_FLAGS=(--verify --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/)
+forge script script/DeployFoundingPass.s.sol --rpc-url monad_testnet --broadcast "${VERIFY_FLAGS[@]}"
+export FOUNDING_PASS_ADDRESS=$(jq -r .foundingPass deployments/10143.json)
+forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast "${VERIFY_FLAGS[@]}"
 cd ../.. && bun run chain:export-abis   # ABIs + addresses → packages/chain
 ```
 
-The script wires every role and writes `deployments/10143.json`. If verification
-didn't finish, verify each contract by hand. Constructor arguments come from the broadcast file:
+`DeployFoundingPass` adds `foundingPass` and `foundingPassArtRenderer` to `deployments/10143.json`
+and keeps the rest. `DeployGame` wires every role and rewrites the file, the pass's two keys
+included. If verification didn't finish, verify each contract by hand. Constructor arguments come
+from the broadcast file:
 
 ```bash
 forge verify-contract <address> <ContractName> --chain 10143 --watch \
@@ -63,24 +87,44 @@ forge verify-contract <address> <ContractName> --chain 10143 --watch \
 
 ### Deployed addresses (chain 10143)
 
-Redeployed 2026-10-06 for the token rename (SOLE → STRIDE, D-038) and verified (Sourcify
-`exact_match`). The source of truth is `deployments/10143.json`, mirrored into `@stridemon/chain`
-(the renderer's address stays in the JSON only: nothing off-chain calls it).
+Deployed 2026-10-08 for the Founding Pass (Part 2, D-041, D-042): the pass first, then the game
+redeployed and wired to it. All six verified (Sourcify `exact_match`). The source of truth is
+`deployments/10143.json`, mirrored into `@stridemon/chain` (the two renderers' addresses stay in
+the JSON only: nothing off-chain calls them).
 
 | Contract | Address |
 |----------|---------|
-| `SneakerArtRenderer` | [`0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229`](https://testnet.monadvision.com/address/0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229) |
-| `SneakerNft` | [`0x6A9B08943f60F0bb779Bd229f907f92CB8002062`](https://testnet.monadvision.com/address/0x6A9B08943f60F0bb779Bd229f907f92CB8002062) |
-| `StrideToken` | [`0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3`](https://testnet.monadvision.com/address/0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3) |
-| `SneakerGame` | [`0x846cd7B8D213Bf516020f22343A69168B81fDE52`](https://testnet.monadvision.com/address/0x846cd7B8D213Bf516020f22343A69168B81fDE52) |
+| `FoundingPassArtRenderer` | [`0xB5324561cF64330D96D1B07B3ff2aA3fa7D601bE`](https://testnet.monadvision.com/address/0xB5324561cF64330D96D1B07B3ff2aA3fa7D601bE) |
+| `FoundingPass` | [`0xAA2b4891a5057aBafD645986ff5493A4F1027080`](https://testnet.monadvision.com/address/0xAA2b4891a5057aBafD645986ff5493A4F1027080) |
+| `SneakerArtRenderer` | [`0xFd44910b780Df3e111EC79835D28CF4919329669`](https://testnet.monadvision.com/address/0xFd44910b780Df3e111EC79835D28CF4919329669) |
+| `SneakerNft` | [`0x6BE031Ff15F944c226832b6D0B99C03662b29337`](https://testnet.monadvision.com/address/0x6BE031Ff15F944c226832b6D0B99C03662b29337) |
+| `StrideToken` | [`0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5`](https://testnet.monadvision.com/address/0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5) |
+| `SneakerGame` | [`0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D`](https://testnet.monadvision.com/address/0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D) |
 
-Two earlier deployments are abandoned: the first (2026-09-29, `SneakerNft` `0x082072B5…`, no
-image) and the 8.3 one (2026-10-03, `SneakerNft` `0xC116917b…`, `SoleToken` `0xe52DC9df…`). Their
-Sneakers and SOLE stay on-chain, but the app no longer reads them.
+**The hosted API and the current APK still use the D-038 game contracts** (below) until the API
+is redeployed from this tree, which has to ship with a new app build: an APK reads the
+addresses it was built with. On that switch, also move the addresses in the root `README.md`,
+`website/src/content/contracts.ts` and `docs/rehearsal-checklist.md` to these (the briefs, the
+prompts and the social posts keep the old ones on purpose).
 
-Admin and pauser: deployer `0xFCe46e8CAFcf766003897e2aD6ab7a4d0E8befD6`. `GAME_SERVER_ROLE`:
-`0xa7a04224FEBE644C7d4d99Cfc8dd694270C7Cf1F`. The first deploy cost about 0.77 MON, the 8.3
-redeploy (four contracts) about 0.96 MON, and the D-038 redeploy about 0.96 MON.
+The test mint (2026-10-08, from the game-server key): Founding Pass
+[#0137](https://testnet.monadvision.com/nft/0xAA2b4891a5057aBafD645986ff5493A4F1027080/137)
+Rose Hiker Night, Founder 001, no gold frame, to the deployer (tx `0x2a315c55…`), and its
+Founder Sneaker [#1](https://testnet.monadvision.com/nft/0x6BE031Ff15F944c226832b6D0B99C03662b29337/1)
+(tx `0xfaf728ac…`). Both pictures show on MonadVision. Design #0137 is used up on this pass
+contract: Part 10 deploys a fresh one before launch.
+
+Three earlier deployments are abandoned: the first (2026-09-29, `SneakerNft` `0x082072B5…`, no
+image), the 8.3 one (2026-10-03, `SneakerNft` `0xC116917b…`, `SoleToken` `0xe52DC9df…`) and the
+D-038 one (2026-10-06, `SneakerNft` `0x6A9B0894…`, `StrideToken` `0xf835cd7F…`, `SneakerGame`
+`0x846cd7B8…`). Their Sneakers and tokens stay on-chain; the D-038 ones are still what the hosted
+API reads, as above.
+
+Admin, pauser and recovery: deployer `0xFCe46e8CAFcf766003897e2aD6ab7a4d0E8befD6`.
+`GAME_SERVER_ROLE` and the pass's `MINTER_ROLE`: `0xa7a04224FEBE644C7d4d99Cfc8dd694270C7Cf1F`.
+The first deploy cost about 0.77 MON, the 8.3 redeploy (four contracts) about 0.96 MON, the D-038
+redeploy about 0.96 MON, and Part 2 about 3.5 MON (the pass about 2.37, the game about 1.12).
+The test mint used about 260,000 gas for the pass and 360,000 for the Founder Sneaker.
 
 To change the art later, deploy a new renderer and point `SneakerNft` at it (no redeploy, no reset):
 
@@ -101,6 +145,15 @@ The steps around them are in [`docs/demo-script.md`](../../docs/demo-script.md).
 |---------|--------|------|
 | `scripts/prepare-demo-wallets` | `PrepareDemoWallets.s.sol` | Mints wallet A any STRIDE it lacks for its next upgrade plus 10 (granting and revoking `MINTER_ROLE` in the same run), tops A and B up to 1 MON below 0.5, prints both |
 | `scripts/demo-energy-config apply\|revert` | `DemoEnergyConfig.s.sol` | Sets `energyRegenerationSeconds` to 60, or back to the launch 30 minutes |
+
+## The lost-wallet move (D-041, D-042)
+
+`scripts/recover-founding-pass <pass number> <new wallet> [--dry-run]` (or `bun run pass:recover
+…`) runs `RecoverFoundingPass.s.sol` from the deployer key (`RECOVERY_ROLE`): it moves the pass,
+then its Founder Sneaker after it, stats and record intact. A step that's already done is
+skipped, so a half-finished run can be run again. Run it only when a founder asked and the code
+sent to the pass's email checked out, and only after Yash's ok: it sends testnet transactions.
+The new wallet must not hold a pass.
 
 ## Manual loop
 

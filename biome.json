@@ -11,6 +11,8 @@
       "**",
       "!packages/contracts",
       "!packages/chain/src/abis",
+      "!packages/chain/src/founding-pass-designs.ts",
+      "!website/src/content/founding-pass-designs.ts",
       "!website/public",
       "!launch-video/public",
       "!launch-video/out",

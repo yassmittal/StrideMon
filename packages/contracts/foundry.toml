@@ -14,7 +14,10 @@ optimizer_runs = 200
 network = "monad"
 fs_permissions = [
     { access = "read", path = "../shared/src/game-rules" },
-    { access = "write", path = "deployments" },
+    # The deploy scripts: DeployFoundingPass checks for the file and keeps its keys.
+    { access = "read-write", path = "deployments" },
+    # RenderPassArt.s.sol: reads the review build's requests, writes the rendered Founding Pass art.
+    { access = "read-write", path = "art/founding-pass/rendered" },
 ]
 
 [profile.default.fuzz]

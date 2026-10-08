@@ -3,6 +3,7 @@ import { waitlistContent } from '@/content/waitlist'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { SectionHeading } from '../ui/section-heading'
 import { WaitlistForm } from '../ui/waitlist-form'
+import { WaitlistPhaseGate } from '../ui/waitlist-phase-gate'
 import { XLogoIcon } from '../ui/x-logo-icon'
 
 const headingId = `${sectionIds.waitlist}-heading`
@@ -41,7 +42,9 @@ export function WaitlistSection() {
         data-reveal
         className="relative self-start rounded-panel bg-surface p-6 md:col-span-5 md:col-start-8 md:p-[30px]"
       >
-        <WaitlistForm />
+        <WaitlistPhaseGate>
+          <WaitlistForm />
+        </WaitlistPhaseGate>
       </div>
     </section>
   )

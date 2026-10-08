@@ -12,6 +12,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC4906} from "@openzeppelin/contracts/interfaces/IERC4906.sol";
 import {Test} from "forge-std/Test.sol";
+import {FoundingPass} from "../src/FoundingPass.sol";
 import {SneakerArtRenderer} from "../src/SneakerArtRenderer.sol";
 import {ISneakerArtRenderer, SneakerAttributes, SneakerNft} from "../src/SneakerNft.sol";
 
@@ -27,7 +28,11 @@ contract SneakerNftTest is Test {
     SneakerNft private sneakerNft;
 
     function setUp() public {
-        sneakerNft = new SneakerNft("StrideMon Sneaker", "SNEAKER", admin, new SneakerArtRenderer());
+        // These are normal Sneakers, which never read the pass. Founder Sneakers are tested in
+        // SneakerGameFounderSneaker.t.sol, against a real one.
+        sneakerNft = new SneakerNft(
+            "StrideMon Sneaker", "SNEAKER", admin, new SneakerArtRenderer(FoundingPass(address(0)))
+        );
         bytes32 gameRole = sneakerNft.GAME_ROLE();
         vm.prank(admin);
         sneakerNft.grantRole(gameRole, game);
@@ -253,7 +258,7 @@ contract SneakerNftTest is Test {
 
 /// @dev A stand-in renderer, to tell a swapped picture apart from the real one.
 contract FixedArtRenderer is ISneakerArtRenderer {
-    function renderImageSvg(uint256, SneakerAttributes calldata)
+    function renderImageSvg(uint256, SneakerAttributes calldata, uint256)
         external
         pure
         returns (string memory)
