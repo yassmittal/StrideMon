@@ -168,7 +168,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-041.
+for it. The next free decision number is D-042.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -186,3 +186,9 @@ line-Sneaker mark, drawn by `apps/mobile/scripts/build-app-icons.sh`), the websi
 X and waitlist pills, `/privacy` and `/delete-account`, `DELETE /v1/me` with Profile → Delete
 account, the `production` EAS profiles, and the testnet line under STRIDE amounts. Needs the API
 and website redeployed and a new app build, then a phone check.
+**Founding Pass (D-041, 2026-10-08):** 1,000 one-of-one passes minted free on `stridemon.xyz/pass`
+as early access, each with a Founder Sneaker (neither can be sent or sold). It's built from
+`docs/founding-pass/`, **one part per session**: paste the prompt in its `README.md`, do the
+first part that isn't done, and stop at its "Done when". Parts 0 (decide, D-041) and 1a (art) are
+done (2026-10-08); next is Part 1b (the art on-chain). The idea is in
+`docs/founding-pass-brief.md`, the art in `packages/contracts/art/founding-pass/`.

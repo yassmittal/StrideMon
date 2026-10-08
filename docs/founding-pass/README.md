@@ -47,7 +47,7 @@ Everyone after the 1,000 gets a **normal Sneaker**: free, today's look, and it c
 
 | Part | What | Size | State |
 |---|---|---|---|
-| [0](part-0-decide.md) | Decide: the last open questions, D-041, the docs | S | Not started |
+| [0](part-0-decide.md) | Decide: the last open questions, D-041, the docs | S | **Done** (2026-10-08, D-041 confirmed by Yash) |
 | 1a | Art design: templates, families, the pass card ([`art/founding-pass`](../../packages/contracts/art/founding-pass/README.md)) | L | **Done** (2026-10-08, look approved by Yash) |
 | [1b](part-1b-art-on-chain.md) | Art on-chain: the Solidity renderer, the review of all 1,000, the freeze | XL | Not started |
 | [2](part-2-contracts.md) | Contracts: `FoundingPass`, Founder Sneakers in the game, the deploy | L | Not started |

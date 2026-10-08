@@ -268,3 +268,53 @@ A sign-up is written once and never changed, so there's no `updatedAt`. A repeat
 upsert with `$setOnInsert` only: the first sign-up's platform and source stay. No IP address
 or user agent is ever stored. An email is deleted by hand when its owner asks (security.md →
 Privacy).
+
+---
+
+## Founding Pass collections (planned, D-041)
+
+Not built yet: Part 3 of [`../founding-pass/`](../founding-pass/README.md) adds them, from the
+brief's §10.2 ([`../founding-pass-brief.md`](../founding-pass-brief.md)). Field names settle there.
+**The chain stays the truth** for who holds which pass and Sneaker. These collections hold the
+email side, which the chain never sees, and the bookkeeping for our own mints.
+
+### `passEmailCodes`
+
+One pending 6-digit code per email, for the website's email step.
+
+- The code is stored only as a **SHA-256 hash**, never as it was sent.
+- It's valid for 10 minutes and 5 tries, and a new one can be sent at most once a minute per
+  email.
+- `expiresAt` has a TTL index, so used and stale codes delete themselves.
+- The email is trimmed and lowercased, as in `waitlistSignups`.
+
+A verified code becomes a signed **email proof** (a token, not a document), so nothing more is
+stored for it.
+
+### `foundingPassMints`
+
+One document per mint request: the design number, the email, the wallet (lowercase), the state
+(`queued`, `confirmed` or `failed`), and its `chainTransactions` id. Once the mint confirms, it
+also holds the founder number, the gold frame and the transaction hash, copied from the mint's
+event for the reveal.
+
+- **Unique by design number, by email and by wallet** (partial unique indexes that skip
+  `failed` records). So two racing requests can't both take #0137, and an email or wallet can't
+  get two passes.
+- It links an email to a wallet: personal data, named on the privacy page (Part 5). It's how
+  support checks a lost-wallet request (D-041).
+
+### How the waitlist counts for the window
+
+During the 48-hour waitlist window, a mint's verified email must be in `waitlistSignups` with a
+`createdAt` **before** the window opened. Nothing is copied: the mint looks the email up. After
+the window, the waitlist no longer matters for minting.
+
+`waitlistSignups` gains one field: the time its one email ("Your 48 hours start now") was sent,
+so the sender never emails an address twice. That makes it the one change to a sign-up after
+it's written.
+
+### New `chainTransactions` kinds
+
+`mintFoundingPass` (key by design number), `mintFounderSneaker` (key by pass) and
+`laceFoundingPass` (key by pass), all sent by the game-server key through the outbox.

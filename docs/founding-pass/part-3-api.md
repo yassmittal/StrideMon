@@ -21,12 +21,14 @@
 
 1. **Email codes and proof** (§15's rules): 6-digit codes, stored only hashed, valid for 10
    minutes and 5 tries, one a minute per email, and the same answer for new and known emails.
+   Sending a code needs a Turnstile token too (D-041), so bots can't use up Brevo's daily 300.
    Verifying returns a short-lived signed **email proof**, good for a few hours, so "Get ready"
    works ahead of time. In development the code is logged. In production the API refuses to boot
    without the Brevo key.
 2. **The schedule**, from config: when the waitlist window starts, its 48-hour length, and the
-   backup opening date. One function says which phase it is (preview, waitlist window, open mint,
-   all minted, open to all), so every route and both clients agree.
+   backup opening date (14 days after the open mint starts, D-041). One function says which
+   phase it is (preview, waitlist window, open mint, all minted, open to all), so every route
+   and both clients agree.
 3. **Mints:** `POST /v1/pass/mints` with the SIWE token, design number, email proof and Turnstile
    token.
    - **During the waitlist window**, the email must have joined the waitlist **before** the window

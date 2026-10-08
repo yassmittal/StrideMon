@@ -25,6 +25,8 @@ to an answer.
      all 1,000 are minted
    - **When something goes wrong:** one answer per error code and blocked state, each with its
      own anchor
+   - **Lost your wallet?** Support can move your pass and Founder Sneaker to a new wallet after
+     an email check (D-041). Say what to send and how long it takes.
    - **Contact:** the support email, and what to include
 2. **One source for the help text:** typed content in `website/src/content/`, like the rest of the
    site, written so Part 8's chatbot can use the same text.

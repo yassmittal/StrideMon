@@ -120,6 +120,7 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | GET | `/v1/activity-sessions/:activitySessionId` | 4 | 🔒 one session (the app polls this while settling) |
 | GET | `/v1/activity-sessions` | 5 | 🔒 history, cursor-paginated |
 | POST | `/v1/waitlist` | 8.8 | `{ email, phonePlatform?, source? }` → `{ status: 'joined' }`. Called from the landing page (D-037) |
+| — | `/v1/pass/*` | Founding Pass | planned: see "The Founding Pass" below (D-041) |
 
 There are deliberately **no endpoints** for Sneaker stats, balances, repair or
 upgrade: the app reads and writes those on-chain directly.
@@ -307,6 +308,46 @@ The landing page is a static site, so its waitlist form posts straight to the AP
 - **CORS** (`plugins/cors.ts`, `@fastify/cors`): only `/v1/waitlist` answers browser requests,
   and only for an origin in `WAITLIST_ALLOWED_ORIGINS`. Every other route sends no CORS headers,
   so browsers still can't call it. The mobile app sends no `Origin` and is unaffected.
+
+## The Founding Pass (planned, D-041)
+
+Not built yet: Part 3 of [`../founding-pass/`](../founding-pass/README.md) builds it, and the
+brief's §10.2 ([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the detail. Route
+names and error codes settle there, and this section then describes what was built.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/v1/pass/email-code` | `{ email, turnstileToken }`: emails a 6-digit code through Brevo. Same answer for new and known emails |
+| POST | `/v1/pass/email-verify` | checks the code, returns a signed **email proof** that lasts a few hours ("Get ready" before mint day) |
+| POST | `/v1/pass/mints` | 🔒 (the website's SIWE sign-in) `{ designNumber, emailProof, turnstileToken }` → queues `mintFoundingPass` in the outbox. A taken design answers `PASS_ALREADY_MINTED` with 3 similar available designs |
+| GET | `/v1/pass/mints/:mintId` | 🔒 the mint's state; once confirmed, the founder number, gold frame and transaction hash (the reveal) |
+| GET | `/v1/pass/collection` | the minted bitmap (cached a few seconds), mints still queued, the total, the last 10 mints, and the schedule's phase with its next time |
+
+- **The schedule** comes from config: the waitlist window's start (48 hours long) and the backup
+  opening date (14 days after the open mint starts). One pure function in `lib/` turns those and
+  the minted count into the phase (preview, waitlist window, open mint, all minted, open to all),
+  so every route and both clients agree. During the window, a mint needs an email that joined
+  the waitlist before the window opened (`waitlistSignups.createdAt`, data-model.md).
+- **The early-access gate:** while `EARLY_ACCESS_REQUIRED` is on, the starter-Sneaker route gives
+  a Sneaker only to a wallet that holds a pass (read from the chain), and that Sneaker is its
+  Founder Sneaker. The gate goes off by itself when all 1,000 are minted or the backup date
+  passes. It stays off until Metropolis judging ends (2026-10-27) and goes on when the preview
+  week starts. The app learns the gate's state from the API.
+- **Founder Sneakers:** a pass holder without one gets one (with the usual gas drip), even if it
+  already owns a normal Sneaker. After opening day, everyone else gets today's starter Sneaker.
+- **Lacing:** when a wallet's first `settleSession` confirms and its pass isn't laced, the outbox
+  job queues `setLaced`.
+- **New outbox kinds:** `mintFoundingPass`, `mintFounderSneaker`, `laceFoundingPass`, each with
+  its own idempotency key (by design number, by pass, by pass).
+- **CORS:** the `/v1/pass/*` routes and SIWE's `/v1/auth/nonce` and `/v1/auth/verify` also
+  accept the site's origins. Every public pass route has its own per-IP rate limit.
+- **The waitlist email:** each waitlist address gets exactly one email, when the waitlist window
+  opens, within Brevo's 300 a day.
+- **The lost-wallet move** (D-041) isn't an API route. Support checks the email by hand and runs
+  `RecoverFoundingPass.s.sol` from the deployer key.
+- **New configuration** (names settle in Part 3): the window's start, the backup opening date,
+  `EARLY_ACCESS_REQUIRED`, `BREVO_API_KEY` (the API refuses to boot without it in production,
+  and logs codes instead in development), the Turnstile secret, and the email-proof secret.
 
 ## Logging
 

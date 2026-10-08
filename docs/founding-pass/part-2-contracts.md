@@ -21,7 +21,8 @@ send.
    - `setLaced`, `passOf` and `mintedBitmap`
    - one pass per wallet
    - `tokenURI` and `imageSvg` through the Part 1b renderer
-   - the lost-wallet move, if Part 0 said yes
+   - the lost-wallet move (D-041): `recoverFoundingPass` by `RECOVERY_ROLE` (the deployer key,
+     never the game server), keeping the pass's record
 2. **Founder Sneakers in the game.** Redeploying is fine, since there are no users.
    - `SneakerNft` remembers which pass each Founder Sneaker belongs to (none for a normal
      Sneaker).
@@ -29,6 +30,9 @@ send.
      Normal Sneakers transfer as today (Phase 7).
    - `SneakerGame` mints **one Founder Sneaker per pass**, to the pass holder. The starter rule
      for everyone else stays as it is.
+   - The lost-wallet move takes the Founder Sneaker with its pass, stats intact (`RECOVERY_ROLE`
+     on `SneakerGame` too), and `RecoverFoundingPass.s.sol` does both in one run (`--dry-run`
+     simulates, like D-033's scripts).
    - **The Founder Sneaker's art:** a new Sneaker renderer draws a Founder Sneaker in its pass's
      design, laced when the pass is, with its level and durability. Normal Sneakers keep
      today's line art. The app shows the art on a dark hero panel, so design it for that (check
@@ -47,6 +51,8 @@ send.
 - Pass transfers and approvals revert. Each design mints once, and each wallet holds one pass.
 - Roles, `setLaced` only once, and `mintedBitmap`.
 - One Founder Sneaker per pass. Founder Sneakers can't be transferred, and normal ones still can.
+- The lost-wallet move: only `RECOVERY_ROLE`, the pass and its Founder Sneaker move together with
+  their records, and a wallet that already holds a pass is refused.
 - The Founder Sneaker image follows its pass, laced included.
 - Fuzz the design number. Keep the existing game tests and invariants passing.
 

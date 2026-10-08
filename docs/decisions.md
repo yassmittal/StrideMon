@@ -890,3 +890,102 @@ ours. Supersedes the domain parts of D-014, D-034 and D-035.
   working when the old API name goes: it can't reach the API at all. Few copies exist, so a
   clean cut beats running two names.
 - **Revisit when:** the instance moves.
+
+## D-041 — The Founding Pass: 1,000 one-of-one passes as early access, each with a Founder Sneaker
+
+Made 2026-10-08 with Yash, in Part 0 of the Founding Pass build. The idea, flow and research are
+in [`founding-pass-brief.md`](founding-pass-brief.md), the art in
+[`packages/contracts/art/founding-pass`](../packages/contracts/art/founding-pass/README.md), and
+the build plan in [`founding-pass/`](founding-pass/README.md), one part per session. Overturns
+D-037's "never a wallet" for the `/pass` page only.
+
+- **Decision:**
+  1. **1,000 Founding Passes, each a different design.** Each design can be minted once, and the
+     token id is the design number. Minting is free (the game server pays the gas), on the website
+     at `stridemon.xyz/pass`, after an email check (a 6-digit code) and a wallet sign-in (the
+     app's SIWE flow). One pass per email and per wallet. The art is Part 1a's system, drawn
+     on-chain by a swappable `FoundingPassArtRenderer`, as D-030 did for the Sneaker.
+  2. **Two linked NFTs.** The **Founding Pass** is the membership card: soulbound (ERC-5192), in
+     its own `FoundingPass` contract, so a game redeploy never touches it. The **Founder
+     Sneaker** is the shoe its holder runs in: one per pass, in `SneakerNft`, drawn in the pass's
+     design. Neither can be sent or sold. Normal Sneakers still can (Phase 7). The game contracts
+     are redeployed for this: there are no users yet.
+  3. **Names.** Designs are named "Family Template Colourway" ("Ember Runner Dusk"). The ten
+     Legendaries (the Prism family, one per template) get hand-picked names instead, after ten
+     rare lights in the sky. A name belongs to its template's Legendary, not to a number, so
+     Part 1b's re-rolls can't separate them:
+
+     | Template | Name | Why it fits |
+     |---|---|---|
+     | Runner | **Earthshine** | the glow our planet casts on the moon: the everyday shoe, for walks on Earth |
+     | Racer | **Afterglow** | the glow after sunset, and the feeling after a race |
+     | Trail | **Fogbow** | the white rainbow seen in morning fog on a trail |
+     | Court | **Fire Rainbow** | a flat band of colour low in the sky, like the court's flat cupsole |
+     | Hoop | **Glory** | rings of colour around a shadow on mist, like a rim, and the glory |
+     | Chunky | **Steve** | a real purple-and-green ribbon in the sky that aurora watchers named Steve in 2016: a dad name for the dad shoe |
+     | Sock | **Moonbow** | a rainbow by moonlight: soft and quiet, like the knit |
+     | Skate | **Airglow** | the night sky's own faint light, and skaters catch air |
+     | Spike | **Heat Lightning** | a silent flash on a summer night: the fastest shoe |
+     | Hiker | **Sun Pillar** | a tall column of light in cold air, like the boot's shaft |
+
+     The card shows the hand-picked name. The attributes still list Prism, the template and the
+     colourway.
+  4. **Gold frame** on about 1 in 10 passes, rolled at random on-chain at mint. It's cosmetic,
+     and nobody says it's worth more.
+  5. **The schedule.** A **preview week** (the gallery and a countdown, no minting), then a
+     **48-hour waitlist window** (only emails that joined the waitlist before it opened can
+     mint), then the **open mint** (anyone, until all 1,000 are minted). Rough dates: the
+     preview week from Sat 2026-11-21, the waitlist window from Sat 2026-11-28 20:00 IST
+     (14:30 UTC), the open mint from Mon 2026-11-30 20:00 IST. Part 10 sets the exact times,
+     which live in the API's config.
+  6. **Early access (the gate).** While `EARLY_ACCESS_REQUIRED` is on, the API gives a Sneaker
+     only to a wallet that holds a pass (on-chain), and that Sneaker is its Founder Sneaker. The
+     gate goes on when the preview week starts, never before Metropolis judging ends
+     (2026-10-27). It goes off by itself when all 1,000 are minted, or on the **backup opening
+     date: 14 days after the open mint starts** (about Mon 2026-12-14 20:00 IST). From then on,
+     everyone without a pass gets a free normal Sneaker in today's look. No new passes, ever.
+  7. **The website asks for a wallet on `/pass` only.** Reown AppKit for web and wagmi load on
+     that page alone, after "Get ready" or "Mint". The landing page and the waitlist stay email
+     only, and joining the waitlist is how someone gets into the waitlist window.
+  8. **Bots.** The email step, a per-IP rate limit on every public pass route, and
+     **Cloudflare Turnstile** (free) on both **Send code** and **Mint**. On Send code it also
+     guards Brevo's free plan (300 emails a day) from being used up.
+  9. **The match quiz** in the gallery: three questions, then six available passes that fit.
+  10. **A lost wallet.** Support may move a pass to a new wallet, by hand, when its founder asks
+      and a code sent to the pass's email checks out. An admin-only action (`RECOVERY_ROLE`, held
+      by the deployer key, never the game-server key) moves the pass **and its Founder Sneaker**
+      together. They keep the design, founder number, frame, laced state and the Sneaker's
+      stats. The new wallet must not hold a pass.
+  11. **Lacing.** The holder's first settled walk laces the pass and its Founder Sneaker (both
+      pictures change), once.
+  12. **Words.** Founding Pass, founder, waitlist, waitlist window, open mint, one of one. Never
+      *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Every
+      surface with the pass says it's free and can't be sent or sold, in those plain words, not
+      "soulbound".
+- **Why:** a pass someone picks and owns gives a reward on mint day, where a place in a line only
+  gives a wait (the brief's v1). Two NFTs, because a soulbound record and a game item that's
+  repaired and upgraded are different things, and a pass that could be traded would turn the
+  1,000 early spots into things to flip. Hand-picked names: the Legendaries are the passes people
+  share most. Names that stick describe the look or tell a story (sneaker nicknames like "Bred"
+  and "Infrared"), and a set with one theme reads as a collection (Pokémon's Legendary birds and
+  beasts). Every Prism design is many colours, and each sky light is a rare sight with colour in
+  it. Each name was checked against shoe model names: Aurora (Brooks), Green Flash (Dunlop),
+  Alpenglow (The North Face), Halo (Nike's Kobe line), Mirage (Puma), Meteor and Shooting Star
+  (adidas) are taken, and Sundog is a sports sunglasses brand, so all were dropped. Turnstile is
+  free, and one-of-ones give bots a reason to snipe the Legendaries. The backup date keeps the
+  app from staying half-closed: 14 days is long enough for word to spread, short enough that
+  nobody waits a month. A lost phone shouldn't mean a founder loses their place for good, and
+  keeping the move manual and admin-only keeps it rare.
+- **Trade-off:**
+  - The website gains wallet code, an email provider (Brevo) and Turnstile. The API gains
+    public routes, CORS for the site on more routes, and personal data (the mint record links an
+    email to a wallet).
+  - While the gate is on, nobody new can play without a pass.
+  - The lost-wallet move means the pass isn't strictly soulbound: the admin can move it, and the
+    help page says so.
+  - The game-server key pays for every pass mint, Founder Sneaker and gas drip, so 1,000 founders
+    need a large testnet MON budget (Part 3 measures it).
+  - "Steve" is the playful name in the set. If it reads as a joke on the card, swap it for
+    another sky light before Part 1b's freeze (for example "Belt of Venus").
+- **Revisit when:** the dates slip (Part 10 moves them), all 1,000 are minted, or mainnet
+  (Phase 10: embedded wallets, a multisig for `RECOVERY_ROLE`).

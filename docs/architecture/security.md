@@ -125,3 +125,53 @@ Phase 10.
 - HTTPS only outside local development.
 - The app never asks the wallet to sign anything except the SIWE message and
   the explicit player transactions, and each has a screen that explains it first.
+
+## The Founding Pass (planned, D-041)
+
+Not built yet: Parts 2, 3 and 5 of [`../founding-pass/`](../founding-pass/README.md) build it,
+from the brief's §9, §10 and §15 ([`../founding-pass-brief.md`](../founding-pass-brief.md)).
+The website becomes a second client of the API, with a wallet on `/pass` only.
+
+**Email codes** (the first attempt's rules, brief §15):
+- 6 digits, not magic links, because mail scanners open links and use them up.
+- Stored only as a SHA-256 hash, valid for 10 minutes and 5 tries, and sent at most once a minute
+  per email.
+- The same answer for a new email and a known one, so the route never reveals who's there.
+- A verified code gives a signed **email proof** that lasts a few hours. It has its own secret,
+  not the access-token one.
+- In production the API refuses to boot without `BREVO_API_KEY`. In development it logs the code
+  instead.
+
+**Bots:**
+- **Cloudflare Turnstile** (free) on both **Send code** and **Mint**, checked server-side with
+  Turnstile's siteverify. On Send code it also stops bots from using up Brevo's 300 free emails a
+  day.
+- A per-IP rate limit on every public pass route.
+- One pass per email (the API) and per wallet (the API and the contract). One-of-ones give bots a
+  reason to snipe the Legendaries the moment minting opens, so these are on from the start.
+
+**CORS:** the `/v1/pass/*` routes and SIWE's `/v1/auth/nonce` and `/v1/auth/verify` accept the
+site's origins (the same list as the waitlist). Every other route stays closed to browsers.
+
+**Who holds which role:**
+
+| Role | Contract | Held by | Can |
+|------|----------|---------|-----|
+| `DEFAULT_ADMIN_ROLE` | `FoundingPass` | deployer | grant roles, `setArtRenderer` |
+| `MINTER_ROLE` | `FoundingPass` | game-server key | `mint`, `setLaced` |
+| `RECOVERY_ROLE` | `FoundingPass`, `SneakerGame` | deployer, **never** the game-server key | the lost-wallet move: a pass and its Founder Sneaker to a new wallet |
+| `GAME_SERVER_ROLE` | `SneakerGame` | game-server key | as today, plus minting one Founder Sneaker per pass |
+
+- If the game-server key leaks, an attacker could mint the remaining passes to wallets of their
+  own. The admin revokes `MINTER_ROLE`, and the passes it minted are visible on-chain. The
+  attacker still can't move a pass or touch a Sneaker someone owns.
+- **The lost-wallet move** is manual, on request only. A code sent to the pass's email must
+  check out, and the new wallet must not hold a pass. Yash runs it from the deployer key. So the
+  pass can't be sent or sold by its holder, but the admin can move it, and the help page says so.
+
+**Secrets** (API env only, like the others): `BREVO_API_KEY`, the Turnstile secret key and the
+email-proof secret. The Turnstile **site** key is public and lives in the website.
+
+**Privacy:** the website now collects an email and, for minting, a wallet. The mint record links
+the two. The privacy page names Brevo and Turnstile and says so (Part 5). Showing "Minted by
+0x3f…a1" is fine, since ownership is public on-chain anyway.

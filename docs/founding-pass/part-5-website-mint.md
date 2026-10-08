@@ -17,8 +17,8 @@ laptop, and always knows what to do next.
    Sign in with the same SIWE flow as the app.
 2. **The network step:** if the wallet isn't on Monad Testnet, add it or switch to it in one tap.
    If the wallet can't, explain how in plain words and link the help guide.
-3. **"Get ready"** at the top of `/pass`: verify the email (6-digit code) and connect the wallet
-   ahead of time. Afterwards, one tap on a pass mints it.
+3. **"Get ready"** at the top of `/pass`: verify the email (Turnstile, then a 6-digit code) and
+   connect the wallet ahead of time. Afterwards, one tap on a pass mints it.
 4. **The mint:**
    - pick a design, pass Turnstile, mint
    - a calm pending state, then the **reveal**: the card turns, the founder number counts up,

@@ -17,6 +17,8 @@ freezes all 1,000 designs.
    - `renderDesignPreviewSvg(designNumber)`: the available card, for the gallery
    - `renderPassSvg(tokenId, passRecord)`: minted, laced or gold-framed
    - the shoe on its own, as a function Part 2's Founder Sneaker art can call
+   - the ten Legendaries' hand-picked names (D-041, brief §3.2) in place of their generated
+     ones, kept with their template so a re-roll never separates a name from its shoe
    - If one contract is over Monad's 128 KB, split it: the drawing, the art data, the design
      table.
 2. **One source for the data.** Generate the Solidity constants (template polygons, lace slats,

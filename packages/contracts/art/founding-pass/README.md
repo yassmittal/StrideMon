@@ -210,7 +210,11 @@ These were all Part 1a's call. Once the look is approved, they can be folded int
    Part 1b: the elements used (path, circle, ellipse, rect, text, one clip path, a translate/scale
    transform, opacity attributes, nonzero windings for the cage window) are all ones
    `react-native-svg` 15 supports.
-2. **Hand-picked names for the 10 Legendaries** (§13, question 3). They're generated for now.
+2. **Hand-picked names for the 10 Legendaries:** decided in Part 0
+   ([D-041](../../../../docs/decisions.md)): ten rare lights in the sky, one per template (Runner
+   Earthshine, Racer Afterglow, Trail Fogbow, Court Fire Rainbow, Hoop Glory, Chunky Steve, Sock
+   Moonbow, Skate Airglow, Spike Heat Lightning, Hiker Sun Pillar). `designs.json` and the
+   previews still show the generated names. Part 1b puts the chosen ones in the renderer.
 3. **A one-off Legendary template** drawn by hand is still possible later. It would be an eleventh
    template used once.
 4. **The review of all 1,000** happens in Part 1b, on the Solidity renderer's own output, with

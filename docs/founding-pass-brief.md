@@ -1,6 +1,6 @@
 # Founding Pass: the brief
 
-Version 4, 2026-10-08. Written for a fresh start on `main`. **This file is self-contained**: nothing
+Version 6, 2026-10-08. Written for a fresh start on `main`. **This file is self-contained**: nothing
 from the first attempt (a verified waitlist line with waves, §15) or from the art experiments
 (§4.3) exists on this branch.
 
@@ -11,11 +11,15 @@ from the first attempt (a verified waitlist line with waves, §15) or from the a
   about a second.
 - **v4 (2026-10-08): the art style is decided** (§4.3): flat-panel Sneakers built from templates,
   in the spirit of STEPN's everyday sneakers. Claude designs the final art in one go (Part 1a).
-- **v5 (this file, 2026-10-08, after Part 1a):**
+- **v5 (2026-10-08, after Part 1a):**
   - **The art is done and approved** ([`packages/contracts/art/founding-pass`](../packages/contracts/art/founding-pass/README.md)).
   - **The pass comes with a Founder Sneaker:** two linked NFTs, and neither can be sent (§7).
   - **The mint opens with a 48-hour waitlist window** (§5.1).
   - **The build moves to [`docs/founding-pass/`](founding-pass/README.md)**, one file per part.
+- **v6 (this file, 2026-10-08, Part 0):** every open question is answered (§13), and
+  [**D-041**](decisions.md) records the whole decision. The ten Legendaries have hand-picked
+  names (§3.2), the backup opening date is 14 days after the open mint (§5.1), Turnstile guards
+  both Send code and Mint (§9), and support can move a lost wallet's pass (§7).
 
 **How to use it:** start a new Claude Code session in the repo root and paste the prompt from
 [`docs/founding-pass/README.md`](founding-pass/README.md). Each session does one part and stops.
@@ -101,6 +105,11 @@ them in sheets of 100.
   prototype's "family + shape + extra" names gave only 293 different names for 1,000 designs.
   Part 1a settled it with "Family Template Colourway" ("Ember Runner Dusk"), which is unique
   because no two designs share all three.
+- **The ten Legendaries have hand-picked names** (Part 0, D-041): ten rare lights in the sky,
+  one per template. Runner **Earthshine**, Racer **Afterglow**, Trail **Fogbow**, Court **Fire
+  Rainbow**, Hoop **Glory**, Chunky **Steve**, Sock **Moonbow**, Skate **Airglow**, Spike **Heat
+  Lightning**, Hiker **Sun Pillar**. A name follows its template's Legendary whatever number
+  Part 1b's re-rolls give it. D-041 has why each fits, and the shoe names checked and dropped.
 - **Rarity comes from layers.** Rare families and rare options give a label: Common, Uncommon, Rare
   or Legendary, with about 10 Legendaries. Part 1a made the Legendaries the Prism family, one per
   template. A hand-drawn **one-off template** stays possible later (STEPN's top tier is hand-made
@@ -257,8 +266,18 @@ countdown to a set time (for example Saturday 20:00 IST, 14:30 UTC).
    opened** can mint. That's the reason to join during the preview week: "join the waitlist to
    mint 48 hours early".
 2. **Open mint.** Anyone can mint what's left, until all 1,000 are minted.
-3. **Opening day.** The app opens to everyone when all 1,000 are minted, or on a backup date if
-   they aren't (Part 0 sets how long after the open mint). So the app never stays half-closed.
+3. **Opening day.** The app opens to everyone when all 1,000 are minted, or on the **backup
+   opening date, 14 days after the open mint starts**, if they aren't (Part 0). So the app never
+   stays half-closed.
+
+**Rough dates (Part 0, D-041; Part 10 sets the exact times):**
+
+| Step | Starts |
+|---|---|
+| Preview week (the gate goes on) | Sat 2026-11-21 |
+| Waitlist window, 48 hours | Sat 2026-11-28, 20:00 IST (14:30 UTC) |
+| Open mint | Mon 2026-11-30, 20:00 IST |
+| Backup opening date | Mon 2026-12-14, 20:00 IST |
 
 Someone who isn't on the waitlist during the window is told when the open mint starts, never just
 refused.
@@ -294,9 +313,9 @@ DETAIL     Tap a card → a sheet with the art large, its layers and rarity, and
 
 ```text
 1. PICK      "Mint #0137" on the detail sheet
-2. EMAIL     email → 6-digit code → verified          (one pass per email)
+2. EMAIL     email → Turnstile → 6-digit code → verified          (one pass per email)
 3. WALLET    connect (MetaMask etc.) → sign a free message   (one pass per wallet; no gas, ever)
-4. MINT      the server mints through the outbox → ~1 s
+4. MINT      Turnstile → the server mints through the outbox → ~1 s
 5. REVEAL    the card turns: #0137 EMBER RUNNER DUSK · FOUNDER 42 (+ gold frame for some)
              Link to the transaction on MonadVision
 6. SHARE     "Post on X" (the pass page)   "Get the app" (the APK / Play)
@@ -352,7 +371,13 @@ directly (§10.1). Even so, the pass stays in its own contract.
   to a wallet that holds a pass. It reads the chain, which is the source of truth. The gate
   switches off by itself when all 1,000 are minted or the backup date passes (§5.1).
 - **The hackathon:** Metropolis judging runs until 2026-10-27, and judges install the README's APK.
-  Keep the gate **off until judging ends**.
+  Keep the gate **off until judging ends**. It goes on when the preview week starts (Part 0,
+  D-041).
+- **A lost wallet (Part 0, D-041):** support may move a pass to a new wallet, by hand, when its
+  founder asks and a code sent to the pass's email checks out. An admin-only action
+  (`RECOVERY_ROLE`, the deployer key) moves the pass and its Founder Sneaker together, keeping the
+  design, founder number, frame, laced state and the Sneaker's stats. The new wallet must not
+  hold a pass. The help page says so, since it means the admin can move a pass.
 - **After 1,000:** everyone can play, with a normal Sneaker. No new passes, ever. The passes stay as
   the record of who was first.
 - **In the app:**
@@ -383,19 +408,23 @@ own page at build time**:
 
 - **Words:** Founding Pass, design, one of one, mint, collection. Never *whitelist*, *WL*,
   *allowlist*, *airdrop*, *alpha*, *sold out* (nothing is sold: say "all minted").
-- **Every surface with the pass says:** "Free. Soulbound: it can't be sold or sent. It isn't a token
-  and never turns into one." STRIDE stays "Monad testnet. STRIDE has no monetary value."
+- **Every surface with the pass says:** "Free. It can't be sent or sold. It isn't a token and never
+  turns into one." Plain words, never "soulbound" in user-facing copy. STRIDE stays "Monad
+  testnet. STRIDE has no monetary value."
 - **Testnet** for the contracts (CLAUDE.md: testnet until Phase 10).
 - **One pass per email and per wallet**, enforced by the API and (per wallet) the contract.
 - **Bots will go for the Legendaries.** One-of-ones give a bot a reason to snipe the rare ones the
-  second minting opens. Use the email step, a per-IP rate limit on minting, and **Cloudflare
-  Turnstile (free) on the mint button** from the start: the first version left it out, but
-  one-of-ones change that.
+  second minting opens. Use the email step, a per-IP rate limit on every public pass route, and
+  **Cloudflare Turnstile (free) on both Send code and Mint** from the start (Part 0): the first
+  version left it out, but one-of-ones change that. On Send code it also keeps bots from using up
+  Brevo's 300 free emails a day.
 - **Rarity is cosmetic.** Never say a rare design or gold frame is worth more.
 - **Expect "airdrop?" replies.** Monad's own soulbound "1 Million Nads" NFT drew airdrop rumours
   even though it said it holds no value. Answer the same plain "no" every time.
 - **Privacy:** the policy page must name the email provider and Turnstile, and say the website now
-  collects a wallet address. Showing "Minted by 0x3f…a1" is fine: ownership is public on-chain anyway.
+  collects a wallet address. The mint record links the email to the wallet (for one pass per
+  email and the lost-wallet check). Showing "Minted by 0x3f…a1" is fine: ownership is public
+  on-chain anyway.
 
 ## 10. Architecture (the plan fills in the details)
 
@@ -413,19 +442,25 @@ redeploy never wipes the founders. Name "StrideMon Founding Pass", symbol `PASS`
 | `mintedBitmap() → uint256[4]` | which of the 1,000 are minted, in one call (1,024 bits), for the gallery |
 | `tokenURI`, `imageSvg` | through the swappable renderer, with attributes (template, colour family, options, rarity, founder number, frame, stage) |
 | transfers and approvals | revert `FoundingPassIsSoulbound()`. `locked()` is always true, and `Locked` is emitted at mint |
+| `recoverFoundingPass(uint256 tokenId, address newOwner)` | `RECOVERY_ROLE` (the deployer key, never the game server). The lost-wallet move (§7): keeps the record, reverts `FoundingPassAlreadyHeld` if `newOwner` has one |
 
 **`FoundingPassArtRenderer`**: `renderPassSvg(tokenId, passRecord)` and `renderDesignPreviewSvg(designNumber)`
-(the gallery's art, before minting), the layer drawings, the frozen design table and the name words.
+(the gallery's art, before minting), the layer drawings, the frozen design table and the name words,
+plus the ten Legendaries' hand-picked names (§3.2).
 
 **Founder Sneakers in the game (decided 2026-10-08, a redeploy is fine):**
 - `SneakerNft` records which pass each Founder Sneaker belongs to.
 - Founder Sneakers can't be transferred. Normal Sneakers can.
 - `SneakerGame` mints one Founder Sneaker per pass.
+- A lost-wallet move (§7) moves the Founder Sneaker with its pass (`RECOVERY_ROLE` on
+  `SneakerGame` too), stats intact.
 - A new Sneaker renderer draws a Founder Sneaker in its pass's design (laced with the pass), and
   normal Sneakers in today's line art.
 
 **Scripts:** `RenderPassArt.s.sol` (previews, the 10 contact sheets and the website export;
-simulation only) and `DeployFoundingPass.s.sol` (its own deploy: it never redeploys the game).
+simulation only), `DeployFoundingPass.s.sol` (its own deploy: it never redeploys the game) and
+`RecoverFoundingPass.s.sol` (the lost-wallet move: the pass and its Founder Sneaker in one run,
+from the deployer key, after asking Yash).
 Deploy keys and `chain:export-abis` work as today.
 
 **Tests:** soulbound transfers revert, each design mintable once, one per wallet, roles, laced once,
@@ -436,12 +471,12 @@ same SVG), and fuzzing on the design number.
 
 | Piece | What it does |
 |---|---|
-| `POST /v1/pass/email-code` | emails a 6-digit code through Brevo (§15's rules: hashed, 10 minutes, 5 tries, once a minute) |
+| `POST /v1/pass/email-code` | `{ email, turnstileToken }`: emails a 6-digit code through Brevo (§15's rules: hashed, 10 minutes, 5 tries, once a minute) |
 | `POST /v1/pass/email-verify` | checks the code and returns a short-lived **email proof** (a signed token, a few hours, so "Get ready" before mint day still works) |
 | `POST /v1/pass/mints` 🔒 | `{ designNumber, emailProof, turnstileToken }` with the SIWE access token. Checks the email has no pass, the wallet holds none (chain), and the design is free. Records the mint and queues `mintFoundingPass` in the outbox. A taken design answers `PASS_ALREADY_MINTED` with 3 similar available designs |
 | `GET /v1/pass/mints/:mintId` 🔒 | the mint's state; once confirmed: founder number, gold frame, transaction hash (the page polls it for the reveal) |
 | `GET /v1/pass/collection` | `mintedBitmap()` (cached a few seconds) plus designs with a mint still queued, the total, the last 10 mints for the live line, and the schedule's phase with its next time |
-| The schedule | From config: the waitlist window's start (48 hours long) and the backup opening date. During the window, a mint needs an email that joined the waitlist before it opened |
+| The schedule | From config: the waitlist window's start (48 hours long) and the backup opening date (14 days after the open mint starts, D-041). During the window, a mint needs an email that joined the waitlist before it opened |
 | Starter-Sneaker gate | `EARLY_ACCESS_REQUIRED` flag; reads `FoundingPass.balanceOf`. Switches off by itself when all 1,000 are minted or the backup date passes |
 | Founder Sneakers | A pass holder without one gets one (with the gas drip), even if they own a normal Sneaker. After opening day, everyone else gets today's normal starter Sneaker |
 | Lacing | after a `settleSession` confirms for a wallet whose pass isn't laced, queue `laceFoundingPass` |
@@ -501,31 +536,33 @@ first** (the most-wanted list is a post), which families and rarities went faste
 email → verified → minted drop-off, races lost (a design taken first), minted → signed in to the app
 → first walk (laced), gold frames, and sign-ups by `?source=`.
 
-## 13. Open questions for Yash (answer these first)
+## 13. Open questions for Yash (all answered in Part 0, 2026-10-08, D-041)
 
 1. ~~**Art:**~~ **Decided 2026-10-08:** flat-panel templates drawn on-chain (§4.3), designed by
    Claude in one go (§4.4).
 2. ~~**Theme:**~~ **Decided:** colour families, not times of day. The final lists are Part 1a's call.
-3. **Names:** generated from layers and unique (§3.2), plus hand-picked names for the ~10 Legendaries?
-4. **Gold frame** at random on about 1 in 10 passes? Recommended: yes.
+3. ~~**Names:**~~ **Decided (Part 0):** generated "Family Template Colourway" names, plus
+   hand-picked names for the ten Legendaries: ten rare lights in the sky, researched and picked by
+   Claude (§3.2, D-041).
+4. ~~**Gold frame** at random on about 1 in 10 passes?~~ **Decided (Part 0):** yes.
 5. ~~**Mint on the website (A)?**~~ **Decided 2026-10-08:** yes.
-6. **Keep the email step, and add Turnstile on the mint button?** Recommended: yes to both.
-7. **The match quiz?** Recommended: yes. It's the best answer to 1,000 choices.
+6. ~~**Keep the email step, and add Turnstile on the mint button?**~~ **Decided (Part 0):** yes to
+   both, and Turnstile guards Send code too (§9).
+7. ~~**The match quiz?**~~ **Decided (Part 0):** yes.
 8. ~~**Preview week, then mint at a set time?**~~ **Decided 2026-10-08:** yes, with a 48-hour
    waitlist window first, then the open mint (§5.1).
 9. ~~**Gate:**~~ **Decided 2026-10-08:** on after judging ends (2026-10-27), and off by itself when
-   all 1,000 are minted or on the backup date.
-10. **Timing:** start after the Metropolis submission (deadline **2026-10-14 09:29 IST**)? Still
-    left there: the recorded repair and upgrade, the ≤ 3-minute demo video and the dashboard
-    (`docs/hackathon-submission.md`). Part 1a (art design) can start in parallel, since it touches
-    nothing the submission uses.
+   all 1,000 are minted or on the backup date. **Part 0:** it goes on when the preview week starts.
+10. ~~**Timing:**~~ **Decided (Part 0):** the build continues after the Metropolis submission
+    (deadline **2026-10-14 09:29 IST**), and the launch lands after judging. Rough dates in §5.1:
+    preview week from 2026-11-21, waitlist window from 2026-11-28 20:00 IST.
 11. ~~**Is the pass the Sneaker you run in?**~~ **Decided 2026-10-08:** no, two linked NFTs. The
     pass gives a Founder Sneaker in its design, and neither can be sent (§7).
 12. ~~**What do non-founders get?**~~ **Decided 2026-10-08:** a free normal Sneaker in today's look,
     from opening day.
-13. **Still open for Part 0:** how long the backup date is after the open mint (14 days
-    recommended), whether support may move a pass to a new wallet after an email check, and the
-    rough dates.
+13. ~~**Still open for Part 0**~~ **Decided (Part 0):** the backup opening date is **14 days**
+    after the open mint starts. Support **may** move a pass to a new wallet after an email check
+    (§7). The rough dates are in §5.1.
 
 ## 14. Research (2026-10-07 and 08)
 

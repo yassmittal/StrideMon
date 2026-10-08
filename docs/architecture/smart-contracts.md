@@ -10,7 +10,8 @@ through Sourcify. The chain definition lives in `packages/chain/src/monad-chains
 
 ## Three contracts, three responsibilities
 
-(Plus `SneakerArtRenderer`, which draws the Sneaker's picture for `SneakerNft`, D-030.)
+(Plus `SneakerArtRenderer`, which draws the Sneaker's picture for `SneakerNft`, D-030. The
+Founding Pass adds a fourth, separate contract: see "The Founding Pass" below, D-041.)
 
 ```text
                  ┌──────────────────────────┐
@@ -193,6 +194,44 @@ Custom errors, not revert strings: `SessionAlreadySettled(bytes32)`,
 `NotSneakerOwner(uint256 tokenId, address caller)`, `SneakerAtMaxLevel(uint256)`,
 `StarterSneakerAlreadyClaimed(address)`, `NothingToRepair(uint256)`,
 `InvalidGameConfig()`.
+
+## The Founding Pass (planned, D-041)
+
+Not built yet. Parts 1b and 2 of [`../founding-pass/`](../founding-pass/README.md) build it, and
+the brief's §10.1 ([`../founding-pass-brief.md`](../founding-pass-brief.md)) has the full
+interface. When they land, this section replaces the plan with what was built.
+
+**`FoundingPass`** (new, its own contract and its own deploy script, so a game redeploy never
+touches it): ERC-721 + ERC-5192 (soulbound) + AccessControl, `StrideMon Founding Pass` / `PASS`.
+
+| Piece | What it is |
+|-------|------------|
+| Token id | the design number, 1 to 1,000. Each design mints once |
+| `mint(to, designNumber)` | `MINTER_ROLE` (the game-server key). Records the founder number (the mint order) and rolls the gold frame, about 1 in 10, from on-chain randomness (cosmetic). One pass per wallet |
+| `setLaced(tokenId)` | `MINTER_ROLE`, once: after the holder's first settled walk |
+| `passOf`, `mintedBitmap` | the per-mint record, and which of the 1,000 are minted in one call |
+| `recoverFoundingPass(tokenId, newOwner)` | `RECOVERY_ROLE` (the deployer key): the lost-wallet move, record kept |
+| Transfers and approvals | revert. `locked()` is always true |
+| `tokenURI`, `imageSvg` | drawn by a swappable `FoundingPassArtRenderer`, like D-030 |
+
+**`FoundingPassArtRenderer`** (new): the gallery's preview card, the minted card (founder number,
+laced, gold frame), and the shoe on its own for the Founder Sneaker. It holds the frozen design
+table and the name words, including the ten Legendaries' hand-picked names. If one contract
+passes Monad's 128 KB, the drawing, the art data and the design table split.
+
+**Founder Sneakers** (the game contracts are redeployed for them; there are no users yet):
+
+- **`SneakerNft`** records which pass a Founder Sneaker belongs to (none for a normal Sneaker).
+  A Founder Sneaker can't be transferred, with its own custom error. Normal Sneakers transfer as
+  in Phase 7.
+- **`SneakerGame`** mints one Founder Sneaker per pass, to the pass holder (`GAME_SERVER_ROLE`).
+  The starter rule for everyone else stays. `RECOVERY_ROLE` moves a Founder Sneaker with its
+  pass, stats intact.
+- **A new Sneaker renderer** draws a Founder Sneaker in its pass's design, laced when the pass
+  is, and normal Sneakers in today's line art (set with `setArtRenderer`).
+
+New roles: `MINTER_ROLE` and `RECOVERY_ROLE` on `FoundingPass`, and `RECOVERY_ROLE` on
+`SneakerGame`. Who holds which is in `security.md`.
 
 ## Project layout
 

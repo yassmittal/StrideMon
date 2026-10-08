@@ -15,7 +15,11 @@ The schedule, in IST and UTC:
 - the preview week starts
 - the waitlist window starts and runs 48 hours
 - the open mint starts when the window ends
-- the backup opening date (Part 0's answer)
+- the backup opening date, 14 days after the open mint starts (Part 0)
+
+Part 0's rough dates (D-041, brief §5.1): the preview week from Sat 2026-11-21, the waitlist
+window from Sat 2026-11-28 20:00 IST, the open mint from Mon 2026-11-30 20:00 IST, and the
+backup opening date Mon 2026-12-14 20:00 IST.
 
 All of it lands after Metropolis judging ends on 2026-10-27.
 
