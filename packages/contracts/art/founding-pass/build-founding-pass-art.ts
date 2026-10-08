@@ -2,8 +2,8 @@
  * Builds the Founding Pass art (docs/founding-pass/part-1b-art-on-chain.md):
  * 1. picks the 1,000 designs, applies Yash's review rounds (re-rolls) and checks the rules
  * 2. writes the generated Solidity: the art data and the design table (`src/founding-pass-art/`)
- * 3. runs `script/RenderPassArt.s.sol` (simulation only), so the Solidity renderer draws every
- *    design and every preview cell into `rendered/`
+ * 3. runs `script/RenderPassArt.s.sol` (simulation only), so the Solidity renderers draw every
+ *    design and every preview cell into `rendered/`, the Founder Sneakers' pictures included
  * 4. lays the drawings out as the review sheets in previews/, as SVG and PNG
  *
  * Run from the repo root: `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`
@@ -81,13 +81,16 @@ function describeReviewStatus(
 
 /** Writes the previews' requests, then has the Solidity renderer draw them (no broadcast). */
 async function renderWithSolidity(previewPlans: readonly PreviewPlan[]): Promise<void> {
-  for (const renderedFolder of ['designs', 'cards', 'sneakers']) {
+  for (const renderedFolder of ['designs', 'cards', 'sneakers', 'sneaker-pictures']) {
     await rm(join(RENDERED_DIRECTORY, renderedFolder), { recursive: true, force: true })
   }
   await mkdir(RENDERED_DIRECTORY, { recursive: true })
   const renderRequests = {
     cards: previewPlans.flatMap((previewPlan) => previewPlan.cardRequests),
     sneakers: previewPlans.flatMap((previewPlan) => previewPlan.sneakerRequests),
+    sneakerPictures: previewPlans.flatMap(
+      (previewPlan) => previewPlan.sneakerPictureRequests ?? [],
+    ),
   }
   await writeFile(
     join(RENDERED_DIRECTORY, 'render-requests.json'),

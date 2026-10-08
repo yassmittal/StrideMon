@@ -1,13 +1,15 @@
 # @stridemon/contracts
 
-The three StrideMon contracts on Monad (Foundry, Solidity 0.8.37, OpenZeppelin 5.7):
+The StrideMon contracts on Monad (Foundry, Solidity 0.8.37, OpenZeppelin 5.7):
 
 | Contract | Is | Holds |
 |----------|----|-------|
-| `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` with an SVG `image` | every Sneaker's level, efficiency, durability and energy |
-| `SneakerArtRenderer` | draws the Sneaker's SVG (D-030), swappable by the admin | nothing |
+| `SneakerNft` | ERC-721 + Enumerable, on-chain JSON `tokenURI` with an SVG `image` | every Sneaker's level, efficiency, durability and energy, and which pass a Founder Sneaker belongs to |
+| `SneakerArtRenderer` | draws the Sneaker's SVG (D-030), a Founder Sneaker in its pass's design (D-042), swappable by the admin | nothing |
 | `StrideToken` | ERC-20 + Permit, 18 decimals (`Stride` / `STRIDE`) | rewards |
-| `SneakerGame` | the rules: starter mint, settlement, repair, upgrade | `GAME_ROLE` on the NFT, `MINTER_ROLE` + `BURNER_ROLE` on the token |
+| `SneakerGame` | the rules: starter and Founder Sneaker mints, settlement, repair, upgrade, the lost-wallet move | `GAME_ROLE` on the NFT, `MINTER_ROLE` + `BURNER_ROLE` on the token |
+| `FoundingPass` | ERC-721 + ERC-5192 (can't be sent), the 1,000 one-of-one passes (D-041) | each pass's founder number, gold frame and laced state |
+| `FoundingPassArtRenderer` | draws the pass art, swappable by the admin | nothing (the 1,000 frozen designs are constants) |
 
 Design: [`docs/architecture/smart-contracts.md`](../../docs/architecture/smart-contracts.md).
 Formulas and numbers: [`docs/architecture/game-rules.md`](../../docs/architecture/game-rules.md).
@@ -41,8 +43,8 @@ deployed initial config to that file's `gameConfig`.
 
 ## Founding Pass art (D-041)
 
-`FoundingPassArtRenderer` draws the 1,000 Founding Pass designs on-chain (built in Part 1b, not
-deployed yet: Part 2 deploys it with `FoundingPass`). The designs were frozen on 2026-10-08,
+`FoundingPassArtRenderer` draws the 1,000 Founding Pass designs on-chain (built in Part 1b,
+deployed with `FoundingPass` in Part 2). The designs were frozen on 2026-10-08,
 after Yash approved them. Its data in `src/founding-pass-art/` is generated, never edited by hand.
 The art system, the generator, the review rounds and the rebuild are in
 [`art/founding-pass/README.md`](art/founding-pass/README.md):
@@ -56,18 +58,26 @@ It runs `script/RenderPassArt.s.sol`, which only simulates: it never broadcasts.
 ## Deploy (Monad testnet)
 
 Keys live in `.env` (gitignored; see `.env.example`). Fund both addresses from
-<https://faucet.monad.xyz>. Monad charges the full gas limit, and the deploy uses
-about 7.5M gas, so give the deployer about 1.5 MON.
+<https://faucet.monad.xyz>. Monad charges the full gas limit. The Founding Pass deploy uses about
+23M gas (its art renderer is about 66 KB) and the game about 8M, so give the deployer about 6 MON
+for both.
+
+The Founding Pass goes first, and the game is wired to it (D-042). A game redeploy alone reuses
+the pass already in `deployments/10143.json`:
 
 ```bash
 set -a && source .env && set +a
-forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast \
-  --verify --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/
+VERIFY_FLAGS=(--verify --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/)
+forge script script/DeployFoundingPass.s.sol --rpc-url monad_testnet --broadcast "${VERIFY_FLAGS[@]}"
+export FOUNDING_PASS_ADDRESS=$(jq -r .foundingPass deployments/10143.json)
+forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast "${VERIFY_FLAGS[@]}"
 cd ../.. && bun run chain:export-abis   # ABIs + addresses → packages/chain
 ```
 
-The script wires every role and writes `deployments/10143.json`. If verification
-didn't finish, verify each contract by hand. Constructor arguments come from the broadcast file:
+`DeployFoundingPass` adds `foundingPass` and `foundingPassArtRenderer` to `deployments/10143.json`
+and keeps the rest. `DeployGame` wires every role and rewrites the file, the pass's two keys
+included. If verification didn't finish, verify each contract by hand. Constructor arguments come
+from the broadcast file:
 
 ```bash
 forge verify-contract <address> <ContractName> --chain 10143 --watch \
@@ -115,6 +125,15 @@ The steps around them are in [`docs/demo-script.md`](../../docs/demo-script.md).
 |---------|--------|------|
 | `scripts/prepare-demo-wallets` | `PrepareDemoWallets.s.sol` | Mints wallet A any STRIDE it lacks for its next upgrade plus 10 (granting and revoking `MINTER_ROLE` in the same run), tops A and B up to 1 MON below 0.5, prints both |
 | `scripts/demo-energy-config apply\|revert` | `DemoEnergyConfig.s.sol` | Sets `energyRegenerationSeconds` to 60, or back to the launch 30 minutes |
+
+## The lost-wallet move (D-041, D-042)
+
+`scripts/recover-founding-pass <pass number> <new wallet> [--dry-run]` (or `bun run pass:recover
+…`) runs `RecoverFoundingPass.s.sol` from the deployer key (`RECOVERY_ROLE`): it moves the pass,
+then its Founder Sneaker after it, stats and record intact. A step that's already done is
+skipped, so a half-finished run can be run again. Run it only when a founder asked and the code
+sent to the pass's email checked out, and only after Yash's ok: it sends testnet transactions.
+The new wallet must not hold a pass.
 
 ## Manual loop
 

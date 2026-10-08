@@ -1,7 +1,12 @@
 import { readColorFamily } from '../art-system/color-families'
 import { readColorway } from '../art-system/colorways'
 import type { ColorFamilyKey, DesignLayers, SneakerTemplate } from '../art-system/types'
-import type { CardRequest, RenderedArt, SneakerRequest } from './rendered-art'
+import type {
+  CardRequest,
+  RenderedArt,
+  SneakerPictureRequest,
+  SneakerRequest,
+} from './rendered-art'
 
 /**
  * One file in previews/: what it asks the Solidity renderer to draw, and how it lays that out
@@ -12,6 +17,8 @@ export type PreviewPlan = {
   pngWidthPixels: number
   cardRequests: readonly CardRequest[]
   sneakerRequests: readonly SneakerRequest[]
+  /** Only the Founder Sneaker files draw whole Sneaker pictures. */
+  sneakerPictureRequests?: readonly SneakerPictureRequest[]
   composeSvg: (renderedArt: RenderedArt) => string
 }
 

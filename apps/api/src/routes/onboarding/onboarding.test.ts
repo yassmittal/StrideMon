@@ -10,7 +10,10 @@ import { generatePrivateKey, type PrivateKeyAccount, privateKeyToAccount } from 
 import { getChainTransactionsCollection } from '../../repositories/chain-transactions-repository'
 import { listSneakerTokenIdsOwnedBy, readSneakerState } from '../../services/sneaker-chain-reader'
 import { buildTestServer, TEST_GAS_DRIP_AMOUNT_WEI } from '../../test-support/build-test-server'
-import { deployTestContracts } from '../../test-support/deploy-test-contracts'
+import {
+  deployTestContracts,
+  TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS,
+} from '../../test-support/deploy-test-contracts'
 import { runOutboxJob } from '../../test-support/run-outbox-job'
 import { signInTestPlayer } from '../../test-support/sign-in-test-player'
 import { startTestChain, type TestChain } from '../../test-support/start-test-chain'
@@ -24,7 +27,7 @@ let accessToken: string
 beforeAll(async () => {
   testChain = await startTestChain()
   contractAddresses = await deployTestContracts(testChain.rpcUrl)
-})
+}, TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS)
 
 afterAll(() => {
   testChain.stop()

@@ -2,6 +2,7 @@ import { COLOR_FAMILIES } from '../art-system/color-families'
 import { COLORWAYS } from '../art-system/colorways'
 import { formatPathData } from '../art-system/geometry'
 import { placeHeelTab } from '../art-system/heel-tab'
+import { LACE_COLORS } from '../art-system/lace-colors'
 import { calculateEyeletCenters, calculateLaceSlatShapes } from '../art-system/lacing'
 import { SNEAKER_TEMPLATES } from '../art-system/templates'
 import type { OptionValue, Panel, Point, SneakerTemplate } from '../art-system/types'
@@ -14,7 +15,8 @@ const EYELET_COORDINATE_HEX_DIGITS = 4
 /**
  * `FoundingPassArtData.sol`: the art system as Solidity data. Templates (their polygons, lace
  * slats, eyelets and heel tab, placed by the art system's own geometry), colour families,
- * colourways and the name words. The drawing itself lives only in `FoundingPassArtRenderer`.
+ * colourways, the name words and the attribute labels. The drawing itself lives only in
+ * `FoundingPassArtRenderer`.
  */
 export function buildArtDataSource(): string {
   return [
@@ -58,6 +60,17 @@ export function buildArtDataSource(): string {
       labels: COLORWAYS.map((colorway) => colorway.label),
     }),
     '',
+    '    /// @notice Indexed by `LaceColor`: the attributes show it once a pass is laced.',
+    buildLabelFunction({
+      functionName: 'readLaceColorLabel',
+      parameterName: 'laceColorIndex',
+      labels: LACE_COLORS.map((laceColor) => laceColor.label),
+    }),
+    '',
+    buildOptionSlotLabelFunction(),
+    '',
+    buildOptionValueLabelFunction(),
+    '',
     buildShadeColorFunction(),
     '',
     buildSheenFunctions(),
@@ -92,6 +105,48 @@ function buildLabelFunction({
     ...labels.map(
       (label, index) =>
         `        if (${parameterName} == ${index}) return ${quoteSolidityString(label)};`,
+    ),
+    '        revert InvalidArtIndex();',
+    '    }',
+  ].join('\n')
+}
+
+/** The attributes' trait type for each option: the Runner's first slot is "Side". */
+function buildOptionSlotLabelFunction(): string {
+  return [
+    '    /// @notice An option slot\'s name, for the attributes (the Runner\'s first slot is "Side").',
+    '    function readOptionSlotLabel(uint256 templateIndex, uint256 slotIndex)',
+    '        internal',
+    '        pure',
+    '        returns (string memory)',
+    '    {',
+    ...SNEAKER_TEMPLATES.flatMap((template, templateIndex) =>
+      template.optionSlots.map(
+        (optionSlot, slotIndex) =>
+          `        if (templateIndex == ${templateIndex} && slotIndex == ${slotIndex}) return ${quoteSolidityString(optionSlot.label)}; // ${template.label}`,
+      ),
+    ),
+    '        revert InvalidArtIndex();',
+    '    }',
+  ].join('\n')
+}
+
+/** The attributes' value for each option: "Wedge" in the Runner's "Side" slot. */
+function buildOptionValueLabelFunction(): string {
+  return [
+    '    /// @notice An option value\'s name, for the attributes ("Wedge" in the Runner\'s "Side").',
+    '    function readOptionValueLabel(uint256 templateIndex, uint256 slotIndex, uint256 valueIndex)',
+    '        internal',
+    '        pure',
+    '        returns (string memory)',
+    '    {',
+    ...SNEAKER_TEMPLATES.flatMap((template, templateIndex) =>
+      template.optionSlots.flatMap((optionSlot, slotIndex) =>
+        optionSlot.values.map(
+          (optionValue, valueIndex) =>
+            `        if (templateIndex == ${templateIndex} && slotIndex == ${slotIndex} && valueIndex == ${valueIndex}) return ${quoteSolidityString(optionValue.label)}; // ${template.label} ${optionSlot.label}`,
+        ),
+      ),
     ),
     '        revert InvalidArtIndex();',
     '    }',

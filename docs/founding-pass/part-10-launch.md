@@ -25,9 +25,14 @@ All of it lands after Metropolis judging ends on 2026-10-27.
 
 ## Before the preview week (Yash deploys, with the session's help)
 
-1. **A fresh `FoundingPass`**, since the rehearsal's mints took real designs. Reset the pass
-   collections in the hosted database and keep the waitlist. Export the ABIs, and update the
-   website's and app's addresses.
+1. **A fresh `FoundingPass`**, since the rehearsal's mints took real designs, **and the game
+   redeployed with it** (D-042): `SneakerGame` and the Sneaker renderer are wired to one
+   `FoundingPass`, and `SneakerNft` remembers which designs already have a Founder Sneaker. Run
+   `DeployFoundingPass.s.sol`, then `DeployGame.s.sol` with the new `FOUNDING_PASS_ADDRESS`
+   (`docs/architecture/smart-contracts.md`, "Deployment flow"). Every Sneaker minted before then
+   stays on the old contracts, so ask Yash first if anyone outside the team has one. Reset the
+   pass and Sneaker collections in the hosted database and keep the waitlist. Export the ABIs,
+   and update the website's and app's addresses.
 2. **Fund the game-server key** for the whole launch (Part 3's budget). The faucet is slow.
 3. **Configure the hosted API** with the dates. Turn the early-access gate **on**.
 4. **Ship the website and the app build**, then check `/pass`, `/help` and the app against

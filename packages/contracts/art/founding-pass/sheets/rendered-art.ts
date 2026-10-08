@@ -21,6 +21,21 @@ export type CardRequest = {
   isLaced: boolean
 }
 
+/**
+ * Matches `SneakerPictureRequest` in `RenderPassArt.s.sol`: a Sneaker's whole picture as
+ * `SneakerNft.imageSvg` returns it. A Founder Sneaker in design `designNumber` with that pass
+ * record, or a normal Sneaker when `designNumber` is 0 (D-042).
+ */
+export type SneakerPictureRequest = {
+  fileName: string
+  designNumber: number
+  sneakerTokenId: number
+  level: number
+  durability: number
+  isLaced: boolean
+  hasGoldFrame: boolean
+}
+
 /** Matches `SneakerRequest` in `RenderPassArt.s.sol`. */
 export type SneakerRequest = EncodedLayers & {
   fileName: string
@@ -48,6 +63,9 @@ export const renderedArt = {
   },
   readCardSvg(fileName: string): string {
     return readRenderedFile(`cards/${fileName}.svg`)
+  },
+  readSneakerPictureSvg(fileName: string): string {
+    return readRenderedFile(`sneaker-pictures/${fileName}.svg`)
   },
   readSneakerMarkup(fileName: string): string {
     const svg = readRenderedFile(`sneakers/${fileName}.svg`)

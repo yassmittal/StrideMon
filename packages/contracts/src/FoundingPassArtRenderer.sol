@@ -5,6 +5,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {FoundingPassArtData} from "./founding-pass-art/FoundingPassArtData.sol";
 import {
     DesignLayers,
+    DesignTraits,
     LaceColor,
     OptionLayer,
     OptionValueArt,
@@ -12,9 +13,11 @@ import {
     PanelRole,
     PassRecord,
     Rarity,
+    SneakerOutline,
     TemplateArt
 } from "./founding-pass-art/FoundingPassArtTypes.sol";
 import {FoundingPassDesigns} from "./founding-pass-art/FoundingPassDesigns.sol";
+import {IFoundingPassArtRenderer} from "./FoundingPass.sol";
 
 /// @title FoundingPassArtRenderer
 /// @notice Draws the 1,000 Founding Pass designs (D-041): a flat-panel Sneaker on a quiet square
@@ -23,7 +26,7 @@ import {FoundingPassDesigns} from "./founding-pass-art/FoundingPassDesigns.sol";
 /// (`founding-pass-art/`); the drawing is this contract.
 /// @dev Paths, circles, an ellipse, rects and text, with one clip path per Sneaker and no
 /// gradients, filters or CSS, so `react-native-svg` draws it the same as a browser (D-030).
-contract FoundingPassArtRenderer {
+contract FoundingPassArtRenderer is IFoundingPassArtRenderer {
     using Strings for uint256;
 
     /// @notice There's no design with this number (designs are 1 to 1,000).
@@ -115,6 +118,48 @@ contract FoundingPassArtRenderer {
         returns (string memory)
     {
         return buildSneakerMarkup(readSneakerParts(layers), isLaced, clipPathId);
+    }
+
+    /// @notice A template's outer edge (the silhouette and the heel tab) and the silhouette's top,
+    /// so a picture on its own background can draw a rim round the shoe and centre it (the
+    /// Founder Sneaker, D-042).
+    /// @param templateIndex `DesignLayers.templateIndex`.
+    function readSneakerOutline(uint256 templateIndex)
+        external
+        pure
+        returns (SneakerOutline memory outline)
+    {
+        if (templateIndex >= FoundingPassArtData.TEMPLATE_COUNT) revert InvalidDesignLayers();
+        TemplateArt memory templateArt = FoundingPassArtData.readTemplateArt(templateIndex);
+        outline.silhouettePathData = templateArt.silhouettePathData;
+        outline.heelTabPathData = templateArt.heelTabPathData;
+        outline.silhouetteTopY = templateArt.silhouetteTopY;
+    }
+
+    /// @notice A design's layers in words, for a pass's attributes.
+    function readDesignTraits(uint256 designNumber)
+        external
+        pure
+        returns (DesignTraits memory traits)
+    {
+        DesignLayers memory layers = readDesignLayers(designNumber);
+        traits.templateLabel = FoundingPassArtData.readTemplateLabel(layers.templateIndex);
+        traits.colorFamilyLabel = FoundingPassArtData.readColorFamilyLabel(layers.colorFamilyIndex);
+        traits.colorwayLabel = FoundingPassArtData.readColorwayLabel(layers.colorwayIndex);
+        uint8 templateIndex = layers.templateIndex;
+        uint8[3] memory valueIndexes = layers.optionValueIndexes;
+        traits.optionSlotLabels = [
+            FoundingPassArtData.readOptionSlotLabel(templateIndex, 0),
+            FoundingPassArtData.readOptionSlotLabel(templateIndex, 1),
+            FoundingPassArtData.readOptionSlotLabel(templateIndex, 2)
+        ];
+        traits.optionValueLabels = [
+            FoundingPassArtData.readOptionValueLabel(templateIndex, 0, valueIndexes[0]),
+            FoundingPassArtData.readOptionValueLabel(templateIndex, 1, valueIndexes[1]),
+            FoundingPassArtData.readOptionValueLabel(templateIndex, 2, valueIndexes[2])
+        ];
+        traits.laceColorLabel = FoundingPassArtData.readLaceColorLabel(uint256(layers.laceColor));
+        traits.rarity = readDesignRarity(designNumber);
     }
 
     /// @notice A design's layers from the design table.

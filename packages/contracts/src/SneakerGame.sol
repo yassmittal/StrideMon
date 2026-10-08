@@ -4,6 +4,7 @@ pragma solidity 0.8.37;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuardTransient} from "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
+import {FoundingPass} from "./FoundingPass.sol";
 import {GameConfig, GameMath} from "./libraries/GameMath.sol";
 import {SneakerAttributes, SneakerNft} from "./SneakerNft.sol";
 import {StrideToken} from "./StrideToken.sol";
@@ -18,24 +19,29 @@ struct SessionSettlement {
 }
 
 /// @title SneakerGame
-/// @notice The game rules: starter Sneakers, activity-session settlement, repair and
+/// @notice The game rules: starter and Founder Sneakers, activity-session settlement, repair and
 /// upgrade. Holds `GAME_ROLE` on `SneakerNft` and `MINTER_ROLE`/`BURNER_ROLE` on
 /// `StrideToken`; replace the rules by deploying a new `SneakerGame` and moving the roles.
 contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
     bytes32 public constant GAME_SERVER_ROLE = keccak256("GAME_SERVER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    /// @notice The lost-wallet move (D-041): the deployer key, never the game server.
+    bytes32 public constant RECOVERY_ROLE = keccak256("RECOVERY_ROLE");
 
     uint16 public constant STARTER_LEVEL = 1;
 
     SneakerNft public immutable sneakerNft;
     StrideToken public immutable strideToken;
+    /// @notice The Founding Passes whose holders get a Founder Sneaker.
+    FoundingPass public immutable foundingPass;
 
     GameConfig private gameConfig;
 
     /// @notice Whether an activity session has already been settled.
     mapping(bytes32 sessionId => bool isSettled) public isSessionSettled;
 
-    /// @notice Whether a wallet has received its one starter Sneaker.
+    /// @notice Whether a wallet has received its one free Sneaker: a starter, or a Founder
+    /// Sneaker (D-042).
     mapping(address player => bool hasClaimed) public hasClaimedStarterSneaker;
 
     /// @notice Emitted when an activity session pays out.
@@ -75,19 +81,26 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
     error StarterSneakerAlreadyClaimed(address player);
     error NothingToRepair(uint256 tokenId);
     error InvalidGameConfig();
+    /// @notice This pass has no Founder Sneaker yet, so there's nothing to move.
+    error NoFounderSneaker(uint256 foundingPassTokenId);
+    /// @notice The Founder Sneaker is already with its pass's holder.
+    error FounderSneakerAlreadyWithPass(uint256 foundingPassTokenId);
 
     /// @param admin Receives `DEFAULT_ADMIN_ROLE`.
     /// @param sneakerNftAddress The Sneaker NFT this game grants `GAME_ROLE` access to.
     /// @param strideTokenAddress The reward token this game mints and burns.
+    /// @param foundingPassAddress The Founding Pass, read to give Founder Sneakers.
     /// @param initialGameConfig The starting rules.
     constructor(
         address admin,
         SneakerNft sneakerNftAddress,
         StrideToken strideTokenAddress,
+        FoundingPass foundingPassAddress,
         GameConfig memory initialGameConfig
     ) {
         sneakerNft = sneakerNftAddress;
         strideToken = strideTokenAddress;
+        foundingPass = foundingPassAddress;
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         applyGameConfig(initialGameConfig);
     }
@@ -106,14 +119,45 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
             revert StarterSneakerAlreadyClaimed(player);
         }
         hasClaimedStarterSneaker[player] = true;
-        SneakerAttributes memory starterAttributes = SneakerAttributes({
-            level: STARTER_LEVEL,
-            efficiency: gameConfig.starterEfficiency,
-            durability: gameConfig.maxDurability,
-            storedEnergy: gameConfig.maxEnergy,
-            energyUpdatedAt: readCurrentTimestamp()
-        });
-        return sneakerNft.mint(player, starterAttributes);
+        return sneakerNft.mint(player, buildStarterAttributes());
+    }
+
+    /// @notice Mints a Founding Pass's one Founder Sneaker, with starter stats, to whoever holds
+    /// the pass. It counts as that wallet's free Sneaker, so it gets no starter after it. A
+    /// holder who got a starter before still gets this (D-042).
+    /// @param foundingPassTokenId The pass. Reverts if it isn't minted.
+    /// @return tokenId The new Sneaker's id.
+    function mintFounderSneaker(uint256 foundingPassTokenId)
+        external
+        nonReentrant
+        onlyRole(GAME_SERVER_ROLE)
+        whenNotPaused
+        returns (uint256 tokenId)
+    {
+        address passHolder = foundingPass.ownerOf(foundingPassTokenId);
+        hasClaimedStarterSneaker[passHolder] = true;
+        return
+            sneakerNft.mintFounderSneaker(passHolder, buildStarterAttributes(), foundingPassTokenId);
+    }
+
+    /// @notice The lost-wallet move's second step (D-041): after
+    /// `FoundingPass.recoverFoundingPass`, moves the pass's Founder Sneaker to the pass's new
+    /// holder, stats intact. It can't send a Sneaker anywhere else. Works while paused: it's
+    /// support, not play.
+    /// @param foundingPassTokenId The pass that moved.
+    function recoverFounderSneaker(uint256 foundingPassTokenId)
+        external
+        nonReentrant
+        onlyRole(RECOVERY_ROLE)
+    {
+        uint256 sneakerTokenId = sneakerNft.founderSneakerTokenIdOf(foundingPassTokenId);
+        if (sneakerTokenId == 0) revert NoFounderSneaker(foundingPassTokenId);
+        address passHolder = foundingPass.ownerOf(foundingPassTokenId);
+        if (sneakerNft.ownerOf(sneakerTokenId) == passHolder) {
+            revert FounderSneakerAlreadyWithPass(foundingPassTokenId);
+        }
+        hasClaimedStarterSneaker[passHolder] = true;
+        sneakerNft.moveFounderSneaker(sneakerTokenId, passHolder);
     }
 
     /// @notice Pays out a validated activity session: spends energy, wears durability
@@ -195,7 +239,7 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
         applyGameConfig(newGameConfig);
     }
 
-    /// @notice Stops starter mints, settlement, repair and upgrade.
+    /// @notice Stops starter and Founder Sneaker mints, settlement, repair and upgrade.
     function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
@@ -291,6 +335,17 @@ contract SneakerGame is AccessControl, Pausable, ReentrancyGuardTransient {
         attributes.energyUpdatedAt = energyUpdatedAtAfterSession;
         attributes.durability -= outcome.durabilityLoss;
         outcome.attributesAfterSession = attributes;
+    }
+
+    /// @dev Full energy and durability, at level 1: every free Sneaker starts the same.
+    function buildStarterAttributes() private view returns (SneakerAttributes memory) {
+        return SneakerAttributes({
+            level: STARTER_LEVEL,
+            efficiency: gameConfig.starterEfficiency,
+            durability: gameConfig.maxDurability,
+            storedEnergy: gameConfig.maxEnergy,
+            energyUpdatedAt: readCurrentTimestamp()
+        });
     }
 
     function readOwnedSneakerAttributes(uint256 tokenId)

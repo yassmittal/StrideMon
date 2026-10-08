@@ -41,7 +41,7 @@ library FoundingPassArtData {
         if (templateIndex == 2) return "Fogbow";
         if (templateIndex == 3) return "Fire Rainbow";
         if (templateIndex == 4) return "Glory";
-        if (templateIndex == 5) return "Steve";
+        if (templateIndex == 5) return "Nacreous";
         if (templateIndex == 6) return "Moonbow";
         if (templateIndex == 7) return "Airglow";
         if (templateIndex == 8) return "Heat Lightning";
@@ -78,6 +78,163 @@ library FoundingPassArtData {
         if (colorwayIndex == 7) return "Haze";
         if (colorwayIndex == 8) return "Storm";
         if (colorwayIndex == 9) return "Drift";
+        revert InvalidArtIndex();
+    }
+
+    /// @notice Indexed by `LaceColor`: the attributes show it once a pass is laced.
+    function readLaceColorLabel(uint256 laceColorIndex) internal pure returns (string memory) {
+        if (laceColorIndex == 0) return "Cream";
+        if (laceColorIndex == 1) return "Ink";
+        if (laceColorIndex == 2) return "Tonal";
+        if (laceColorIndex == 3) return "Lime";
+        revert InvalidArtIndex();
+    }
+
+    /// @notice An option slot's name, for the attributes (the Runner's first slot is "Side").
+    function readOptionSlotLabel(uint256 templateIndex, uint256 slotIndex)
+        internal
+        pure
+        returns (string memory)
+    {
+        if (templateIndex == 0 && slotIndex == 0) return "Side"; // Runner
+        if (templateIndex == 0 && slotIndex == 1) return "Heel"; // Runner
+        if (templateIndex == 0 && slotIndex == 2) return "Sole"; // Runner
+        if (templateIndex == 1 && slotIndex == 0) return "Upper"; // Racer
+        if (templateIndex == 1 && slotIndex == 1) return "Midsole"; // Racer
+        if (templateIndex == 1 && slotIndex == 2) return "Heel"; // Racer
+        if (templateIndex == 2 && slotIndex == 0) return "Overlay"; // Trail
+        if (templateIndex == 2 && slotIndex == 1) return "Guard"; // Trail
+        if (templateIndex == 2 && slotIndex == 2) return "Tread"; // Trail
+        if (templateIndex == 3 && slotIndex == 0) return "Side"; // Court
+        if (templateIndex == 3 && slotIndex == 1) return "Toe"; // Court
+        if (templateIndex == 3 && slotIndex == 2) return "Heel"; // Court
+        if (templateIndex == 4 && slotIndex == 0) return "Side"; // Hoop
+        if (templateIndex == 4 && slotIndex == 1) return "Ankle"; // Hoop
+        if (templateIndex == 4 && slotIndex == 2) return "Collar"; // Hoop
+        if (templateIndex == 5 && slotIndex == 0) return "Layers"; // Chunky
+        if (templateIndex == 5 && slotIndex == 1) return "Midsole"; // Chunky
+        if (templateIndex == 5 && slotIndex == 2) return "Heel"; // Chunky
+        if (templateIndex == 6 && slotIndex == 0) return "Cuff"; // Sock
+        if (templateIndex == 6 && slotIndex == 1) return "Cage"; // Sock
+        if (templateIndex == 6 && slotIndex == 2) return "Sole"; // Sock
+        if (templateIndex == 7 && slotIndex == 0) return "Side"; // Skate
+        if (templateIndex == 7 && slotIndex == 1) return "Foxing"; // Skate
+        if (templateIndex == 7 && slotIndex == 2) return "Heel"; // Skate
+        if (templateIndex == 8 && slotIndex == 0) return "Side"; // Spike
+        if (templateIndex == 8 && slotIndex == 1) return "Support"; // Spike
+        if (templateIndex == 8 && slotIndex == 2) return "Plate"; // Spike
+        if (templateIndex == 9 && slotIndex == 0) return "Shaft"; // Hiker
+        if (templateIndex == 9 && slotIndex == 1) return "Rand"; // Hiker
+        if (templateIndex == 9 && slotIndex == 2) return "Collar"; // Hiker
+        revert InvalidArtIndex();
+    }
+
+    /// @notice An option value's name, for the attributes ("Wedge" in the Runner's "Side").
+    function readOptionValueLabel(uint256 templateIndex, uint256 slotIndex, uint256 valueIndex)
+        internal
+        pure
+        returns (string memory)
+    {
+        if (templateIndex == 0 && slotIndex == 0 && valueIndex == 0) return "Wedge"; // Runner Side
+        if (templateIndex == 0 && slotIndex == 0 && valueIndex == 1) return "Zigzag"; // Runner Side
+        if (templateIndex == 0 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Runner Side
+        if (templateIndex == 0 && slotIndex == 0 && valueIndex == 3) return "Chevron"; // Runner Side
+        if (templateIndex == 0 && slotIndex == 1 && valueIndex == 0) return "Counter"; // Runner Heel
+        if (templateIndex == 0 && slotIndex == 1 && valueIndex == 1) return "Clip"; // Runner Heel
+        if (templateIndex == 0 && slotIndex == 1 && valueIndex == 2) return "Cage"; // Runner Heel
+        if (templateIndex == 0 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Runner Sole
+        if (templateIndex == 0 && slotIndex == 2 && valueIndex == 1) return "Flash"; // Runner Sole
+        if (templateIndex == 0 && slotIndex == 2 && valueIndex == 2) return "Pod"; // Runner Sole
+        if (templateIndex == 1 && slotIndex == 0 && valueIndex == 0) return "Streaks"; // Racer Upper
+        if (templateIndex == 1 && slotIndex == 0 && valueIndex == 1) return "Block"; // Racer Upper
+        if (templateIndex == 1 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Racer Upper
+        if (templateIndex == 1 && slotIndex == 0 && valueIndex == 3) return "Shard"; // Racer Upper
+        if (templateIndex == 1 && slotIndex == 1 && valueIndex == 0) return "Carbon"; // Racer Midsole
+        if (templateIndex == 1 && slotIndex == 1 && valueIndex == 1) return "Tinted"; // Racer Midsole
+        if (templateIndex == 1 && slotIndex == 1 && valueIndex == 2) return "Two-tone"; // Racer Midsole
+        if (templateIndex == 1 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Racer Heel
+        if (templateIndex == 1 && slotIndex == 2 && valueIndex == 1) return "Kick"; // Racer Heel
+        if (templateIndex == 1 && slotIndex == 2 && valueIndex == 2) return "Fin"; // Racer Heel
+        if (templateIndex == 2 && slotIndex == 0 && valueIndex == 0) return "Ridge"; // Trail Overlay
+        if (templateIndex == 2 && slotIndex == 0 && valueIndex == 1) return "Peaks"; // Trail Overlay
+        if (templateIndex == 2 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Trail Overlay
+        if (templateIndex == 2 && slotIndex == 0 && valueIndex == 3) return "Slope"; // Trail Overlay
+        if (templateIndex == 2 && slotIndex == 1 && valueIndex == 0) return "Toe"; // Trail Guard
+        if (templateIndex == 2 && slotIndex == 1 && valueIndex == 1) return "Heel"; // Trail Guard
+        if (templateIndex == 2 && slotIndex == 1 && valueIndex == 2) return "Rand"; // Trail Guard
+        if (templateIndex == 2 && slotIndex == 2 && valueIndex == 0) return "Mono"; // Trail Tread
+        if (templateIndex == 2 && slotIndex == 2 && valueIndex == 1) return "Stripe"; // Trail Tread
+        if (templateIndex == 2 && slotIndex == 2 && valueIndex == 2) return "Tinted"; // Trail Tread
+        if (templateIndex == 3 && slotIndex == 0 && valueIndex == 0) return "Saddle"; // Court Side
+        if (templateIndex == 3 && slotIndex == 0 && valueIndex == 1) return "Triangle"; // Court Side
+        if (templateIndex == 3 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Court Side
+        if (templateIndex == 3 && slotIndex == 0 && valueIndex == 3) return "Chevron"; // Court Side
+        if (templateIndex == 3 && slotIndex == 1 && valueIndex == 0) return "Smooth"; // Court Toe
+        if (templateIndex == 3 && slotIndex == 1 && valueIndex == 1) return "Cap"; // Court Toe
+        if (templateIndex == 3 && slotIndex == 1 && valueIndex == 2) return "Perforated"; // Court Toe
+        if (templateIndex == 3 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Court Heel
+        if (templateIndex == 3 && slotIndex == 2 && valueIndex == 1) return "Tab"; // Court Heel
+        if (templateIndex == 3 && slotIndex == 2 && valueIndex == 2) return "Spoiler"; // Court Heel
+        if (templateIndex == 4 && slotIndex == 0 && valueIndex == 0) return "Bolt"; // Hoop Side
+        if (templateIndex == 4 && slotIndex == 0 && valueIndex == 1) return "Panel"; // Hoop Side
+        if (templateIndex == 4 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Hoop Side
+        if (templateIndex == 4 && slotIndex == 0 && valueIndex == 3) return "Wedge"; // Hoop Side
+        if (templateIndex == 4 && slotIndex == 1 && valueIndex == 0) return "Plain"; // Hoop Ankle
+        if (templateIndex == 4 && slotIndex == 1 && valueIndex == 1) return "Pad"; // Hoop Ankle
+        if (templateIndex == 4 && slotIndex == 1 && valueIndex == 2) return "Strap"; // Hoop Ankle
+        if (templateIndex == 4 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Hoop Collar
+        if (templateIndex == 4 && slotIndex == 2 && valueIndex == 1) return "Tipped"; // Hoop Collar
+        if (templateIndex == 4 && slotIndex == 2 && valueIndex == 2) return "Stripe"; // Hoop Collar
+        if (templateIndex == 5 && slotIndex == 0 && valueIndex == 0) return "Mudguard"; // Chunky Layers
+        if (templateIndex == 5 && slotIndex == 0 && valueIndex == 1) return "Waves"; // Chunky Layers
+        if (templateIndex == 5 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Chunky Layers
+        if (templateIndex == 5 && slotIndex == 0 && valueIndex == 3) return "Shard"; // Chunky Layers
+        if (templateIndex == 5 && slotIndex == 1 && valueIndex == 0) return "Stacked"; // Chunky Midsole
+        if (templateIndex == 5 && slotIndex == 1 && valueIndex == 1) return "Solid"; // Chunky Midsole
+        if (templateIndex == 5 && slotIndex == 1 && valueIndex == 2) return "Striped"; // Chunky Midsole
+        if (templateIndex == 5 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Chunky Heel
+        if (templateIndex == 5 && slotIndex == 2 && valueIndex == 1) return "Cap"; // Chunky Heel
+        if (templateIndex == 5 && slotIndex == 2 && valueIndex == 2) return "Pod"; // Chunky Heel
+        if (templateIndex == 6 && slotIndex == 0 && valueIndex == 0) return "Plain"; // Sock Cuff
+        if (templateIndex == 6 && slotIndex == 0 && valueIndex == 1) return "Band"; // Sock Cuff
+        if (templateIndex == 6 && slotIndex == 0 && valueIndex == 2) return "Tipped"; // Sock Cuff
+        if (templateIndex == 6 && slotIndex == 1 && valueIndex == 0) return "Wrap"; // Sock Cage
+        if (templateIndex == 6 && slotIndex == 1 && valueIndex == 1) return "Zigzag"; // Sock Cage
+        if (templateIndex == 6 && slotIndex == 1 && valueIndex == 2) return "Plain"; // Sock Cage
+        if (templateIndex == 6 && slotIndex == 1 && valueIndex == 3) return "Chevron"; // Sock Cage
+        if (templateIndex == 6 && slotIndex == 2 && valueIndex == 0) return "Flat"; // Sock Sole
+        if (templateIndex == 6 && slotIndex == 2 && valueIndex == 1) return "Stripe"; // Sock Sole
+        if (templateIndex == 6 && slotIndex == 2 && valueIndex == 2) return "Pod"; // Sock Sole
+        if (templateIndex == 7 && slotIndex == 0 && valueIndex == 0) return "Shard"; // Skate Side
+        if (templateIndex == 7 && slotIndex == 0 && valueIndex == 1) return "Wedge"; // Skate Side
+        if (templateIndex == 7 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Skate Side
+        if (templateIndex == 7 && slotIndex == 0 && valueIndex == 3) return "Block"; // Skate Side
+        if (templateIndex == 7 && slotIndex == 1 && valueIndex == 0) return "Plain"; // Skate Foxing
+        if (templateIndex == 7 && slotIndex == 1 && valueIndex == 1) return "Stripe"; // Skate Foxing
+        if (templateIndex == 7 && slotIndex == 1 && valueIndex == 2) return "Double"; // Skate Foxing
+        if (templateIndex == 7 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Skate Heel
+        if (templateIndex == 7 && slotIndex == 2 && valueIndex == 1) return "Patch"; // Skate Heel
+        if (templateIndex == 7 && slotIndex == 2 && valueIndex == 2) return "Counter"; // Skate Heel
+        if (templateIndex == 8 && slotIndex == 0 && valueIndex == 0) return "Dart"; // Spike Side
+        if (templateIndex == 8 && slotIndex == 0 && valueIndex == 1) return "Streaks"; // Spike Side
+        if (templateIndex == 8 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Spike Side
+        if (templateIndex == 8 && slotIndex == 0 && valueIndex == 3) return "Chevron"; // Spike Side
+        if (templateIndex == 8 && slotIndex == 1 && valueIndex == 0) return "None"; // Spike Support
+        if (templateIndex == 8 && slotIndex == 1 && valueIndex == 1) return "Counter"; // Spike Support
+        if (templateIndex == 8 && slotIndex == 1 && valueIndex == 2) return "Strap"; // Spike Support
+        if (templateIndex == 8 && slotIndex == 2 && valueIndex == 0) return "Matched"; // Spike Plate
+        if (templateIndex == 8 && slotIndex == 2 && valueIndex == 1) return "Contrast"; // Spike Plate
+        if (templateIndex == 8 && slotIndex == 2 && valueIndex == 2) return "Flash"; // Spike Plate
+        if (templateIndex == 9 && slotIndex == 0 && valueIndex == 0) return "Zigzag"; // Hiker Shaft
+        if (templateIndex == 9 && slotIndex == 0 && valueIndex == 1) return "Panel"; // Hiker Shaft
+        if (templateIndex == 9 && slotIndex == 0 && valueIndex == 2) return "Plain"; // Hiker Shaft
+        if (templateIndex == 9 && slotIndex == 0 && valueIndex == 3) return "Peaks"; // Hiker Shaft
+        if (templateIndex == 9 && slotIndex == 1 && valueIndex == 0) return "None"; // Hiker Rand
+        if (templateIndex == 9 && slotIndex == 1 && valueIndex == 1) return "Heel"; // Hiker Rand
+        if (templateIndex == 9 && slotIndex == 1 && valueIndex == 2) return "Wrap"; // Hiker Rand
+        if (templateIndex == 9 && slotIndex == 2 && valueIndex == 0) return "Plain"; // Hiker Collar
+        if (templateIndex == 9 && slotIndex == 2 && valueIndex == 1) return "Tipped"; // Hiker Collar
+        if (templateIndex == 9 && slotIndex == 2 && valueIndex == 2) return "Stripe"; // Hiker Collar
         revert InvalidArtIndex();
     }
 

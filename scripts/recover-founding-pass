@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# The lost-wallet move (D-041, D-042): moves Founding Pass <number> and its Founder Sneaker to the
+# founder's <new wallet>, from the deployer key. Run it only when the founder asked and the code
+# sent to the pass's email checked out, and only after Yash's ok: it sends testnet transactions.
+# Steps already done are skipped, so running it again is safe.
+#
+#   scripts/recover-founding-pass <pass number> <new wallet address> [--dry-run]
+
+set -euo pipefail
+if [[ $# -lt 2 || "$1" == --* || "$2" == --* ]]; then
+  echo "usage: scripts/recover-founding-pass <pass number> <new wallet address> [--dry-run]" >&2
+  exit 64
+fi
+export FOUNDING_PASS_TOKEN_ID="$1"
+export NEW_OWNER_ADDRESS="$2"
+source "$(dirname "${BASH_SOURCE[0]}")/demo-env.sh"
+
+forge script script/RecoverFoundingPass.s.sol "${FORGE_SCRIPT_FLAGS[@]}"

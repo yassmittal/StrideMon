@@ -26,7 +26,7 @@ src/founding-pass-art/FoundingPassArtTypes.sol  hand-written: the shared enums a
 src/FoundingPassArtRenderer.sol                 hand-written: the drawing, the card, the names
       │
       ▼  script/RenderPassArt.s.sol (simulation only, never broadcast)
-rendered/        every design's gallery card, plus the cards and Sneakers the sheets ask for (gitignored)
+rendered/        every design's gallery card, plus the cards, Sneakers and Sneaker pictures the sheets ask for (gitignored)
       │
       ▼  sheets/ (layout only: it never draws a Sneaker)
 previews/        the review sheets, as SVG and PNG
@@ -53,7 +53,10 @@ It takes about 15 seconds:
 2. writes `previews/designs.json` and the two generated Solidity files (formatted with `forge fmt`)
 3. runs `forge script script/RenderPassArt.s.sol:RenderPassArt`: the Solidity renderer writes all
    1,000 gallery cards to `rendered/designs/`, and the extra cards and Sneakers the sheets ask for
-   (listed in `rendered/render-requests.json`) to `rendered/cards/` and `rendered/sneakers/`
+   (listed in `rendered/render-requests.json`) to `rendered/cards/` and `rendered/sneakers/`.
+   `SneakerArtRenderer` draws the Founder Sneakers' whole pictures to `rendered/sneaker-pictures/`,
+   reading a stand-in pass (`PreviewFoundingPass`) so any record, a gold frame included, can be
+   shown
 4. lays those out as the sheets in `previews/`, and converts them to PNG
 
 It needs Foundry 1.8.3 and `rsvg-convert` (`brew install librsvg`). The PNGs' text is IBM Plex
@@ -69,15 +72,18 @@ ES2024's `Map.groupBy`).
 
 ## The renderer
 
-`FoundingPassArtRenderer` is one contract of about 56 KB (Monad allows 128 KB), so nothing had to
-split. The generated libraries are compiled into it.
+`FoundingPassArtRenderer` is one contract of about 66 KB (Monad allows 128 KB), so nothing had to
+split. The generated libraries are compiled into it. It implements `IFoundingPassArtRenderer`
+(in `FoundingPass.sol`), so `FoundingPass` can swap it like the Sneaker's (D-030).
 
 | Function | Returns |
 |---|---|
 | `renderDesignPreviewSvg(designNumber)` | The gallery's card: available and unlaced, no founder number, no frame |
 | `renderPassSvg(tokenId, passRecord)` | A minted pass: `FOUNDER 042`, the lace slats once laced, the gold frame if it rolled one |
-| `renderSneakerMarkup(layers, isLaced, clipPathId)` | The shoe alone in its 1000 × 600 space, for any valid layers. Part 2's Founder Sneaker art places it on its own picture |
+| `renderSneakerMarkup(layers, isLaced, clipPathId)` | The shoe alone in its 1000 × 600 space, for any valid layers. The Founder Sneaker's picture (D-042) places it on the dark panel |
+| `readSneakerOutline(templateIndex)` | The silhouette and heel tab's path data and the silhouette's top: the Founder Sneaker draws a light rim round the shoe with them, and centres it |
 | `readDesignLayers`, `readDesignName`, `readDesignRarity` | One design's row from the table, its name, its rarity |
+| `readDesignTraits(designNumber)` | The layers in words (template, family, colourway, each option slot and value, laces, rarity), for the pass's attributes |
 
 A card is 2.4 to 3.9 KB of SVG and costs at most about 100,000 gas to draw. Monad runs an
 `eth_call` of up to 8.1M gas in its fast pool, and nodes allow 30M by default.
@@ -153,6 +159,8 @@ cards as `<img>` in a browser, and they matched. The screen was deleted afterwar
 | `5-colourways` | The Runner in Ocean through all 10 colourways |
 | `6-options` | Every option value of every template, one slot changed at a time |
 | `7-legendaries` | The 10 Legendaries, with their hand-picked names |
+| `8-founder-sneakers` | The Founder Sneaker (D-042) as `SneakerNft.imageSvg` draws it: one design per template in a dark colourway or a metal family, as minted and laced (some with a gold-framed pass), then a normal Sneaker for comparison, #0137 in three states and a Legendary |
+| `founder-sneaker-0137-minted`, `-laced` | #0137's Founder Sneaker alone, at a phone's width, as the app's hero panel shows it |
 | `x-founding-pass-teaser` | The first X post's image (1080 × 1350, `social/posts/2026-10-10-founding-pass-first-look.md`): six silhouettes, no pass numbers |
 | `designs.json` | All 1,000 designs: number, layers, name, rarity. Frozen on 2026-10-08 |
 
@@ -332,10 +340,10 @@ These were all Part 1a's call. Once the look is approved, they can be folded int
    template used once, and it would mean reopening the freeze.
 3. **"Gold" is both a family and the frame.** A Gold pass with a gold frame is a nice double, but if
    the shared word confuses, the family can take another name.
-4. **"Steve"** (the Chunky Legendary, #0542) is the playful name in the set. D-041 said to swap it
-   for another sky light (for example "Belt of Venus") before the freeze if it read as a joke on
-   the card. It stays: it's on sheet 6, which Yash approved. The name is art data
-   (`legendaryName` in `art-system/templates/chunky.ts`), not a row of the frozen table, so a
-   later swap would change the name only, never a design.
+4. **The Chunky Legendary's name** (#0542): closed. It was **"Steve"**, the playful name in the
+   set, and it read as a joke beside the other nine, so Yash swapped it for **"Nacreous"**
+   (mother-of-pearl clouds) on 2026-10-08, after the freeze (D-041). The name is art data
+   (`legendaryName` in `art-system/templates/chunky.ts`), not a row of the frozen table, so the
+   swap changed the name only, never a design: the table's bytes are the same.
 5. **`previews/` is generated output.** Keep it in the repo for review, or ignore it: Yash's call.
    `rendered/` is ignored (`.gitignore`).

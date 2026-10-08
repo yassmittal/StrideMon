@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import {
+  foundingPassAbi,
   monadTestnet,
   type StrideMonContractAddresses,
   sneakerGameAbi,
@@ -26,17 +27,26 @@ export const ANVIL_DEPLOYER_PRIVATE_KEY =
 export const ANVIL_GAME_SERVER_PRIVATE_KEY =
   '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d'
 
+/**
+ * For the `beforeAll` that calls `deployTestContracts`: about 7 seconds of deploys and grants
+ * (the Founding Pass art renderer alone is about 66 KB), past bun's 5-second default.
+ */
+export const TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS = 30_000
+
 const FOUNDRY_OUT_URL = new URL('../../../../packages/contracts/out/', import.meta.url)
 
-// Same names and symbols as DeployGame.s.sol.
+// Same names and symbols as DeployFoundingPass.s.sol and DeployGame.s.sol.
+const FOUNDING_PASS_NAME = 'StrideMon Founding Pass'
+const FOUNDING_PASS_SYMBOL = 'PASS'
 const SNEAKER_NFT_NAME = 'StrideMon Sneaker'
 const SNEAKER_NFT_SYMBOL = 'SNEAKER'
 const STRIDE_TOKEN_NAME = 'Stride'
 const STRIDE_TOKEN_SYMBOL = 'STRIDE'
 
 /**
- * Deploys SneakerArtRenderer, SneakerNft, StrideToken and SneakerGame to a test Anvil and wires the same
- * roles as `DeployGame.s.sol`, with the game config from the shared fixtures
+ * Deploys the Founding Pass (its art renderer and `FoundingPass`), then SneakerArtRenderer,
+ * SneakerNft, StrideToken and SneakerGame to a test Anvil, and wires the same roles as
+ * `DeployFoundingPass.s.sol` and `DeployGame.s.sol`, with the game config from the shared fixtures
  * (which `DeployGame.t.sol` pins the real deploy to). Uses Foundry's `out/`, so run
  * `bun run contracts:build` first.
  *
@@ -76,7 +86,25 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
 
   const adminAddress = deployerAccount.address
   // No constructor arguments, so no ABI is needed to deploy it.
-  const sneakerArtRenderer = await deploy('SneakerArtRenderer', [], [])
+  const foundingPassArtRenderer = await deploy('FoundingPassArtRenderer', [], [])
+  const foundingPass = await deploy('FoundingPass', foundingPassAbi, [
+    FOUNDING_PASS_NAME,
+    FOUNDING_PASS_SYMBOL,
+    adminAddress,
+    foundingPassArtRenderer,
+  ])
+  // Its one constructor argument is an address, so the encoding needs no ABI from the chain package.
+  const sneakerArtRenderer = await deploy(
+    'SneakerArtRenderer',
+    [
+      {
+        type: 'constructor',
+        stateMutability: 'nonpayable',
+        inputs: [{ name: 'foundingPassAddress', type: 'address' }],
+      },
+    ],
+    [foundingPass],
+  )
   const sneakerNft = await deploy('SneakerNft', sneakerNftAbi, [
     SNEAKER_NFT_NAME,
     SNEAKER_NFT_SYMBOL,
@@ -92,11 +120,32 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
     adminAddress,
     sneakerNft,
     strideToken,
+    foundingPass,
     FIXTURE_GAME_CONFIG,
   ])
 
-  // The five grants in DeployGame.s.sol → deployGame, in the same order.
-  const [gameRole, minterRole, burnerRole, gameServerRole, pauserRole] = await Promise.all([
+  // The two grants in DeployFoundingPass.s.sol, then the six in DeployGame.s.sol → deployGame,
+  // in the same order.
+  const [
+    passMinterRole,
+    passRecoveryRole,
+    gameRole,
+    minterRole,
+    burnerRole,
+    gameServerRole,
+    pauserRole,
+    gameRecoveryRole,
+  ] = await Promise.all([
+    publicClient.readContract({
+      address: foundingPass,
+      abi: foundingPassAbi,
+      functionName: 'MINTER_ROLE',
+    }),
+    publicClient.readContract({
+      address: foundingPass,
+      abi: foundingPassAbi,
+      functionName: 'RECOVERY_ROLE',
+    }),
     publicClient.readContract({
       address: sneakerNft,
       abi: sneakerNftAbi,
@@ -122,7 +171,28 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
       abi: sneakerGameAbi,
       functionName: 'PAUSER_ROLE',
     }),
+    publicClient.readContract({
+      address: sneakerGame,
+      abi: sneakerGameAbi,
+      functionName: 'RECOVERY_ROLE',
+    }),
   ])
+  await confirm(
+    await deployerWalletClient.writeContract({
+      address: foundingPass,
+      abi: foundingPassAbi,
+      functionName: 'grantRole',
+      args: [passMinterRole, gameServerAddress],
+    }),
+  )
+  await confirm(
+    await deployerWalletClient.writeContract({
+      address: foundingPass,
+      abi: foundingPassAbi,
+      functionName: 'grantRole',
+      args: [passRecoveryRole, adminAddress],
+    }),
+  )
   await confirm(
     await deployerWalletClient.writeContract({
       address: sneakerNft,
@@ -163,8 +233,16 @@ export async function deployTestContracts(rpcUrl: string): Promise<StrideMonCont
       args: [pauserRole, adminAddress],
     }),
   )
+  await confirm(
+    await deployerWalletClient.writeContract({
+      address: sneakerGame,
+      abi: sneakerGameAbi,
+      functionName: 'grantRole',
+      args: [gameRecoveryRole, adminAddress],
+    }),
+  )
 
-  return { sneakerNft, strideToken, sneakerGame }
+  return { sneakerNft, strideToken, sneakerGame, foundingPass }
 }
 
 async function readCreationBytecode(contractName: string): Promise<Hex> {

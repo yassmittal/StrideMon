@@ -19,6 +19,11 @@ export const sneakerGameAbi = [
         "internalType": "contract StrideToken"
       },
       {
+        "name": "foundingPassAddress",
+        "type": "address",
+        "internalType": "contract FoundingPass"
+      },
+      {
         "name": "initialGameConfig",
         "type": "tuple",
         "internalType": "struct GameConfig",
@@ -124,6 +129,19 @@ export const sneakerGameAbi = [
   },
   {
     "type": "function",
+    "name": "RECOVERY_ROLE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "STARTER_LEVEL",
     "inputs": [],
     "outputs": [
@@ -150,6 +168,19 @@ export const sneakerGameAbi = [
         "name": "",
         "type": "uint16",
         "internalType": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "foundingPass",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract FoundingPass"
       }
     ],
     "stateMutability": "view"
@@ -325,6 +356,25 @@ export const sneakerGameAbi = [
   },
   {
     "type": "function",
+    "name": "mintFounderSneaker",
+    "inputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "mintStarterSneaker",
     "inputs": [
       {
@@ -433,6 +483,19 @@ export const sneakerGameAbi = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "recoverFounderSneaker",
+    "inputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -979,8 +1042,30 @@ export const sneakerGameAbi = [
   },
   {
     "type": "error",
+    "name": "FounderSneakerAlreadyWithPass",
+    "inputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "InvalidGameConfig",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoFounderSneaker",
+    "inputs": [
+      {
+        "name": "foundingPassTokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",

@@ -1,6 +1,8 @@
 import { monadTestnet } from '@stridemon/chain'
 
 const ANVIL_STARTUP_TIMEOUT_MILLISECONDS = 10_000
+/** Monad's contract size limit (MIP-2). The Founding Pass art renderer is over Ethereum's 24 KB (D-042). */
+const MONAD_CONTRACT_SIZE_LIMIT_BYTES = 128 * 1024
 const LISTENING_LINE_PATTERN = /Listening on ([\d.]+:\d+)/
 
 export type TestChain = {
@@ -9,15 +11,23 @@ export type TestChain = {
 }
 
 /**
- * Starts a throwaway Anvil with Monad testnet's chain id on a free port. Tests
- * that make chain calls (signature verification) use it instead of the real
+ * Starts a throwaway Anvil with Monad testnet's chain id and contract size limit on a free
+ * port. Tests that make chain calls (signature verification) use it instead of the real
  * testnet RPC. Needs Foundry's `anvil` on the PATH.
  */
 export async function startTestChain(): Promise<TestChain> {
-  const anvilProcess = Bun.spawn(['anvil', '--port', '0', '--chain-id', String(monadTestnet.id)], {
-    stdout: 'pipe',
-    stderr: 'inherit',
-  })
+  const anvilProcess = Bun.spawn(
+    [
+      'anvil',
+      '--port',
+      '0',
+      '--chain-id',
+      String(monadTestnet.id),
+      '--code-size-limit',
+      String(MONAD_CONTRACT_SIZE_LIMIT_BYTES),
+    ],
+    { stdout: 'pipe', stderr: 'inherit' },
+  )
   const stop = () => anvilProcess.kill()
 
   try {

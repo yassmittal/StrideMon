@@ -553,7 +553,7 @@ library FoundingPassDesigns {
         hex"050b030000010302" // #0539 Gold Chunky Dusk
         hex"0608050100010200" // #0540 Moss Sock Frost
         hex"0002010001010200" // #0541 Rose Runner Day
-        hex"050d060201000003" // #0542 Steve
+        hex"050d060201000003" // #0542 Nacreous
         hex"0307020000010000" // #0543 Jade Court Flare
         hex"0005040100000100" // #0544 Ocean Runner Night
         hex"020a060000010000" // #0545 Clay Trail Eclipse

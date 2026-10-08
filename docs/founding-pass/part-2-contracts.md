@@ -43,8 +43,10 @@ send.
    - run `bun run chain:export-abis` and update the addresses in `packages/contracts/README.md`
    - reset the local test database if the game contracts changed (as D-038 did; keep the
      waitlist)
-   - a test mint from the deployer: one pass and its Founder Sneaker. Check both images on
-     MonadVision.
+   - a test mint to the deployer's wallet: one pass and its Founder Sneaker (the game-server
+     key sends both, since it holds `MINTER_ROLE` and `GAME_SERVER_ROLE`). Check both images on
+     MonadVision. The design it takes is gone on this contract, which is fine: Part 10 deploys
+     a fresh `FoundingPass` (and game) before launch.
 
 ## Tests
 

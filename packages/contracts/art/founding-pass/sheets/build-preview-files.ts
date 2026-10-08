@@ -11,6 +11,7 @@ import {
   planLegendariesSheet,
   type ReviewStatus,
 } from './collection-sheets'
+import { planFounderSneakerFiles } from './founder-sneaker-sheets'
 import type { PreviewPlan } from './showcase'
 import { planXTeaserFile } from './x-teaser'
 
@@ -19,8 +20,8 @@ export type { PreviewPlan } from './showcase'
 
 /**
  * Every file previews/ gets: the ten contact sheets for the review, the art-system sheets, the
- * card states, the Legendaries, and the X teaser. All of them lay out the Solidity renderer's
- * own drawings.
+ * card states, the Legendaries, the Founder Sneakers, and the X teaser. All of them lay out the
+ * Solidity renderers' own drawings.
  */
 export function planPreviewFiles(
   designs: readonly Design[],
@@ -34,6 +35,7 @@ export function planPreviewFiles(
     planColorwaysSheet(),
     planOptionsSheet(),
     planLegendariesSheet(designs),
+    ...planFounderSneakerFiles(designs),
     planXTeaserFile(),
   ]
 }

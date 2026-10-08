@@ -19,7 +19,8 @@ contract SneakerGameTest is GameTestBase {
     function test_ConstructorStoresConfigAndEmitsGameConfigUpdated() public {
         vm.expectEmit();
         emit SneakerGame.GameConfigUpdated(gameConfig);
-        SneakerGame newSneakerGame = new SneakerGame(deployer, sneakerNft, strideToken, gameConfig);
+        SneakerGame newSneakerGame =
+            new SneakerGame(deployer, sneakerNft, strideToken, foundingPass, gameConfig);
 
         assertEq(abi.encode(newSneakerGame.getGameConfig()), abi.encode(gameConfig));
         assertEq(address(newSneakerGame.sneakerNft()), address(sneakerNft));
@@ -32,7 +33,7 @@ contract SneakerGameTest is GameTestBase {
         invalidGameConfig.energyRegenerationSeconds = 0;
 
         vm.expectRevert(SneakerGame.InvalidGameConfig.selector);
-        new SneakerGame(deployer, sneakerNft, strideToken, invalidGameConfig);
+        new SneakerGame(deployer, sneakerNft, strideToken, foundingPass, invalidGameConfig);
     }
 
     // ---------------------------------------------------------------------------------

@@ -121,7 +121,7 @@ contract FoundingPassArtRendererTest is Test {
             "Fogbow",
             "Fire Rainbow",
             "Glory",
-            "Steve",
+            "Nacreous",
             "Moonbow",
             "Airglow",
             "Heat Lightning",

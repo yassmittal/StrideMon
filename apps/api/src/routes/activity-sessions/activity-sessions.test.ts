@@ -37,6 +37,7 @@ import { buildTestServer } from '../../test-support/build-test-server'
 import {
   ANVIL_DEPLOYER_PRIVATE_KEY,
   deployTestContracts,
+  TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS,
 } from '../../test-support/deploy-test-contracts'
 import { giveTestPlayerSneaker } from '../../test-support/give-test-player-sneaker'
 import { runOutboxJob } from '../../test-support/run-outbox-job'
@@ -64,7 +65,7 @@ let sneakerTokenId: bigint
 beforeAll(async () => {
   testChain = await startTestChain()
   contractAddresses = await deployTestContracts(testChain.rpcUrl)
-})
+}, TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS)
 
 afterAll(() => {
   testChain.stop()

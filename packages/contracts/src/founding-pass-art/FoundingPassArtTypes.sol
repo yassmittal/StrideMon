@@ -88,6 +88,28 @@ struct DesignLayers {
     LaceColor laceColor;
 }
 
+/// @notice A design's layers in words, for a pass's attributes (D-042).
+struct DesignTraits {
+    string templateLabel;
+    string colorFamilyLabel;
+    string colorwayLabel;
+    /// @dev Each option slot's name ("Side") and the design's value in it ("Wedge").
+    string[3] optionSlotLabels;
+    string[3] optionValueLabels;
+    /// @dev The attributes show it only once a pass is laced.
+    string laceColorLabel;
+    Rarity rarity;
+}
+
+/// @notice A template's outer edge, for a picture that places the shoe on its own background
+/// (the Founder Sneaker draws a rim round it, D-042).
+struct SneakerOutline {
+    string silhouettePathData;
+    string heelTabPathData;
+    /// @dev The silhouette's highest point in the 1000 × 600 Sneaker space, for centring.
+    uint256 silhouetteTopY;
+}
+
 /// @notice What a minted pass adds to its design's card. `FoundingPass` keeps one per token.
 struct PassRecord {
     /// @dev The mint order, from 1.

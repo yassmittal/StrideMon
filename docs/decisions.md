@@ -922,7 +922,7 @@ D-037's "never a wallet" for the `/pass` page only.
      | Trail | **Fogbow** | the white rainbow seen in morning fog on a trail |
      | Court | **Fire Rainbow** | a flat band of colour low in the sky, like the court's flat cupsole |
      | Hoop | **Glory** | rings of colour around a shadow on mist, like a rim, and the glory |
-     | Chunky | **Steve** | a real purple-and-green ribbon in the sky that aurora watchers named Steve in 2016: a dad name for the dad shoe |
+     | Chunky | **Nacreous** | nacreous (mother-of-pearl) clouds: a rare polar sky light that shimmers in many colours, and nacre builds up in layers like the Chunky's stacked midsole |
      | Sock | **Moonbow** | a rainbow by moonlight: soft and quiet, like the knit |
      | Skate | **Airglow** | the night sky's own faint light, and skaters catch air |
      | Spike | **Heat Lightning** | a silent flash on a summer night: the fastest shoe |
@@ -930,6 +930,13 @@ D-037's "never a wallet" for the `/pass` page only.
 
      The card shows the hand-picked name. The attributes still list Prism, the template and the
      colourway.
+
+     **Changed 2026-10-08 (Yash, during Part 2):** the Chunky's Legendary (#0542) was first
+     named **Steve**, after the purple-and-green ribbon aurora watchers named in 2016, as a dad
+     name for the dad shoe. It read as a joke beside the other nine, so it's **Nacreous** now.
+     "Nacreous" is no shoe model's name (checked like the others; "Nacre" only appears as a
+     colourway nickname, never a model). The name is art data, not a row of the frozen design
+     table, so the swap changed no design: only #0542's name and its comment in the table.
   4. **Gold frame** on about 1 in 10 passes, rolled at random on-chain at mint. It's cosmetic,
      and nobody says it's worth more.
   5. **The schedule.** A **preview week** (the gallery and a countdown, no minting), then a
@@ -985,7 +992,65 @@ D-037's "never a wallet" for the `/pass` page only.
     help page says so.
   - The game-server key pays for every pass mint, Founder Sneaker and gas drip, so 1,000 founders
     need a large testnet MON budget (Part 3 measures it).
-  - "Steve" is the playful name in the set. If it reads as a joke on the card, swap it for
-    another sky light before Part 1b's freeze (for example "Belt of Venus").
+  - ~~"Steve" is the playful name in the set. If it reads as a joke on the card, swap it for
+    another sky light before Part 1b's freeze (for example "Belt of Venus").~~ Swapped for
+    "Nacreous" on 2026-10-08 (see item 3).
 - **Revisit when:** the dates slip (Part 10 moves them), all 1,000 are minted, or mainnet
   (Phase 10: embedded wallets, a multisig for `RECOVERY_ROLE`).
+
+## D-042 — How the Founding Pass and the Founder Sneaker link on-chain
+
+Made 2026-10-08 in Part 2 of the Founding Pass build ([`founding-pass/part-2-contracts.md`](founding-pass/part-2-contracts.md)).
+It fills in D-041's contracts. The full interface is in
+[`architecture/smart-contracts.md`](architecture/smart-contracts.md).
+
+- **Decision:**
+  1. **Lacing lives on the pass only.** `FoundingPass.setLaced` is the one call. The Founder
+     Sneaker's picture reads the pass's laced state (and its gold frame) live, so one
+     transaction laces both pictures and the two can never disagree.
+  2. **The link lives in `SneakerNft`**, the permanent contract: `foundingPassTokenIdOf(sneaker)`
+     and `founderSneakerTokenIdOf(pass)`, and `SneakerNft` refuses a second Founder Sneaker for
+     a pass. A later `SneakerGame` can't forget which passes already have one.
+  3. **`SneakerGame.mintFounderSneaker(passTokenId)`** (game server) mints to whoever holds the
+     pass, with starter stats, and marks that wallet's starter as claimed: a founder's Founder
+     Sneaker is their free Sneaker. A founder who already got a normal starter (before the gate)
+     still gets their Founder Sneaker.
+  4. **Founder Sneakers refuse `transferFrom`, `safeTransferFrom` and `approve`** with
+     `FounderSneakerNotTransferable(tokenId)`. Normal Sneakers work as in Phase 7.
+  5. **The lost-wallet move** is two calls, run together by `RecoverFoundingPass.s.sol` from the
+     deployer key: `FoundingPass.recoverFoundingPass(passTokenId, newOwner)`, then
+     `SneakerGame.recoverFounderSneaker(passTokenId)`, which can only move the Founder Sneaker
+     **to whoever holds the pass now**, never to an address of the caller's choice. Both work
+     while the game is paused: it's support, not play. The script skips a step that's already
+     done, so a half-finished run can be run again.
+  6. **One renderer for every Sneaker.** `SneakerArtRenderer.renderImageSvg` also takes the
+     Sneaker's pass token id (0 for a normal Sneaker). Normal Sneakers keep D-030's art byte for
+     byte. A Founder Sneaker is drawn by the pass's own art renderer (read from `FoundingPass`,
+     so a pass-art swap changes both) on the same dark square, with a light rim round the shoe
+     so its ink outline shows on the dark panel.
+  7. **The gold frame** rolls from `keccak256(prevrandao, the previous block hash, design,
+     founder number, wallet)`, 1 in 10. Someone could predict it, but only the game server
+     mints, it's cosmetic, and nobody can buy a re-roll.
+  8. **`mintedBitmap()`** is four words, and bit *n* is design *n* (bit 0 is never set), so a
+     client checks a design without an off-by-one.
+  9. **The pass's attributes** name the template, family, colourway, each option ("Side: Wedge"),
+     rarity, founder number, frame and stage, and the lace colour once laced (it's the lacing's
+     small reveal). The option and lace labels are added to the generated art data, which
+     changes no design.
+  10. **Deploy order:** `DeployFoundingPass.s.sol` first (its own script: the pass art renderer
+      and `FoundingPass`), then `DeployGame.s.sol` with `FOUNDING_PASS_ADDRESS`. Both write to
+      `deployments/<chainId>.json` without dropping each other's keys.
+  11. **The API's test Anvil** runs with Monad's 128 KB contract size limit
+      (`--code-size-limit`), since the pass art renderer is about 56 KB and Anvil's default is
+      Ethereum's 24 KB.
+- **Why:** one source of truth for each fact (the laced state on the pass, the link in the
+  permanent NFT), and the recovery can't be turned into a way to send someone's Sneaker
+  anywhere. One renderer keeps a single `setArtRenderer` for every Sneaker picture.
+- **Trade-off:** `SneakerArtRenderer` now depends on `FoundingPass`, and a Founder Sneaker's
+  picture costs a few hundred thousand gas to draw (fine for `eth_call`). Lacing doesn't emit an
+  ERC-4906 event on the Sneaker: wallets that cache metadata refresh it on the next stat change
+  (every settled walk emits one). A fresh `FoundingPass` (Part 10 deploys one after the
+  rehearsal) means a fresh game too, since the game is wired to one pass contract and
+  `SneakerNft` keeps the links.
+- **Revisit when:** mainnet (a multisig holds `RECOVERY_ROLE`, D-041), or a Sneaker needs art
+  that isn't the pass's.

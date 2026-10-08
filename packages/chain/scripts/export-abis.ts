@@ -23,9 +23,14 @@ const EXPORTED_CONTRACTS = [
     abiExportName: 'sneakerGameAbi',
     fileName: 'sneaker-game-abi.ts',
   },
+  {
+    contractName: 'FoundingPass',
+    abiExportName: 'foundingPassAbi',
+    fileName: 'founding-pass-abi.ts',
+  },
 ] as const
 
-const DEPLOYED_CONTRACT_KEYS = ['sneakerNft', 'strideToken', 'sneakerGame'] as const
+const DEPLOYED_CONTRACT_KEYS = ['sneakerNft', 'strideToken', 'sneakerGame', 'foundingPass'] as const
 
 type DeployedContractKey = (typeof DEPLOYED_CONTRACT_KEYS)[number]
 
@@ -96,6 +101,7 @@ function parseDeployment(deploymentJson: unknown, fileName: string): ChainDeploy
     sneakerNft: readDeployedAddress(fields, 'sneakerNft', fileName),
     strideToken: readDeployedAddress(fields, 'strideToken', fileName),
     sneakerGame: readDeployedAddress(fields, 'sneakerGame', fileName),
+    foundingPass: readDeployedAddress(fields, 'foundingPass', fileName),
   }
   return { chainId, addresses }
 }
@@ -129,6 +135,7 @@ export type StrideMonContractAddresses = {
   sneakerNft: Address
   strideToken: Address
   sneakerGame: Address
+  foundingPass: Address
 }
 
 /**

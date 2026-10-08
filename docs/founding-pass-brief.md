@@ -107,9 +107,10 @@ them in sheets of 100.
   because no two designs share all three.
 - **The ten Legendaries have hand-picked names** (Part 0, D-041): ten rare lights in the sky,
   one per template. Runner **Earthshine**, Racer **Afterglow**, Trail **Fogbow**, Court **Fire
-  Rainbow**, Hoop **Glory**, Chunky **Steve**, Sock **Moonbow**, Skate **Airglow**, Spike **Heat
-  Lightning**, Hiker **Sun Pillar**. A name follows its template's Legendary whatever number
-  Part 1b's re-rolls give it. D-041 has why each fits, and the shoe names checked and dropped.
+  Rainbow**, Hoop **Glory**, Chunky **Nacreous**, Sock **Moonbow**, Skate **Airglow**, Spike
+  **Heat Lightning**, Hiker **Sun Pillar**. A name follows its template's Legendary whatever
+  number Part 1b's re-rolls give it. D-041 has why each fits, and the shoe names checked and
+  dropped. (The Chunky's was "Steve" until 2026-10-08, when Yash swapped it for Nacreous.)
 - **Rarity comes from layers.** Rare families and rare options give a label: Common, Uncommon, Rare
   or Legendary, with about 10 Legendaries. Part 1a made the Legendaries the Prism family, one per
   template. A hand-drawn **one-off template** stays possible later (STEPN's top tier is hand-made

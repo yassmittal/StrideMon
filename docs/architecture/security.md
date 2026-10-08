@@ -16,7 +16,8 @@ starting with it.
 
 - `.env` files are gitignored, and `.env.example` documents every variable with
   fake values.
-- The game-server key holds **only** `GAME_SERVER_ROLE`. It is not the admin.
+- The game-server key holds **only** `GAME_SERVER_ROLE` (and, for the Founding Pass,
+  `MINTER_ROLE` on `FoundingPass`). It is not the admin.
   If it leaks, the attacker can settle fake sessions (capped by each Sneaker's
   energy, see below) and mint starters, but can't change rules, grant roles or
   touch anyone's balance.
@@ -126,10 +127,10 @@ Phase 10.
 - The app never asks the wallet to sign anything except the SIWE message and
   the explicit player transactions, and each has a screen that explains it first.
 
-## The Founding Pass (planned, D-041)
+## The Founding Pass (D-041)
 
-Not built yet: Parts 2, 3 and 5 of [`../founding-pass/`](../founding-pass/README.md) build it,
-from the brief's §9, §10 and §15 ([`../founding-pass-brief.md`](../founding-pass-brief.md)).
+The contracts are built (Part 2, D-042). Parts 3 and 5 of
+[`../founding-pass/`](../founding-pass/README.md) build the rest, from the brief's §9, §10 and §15 ([`../founding-pass-brief.md`](../founding-pass-brief.md)).
 The website becomes a second client of the API, with a wallet on `/pass` only.
 
 **Email codes** (the first attempt's rules, brief §15):
@@ -162,12 +163,17 @@ site's origins (the same list as the waitlist). Every other route stays closed t
 | `RECOVERY_ROLE` | `FoundingPass`, `SneakerGame` | deployer, **never** the game-server key | the lost-wallet move: a pass and its Founder Sneaker to a new wallet |
 | `GAME_SERVER_ROLE` | `SneakerGame` | game-server key | as today, plus minting one Founder Sneaker per pass |
 
+The deploy scripts wire exactly this, and `DeployGame.t.sol` checks it (D-042).
+
 - If the game-server key leaks, an attacker could mint the remaining passes to wallets of their
   own. The admin revokes `MINTER_ROLE`, and the passes it minted are visible on-chain. The
   attacker still can't move a pass or touch a Sneaker someone owns.
 - **The lost-wallet move** is manual, on request only. A code sent to the pass's email must
-  check out, and the new wallet must not hold a pass. Yash runs it from the deployer key. So the
-  pass can't be sent or sold by its holder, but the admin can move it, and the help page says so.
+  check out, and the new wallet must not hold a pass. Yash runs it from the deployer key
+  (`scripts/recover-founding-pass`). So the pass can't be sent or sold by its holder, but the
+  admin can move it, and the help page says so. `SneakerGame.recoverFounderSneaker` can only move
+  a Founder Sneaker to whoever holds its pass, so even `RECOVERY_ROLE` can't send a Sneaker
+  anywhere else (D-042).
 
 **Secrets** (API env only, like the others): `BREVO_API_KEY`, the Turnstile secret key and the
 email-proof secret. The Turnstile **site** key is public and lives in the website.
