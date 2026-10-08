@@ -98,4 +98,5 @@ the app.
 
 | Week of | Status | Posted | xLink |
 |---|---|---|---|
-| 2026-10-05 | draft | | |
+| 2026-10-05 | posted | 2026-10-07 | |
+| 2026-10-12 | draft (Founding Pass, from 2026-10-09) | | |
