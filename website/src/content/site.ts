@@ -43,10 +43,12 @@ export const monadPublicRpcUrl = 'https://testnet-rpc.monad.xyz'
 export const monadRpcUrl = process.env.NEXT_PUBLIC_MONAD_RPC_URL ?? monadPublicRpcUrl
 
 /**
- * Cloudflare Turnstile's site key for `stridemon.xyz` (D-041, D-045). Public by design. A local run
- * uses Cloudflare's always-pass test key (`1x00000000000000000000AA`).
+ * Cloudflare Turnstile's site key for the `stridemon.xyz` widget (D-041, D-045). Public by design.
+ * A local run uses Cloudflare's always-pass test key (`1x00000000000000000000AA`): this one only
+ * works on the widget's own hostnames.
  */
-export const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
+export const turnstileSiteKey =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '0x4AAAAAAFRleBaVJ9eZuqBJ'
 
 /** The Founding Pass gallery (D-041) and, until Part 7 builds `/help`, its questions (D-044). */
 export const passGalleryPath = '/pass'

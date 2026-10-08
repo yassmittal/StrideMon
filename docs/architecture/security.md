@@ -147,8 +147,10 @@ The website becomes a second client of the API, with a wallet on `/pass` only.
 
 **Bots:**
 - **Cloudflare Turnstile** (free) on both **Send code** and **Mint**, checked server-side with
-  Turnstile's siteverify. On Send code it also stops bots from using up Brevo's 300 free emails a
-  day.
+  Turnstile's siteverify: it must answer `success`, the route's action (`send-code` or `mint`, so
+  a token from one can't be spent on the other) and a hostname of the site's own origins
+  (`WAITLIST_ALLOWED_ORIGINS`) (D-045). On Send code it also stops bots from using up Brevo's 300
+  free emails a day.
 - A per-IP rate limit on every public pass route.
 - One pass per email (the API) and per wallet (the API and the contract). One-of-ones give bots a
   reason to snipe the Legendaries the moment minting opens, so these are on from the start.

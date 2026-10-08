@@ -50,6 +50,7 @@ export async function sendPassEmailCode({
     turnstileVerifier,
     turnstileToken: body.turnstileToken,
     remoteIpAddress,
+    expectedAction: 'send-code',
   })
 
   const { email } = body

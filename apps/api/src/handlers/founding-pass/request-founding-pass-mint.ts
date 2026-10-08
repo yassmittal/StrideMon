@@ -73,6 +73,7 @@ export async function requestFoundingPassMint({
     turnstileVerifier,
     turnstileToken: body.turnstileToken,
     remoteIpAddress,
+    expectedAction: 'mint',
   })
   const email = await verifyEmailProof({
     emailProof: body.emailProof,

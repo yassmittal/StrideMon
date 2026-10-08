@@ -479,10 +479,10 @@ you@gmail.com`. In Gmail, open it → ⋮ → **Show original**: DKIM and DMARC 
 The mint on `stridemon.xyz/pass` needs the API above (redeployed from this tree) and three public
 settings on the website side:
 
-- [ ] **Turnstile site key:** Cloudflare → Turnstile → the `stridemon.xyz` site → the **site key**
-  (public, not the secret). Put it in `website/src/content/site.ts` (`turnstileSiteKey`) or set
-  `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in Vercel. The site's hostname list must include
-  `stridemon.xyz` (and `www.stridemon.xyz` if it's ever served there).
+- [x] **Turnstile site key:** `0x4AAAAAAFRleBaVJ9eZuqBJ`, in `website/src/content/site.ts`
+  (2026-10-09). Its **secret** goes in the server's `.env` as `TURNSTILE_SECRET_KEY` (§12). The
+  API also checks each token's hostname against `WAITLIST_ALLOWED_ORIGINS`, so on the server that
+  list must be the site's real origins only (`https://stridemon.xyz`), never `localhost`.
 - [ ] **Reown:** <https://cloud.reown.com> → the app's project → **Domain**. If the allowlist has
   entries, add `stridemon.xyz`; otherwise wallets refuse to connect from the website.
 - [ ] **The pass contract:** `foundingPassContract` in `website/src/content/contracts.ts` must be

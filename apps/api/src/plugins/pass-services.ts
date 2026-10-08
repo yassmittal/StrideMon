@@ -6,7 +6,11 @@ import {
   type EmailSender,
 } from '../services/email-sender'
 import { readFoundingPassCollectionState } from '../services/founding-pass-chain-reader'
-import { createTurnstileVerifier, type TurnstileVerifier } from '../services/turnstile-verifier'
+import {
+  createTurnstileVerifier,
+  readTurnstileHostnames,
+  type TurnstileVerifier,
+} from '../services/turnstile-verifier'
 
 // "Cached a few seconds" (brief §10.2): the gallery polls, and mint day is a rush.
 const COLLECTION_CACHE_MILLISECONDS = 3_000
@@ -36,7 +40,11 @@ export const passServicesPlugin = fastifyPlugin<PassServicesPluginOptions>(
     )
     fastify.decorate(
       'turnstileVerifier',
-      options.turnstileVerifier ?? createTurnstileVerifier(turnstileSecretKey),
+      options.turnstileVerifier ??
+        createTurnstileVerifier({
+          turnstileSecretKey,
+          allowedHostnames: readTurnstileHostnames(fastify.config.waitlistAllowedOrigins),
+        }),
     )
     fastify.decorate(
       'foundingPassCollectionReader',

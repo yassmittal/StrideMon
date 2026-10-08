@@ -393,6 +393,11 @@ The collection:
 | `email-verify` | `EMAIL_CODE_INCORRECT` 400 (`details.attemptsLeft`), `EMAIL_CODE_EXPIRED` 400 (none pending, expired or used), `EMAIL_CODE_TOO_MANY_ATTEMPTS` 429 |
 | `POST mints` | `TURNSTILE_FAILED` 403, `EMAIL_PROOF_INVALID` 401, `PASS_MINT_NOT_OPEN` 409 (`details.opensAt`), `PASS_WAITLIST_WINDOW_ONLY` 403 (`details.openMintStartsAt`), `PASS_ALL_MINTED` 409, `PASS_MINT_CLOSED` 409, `PASS_EMAIL_ALREADY_USED` 409 (`details.designNumber`), `PASS_WALLET_ALREADY_USED` 409 (`details.designNumber`, and `details.mintId` when the API minted it), `PASS_ALREADY_MINTED` 409 (`details.similarAvailableDesignNumbers`: 3 similar designs still free) |
 
+**Turnstile** (D-043, D-045): siteverify must answer `success`, the route's action (`send-code`
+for `email-code`, `mint` for `POST mints`) and a hostname of `WAITLIST_ALLOWED_ORIGINS`. Answers
+from Cloudflare's test keys (development and tests; production refuses them at boot) carry no
+action and the hostname `example.com`, so they count on `success` alone.
+
 The mint checks run in that order: Turnstile, the email proof, the phase, the waitlist window,
 the email, the wallet (in Mongo, then `balanceOf` on the chain), the design (the chain's bitmap,
 then the unique index on insert). Racing mints of one design: the database lets the first insert
