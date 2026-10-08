@@ -38,6 +38,7 @@ linted with the repo's Biome config and typechecks under `tsconfig.base.json` (s
 | `5-colourways` | The Runner in Ocean through all 10 colourways |
 | `6-options` | Every option value of every template, one slot changed at a time |
 | `7-legendaries` | The 10 Legendaries |
+| `x-founding-pass-teaser` | The first X post's image (1080 × 1350, `social/posts/2026-10-10-founding-pass-first-look.md`): six silhouettes, no pass numbers |
 | `designs.json` | All 1,000 designs: number, layers, name, rarity. A draft: Part 1b re-rolls and freezes it |
 
 ## The system

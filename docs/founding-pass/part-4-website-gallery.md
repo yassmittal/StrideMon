@@ -35,7 +35,8 @@ the one they love, read how it all works, and join the waitlist. No wallet yet: 
    window, get the app with the same wallet, run in your Founder Sneaker. Link to the full help
    (Part 7).
 5. **The landing page:** a Founding Pass section linking to `/pass`, and the waitlist form's copy
-   becomes "Join the waitlist to mint 48 hours before everyone else".
+   becomes "Join the waitlist to mint 48 hours before everyone else". Keep its promise: one email,
+   when the waitlist window opens, and nothing else.
 
 ## Nobody gets stuck
 

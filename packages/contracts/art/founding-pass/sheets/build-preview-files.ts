@@ -11,10 +11,11 @@ import {
   buildLegendariesSheet,
 } from './collection-sheets'
 import type { PreviewFile } from './showcase'
+import { buildXTeaserFile } from './x-teaser'
 
 export type { PreviewFile } from './showcase'
 
-/** Every file previews/ gets: the four sheets the brief asks for, then three for the review. */
+/** Every file previews/ gets: the four sheets the brief asks for, three for the review, one for X. */
 export function buildPreviewFiles(designs: readonly Design[]): PreviewFile[] {
   return [
     buildTemplatesSheet(),
@@ -24,5 +25,6 @@ export function buildPreviewFiles(designs: readonly Design[]): PreviewFile[] {
     buildColorwaysSheet(),
     buildOptionsSheet(),
     buildLegendariesSheet(designs),
+    buildXTeaserFile(),
   ]
 }

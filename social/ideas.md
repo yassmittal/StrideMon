@@ -20,6 +20,19 @@ One line each: `pillar · account · idea · source`. When an idea gets a date, 
 - build-story · yash · What I'd do differently, and what's next (marketplace, the iOS day) · roadmap.md
 - changelog · yash · Week 2 recap · —
 
+## Founding Pass (each one waits for the part that makes it true)
+
+The first look is drafted: `posts/2026-10-10-founding-pass-first-look.md`. The plan is in
+`docs/founding-pass/`.
+
+- proof · stridemon · The waitlist mints first: 48 hours before the open mint. Only once the site's waitlist section says so (Part 4) · founding-pass-brief §5.1
+- build-story · yash · The first side marks were a "W" and a "V", and the V looked like a brand's logo: drawing 10 silhouettes with no lookalikes · art/founding-pass/README.md
+- deep-dive · stridemon · How 1,000 one-of-ones get picked: a seeded script, fair counts, no two sharing more than 4 of 6 visible layers (thread, the options sheet) · art/founding-pass/README.md
+- proof · stridemon · The gallery is live: browse all 1,000 and pick yours (Part 4) · founding-pass-brief §5.2
+- proof · stridemon · It changes after your first walk: the same pass unlaced, then laced (two cards, once Part 2 puts it on-chain) · founding-pass-brief §2
+- proof · stridemon · Your Founder Sneaker: your pass's design on the Sneaker you walk in (Part 6) · founding-pass-brief §7
+- proof · stridemon · Preview week: a colour family a day, and a Legendary of the day (Part 10) · founding-pass-brief §5.1
+
 ## Later
 
 - proof · stridemon · After the D-038 redeploy: "STRIDE is live on the explorer too", with a fresh settle transaction

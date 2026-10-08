@@ -37,14 +37,16 @@ All of it lands after Metropolis judging ends on 2026-10-27.
   - a colour family a day, a "Legendary of the day", and the schedule
   - every STRIDE mention carries "Monad testnet. STRIDE has no monetary value."
   - never "whitelist" or "airdrop"
-- **Emails** (Part 3's sender, within Brevo's daily limit): "The waitlist window opens on…" a day
-  before it does.
+- **No email yet.** The waitlist was promised a single email, and it goes out when the window
+  opens. Dates go on X and the site.
 
 ## The waitlist window, the open mint, opening day
 
 - Watch the outbox, the API logs, the minted count and the key's MON balance. Answer the help
   inbox. Reply "airdrop?" with the same plain no every time.
-- At the open mint: send "Minting is open" to the waitlist, and draft the post.
+- **When the window opens:** send the waitlist its one email (Part 3's sender, within Brevo's
+  daily limit), and draft the post.
+- **At the open mint:** draft the post. The waitlist already had its email.
 - **Opening day:** when all 1,000 are minted or the backup date arrives, the gate switches off by
   itself. Check that a new wallet gets a normal Sneaker. Draft the "most-wanted passes" post from
   the brief §12 metrics.

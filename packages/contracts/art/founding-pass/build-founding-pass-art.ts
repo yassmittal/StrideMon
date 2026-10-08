@@ -20,6 +20,10 @@ const PREVIEWS_DIRECTORY = fileURLToPath(new URL('previews/', import.meta.url))
 const PLEX_MONO_FONT_DIRECTORY = fileURLToPath(
   new URL('../../../../node_modules/@expo-google-fonts/ibm-plex-mono/400Regular/', import.meta.url),
 )
+/** Satoshi, for the X teaser's text (the app's own copy of the font). */
+const SATOSHI_FONT_DIRECTORY = fileURLToPath(
+  new URL('../../../../apps/mobile/assets/fonts/', import.meta.url),
+)
 const SYSTEM_FONTCONFIG_FILE = '/opt/homebrew/etc/fonts/fonts.conf'
 
 const designs = generateDesigns()
@@ -61,7 +65,7 @@ async function renderPngs(previewFiles: readonly PreviewFile[]): Promise<void> {
   }
 }
 
-/** Points fontconfig at IBM Plex Mono, so the PNGs show the same type as the app and website. */
+/** Points fontconfig at IBM Plex Mono and Satoshi, so the PNGs show the app's and website's type. */
 async function buildFontEnvironment(fontconfigDirectory: string): Promise<Record<string, string>> {
   const environment: Record<string, string> = {}
   for (const [name, value] of Object.entries(process.env)) {
@@ -80,6 +84,7 @@ async function buildFontEnvironment(fontconfigDirectory: string): Promise<Record
       '<fontconfig>',
       `  <include ignore_missing="yes">${SYSTEM_FONTCONFIG_FILE}</include>`,
       `  <dir>${PLEX_MONO_FONT_DIRECTORY}</dir>`,
+      `  <dir>${SATOSHI_FONT_DIRECTORY}</dir>`,
       `  <cachedir>${join(fontconfigDirectory, 'cache')}</cachedir>`,
       '</fontconfig>',
       '',

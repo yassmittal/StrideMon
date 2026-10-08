@@ -49,9 +49,12 @@
 8. **CORS and limits:** the `/v1/pass/*` routes and SIWE's nonce and verify routes accept the
    site's origin only, and every public route has a per-IP rate limit. In `bun test`, give each
    injected request its own `remoteAddress`.
-9. **The waitlist emails**, built now and sent in Part 10: "The waitlist window opens on…" and
-   "Minting is open". Brevo's free plan sends 300 a day, so the sender spreads a large list over
-   days and reports what it sent.
+9. **The waitlist email**, built now and sent in Part 10. The site promises "one email when it opens,
+   nothing else", so each waitlist address gets **exactly one** email: "Your 48 hours start now",
+   sent when the waitlist window opens. That's the moment a waitlist member can get in. Brevo's
+   free plan sends 300 a day: if the list is bigger, start sending earlier, oldest sign-ups first,
+   and say in the email when the window opens and closes. The sender reports what it sent and never
+   emails an address twice.
 10. **The testnet MON budget:** the game-server key pays for every pass mint, Founder Sneaker
     and gas drip. Today's drip alone is about 0.13 MON per new player (`CLAUDE.md`), so 1,000
     founders could need well over 100 MON. Measure the real cost per founder, and tell Yash the
