@@ -445,7 +445,7 @@ The API built from Part 3 on refuses to boot without these. Add them to the serv
 
 | Variable | Value on the server |
 |---|---|
-| `EARLY_ACCESS_REQUIRED` | `false` until Metropolis judging ends (2026-10-27). `true` when the preview week starts (Part 10) |
+| `EARLY_ACCESS_REQUIRED` | `false` until Metropolis judging ends (2026-10-27). `true` when early access starts (Part 10, D-049) |
 | `PASS_WAITLIST_WINDOW_STARTS_AT` | `2026-11-28T14:30:00Z` for now. Part 10 sets the real time |
 | `PASS_WAITLIST_WINDOW_HOURS` | `48` |
 | `PASS_BACKUP_OPENING_AT` | `2026-12-14T14:30:00Z` for now (14 days after the open mint starts) |

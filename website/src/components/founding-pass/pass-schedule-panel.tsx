@@ -1,7 +1,13 @@
 'use client'
 
-import { passPhaseContent, passScheduleContent, passSectionIds } from '@/content/founding-pass'
+import {
+  passAppAccessContent,
+  passPhaseContent,
+  passScheduleContent,
+  passSectionIds,
+} from '@/content/founding-pass'
 import { appDownloadUrl, sectionIds } from '@/content/site'
+import type { PassCollection } from '@/lib/founding-pass/pass-collection'
 import { formatPassNumber, readPassDesign } from '@/lib/founding-pass/pass-design'
 import {
   type CountdownParts,
@@ -149,6 +155,12 @@ export function PassSchedulePanel() {
         })}
       </ol>
 
+      <AppAccessLine
+        phase={phase}
+        collection={collection}
+        backupOpeningAt={scheduleTimes.backupOpeningAt}
+      />
+
       {collection === null && requestStatus === 'failed' ? (
         <p className="flex flex-wrap items-center gap-x-2 text-xs leading-[1.4] text-on-dark-secondary">
           {passScheduleContent.unavailableLine}
@@ -161,6 +173,51 @@ export function PassSchedulePanel() {
           </button>
         </p>
       ) : null}
+    </div>
+  )
+}
+
+/**
+ * Who can play the app right now (D-049), from the API's gate. Before early access, the test
+ * period; while the gate is on, founders only. Nothing once it's open to all (the next step says
+ * so), or when the API hasn't said.
+ */
+function AppAccessLine({
+  phase,
+  collection,
+  backupOpeningAt,
+}: {
+  phase: PassSchedulePhase | null
+  collection: PassCollection | null
+  backupOpeningAt: string
+}) {
+  const isEarlyAccessGateOn = collection?.isEarlyAccessGateOn ?? null
+  const isOver = phase === 'allMinted' || phase === 'openToAll'
+  if (phase === null || isOver || isEarlyAccessGateOn === null) return null
+  if (!isEarlyAccessGateOn && phase !== 'preview') return null
+  return (
+    <div className="flex flex-col gap-1.5 border-t border-hairline-on-dark pt-6">
+      <p className="text-label font-medium tracking-[0.08em] uppercase">
+        {passAppAccessContent.label}
+      </p>
+      <p className="max-w-[34em] text-sm leading-[1.45] text-on-dark-secondary">
+        {isEarlyAccessGateOn ? (
+          <>
+            {passAppAccessContent.foundersOnlyPrefix}{' '}
+            <LocalDateTime isoTimestamp={backupOpeningAt} /> at the latest.
+          </>
+        ) : (
+          <>
+            {passAppAccessContent.testPeriodText}{' '}
+            <a
+              href={appDownloadUrl}
+              className="text-on-dark underline decoration-hairline-on-dark underline-offset-4"
+            >
+              {passAppAccessContent.getAppLabel}
+            </a>
+          </>
+        )}
+      </p>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 # Founding Pass: the brief
 
-Version 6, 2026-10-08. Written for a fresh start on `main`. **This file is self-contained**: nothing
+Version 6, 2026-10-08 (§5.1 words and §7 clarified by D-049, 2026-10-09). Written for a fresh start on `main`. **This file is self-contained**: nothing
 from the first attempt (a verified waitlist line with waves, §15) or from the art experiments
 (§4.3) exists on this branch.
 
@@ -250,10 +250,12 @@ Then **stop** and show Yash the sheets. Once he approves, Part 1b ports the rend
 
 ## 5. The gallery and the flow
 
-### 5.1 Before mint day: the preview week (recommended)
+### 5.1 Before mint day: the preview
 
-The gallery at **`stridemon.xyz/pass`** goes live about a week before minting opens, with a
-countdown to a set time (for example Saturday 20:00 IST, 14:30 UTC).
+**Preview** is everything before the waitlist window (D-049). The gallery at
+**`stridemon.xyz/pass`** is already live (since Part 4), with minting closed and a countdown to the
+waitlist window. (This section first planned a "preview week" before minting. D-049 retired the
+words, which also stood for the day the gate goes on: that day is now **early access starts**.)
 
 - People browse, take the match quiz, **heart favorites** (kept in the browser, no account), and
   share pass pages.
@@ -264,7 +266,7 @@ countdown to a set time (for example Saturday 20:00 IST, 14:30 UTC).
 **The schedule (decided 2026-10-08):**
 
 1. **Waitlist window, 48 hours.** Only emails that joined the waitlist **before the window
-   opened** can mint. That's the reason to join during the preview week: "join the waitlist to
+   opened** can mint. That's the reason to join during the preview: "join the waitlist to
    mint 48 hours early".
 2. **Open mint.** Anyone can mint what's left, until all 1,000 are minted.
 3. **Opening day.** The app opens to everyone when all 1,000 are minted, or on the **backup
@@ -275,13 +277,26 @@ countdown to a set time (for example Saturday 20:00 IST, 14:30 UTC).
 
 | Step | Starts |
 |---|---|
-| Preview week (the gate goes on) | Sat 2026-11-21 |
+| Preview: the gallery, minting closed | Already live (Part 4) |
+| Early access starts: the game starts over on fresh contracts, the gate goes on (D-049) | Sat 2026-11-21 |
 | Waitlist window, 48 hours | Sat 2026-11-28, 20:00 IST (14:30 UTC) |
 | Open mint | Mon 2026-11-30, 20:00 IST |
 | Backup opening date | Mon 2026-12-14, 20:00 IST |
 
 Someone who isn't on the waitlist during the window is told when the open mint starts, never just
 refused.
+
+**The app across the schedule (D-049):**
+
+| When | Who can play |
+|---|---|
+| Until early access starts (the test period) | Anyone, with a free normal Sneaker on the current contracts |
+| Early access starts → the waitlist window | Nobody outside the team: the game starts over, and no passes exist yet |
+| The waitlist window and the open mint | Founders only, each with a Founder Sneaker |
+| Opening day (all 1,000 minted, or the backup date) | Everyone. Founders keep their Founder Sneaker, everyone else gets a free normal Sneaker |
+
+Sneakers and STRIDE from the test period stay on the old contracts and don't carry over. The
+site and the app say so (D-049).
 
 ### 5.2 The page
 
@@ -370,10 +385,12 @@ directly (§10.1). Even so, the pass stays in its own contract.
 
 - **Early access (the gate):** while `EARLY_ACCESS_REQUIRED` is on, the API only gives a Sneaker
   to a wallet that holds a pass. It reads the chain, which is the source of truth. The gate
-  switches off by itself when all 1,000 are minted or the backup date passes (§5.1).
+  switches off by itself when all 1,000 are minted or the backup date passes (§5.1). It only
+  stops *new* Sneakers: no older Sneaker plays during early access because the game starts over
+  on fresh contracts the same day (Part 10, D-049).
 - **The hackathon:** Metropolis judging runs until 2026-10-27, and judges install the README's APK.
-  Keep the gate **off until judging ends**. It goes on when the preview week starts (Part 0,
-  D-041).
+  Keep the gate **off until judging ends**. It goes on when early access starts (Part 0,
+  D-041, D-049).
 - **A lost wallet (Part 0, D-041):** support may move a pass to a new wallet, by hand, when its
   founder asks and a code sent to the pass's email checks out. An admin-only action
   (`RECOVERY_ROLE`, the deployer key) moves the pass and its Founder Sneaker together, keeping the
@@ -527,9 +544,9 @@ go-ahead.
 | 7 | Help: plain-words guides and a next step everywhere | M |
 | 8 | Help chatbot on the website (optional, Yash decides the cost first) | M |
 | 9 | Rehearsal: the whole flow, end to end, so nobody gets stuck | M |
-| 10 | Launch: preview week, the waitlist window, open mint, opening day | S + calendar |
+| 10 | Launch: early access starts, the waitlist window, open mint, opening day | S + calendar |
 
-About 5 weeks of focused work before the preview week, mostly Parts 1b, 4 and 5.
+About 5 weeks of focused work before early access starts, mostly Parts 1b, 4 and 5.
 
 ## 12. Metrics (no analytics added)
 
@@ -576,7 +593,7 @@ email → verified → minted drop-off, races lost (a design taken first), minte
 | **Dynamic NFTs that level up with activity** (Typus "Tails", Station3's free Passport). [7] | The pass changing after the first walk. |
 | **Sybil filtering in 2026** rewards deep activity on few wallets. [8] | A free soulbound pass, one per email and wallet, is little use to farmers. |
 | **Google Play still requires 12 testers for 14 days** for new personal accounts, and rejects tests where testers barely used the app. [9] | Founders are the natural closed test. |
-| **Email:** Resend's free plan is 3,000/month but only 100/day; Brevo's is 300/day; SES is $0.10 per 1,000. [10][11] Brevo rewrites the sender to `@brevosend.com` unless the domain is DKIM-authenticated. [16] | Brevo, with the domain authenticated. **Mint day can exceed 300 codes**: "Get ready" during the preview week spreads them out; otherwise move to SES. |
+| **Email:** Resend's free plan is 3,000/month but only 100/day; Brevo's is 300/day; SES is $0.10 per 1,000. [10][11] Brevo rewrites the sender to `@brevosend.com` unless the domain is DKIM-authenticated. [16] | Brevo, with the domain authenticated. **Mint day can exceed 300 codes**: "Get ready" during the preview spreads them out; otherwise move to SES. |
 | **Monad gas:** ~$0.0005 for a 200k-gas transaction at the minimum base fee; MON ~$0.034. [12][13] | On testnet the mints are free. Even on mainnet, 1,000 would cost under $1. |
 | **Monad's contract size limit is 128 KB** (initcode 256 KB), up from Ethereum's 24 KB. [17] | Room for the layer drawings and the 1,000-row design table. |
 | **Privy's free plan:** 500 MAU, then $299/month. [14] | Embedded wallets wait (option C). |

@@ -15,6 +15,13 @@ export const plannedPassScheduleTimes: PassScheduleTimes = {
   backupOpeningAt: '2026-12-14T14:30:00.000Z',
 }
 
+/**
+ * The day early access is planned to start (D-049): the game starts over on fresh contracts and
+ * only Founding Pass holders get a Sneaker. Yash switches it on by hand (Part 10), so it's a date
+ * in words, not a time. Keep it in step with Part 10's date.
+ */
+export const plannedEarlyAccessStartDateText = 'Saturday 21 November'
+
 /** The `/pass` page's sections, for in-page links. */
 export const passSectionIds = {
   find: 'find',
@@ -125,6 +132,15 @@ export const passScheduleContent = {
     description: string
     timeKey: keyof PassScheduleTimes | null
   }[],
+} as const
+
+/** Where the app stands, in the schedule panel (D-049). From the API's `isEarlyAccessGateOn`. */
+export const passAppAccessContent = {
+  label: 'The app',
+  testPeriodText: `Anyone can try it now with a free Sneaker. On ${plannedEarlyAccessStartDateText}, early access starts: the game starts over, and only founders can play. Sneakers and STRIDE from before then don’t carry over.`,
+  getAppLabel: 'Get the app',
+  foundersOnlyPrefix:
+    'Founders only, each with a Founder Sneaker. It opens to everyone when all 1,000 are minted, or on',
 } as const
 
 export const passFindContent = {
@@ -352,13 +368,27 @@ export const passQuestions: readonly PassQuestion[] = [
       'No. The pass and your Founder Sneaker can’t be sent or sold. The pass isn’t a token and never turns into one.',
   },
   {
+    question: 'Is the pass my Sneaker?',
+    answer:
+      'No, they’re two things. The pass is your membership card: you mint it here, and it shows you’re a founder. The Founder Sneaker is the shoe you walk with: the app gives it to you, drawn in your pass’s design, when you sign in with the wallet that holds the pass.',
+  },
+  {
+    question: 'Why does my pass have two numbers?',
+    answer:
+      'The pass number, like #0137, is the design: which of the 1,000 you picked. The founder number, like Founder 42, is the order you minted in: the 42nd founder to mint.',
+  },
+  {
+    question: 'Can I play the app before I have a pass?',
+    answer: `Until early access starts on ${plannedEarlyAccessStartDateText}, anyone can try it with a free Sneaker. Then the game starts over, and only founders can play until all 1,000 are minted or the last date in the schedule. Sneakers and STRIDE from before early access don’t carry over.`,
+  },
+  {
     question: 'How many can I mint?',
     answer: 'One pass per email and one per wallet.',
   },
   {
     question: 'What is the waitlist window?',
     answer:
-      'The first 48 hours of minting. Only emails that joined the waitlist before it opened can mint then. After that, anyone can mint what’s left.',
+      'The first 48 hours of minting. Only emails that joined the waitlist before it opened can mint then, so check the same email you joined with. After that, anyone can mint what’s left.',
   },
   {
     question: 'Do I need a wallet now?',

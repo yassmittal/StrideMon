@@ -77,6 +77,10 @@ export function FoundingPassGate({
           <Text style={styles.body}>
             Minted with another wallet? Sign out and sign in with that one.
           </Text>
+          <Text style={styles.caption}>
+            Played before early access? The game started over for the Founding Pass, so Sneakers and
+            STRIDE from the test period don’t carry over.
+          </Text>
           <PassCheckFeedback passCheck={passCheck} />
           <Button
             label="I’ve minted my pass"

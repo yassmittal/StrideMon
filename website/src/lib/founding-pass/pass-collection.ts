@@ -26,6 +26,11 @@ export type PassCollection = {
   scheduleTimes: PassScheduleTimes
   /** The API's phase when it answered. The page recomputes it from the times and the clock. */
   phase: PassSchedulePhase
+  /**
+   * Whether the app gives a Sneaker only to pass holders right now (D-041, D-049). `null` when the
+   * API doesn't say.
+   */
+  isEarlyAccessGateOn: boolean | null
 }
 
 export type PassAvailability = 'available' | 'pending' | 'minted'
@@ -97,6 +102,8 @@ function parsePassCollection(body: unknown): PassCollection | null {
       backupOpeningAt: schedule.backupOpeningAt,
     },
     phase,
+    isEarlyAccessGateOn:
+      typeof body.isEarlyAccessGateOn === 'boolean' ? body.isEarlyAccessGateOn : null,
   }
 }
 

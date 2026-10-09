@@ -434,6 +434,8 @@ pass's Founder Sneaker (`SneakerNft.founderSneakerTokenIdOf`).
 The onboarding status adds `starterSneakerKind` (`founder` or `normal`: which free Sneaker this
 wallet gets) and `isFoundingPassRequired` (the gate is on and the wallet holds no pass), so the
 app knows which screen to show. The gate stays off until Metropolis judging ends (2026-10-27).
+The gate only stops *new* Sneakers. No older Sneaker plays during early access because the game
+starts over on fresh contracts the day the gate goes on (Part 10, D-049).
 
 **Lacing:** when a `settleSession` confirms, the outbox job reads the wallet's pass. If it holds
 one that isn't laced, it queues `laceFoundingPass` (`setLaced`). A 0-minute run sends no

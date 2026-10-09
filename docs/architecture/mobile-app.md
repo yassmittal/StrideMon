@@ -223,7 +223,8 @@ Sneaker. The decision is D-046.
 - **The gate:** when the starter request is refused with `FOUNDING_PASS_REQUIRED`, the minting
   screen gives way to `FoundingPassGate`: "Mint a Founding Pass to get in early", the mint's
   phase and when the app opens to everyone, a button to `stridemon.xyz/pass`, the signed-in
-  address with "Minted with another wallet? Sign out and sign in with that one.", Sign out,
+  address with "Minted with another wallet? Sign out and sign in with that one.", a line saying
+  test-period Sneakers and STRIDE don't carry over (D-049), Sign out,
   "I've minted my pass" ("Checking for your pass…") and a help link. While it's open it looks for
   a pass every 5 seconds and asks again for the starter once the collection says the gate is off.
 - **Profile** shows the pass (`FoundingPassPanel`): the card, the founder number, laced or not,

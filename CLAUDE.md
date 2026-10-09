@@ -171,7 +171,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-049.
+for it. The next free decision number is D-050.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -245,3 +245,9 @@ with DeepSeek V3.2 on Amazon Bedrock (`BEDROCK_API_KEY`, `us-east-1`) under a $5
 (`HELP_CHAT_MONTHLY_CAP_USD`). **After any change to `website/src/content/help.ts`, run
 `bun run help:export-knowledge`** and redeploy the API. `cd apps/api && bun run help:check-answers`
 runs the 20-question test list against the live model.
+**Founder access, said plainly (D-049, 2026-10-09):** "preview" is everything before the waitlist
+window (the gallery is already live); "preview week" is retired. **Early access starts** (planned
+Sat 2026-11-21) is the day Part 10 restarts the game on fresh contracts and turns the gate on, so
+test-period Sneakers and STRIDE don't carry over. `/pass` shows where the app stands from the API's
+`isEarlyAccessGateOn`; the copy explains the pass vs the Founder Sneaker, the two numbers (design
+`#0137` vs "Founder 42"), and that the email must be the waitlist one.

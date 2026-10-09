@@ -1432,3 +1432,43 @@ Yash chose the AI option, on Amazon Bedrock (his API key, `us-east-1`), with a *
 - **Revisit when:** the cap is reached in a normal month (raise it, or send only the matching
   topics instead of the whole text), Bedrock's prices change, or a cheaper model passes the test
   list.
+
+## D-049 — Founder access, said plainly
+
+Made 2026-10-09, after a first-time read of the whole flow found six places a new player could
+misread it. It refines D-041's schedule words and D-044, D-045, D-046 and D-047's copy. Nothing
+about the contracts, the API or the dates changes.
+
+- **Decision:**
+  1. **"Preview" is everything before the waitlist window.** The gallery at `/pass` is already
+     live (since Part 4), with minting closed. The words **"preview week"** are retired: they
+     stood for two things (the gallery going up, and the gate going on).
+  2. **"Early access starts"** names the day the game starts over for the Founding Pass (planned
+     Sat 2026-11-21, a week before the waitlist window; Part 10 sets it). That day, as Part 10
+     already planned: a fresh `FoundingPass` and game are deployed, the hosted database's pass
+     and Sneaker records are reset (the waitlist stays), and `EARLY_ACCESS_REQUIRED` goes on.
+  3. **The test period ends at early access, and nothing carries over.** Until then, anyone can
+     try the app with a free normal Sneaker on the current contracts. Sneakers and STRIDE from
+     the test period stay on the old contracts. So during early access only founders play: the
+     gate stops new Sneakers, and the restart means no older Sneaker is on the new contracts.
+     Between early access starting and the waitlist window, no passes exist, so nobody outside
+     the team can play that week.
+  4. **Say where the app stands, live.** `/pass`'s schedule panel has an "The app" line from
+     `GET /v1/pass/collection`'s `isEarlyAccessGateOn`: open to anyone (with the planned early
+     access date, `plannedEarlyAccessStartDateText` in `website/src/content/founding-pass.ts`),
+     founders only (with the opening day), or nothing once it's open to all. The help page's
+     "How it works" gains an **Early access** step, and the app's gate screen says that
+     test-period Sneakers don't carry over.
+  5. **The pass and the Founder Sneaker are two things**, and the copy says so where people ask:
+     a question on `/pass` and an answer on `/help` (`pass-or-sneaker`).
+  6. **Two numbers, explained.** `#0137` is the design (which of the 1,000), and "Founder 42" is
+     the mint order. The reveal says it in one line, and `/pass` and `/help` (`two-numbers`)
+     answer it. The on-chain card is unchanged (the designs are frozen).
+  7. **The email must match the waitlist.** The email step says to use the email you joined the
+     waitlist with, because in the window the API checks that email.
+- **Why:** the early-access flow has three dates and two NFTs, and someone who tried the app in
+  the test period would otherwise find their Sneaker gone with no reason given. Reading the
+  app's state from the API, not from a planned date, keeps the panel right if the switch moves.
+- **Trade-off:** one more planned date to keep in sync (Part 10). The help page now says the
+  test period's Sneakers don't carry over, which only holds if Part 10's restart happens.
+- **Revisit when:** Part 10 sets the dates, or early access starts without a restart.

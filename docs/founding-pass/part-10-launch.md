@@ -1,6 +1,6 @@
 # Part 10: Launch
 
-**Goal:** the preview week, the waitlist window, the open mint and opening day happen on
+**Goal:** early access, the waitlist window, the open mint and opening day happen on
 schedule, and people get help fast when they need it.
 
 ## Read first
@@ -12,18 +12,23 @@ schedule, and people get help fast when they need it.
 ## Set the dates with Yash
 
 The schedule, in IST and UTC:
-- the preview week starts
+- early access starts (the restart and the gate, D-049)
 - the waitlist window starts and runs 48 hours
 - the open mint starts when the window ends
 - the backup opening date, 14 days after the open mint starts (Part 0)
 
-Part 0's rough dates (D-041, brief §5.1): the preview week from Sat 2026-11-21, the waitlist
+Part 0's rough dates (D-041, brief §5.1): early access from Sat 2026-11-21, the waitlist
 window from Sat 2026-11-28 20:00 IST, the open mint from Mon 2026-11-30 20:00 IST, and the
 backup opening date Mon 2026-12-14 20:00 IST.
 
-All of it lands after Metropolis judging ends on 2026-10-27.
+All of it lands after Metropolis judging ends on 2026-10-27. When a date moves, change the
+website's planned copies too: `plannedPassScheduleTimes` and `plannedEarlyAccessStartDateText` in
+`website/src/content/founding-pass.ts` (D-049), and ship the site.
 
-## Before the preview week (Yash deploys, with the session's help)
+## Early access starts (Yash deploys, with the session's help)
+
+All of this happens on the one day, so the app goes from the test period straight to
+founders only (D-049).
 
 1. **A fresh `FoundingPass`**, since the rehearsal's mints took real designs, **and the game
    redeployed with it** (D-042): `SneakerGame` and the Sneaker renderer are wired to one
@@ -38,7 +43,7 @@ All of it lands after Metropolis judging ends on 2026-10-27.
 4. **Ship the website and the app build**, then check `/pass`, `/help` and the app against
    production once.
 
-## Preview week
+## Early access week
 
 - `/pass` is live with its countdown, and the landing page asks people to join the waitlist to
   mint 48 hours early.

@@ -5,6 +5,7 @@ import { buildExplorerTransactionUrl, shortenAddress } from '@/content/contracts
 import { passPromiseLine } from '@/content/founding-pass'
 import {
   buildMintedShareText,
+  buildRevealNumbersLine,
   mintPendingContent,
   revealContent,
 } from '@/content/founding-pass-mint'
@@ -112,6 +113,9 @@ export function PassMintProgress({
                 {countedFounderNumber}
               </span>
               <span className="text-sm text-ink-secondary-small">{revealContent.ofLabel}</span>
+            </p>
+            <p className="text-sm leading-[1.4] text-ink-secondary-small">
+              {buildRevealNumbersLine(passNumberText, founderNumber)}
             </p>
             {mint.hasGoldFrame ? (
               <p className="text-base leading-[1.4]">{revealContent.goldFrameLine}</p>

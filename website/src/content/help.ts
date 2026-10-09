@@ -1,3 +1,4 @@
+import { plannedEarlyAccessStartDateText } from './founding-pass'
 import { walletStepContent } from './founding-pass-mint'
 import type { screenshots } from './screenshots'
 import {
@@ -35,6 +36,9 @@ export type HelpTopicId =
   | 'first-walk'
   // Plain answers
   | 'whats-free'
+  | 'pass-or-sneaker'
+  | 'two-numbers'
+  | 'play-before-pass'
   | 'cant-be-sent-or-sold'
   | 'why-email'
   | 'which-wallet'
@@ -149,7 +153,11 @@ export const helpSections: readonly { id: HelpTopicId; title: string }[] = [
 export const helpHowItWorks: readonly { title: string; text: string }[] = [
   {
     title: 'Preview',
-    text: 'Browse all 1,000 Founding Passes, heart your favourites, and join the waitlist.',
+    text: 'Browse all 1,000 Founding Passes, heart your favourites, and join the waitlist. Minting hasn’t started, and anyone can try the app with a free Sneaker.',
+  },
+  {
+    title: 'Early access',
+    text: `On ${plannedEarlyAccessStartDateText}, the game starts over for the Founding Pass. From then, only founders can play, and Sneakers and STRIDE from before don’t carry over.`,
   },
   {
     title: 'Waitlist window',
@@ -320,6 +328,33 @@ export const helpPlainAnswers: readonly HelpAnswer[] = [
     paragraphs: [
       'Everything. The pass, the Founder Sneaker and the app are free. StrideMon pays the gas, and gives new players a little test MON. You never pay anything.',
     ],
+  },
+  {
+    id: 'pass-or-sneaker',
+    question: 'Is the Founding Pass my Sneaker?',
+    paragraphs: [
+      'No, they’re two things. The pass is your membership card: you mint it on the website, and it shows you’re a founder. You don’t walk with it.',
+      'The Founder Sneaker is the shoe you walk with. The app gives it to you, drawn in your pass’s design, when you sign in with the wallet that holds the pass. Neither can be sent or sold.',
+    ],
+    links: [helpLinks.signInApp],
+  },
+  {
+    id: 'two-numbers',
+    question: 'Why does my pass have two numbers?',
+    paragraphs: [
+      'The pass number, like #0137, is the design: which of the 1,000 you picked. Every design exists once.',
+      'The founder number, like Founder 42, is the order you minted in: you were the 42nd founder to mint.',
+    ],
+  },
+  {
+    id: 'play-before-pass',
+    question: 'Can I play the app before I have a pass?',
+    paragraphs: [
+      `Until early access starts on ${plannedEarlyAccessStartDateText}, yes: anyone can try it with a free Sneaker. That’s a test period.`,
+      'When early access starts, the game starts over. Sneakers and STRIDE from the test period don’t carry over, and only founders can play. Nobody has a pass until the waitlist window opens, so the app waits until then.',
+      'When all 1,000 are minted, or on the last date in the schedule, anyone can play again with a free Sneaker.',
+    ],
+    links: [helpLinks.gallery],
   },
   {
     id: 'cant-be-sent-or-sold',
@@ -545,6 +580,7 @@ export const helpTroubleshootingGroups: readonly HelpAnswerGroup[] = [
           'Right now, only founders can play. The app looks for a pass in the wallet you signed in with.',
           'Minted already? Check that the address the app shows is the wallet you minted with. If not, tap Sign out and sign in with that one.',
           'Just minted? Tap I’ve minted my pass. A new pass can take a few seconds to show.',
+          'Played before early access? The game started over for the Founding Pass, so Sneakers and STRIDE from the test period don’t carry over.',
           'No pass yet? Tap See the Founding Passes. The app opens to everyone when all 1,000 are minted, or on the last date in the schedule.',
         ],
         links: [helpLinks.gallery, helpLinks.signInApp],

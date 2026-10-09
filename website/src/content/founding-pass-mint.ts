@@ -24,7 +24,8 @@ export const getReadyContent = {
 export const emailStepContent = {
   stepLabel: 'Step 1',
   title: 'Check your email',
-  description: 'We send a 6-digit code to check it’s yours. It’s one pass per email.',
+  description:
+    'We send a 6-digit code to check it’s yours. It’s one pass per email. In the waitlist window, use the email you joined the waitlist with.',
   emailLabel: 'Email',
   emailPlaceholder: 'you@example.com',
   sendCodeLabel: 'Send code',
@@ -110,6 +111,26 @@ export const revealContent = {
     'Next: install StrideMon on Android and sign in with this wallet. The app gives you a Founder Sneaker in this design, and your first walk laces both.',
   doneLabel: 'Done',
 } as const
+
+/** The reveal's line on the two numbers (D-049): the design, and the mint order. */
+export function buildRevealNumbersLine(passNumberText: string, founderNumber: number): string {
+  return `${passNumberText} is your design, one of the 1,000. Founder ${founderNumber} means you were the ${formatOrdinal(founderNumber)} founder to mint.`
+}
+
+function formatOrdinal(count: number): string {
+  const lastTwoDigits = count % 100
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 13) return `${count}th`
+  switch (count % 10) {
+    case 1:
+      return `${count}st`
+    case 2:
+      return `${count}nd`
+    case 3:
+      return `${count}rd`
+    default:
+      return `${count}th`
+  }
+}
 
 /** The X post after a mint (brief §8). The link carries `?source=x-share`. */
 export function buildMintedShareText(

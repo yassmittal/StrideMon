@@ -20,8 +20,15 @@ does that as its last step).
 ## The whole picture in plain words
 
 ```text
-PREVIEW WEEK     The gallery of all 1,000 designs goes up at stridemon.xyz/pass with a
-                 countdown. People browse, pick favourites, share, and join the waitlist.
+PREVIEW          Everything before the waitlist window. The gallery of all 1,000 designs is
+                 live at stridemon.xyz/pass with a countdown, minting closed. People browse,
+                 pick favourites, share, and join the waitlist. Until early access starts,
+                 anyone can try the app with a free normal Sneaker (the test period).
+
+EARLY ACCESS     About a week before the waitlist window (D-049). The game starts over on
+STARTS           fresh contracts and the gate goes on: test-period Sneakers and STRIDE don't
+                 carry over, and only pass holders get a Sneaker. No passes exist yet, so
+                 nobody plays until the waitlist window.
 
 WAITLIST WINDOW  48 hours. Only people who joined the waitlist before it opened can mint.
                  Each picks one design and mints it free on the website.
@@ -58,7 +65,7 @@ Everyone after the 1,000 gets a **normal Sneaker**: free, today's look, and it c
 | [7](part-7-help.md) | Help: plain-words guides and a next step everywhere | M | **Done** (2026-10-09, D-047; Yash read `/help` on the website; some guide screenshots still to update) |
 | [8](part-8-help-chatbot.md) | Help chatbot on the website (optional, Yash decides the cost first) | M | **Done** (2026-10-09, D-048; test list 20/20, cap and Lighthouse checked, Yash tried it) |
 | [9](part-9-rehearsal.md) | Rehearsal: the whole flow, end to end, so nobody gets stuck | M | Not started |
-| [10](part-10-launch.md) | Launch: preview week, the waitlist window, open mint, opening day | S + calendar | Not started |
+| [10](part-10-launch.md) | Launch: early access starts, the waitlist window, open mint, opening day | S + calendar | Not started |
 
 ## Rules for every part
 
