@@ -8,6 +8,7 @@ import {
   formatPassNumber,
   readPassDesign,
 } from '@/lib/founding-pass/pass-design'
+import { HelpTopicLink } from '../ui/help-topic-link'
 import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { PassArt } from './pass-art'
@@ -108,6 +109,7 @@ export function FounderPassPanel({
             </a>
           ) : null}
         </div>
+        <HelpTopicLink helpTopicId="already-a-founder" />
         <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
           {passPromiseLine}
         </p>

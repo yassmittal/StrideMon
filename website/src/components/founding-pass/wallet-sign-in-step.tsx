@@ -26,6 +26,7 @@ import {
 } from '@/lib/founding-pass/use-pass-wallet'
 import type { PassWalletAccount } from '@/lib/founding-pass/wallet/pass-wallet-connection'
 import { isWalletRejection } from '@/lib/founding-pass/wallet-errors'
+import { HelpTopicLink } from '../ui/help-topic-link'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { MintProblemNote, MintTextButton } from './mint-problem-note'
 import { MintStepFrame, mintQuietButtonClassName } from './mint-step-frame'
@@ -199,6 +200,7 @@ export function WalletSignInStep({ headingLevel }: WalletSignInStepProps) {
                 }
               />
             </button>
+            <HelpTopicLink helpTopicId="wrong-network" />
           </div>
         </div>
       ) : (

@@ -50,9 +50,9 @@ export const monadRpcUrl = process.env.NEXT_PUBLIC_MONAD_RPC_URL ?? monadPublicR
 export const turnstileSiteKey =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '0x4AAAAAAFRleBaVJ9eZuqBJ'
 
-/** The Founding Pass gallery (D-041) and, until Part 7 builds `/help`, its questions (D-044). */
+/** The Founding Pass gallery (D-041), and the help page every error links to (D-047). */
 export const passGalleryPath = '/pass'
-export const passHelpPath = '/pass#questions'
+export const helpPath = '/help'
 
 export const siteName = 'StrideMon'
 
@@ -130,6 +130,7 @@ export const footerContent = {
   builtOnLine: 'Built on Monad testnet for a hackathon.',
   noValueLine: 'STRIDE has no monetary value.',
   githubLabel: 'GitHub',
+  helpLabel: 'Help',
   privacyPolicyLabel: 'Privacy',
   deleteAccountLabel: 'Delete account',
 } as const

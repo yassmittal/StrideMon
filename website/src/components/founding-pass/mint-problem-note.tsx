@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 import {
   type MintProblemKey,
-  mintHelpLabel,
-  mintHelpPath,
   mintProblemContent,
+  mintProblemHelpTopicIds,
 } from '@/content/founding-pass-mint'
+import { HelpTopicLink } from '../ui/help-topic-link'
 
 type MintProblemNoteProps = {
   problemKey: MintProblemKey
@@ -15,7 +15,10 @@ type MintProblemNoteProps = {
   tone?: 'light' | 'dark'
 }
 
-/** What went wrong, what to do about it, and where to get help, in plain words (Part 5). */
+/**
+ * What went wrong, what to do about it, and where to get help, in plain words (Part 5). The help
+ * link opens the problem's own answer (D-047).
+ */
 export function MintProblemNote({
   problemKey,
   extra,
@@ -33,12 +36,7 @@ export function MintProblemNote({
       {extra}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         {actions}
-        <a
-          href={mintHelpPath}
-          className="inline-flex min-h-11 items-center text-label font-medium tracking-[0.08em] uppercase underline decoration-hairline underline-offset-4"
-        >
-          {mintHelpLabel}
-        </a>
+        <HelpTopicLink helpTopicId={mintProblemHelpTopicIds[problemKey]} />
       </div>
     </div>
   )

@@ -30,6 +30,8 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/founding-pass.ts` | The Founding Pass page's copy, the planned schedule, the match quiz and the questions (D-044) |
 | `src/content/founding-pass-designs.ts` | **Generated**: the 1,000 designs and their layer labels. Never edit it by hand |
 | `src/content/founding-pass-mint.ts` | The mint's copy: "Get ready", the steps, the reveal, and one plain message per problem (D-045) |
+| `src/content/help.ts` | The help page (`/help`, D-047): every guide and answer as plain strings, each with an `id` that's its anchor. Mint problems and the app link to those ids: don't rename one without changing `mintProblemHelpTopicIds` and the app's `helpTopicIds` |
+| `public/help/` | The help guides' website screenshots (378 × 770 WebP, cut from `media-source/pass-mint-screenshots/`) |
 | `src/content/founding-pass-abi.ts` | The four `FoundingPass` reads the site makes, copied by hand (D-045) |
 | `public/pass-art/` | **Generated**: each design's card (`cards/0137.svg`) and laced Sneaker (`laced/0137.svg`) |
 | `src/lib/founding-pass/` | The design table's helpers, the gallery's filters and quiz, the schedule, the live state and favourites stores, and the mint: its API calls, "Get ready" store, mint flow, Turnstile and chain reads |

@@ -1,6 +1,6 @@
 import type { PassGallerySort } from '@/lib/founding-pass/pass-gallery-view'
 import type { PassSchedulePhase, PassScheduleTimes } from '@/lib/founding-pass/pass-schedule'
-import { passHelpPath, sectionIds, supportEmail, xAccountHandle, xAccountUrl } from './site'
+import { helpPath, sectionIds, supportEmail, xAccountHandle, xAccountUrl } from './site'
 
 // The Founding Pass gallery at /pass (D-041, D-044). Words: Founding Pass, founder, waitlist,
 // waitlist window, open mint, one of one, and "all minted" (docs/founding-pass/README.md).
@@ -299,7 +299,7 @@ export const passHowItWorksContent = {
   metaLabels: ['How it works', 'Four steps'],
   heading: 'From waitlist to your first walk',
   helpLabel: 'Read the full help',
-  helpPath: passHelpPath,
+  helpPath,
   steps: [
     {
       title: 'Join the waitlist',
@@ -332,6 +332,8 @@ export type PassQuestion = {
 export const passQuestionsContent = {
   metaLabels: ['Questions', 'Founding Pass'],
   heading: 'Questions',
+  helpLabel: 'Read the full help',
+  helpPath,
   helpPrompt: 'Still stuck? Write to',
   helpOr: 'or ask on X:',
   supportEmail,

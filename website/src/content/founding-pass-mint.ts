@@ -1,11 +1,11 @@
-import { appDownloadUrl, passHelpPath, xAccountHandle } from './site'
+import type { HelpTopicId } from './help'
+import { appDownloadUrl, xAccountHandle } from './site'
 
 // The mint on /pass (Part 5, D-045): "Get ready", the steps, the mint, the reveal, and every
 // problem with a plain next step (docs/founding-pass/README.md → Nobody gets stuck). Words:
 // Founding Pass, founder, waitlist, waitlist window, open mint, one of one, "all minted".
 
 export const mintHelpLabel = 'Get help'
-export const mintHelpPath = passHelpPath
 
 export const getReadyContent = {
   sectionId: 'get-ready',
@@ -48,7 +48,7 @@ export const walletStepContent = {
   stepLabel: 'Step 2',
   title: 'Sign in with your wallet',
   description:
-    'A free signature proves the wallet is yours. Nothing is sent on-chain. Use the wallet you’ll use in the app.',
+    'A free signature proves the wallet is yours. It sends nothing and costs nothing. Use the wallet you’ll use in the app.',
   connectLabel: 'Connect wallet',
   loadingLabel: 'Opening wallets',
   signInLabel: 'Sign in',
@@ -224,7 +224,7 @@ export const mintProblemContent: Record<MintProblemKey, MintProblemContent> = {
   },
   signatureRefused: {
     title: 'You said no in your wallet.',
-    text: 'You’re not signed in yet. Signing is free and sends nothing on-chain. Tap Sign in to try again.',
+    text: 'You’re not signed in yet. Signing is free and sends nothing. Tap Sign in to try again.',
   },
   signInRequestExpired: {
     title: 'The sign-in request ran out.',
@@ -298,6 +298,39 @@ export const mintProblemContent: Record<MintProblemKey, MintProblemContent> = {
     title: 'Something went wrong on our side.',
     text: 'Nothing was minted. Try again in a minute. If it keeps happening, write to us.',
   },
+}
+
+/** Each problem's own answer on /help (D-047). */
+export const mintProblemHelpTopicIds: Record<MintProblemKey, HelpTopicId> = {
+  emailInvalid: 'code-not-arriving',
+  codeFormat: 'wrong-code',
+  codeRecentlySent: 'code-not-arriving',
+  emailSendFailed: 'code-not-arriving',
+  codeIncorrect: 'wrong-code',
+  codeExpired: 'wrong-code',
+  codeTooManyAttempts: 'wrong-code',
+  walletLoadFailed: 'wallet-wont-load',
+  walletNotConnected: 'no-wallet',
+  walletNotAnswering: 'wallet-not-answering',
+  signatureRefused: 'sign-in-failed',
+  signInRequestExpired: 'sign-in-failed',
+  signatureInvalid: 'sign-in-failed',
+  networkSwitchFailed: 'wrong-network',
+  turnstileFailed: 'robot-check',
+  turnstileUnavailable: 'robot-check',
+  emailProofInvalid: 'check-ran-out',
+  signInEnded: 'check-ran-out',
+  notOpen: 'minting-not-open',
+  waitlistOnly: 'waitlist-only',
+  allMinted: 'all-minted',
+  mintClosed: 'all-minted',
+  alreadyMinted: 'pass-taken',
+  mintFailed: 'mint-failed',
+  mintStillQueued: 'mint-slow',
+  mintLostContact: 'mint-slow',
+  rateLimited: 'too-many-tries',
+  unreachable: 'cant-reach-stridemon',
+  unexpected: 'cant-reach-stridemon',
 }
 
 export const mintProblemActionLabels = {

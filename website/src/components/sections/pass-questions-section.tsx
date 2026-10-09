@@ -5,7 +5,7 @@ import { XLogoIcon } from '../ui/x-logo-icon'
 
 const headingId = `${passSectionIds.questions}-heading`
 
-/** The Founding Pass's short answers, and where to get help (Part 7 adds the full help page). */
+/** The Founding Pass's short answers, and where to get help: the full help page (D-047) or us. */
 export function PassQuestionsSection() {
   return (
     <section
@@ -20,6 +20,13 @@ export function PassQuestionsSection() {
           heading={passQuestionsContent.heading}
         />
         <div data-reveal className="flex flex-col gap-1 text-base leading-[1.4]">
+          <a
+            href={passQuestionsContent.helpPath}
+            className="group mb-3 inline-flex min-h-11 items-center gap-2 self-start text-label font-medium tracking-[0.08em] uppercase"
+          >
+            {passQuestionsContent.helpLabel}
+            <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+          </a>
           <p className="text-ink-secondary-small">{passQuestionsContent.helpPrompt}</p>
           <a
             href={`mailto:${passQuestionsContent.supportEmail}`}

@@ -1,5 +1,6 @@
 import { faqContent, frequentlyAskedQuestions } from '@/content/faq'
 import { sectionIds } from '@/content/site'
+import { ArrowIcon } from '../ui/arrow-icon'
 import { SectionHeading } from '../ui/section-heading'
 
 const headingId = `${sectionIds.faq}-heading`
@@ -11,12 +12,20 @@ export function FaqSection() {
       aria-labelledby={headingId}
       className="page-gutter page-container grid gap-10 py-16 md:grid-cols-12 md:gap-6 md:py-24"
     >
-      <div className="md:col-span-4">
+      <div className="flex flex-col gap-8 md:col-span-4">
         <SectionHeading
           id={headingId}
           metaLabels={faqContent.metaLabels}
           heading={faqContent.heading}
         />
+        <a
+          data-reveal
+          href={faqContent.helpPath}
+          className="group inline-flex min-h-11 items-center gap-2 self-start text-label font-medium tracking-[0.08em] uppercase"
+        >
+          {faqContent.helpLabel}
+          <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+        </a>
       </div>
       <div data-reveal className="border-t border-hairline md:col-span-7 md:col-start-6">
         {frequentlyAskedQuestions.map((item) => (

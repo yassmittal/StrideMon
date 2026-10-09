@@ -256,6 +256,18 @@
   transform: rotate(45deg);
 }
 
+/* ---------- Help: the answer a link opened (D-047) ---------- */
+
+.help-topic {
+  border-radius: var(--radius-panel);
+}
+
+/* A spread shadow pads the highlight without moving the text. */
+.help-topic:target {
+  background: var(--color-surface);
+  box-shadow: 0 0 0 12px var(--color-surface);
+}
+
 /* ---------- Waitlist: the joined line fades in where the form was ---------- */
 
 .waitlist-joined {

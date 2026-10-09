@@ -6,6 +6,7 @@ import {
 import {
   footerContent,
   githubRepositoryUrl,
+  helpPath,
   legalPagePaths,
   siteName,
   xAccountHandle,
@@ -33,6 +34,12 @@ export function SiteFooter() {
             className="grid grid-cols-1 gap-x-6 sm:grid-cols-2 md:col-span-6"
           >
             <ul>
+              <li>
+                <a href={helpPath} className={footerLinkClass}>
+                  {footerContent.helpLabel}
+                  <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+                </a>
+              </li>
               <li>
                 <a
                   href={githubRepositoryUrl}
