@@ -1,6 +1,7 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
+import { buildHelpUrl } from '../../../config/website-urls'
 import {
   buildSneakerExplorerUrl,
   buildTransactionExplorerUrl,
@@ -13,6 +14,7 @@ import { formatWalletAddress } from '../../../lib/format/format-wallet-address'
 import { colors, layout, radii, spacing, textStyles } from '../../../theme'
 import {
   describeSneakerGameTransactionError,
+  findSneakerGameTransactionHelpTopicId,
   type SneakerGameTransactionErrorCode,
 } from '../sneaker-game-transaction-state'
 import type { SneakerTransactionConfirmation } from './SneakerTransactionSheet'
@@ -178,6 +180,12 @@ export function FailedStep({
           {isWalletCancel ? 'You cancelled in your wallet' : 'That didn’t go through'}
         </Text>
         <Text style={styles.caption}>{describeSneakerGameTransactionError(errorCode)}</Text>
+        {!isWalletCancel && (
+          <ExternalLink
+            label="Get help"
+            url={buildHelpUrl(findSneakerGameTransactionHelpTopicId(errorCode))}
+          />
+        )}
       </View>
       <Button label="Try again" onPress={onRetryPress} />
       <Button label="Close" variant="secondary" onPress={onClosePress} />

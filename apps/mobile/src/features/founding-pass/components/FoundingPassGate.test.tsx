@@ -57,7 +57,7 @@ describe('FoundingPassGate', () => {
     expect(screen.getByText('Minting is open to everyone. 612 of 1,000 minted.')).toBeTruthy()
     expect(screen.getByText(/The app opens to everyone when all 1,000 are minted/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'See the Founding Passes' })).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Help with the Founding Pass' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Get help' })).toBeTruthy()
   })
 
   it('shows the signed-in wallet in full, with the way out for a pass in another wallet', async () => {

@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button } from '../../../components/ui/Button'
+import { ExternalLink } from '../../../components/ui/ExternalLink'
+import { buildHelpUrl } from '../../../config/website-urls'
 import { colors, radii, spacing, textStyles } from '../../../theme'
 import { WalletAddress } from '../../wallet/components/WalletAddress'
-import { describeSignInError, type SignInState } from '../sign-in-state'
+import { describeSignInError, findSignInHelpTopicId, type SignInState } from '../sign-in-state'
 
 type SignInPanelProps = {
   walletAddress: string | undefined
@@ -31,7 +33,9 @@ export function SignInPanel({
           Turn on the Monad Testnet network (chain 10143) in your wallet first. Wallets only share
           accounts for networks they have enabled.
         </Text>
+        <ExternalLink label="How to add Monad Testnet" url={buildHelpUrl('add-monad-testnet')} />
         <Button label="Connect wallet" onPress={onConnectWalletPress} />
+        <ExternalLink label="Can’t connect? Get help" url={buildHelpUrl('app-cant-connect')} />
       </View>
     )
   }
@@ -76,9 +80,15 @@ function SignInProgress({ signInState }: { signInState: SignInState }) {
       return <Text style={styles.progress}>Checking your signature…</Text>
     case 'failed':
       return (
-        <Text style={styles.error} accessibilityRole="alert">
-          {describeSignInError(signInState.errorCode)}
-        </Text>
+        <View>
+          <Text style={styles.error} accessibilityRole="alert">
+            {describeSignInError(signInState.errorCode)}
+          </Text>
+          <ExternalLink
+            label="Get help"
+            url={buildHelpUrl(findSignInHelpTopicId(signInState.errorCode))}
+          />
+        </View>
       )
     default: {
       const unhandledPhase: never = signInState

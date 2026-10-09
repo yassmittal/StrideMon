@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { DarkPanel } from '../../../components/ui/DarkPanel'
+import { ExternalLink } from '../../../components/ui/ExternalLink'
+import { buildHelpUrl } from '../../../config/website-urls'
 import { colors, spacing, textStyles } from '../../../theme'
 
 /** The settlement would be rejected if the Sneaker changed hands mid-run, so the app says so first. */
@@ -40,6 +42,9 @@ export function TransferPanel({
         isDisabled={isFounderSneaker !== false || isRunInProgress}
       />
       {blockedReasonMessage !== null && <Text style={styles.caption}>{blockedReasonMessage}</Text>}
+      {isFounderSneaker === true && (
+        <ExternalLink label="Why?" url={buildHelpUrl('founder-sneaker-cant-send')} />
+      )}
     </View>
   )
 }

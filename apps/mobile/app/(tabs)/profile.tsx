@@ -7,7 +7,7 @@ import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Panel } from '../../src/components/ui/Panel'
 import { Screen } from '../../src/components/ui/Screen'
 import { ScreenTitle } from '../../src/components/ui/ScreenTitle'
-import { privacyPolicyUrl } from '../../src/config/website-urls'
+import { helpUrl, privacyPolicyUrl } from '../../src/config/website-urls'
 import { DeleteAccountSheet } from '../../src/features/auth/components/DeleteAccountSheet'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { useDeleteAccount } from '../../src/features/auth/hooks/useDeleteAccount'
@@ -78,6 +78,7 @@ export default function ProfileScreen() {
           variant="secondary"
           onPress={() => setIsDeleteAccountSheetVisible(true)}
         />
+        <ExternalLink label="Help" url={helpUrl} />
         <ExternalLink label="Privacy policy" url={privacyPolicyUrl} />
       </View>
       <DeleteAccountSheet

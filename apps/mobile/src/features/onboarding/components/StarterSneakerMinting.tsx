@@ -5,10 +5,11 @@ import { CounterText } from '../../../components/ui/CounterText'
 import { ErrorState } from '../../../components/ui/ErrorState'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
 import { MetaLabel } from '../../../components/ui/MetaLabel'
-import { foundingPassHelpUrl } from '../../../config/website-urls'
+import { buildHelpUrl } from '../../../config/website-urls'
 import { colors, spacing, textStyles } from '../../../theme'
 import {
   describeStarterSneakerRequestError,
+  findStarterSneakerRequestHelpTopicId,
   type StarterSneakerMintingState,
 } from '../starter-sneaker-minting-state'
 import { OnboardingStepRow } from './OnboardingStepRow'
@@ -116,20 +117,18 @@ function MintingFeedback({
   isRetrying,
 }: StarterSneakerMintingProps) {
   const { sneakerName } = SNEAKER_COPY[starterSneakerKind]
-  // A founder's way to help, as everywhere the pass shows (Part 7 replaces it with `/help`).
-  const helpLink =
-    starterSneakerKind === 'founder' ? (
-      <ExternalLink label="Help with the Founding Pass" url={foundingPassHelpUrl} tone="onDark" />
-    ) : null
   switch (mintingState.phase) {
     case 'requesting':
       return null
     case 'minting':
       return isGamePaused ? (
-        <Text style={styles.progress} accessibilityRole="alert">
-          StrideMon is paused for maintenance. Your {sneakerName} is saved in the queue and mints by
-          itself when the game is back.
-        </Text>
+        <View style={styles.feedback}>
+          <Text style={styles.progress} accessibilityRole="alert">
+            StrideMon is paused for maintenance. Your {sneakerName} is saved in the queue and mints
+            by itself when the game is back.
+          </Text>
+          <ExternalLink label="Get help" url={buildHelpUrl('game-paused')} tone="onDark" />
+        </View>
       ) : null
     case 'arriving':
       return <Text style={styles.progress}>Loading your {sneakerName} from Monad…</Text>
@@ -142,7 +141,11 @@ function MintingFeedback({
             isRetrying={isRetrying}
             tone="dark"
           />
-          {helpLink}
+          <ExternalLink
+            label="Get help"
+            url={buildHelpUrl(findStarterSneakerRequestHelpTopicId(mintingState.errorCode))}
+            tone="onDark"
+          />
         </View>
       )
     case 'mintFailed':
@@ -155,7 +158,7 @@ function MintingFeedback({
             retryLabel="Check again"
             tone="dark"
           />
-          {helpLink}
+          <ExternalLink label="Get help" url={buildHelpUrl('sneaker-not-arriving')} tone="onDark" />
         </View>
       )
     default: {

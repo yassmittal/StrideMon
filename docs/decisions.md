@@ -1324,3 +1324,40 @@ It fills in D-041's app and the brief's §7 and §10.4. The API is unchanged (D-
   the summary before the lacing lands misses the moment (the pictures still change, on the next
   read). The gate polls the chain while it's open.
 - **Revisit when:** Part 7 builds `/help` (deep links), or mainnet.
+
+## D-047 — How the help page works
+
+Made 2026-10-09 in Part 7 of the Founding Pass build ([`founding-pass/part-7-help.md`](founding-pass/part-7-help.md)).
+It replaces D-044's and D-046's stand-in help link (`/pass#questions`).
+
+- **Decision:**
+  1. **One page, `stridemon.xyz/help`,** static like the rest of the site, in this order: how it
+     works (five steps), before you start, the guides, plain answers, "When something goes
+     wrong", lost wallet, contact. Every answer is open on the page (no folded `<details>`), so
+     a deep link always lands on readable text, and the linked answer is marked with `:target`.
+  2. **One source:** `website/src/content/help.ts` holds every word as plain strings (paragraphs
+     and step lists, no JSX), so Part 8's chatbot can read the same text. Each guide and answer
+     has a stable `id`, which is its anchor (`/help#wrong-code`).
+  3. **Every error links to its own answer.** On the website, `mintProblemHelpTopicIds` maps each
+     `MintProblemKey` to a help id, and `MintProblemNote` links there. In the app,
+     `src/config/website-urls.ts` has `buildHelpUrl(helpTopicId)` and the ids it uses, which
+     must exist in `help.ts` (`website-urls.test.ts` lists them, and the help page's own check
+     is to grep for each). The app opens the web help from Profile → Help, the gate screen, the
+     minting screen, sign-in errors, a Home read error and a Founder Sneaker's disabled Send.
+  4. **"Add Monad Testnet" is one tap** where the browser has a wallet (`window.ethereum`, the
+     MetaMask extension or MetaMask's own browser): `wallet_addEthereumChain` with the same
+     details as the mint's network step. Without one, the page says so and shows the details
+     to add by hand. It loads no wallet library.
+  5. **Screenshots** for the website guides come from Part 5's phone shots
+     (`media-source/pass-mint-screenshots/`, cropped, as WebP in `public/help/`); the app guides
+     reuse `public/screenshots/`. MetaMask's own screens aren't shown: the guide links MetaMask's
+     download page and says what to tap, in words.
+  6. **The lost-wallet answer** says what to send (from the minting email: the pass number and
+     the new wallet's address), that we reply with a code to check, that the new wallet can't
+     already hold a pass, and that a move usually takes up to two days. It says plainly that
+     support can move a pass, which is the one way a pass ever moves (D-041).
+- **Why:** one page with stable anchors is the simplest thing every error, on both clients, can
+  point at. Plain strings keep the chatbot honest to the same words.
+- **Trade-off:** the page is long. The app can't check the website's ids at build time (the site
+  isn't a workspace), so a renamed id lands on the page's top instead of its answer.
+- **Revisit when:** the help outgrows one page, or iOS ships (the guides say Android).

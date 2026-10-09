@@ -1,4 +1,5 @@
 import type { OnboardingStatusResponse } from '@stridemon/shared/api-contracts'
+import type { HelpTopicId } from '../../config/website-urls'
 import { type ApiClientErrorCode, ApiError } from '../../lib/api-client'
 
 type StarterSneakerRequestErrorCode = ApiClientErrorCode | 'UNKNOWN_ERROR'
@@ -62,6 +63,23 @@ export function describeStarterSneakerRequestError(
       return 'Your sign-in has expired. Sign out from Profile and sign in again.'
     default:
       return 'Requesting your Sneaker didn’t work. Please try again.'
+  }
+}
+
+/** The help answer for a failed request (D-047). */
+export function findStarterSneakerRequestHelpTopicId(
+  errorCode: StarterSneakerRequestErrorCode,
+): HelpTopicId {
+  switch (errorCode) {
+    case 'NETWORK_UNREACHABLE':
+      return 'cant-reach-stridemon'
+    case 'RATE_LIMITED':
+      return 'too-many-tries'
+    case 'UNAUTHENTICATED':
+    case 'REFRESH_TOKEN_REVOKED':
+      return 'app-sign-in-expired'
+    default:
+      return 'sneaker-not-arriving'
   }
 }
 

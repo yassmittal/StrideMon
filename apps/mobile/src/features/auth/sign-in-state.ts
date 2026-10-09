@@ -1,3 +1,4 @@
+import type { HelpTopicId } from '../../config/website-urls'
 import type { ApiClientErrorCode } from '../../lib/api-client'
 
 /** Failures that happen on the device, before or instead of an API error. */
@@ -30,5 +31,19 @@ export function describeSignInError(errorCode: SignInErrorCode): string {
       return 'Too many sign-in attempts. Wait a minute, then try again.'
     default:
       return 'Signing in didn’t work. Please try again.'
+  }
+}
+
+/** The help answer for each failure (D-047). */
+export function findSignInHelpTopicId(errorCode: SignInErrorCode): HelpTopicId {
+  switch (errorCode) {
+    case 'WALLET_NOT_CONNECTED':
+      return 'app-cant-connect'
+    case 'NETWORK_UNREACHABLE':
+      return 'cant-reach-stridemon'
+    case 'RATE_LIMITED':
+      return 'too-many-tries'
+    default:
+      return 'sign-in-failed'
   }
 }

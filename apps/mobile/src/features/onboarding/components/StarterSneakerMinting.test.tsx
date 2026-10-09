@@ -106,6 +106,6 @@ describe('StarterSneakerMinting', () => {
     expect(screen.getByText('We couldn’t mint your Founder Sneaker')).toBeTruthy()
     expect(screen.getByText(/can’t be sent or sold/)).toBeTruthy()
     expect(screen.getByLabelText('Your Founder Sneaker: Not minted')).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Help with the Founding Pass' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Get help' })).toBeTruthy()
   })
 })

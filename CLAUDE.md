@@ -171,7 +171,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-047.
+for it. The next free decision number is D-048.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -231,7 +231,11 @@ Yash's phone (`docs/device-testing.md` §11): `features/founding-pass/` (the pas
 the gate on the API's `FOUNDING_PASS_REQUIRED`, "Minting your Founder Sneaker…", the pass on Profile,
 the laced moment on the run summary, a Founder Sneaker's Send disabled). It's checked on the phone
 against `pass:local-stack --early-access`, with the app's four optional `EXPO_PUBLIC_*_ADDRESS`
-overrides (the stack prints them). Builds never set them. The idea is in `docs/founding-pass-brief.md`, the art in
+overrides (the stack prints them). Builds never set them. **Part 7 (help) is built** (2026-10-09,
+D-047), waiting for Yash's read: `stridemon.xyz/help` from `website/src/content/help.ts` (plain
+strings, one `id` per answer, which is its anchor). Every website mint problem
+(`mintProblemHelpTopicIds`) and app error (`buildHelpUrl` in `apps/mobile/src/config/website-urls.ts`)
+links to its own answer; `website-urls.test.ts` checks the app's ids still exist on the site. The idea is in `docs/founding-pass-brief.md`, the art in
 `packages/contracts/art/founding-pass/`, rebuilt with
 `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
 data is generated: never edit it by hand.

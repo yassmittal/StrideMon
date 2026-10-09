@@ -3,11 +3,13 @@ import { router } from 'expo-router'
 import type { ReactNode } from 'react'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { ErrorState } from '../../src/components/ui/ErrorState'
+import { ExternalLink } from '../../src/components/ui/ExternalLink'
 import { HeroPanel } from '../../src/components/ui/HeroPanel'
 import { LoadingScreen } from '../../src/components/ui/LoadingScreen'
 import { MetaLabel } from '../../src/components/ui/MetaLabel'
 import { Panel } from '../../src/components/ui/Panel'
 import { Screen } from '../../src/components/ui/Screen'
+import { buildHelpUrl } from '../../src/config/website-urls'
 import { ActiveRunBanner } from '../../src/features/activity-session/components/ActiveRunBanner'
 import { StartRunPanel } from '../../src/features/activity-session/components/StartRunPanel'
 import { useFinishActivitySession } from '../../src/features/activity-session/hooks/useFinishActivitySession'
@@ -66,6 +68,7 @@ export default function HomeScreen() {
           onRetryPress={() => currentUserQuery.refetch()}
           isRetrying={currentUserQuery.isRefetching}
         />
+        <ExternalLink label="Get help" url={buildHelpUrl('cant-reach-stridemon')} />
       </Screen>
     )
   }
@@ -77,6 +80,7 @@ export default function HomeScreen() {
           message="Couldn’t read your Founding Pass from Monad. Check your connection and try again."
           onRetryPress={() => void refetchFoundingPass()}
         />
+        <ExternalLink label="Get help" url={buildHelpUrl('app-cant-read-monad')} />
       </Screen>
     )
   }
@@ -103,6 +107,7 @@ export default function HomeScreen() {
             message="Couldn’t read your Sneaker from Monad. Check your connection and try again."
             onRetryPress={refetchSelectedSneaker}
           />
+          <ExternalLink label="Get help" url={buildHelpUrl('app-cant-read-monad')} />
         </Screen>
       )
     case 'none':

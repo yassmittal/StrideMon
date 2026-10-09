@@ -1,4 +1,5 @@
 import type { Address, Hash } from 'viem'
+import type { HelpTopicId } from '../../config/website-urls'
 
 /**
  * A player transaction signed by the player's own wallet: repair or upgrade on
@@ -45,6 +46,25 @@ export function describeSneakerGameTransactionError(
       return 'Monad refused this transaction, usually because your balance or Sneaker just changed, or the address can’t receive a Sneaker. Check and try again.'
     case 'TRANSACTION_FAILED':
       return 'Something went wrong talking to your wallet or Monad. Check your connection and try again.'
+    default: {
+      const unhandledErrorCode: never = errorCode
+      throw new Error(`Unhandled transaction error: ${String(unhandledErrorCode)}`)
+    }
+  }
+}
+
+/** The help answer for a failure (D-047). A wallet that stopped answering is the likeliest cause. */
+export function findSneakerGameTransactionHelpTopicId(
+  errorCode: SneakerGameTransactionErrorCode,
+): HelpTopicId {
+  switch (errorCode) {
+    case 'WALLET_NOT_CONNECTED':
+    case 'TRANSACTION_FAILED':
+    case 'WALLET_REJECTED':
+      return 'app-wallet-stopped-answering'
+    case 'NOT_ENOUGH_GAS':
+    case 'CHAIN_REJECTED':
+      return 'contact'
     default: {
       const unhandledErrorCode: never = errorCode
       throw new Error(`Unhandled transaction error: ${String(unhandledErrorCode)}`)

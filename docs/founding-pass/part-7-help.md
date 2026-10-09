@@ -44,3 +44,16 @@ to an answer.
   noted where they hesitated, and those spots are fixed.
 
 Lighthouse holds. Mark Part 7 **Done**, then stop.
+
+## As built (D-047)
+
+- `/help` is one static page from `website/src/content/help.ts` (plain strings, a stable `id` per
+  guide and answer). Every answer is open on the page, so a deep link lands on text.
+- The website's mint problems link through `mintProblemHelpTopicIds`; the app builds its links
+  with `buildHelpUrl` in `apps/mobile/src/config/website-urls.ts`. Profile has Help.
+- "Add Monad Testnet" is one tap where the browser has a wallet, and the details are shown either
+  way.
+- The guides use Part 5's phone screenshots and the app's own. MetaMask's screens are described in
+  words: retake crisper shots, and add MetaMask's, if a first-time tester hesitates there.
+- The support reply time ("up to two days") is a promise Yash makes: change it in `help.ts` if it's
+  wrong.

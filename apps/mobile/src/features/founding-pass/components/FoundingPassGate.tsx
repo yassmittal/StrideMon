@@ -5,7 +5,7 @@ import { Button } from '../../../components/ui/Button'
 import { ExternalLink } from '../../../components/ui/ExternalLink'
 import { MetaLabel } from '../../../components/ui/MetaLabel'
 import { Panel } from '../../../components/ui/Panel'
-import { foundingPassGalleryUrl, foundingPassHelpUrl } from '../../../config/website-urls'
+import { buildHelpUrl, foundingPassGalleryUrl } from '../../../config/website-urls'
 import { colors, fontFamilies, spacing, textStyles } from '../../../theme'
 import { describeMintPhase, describeOpeningDay } from '../founding-pass-gate-copy'
 import type { PassCheck } from '../hooks/useFoundingPassGate'
@@ -93,7 +93,7 @@ export function FoundingPassGate({
         </View>
       </Panel>
 
-      <ExternalLink label="Help with the Founding Pass" url={foundingPassHelpUrl} />
+      <ExternalLink label="Get help" url={buildHelpUrl('app-no-pass')} />
     </View>
   )
 }
