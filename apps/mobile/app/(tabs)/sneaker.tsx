@@ -17,6 +17,7 @@ import { SneakerPicker } from '../../src/features/sneaker/components/SneakerPick
 import { TransferPanel } from '../../src/features/sneaker/components/TransferPanel'
 import { UpgradePanel } from '../../src/features/sneaker/components/UpgradePanel'
 import { useGameConfig } from '../../src/features/sneaker/hooks/useGameConfig'
+import { useIsFounderSneaker } from '../../src/features/sneaker/hooks/useIsFounderSneaker'
 import { useIsGamePaused } from '../../src/features/sneaker/hooks/useIsGamePaused'
 import { useRepairSneaker } from '../../src/features/sneaker/hooks/useRepairSneaker'
 import { useSelectedSneaker } from '../../src/features/sneaker/hooks/useSelectedSneaker'
@@ -61,7 +62,7 @@ export default function SneakerScreen() {
           {selectedSneaker.hasClaimedStarterSneaker && walletAddress !== undefined ? (
             <NoSneakersCard walletAddress={walletAddress} />
           ) : (
-            <Text style={styles.caption}>Your starter Sneaker is on its way. Check Home.</Text>
+            <Text style={styles.caption}>No Sneaker yet. Home shows how to get one.</Text>
           )}
         </Screen>
       )
@@ -106,6 +107,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
   const upgrade = useUpgradeSneaker(sneakerTokenId)
   const localActiveActivitySessionQuery = useLocalActiveActivitySession()
   const isGamePaused = useIsGamePaused()
+  const isFounderSneaker = useIsFounderSneaker(sneakerTokenId)
 
   const attributes = attributesQuery.data
   const gameConfig = gameConfigQuery.data
@@ -185,6 +187,7 @@ function SneakerDetail({ walletAddress, sneakerTokenId, sneakerPicker }: Sneaker
             sneakerTokenId={sneakerTokenId}
             // While the check loads, it counts as no run: settlement rejects a mid-run transfer anyway.
             isRunInProgress={Boolean(localActiveActivitySessionQuery.data)}
+            isFounderSneaker={isFounderSneaker}
             onTransferPress={() =>
               router.push({
                 pathname: '/sneaker/transfer',

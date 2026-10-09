@@ -1,3 +1,4 @@
+import type { StarterSneakerKind } from '@stridemon/shared/domain'
 import { fireEvent, render, screen } from '@testing-library/react-native'
 import type { StarterSneakerMintingState } from '../starter-sneaker-minting-state'
 import { StarterSneakerMinting } from './StarterSneakerMinting'
@@ -5,10 +6,15 @@ import { StarterSneakerMinting } from './StarterSneakerMinting'
 const TRANSACTION_HASH = `0x${'ab'.repeat(32)}`
 const noop = () => {}
 
-function renderMinting(mintingState: StarterSneakerMintingState, onRetryPress = noop) {
+function renderMinting(
+  mintingState: StarterSneakerMintingState,
+  onRetryPress = noop,
+  starterSneakerKind: StarterSneakerKind = 'normal',
+) {
   return render(
     <StarterSneakerMinting
       mintingState={mintingState}
+      starterSneakerKind={starterSneakerKind}
       isGamePaused={false}
       onRetryPress={onRetryPress}
       isRetrying={false}
@@ -80,5 +86,26 @@ describe('StarterSneakerMinting', () => {
     expect(screen.getByText('We couldn’t mint your Sneaker')).toBeTruthy()
     expect(screen.getByRole('alert').props.children).toMatch(/nothing was charged/)
     expect(screen.getByRole('button', { name: 'Check again' })).toBeTruthy()
+  })
+
+  it('names the Founder Sneaker for a pass holder, with a help link when it fails', async () => {
+    await renderMinting(
+      {
+        phase: 'mintFailed',
+        onboardingStatus: {
+          starterSneaker: { status: 'failed', transactionHash: null },
+          gasDrip: { status: 'confirmed', transactionHash: TRANSACTION_HASH },
+          starterSneakerKind: 'founder',
+          isFoundingPassRequired: false,
+        },
+      },
+      noop,
+      'founder',
+    )
+
+    expect(screen.getByText('We couldn’t mint your Founder Sneaker')).toBeTruthy()
+    expect(screen.getByText(/can’t be sent or sold/)).toBeTruthy()
+    expect(screen.getByLabelText('Your Founder Sneaker: Not minted')).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Help with the Founding Pass' })).toBeTruthy()
   })
 })

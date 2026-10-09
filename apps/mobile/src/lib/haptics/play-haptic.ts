@@ -19,3 +19,8 @@ export function playRunStoppedHaptic() {
 export function playSuccessHaptic() {
   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(ignoreHapticFailure)
 }
+
+/** The first settled walk laced the Founding Pass: softer than a success, a quiet moment. */
+export function playLacedHaptic() {
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(ignoreHapticFailure)
+}

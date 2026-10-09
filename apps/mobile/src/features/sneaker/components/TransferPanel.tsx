@@ -6,9 +6,15 @@ import { colors, spacing, textStyles } from '../../../theme'
 export const TRANSFER_BLOCKED_DURING_RUN_MESSAGE =
   'Finish your run first. A Sneaker can’t change hands during a run.'
 
+/** A Founder Sneaker stays with its pass (D-041), and `SneakerNft` refuses to move it. */
+export const FOUNDER_SNEAKER_TRANSFER_MESSAGE =
+  'Founder Sneakers stay with their founder. They can’t be sent or sold.'
+
 type TransferPanelProps = {
   sneakerTokenId: bigint
   isRunInProgress: boolean
+  /** `undefined` while the chain read loads: the panel waits, disabled. */
+  isFounderSneaker: boolean | undefined
   onTransferPress: () => void
 }
 
@@ -16,17 +22,24 @@ type TransferPanelProps = {
 export function TransferPanel({
   sneakerTokenId,
   isRunInProgress,
+  isFounderSneaker,
   onTransferPress,
 }: TransferPanelProps) {
+  const blockedReasonMessage =
+    isFounderSneaker === true
+      ? FOUNDER_SNEAKER_TRANSFER_MESSAGE
+      : isRunInProgress
+        ? TRANSFER_BLOCKED_DURING_RUN_MESSAGE
+        : null
   return (
     <View style={styles.container}>
       <DarkPanel
         title={`Send Sneaker #${sneakerTokenId}`}
         description="It’s an NFT you own. Its level, efficiency and durability go with it."
         onPress={onTransferPress}
-        isDisabled={isRunInProgress}
+        isDisabled={isFounderSneaker !== false || isRunInProgress}
       />
-      {isRunInProgress && <Text style={styles.caption}>{TRANSFER_BLOCKED_DURING_RUN_MESSAGE}</Text>}
+      {blockedReasonMessage !== null && <Text style={styles.caption}>{blockedReasonMessage}</Text>}
     </View>
   )
 }

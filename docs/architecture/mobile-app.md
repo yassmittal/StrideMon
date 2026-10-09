@@ -68,6 +68,9 @@ apps/mobile/
     │   │   └── auth-token-storage.ts
     │   ├── wallet/                  useWalletConnection, useMonBalance, WalletAddress, MonBalance
     │   ├── onboarding/              useStarterSneakerOnboarding, StarterSneakerMinting ("Minting your Sneaker…")
+    │   ├── founding-pass/           useFoundingPass, useFoundingPassImageSvg, useFoundingPassSchedule,
+    │   │                            useFoundingPassGate, useLacedMoment; FoundingPassCard, FoundingPassGate,
+    │   │                            FoundingPassPanel, LacedMomentPanel (Part 6, D-046)
     │   ├── sneaker/
     │   │   ├── hooks/               useOwnedSneakers, useSelectedSneaker (Phase 7), useSneakerAttributes,
     │   │   │                        useSneakerEnergy, useGameConfig (Phase 3); useSneakerImageSvg (8.3);
@@ -201,25 +204,37 @@ from `SneakerGame.currentEnergy`; the countdown to the next point is computed on
 the device from the on-chain `energyUpdatedAt`, and the value is read again when
 it reaches zero.
 
-## The Founding Pass (planned, D-041)
+## The Founding Pass (Part 6, D-041, D-046)
 
-Not built yet: Part 6 of [`../founding-pass/`](../founding-pass/README.md) builds it, from the
-brief's §7 and §10.4 ([`../founding-pass-brief.md`](../founding-pass-brief.md)). Passes are minted
-on the website, never in the app. The app shows them and gives the Founder Sneaker.
+Passes are minted on the website, never in the app. The app shows them and gives the Founder
+Sneaker. The decision is D-046.
 
-- **`features/founding-pass/`** (new): `useFoundingPass` reads the wallet's pass from the chain
-  with wagmi (whether it holds one, which one, `passOf`, `imageSvg`), and `FoundingPassCard`
-  draws it with `SvgXml`, like `SneakerCard`.
-- **The gate:** while early access is on (the API says so), a wallet with no pass and no Sneaker
-  sees "Mint a Founding Pass to get in early" where the minting screen is today. It links to
-  `stridemon.xyz/pass` and the help page.
-- **The Founder Sneaker:** a pass holder gets it through the existing minting screen. Home shows
-  it like any Sneaker, and the picker (D-027) lists it beside any normal ones.
-- **Profile** shows the pass.
-- **Laced:** after the first settled walk, a quiet "Your shoe is laced" moment with a haptic.
-- **Transfer:** a Founder Sneaker's transfer is disabled with a plain reason ("Founder Sneakers
-  can't be sent or sold"). Normal Sneakers transfer as today.
-- Every blocked state says what's happening, what to do next and where to get help (Part 7).
+- **`features/founding-pass/`:** `useFoundingPass` reads the wallet's pass from the chain with
+  wagmi (`balanceOf`, `tokenOfOwnerByIndex`, `passOf` and `SneakerNft.founderSneakerTokenIdOf`),
+  `useFoundingPassImageSvg` reads its card (`FoundingPass.imageSvg`), and `FoundingPassCard`
+  draws it with `SvgXml`, like `SneakerArt`. `useFoundingPassSchedule` reads the phase and times
+  from `GET /v1/pass/collection`.
+- **Home asks the pass first:**
+  - **A pass without a Founder Sneaker** → the minting screen as "Minting your Founder
+    Sneaker…" (the same `POST /v1/onboarding/starter-sneaker`), even when the wallet already owns
+    a normal Sneaker. Home switches by itself once the chain shows the Founder Sneaker.
+  - Otherwise as in "The starter Sneaker" above. The picker (D-027) lists the Founder Sneaker
+    beside any normal ones.
+- **The gate:** when the starter request is refused with `FOUNDING_PASS_REQUIRED`, the minting
+  screen gives way to `FoundingPassGate`: "Mint a Founding Pass to get in early", the mint's
+  phase and when the app opens to everyone, a button to `stridemon.xyz/pass`, the signed-in
+  address with "Minted with another wallet? Sign out and sign in with that one.", Sign out,
+  "I've minted my pass" ("Checking for your pass…") and a help link. While it's open it looks for
+  a pass every 5 seconds and asks again for the starter once the collection says the gate is off.
+- **Profile** shows the pass (`FoundingPassPanel`): the card, the founder number, laced or not,
+  and a link to its page on the website.
+- **Laced:** the run summary watches the pass once the run settles. When it turns laced, a quiet
+  "Your shoe is laced" panel with the new card and one soft haptic, and every chain read is
+  refreshed so the Sneaker's picture changes too.
+- **Transfer:** a Founder Sneaker's Send panel is disabled with "Founder Sneakers stay with their
+  founder. They can't be sent or sold." Normal Sneakers transfer as today.
+- Every blocked state says what's happening, what to do next and where to get help. Help links
+  go to `stridemon.xyz/pass#questions` until Part 7 builds `/help`.
 
 ## Auth on the device
 
@@ -257,6 +272,7 @@ on the website, never in the app. The app shows them and gives the Founder Sneak
 | `EXPO_PUBLIC_MONAD_CHAIN_ID` | selects addresses from `@stridemon/chain` |
 | `EXPO_PUBLIC_MONAD_RPC_URL` | public RPC for reads |
 | `EXPO_PUBLIC_REOWN_PROJECT_ID` | from the Reown dashboard (free) |
+| `EXPO_PUBLIC_SNEAKER_NFT_ADDRESS`, `…_STRIDE_TOKEN_ADDRESS`, `…_SNEAKER_GAME_ADDRESS`, `…_FOUNDING_PASS_ADDRESS` | optional, all four or none: replace `@stridemon/chain`'s addresses, only to test against the local Founding Pass stack (D-046). Builds never set them |
 
 Everything prefixed `EXPO_PUBLIC_` is compiled into the app and **public**.
 Secrets never go here.

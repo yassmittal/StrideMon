@@ -169,6 +169,8 @@ Phase 7's check (no new build; Metro only). Wallet B is a second account in the 
   Sneaker tab: Send is disabled with "Finish your run first". Finish the run afterwards.
 - **Back to A:** as B, send #4 back to A's address. A's Home shows #4 again by itself.
 
+The Founding Pass's app check (Part 6) is §11.
+
 Phase 8.5's check is one full demo rehearsal, step by step in
 [`rehearsal-checklist.md`](rehearsal-checklist.md).
 
@@ -218,3 +220,55 @@ maestro test -e WALLET_B_ADDRESS=<B's address> .maestro/demo-without-gps.yaml
 - Sign-in runs only if the app is signed out, and repair only if the Sneaker is worn and A can pay.
 - Wallet A needs STRIDE for the upgrade (`bun run demo:prepare-wallets --dry-run` shows it).
 - It ends with the Sneaker in wallet B. Send it back from B before the demo.
+
+## 11. The Founding Pass on the phone (Part 6, D-046)
+
+The app's pass, gate, Founder Sneaker and laced moment, checked against the **local pass stack**
+(its own Anvil, contracts, database and API), never testnet. No new build: Metro only.
+
+**Set up** (the phone and the laptop on the same Wi-Fi; Monad Testnet enabled in MetaMask):
+
+```bash
+bun run db:start && bun run contracts:build             # once, from the repo root
+cd apps/api && bun run pass:local-stack --early-access  # terminal 1: prints the lines below
+cp apps/mobile/.env apps/mobile/.env.hosted             # keep the hosted settings
+vim apps/mobile/.env                                    # paste the stack's six EXPO_PUBLIC_ lines
+cd apps/mobile && bunx expo start --clear               # terminal 2
+cd website && <the stack's website command>             # terminal 3: http://localhost:3000/pass
+```
+
+- Every stack start is a fresh chain and database, so the app's old sign-in is gone: Profile →
+  sign out (or clear the app's storage) and sign in again.
+- The stack signs in for `localhost:3000`, so MetaMask on the phone may warn that the sign-in is
+  for another site. That's the local stack: continue.
+- **Don't repair, upgrade or send** in this setup. Those transactions go through MetaMask to the
+  real testnet, not the stack's Anvil. Walks are fine: the stack's game server settles them.
+- To mint, the laptop's MetaMask needs the same account as the phone. If it doesn't have it, mint
+  from the phone with the tunnels in `website/README.md` → "Try the mint locally".
+
+**Check:**
+
+1. **The gate.** Sign in with an account that has no pass (Account 2). Home shows "Mint a Founding
+   Pass to get in early", "Minting is open to everyone. 0 of 1,000 minted.", when the app opens to
+   everyone, and the signed-in address in full with "Minted with another wallet?…". "I've minted
+   my pass" says "Checking for your pass…", then "No pass in this wallet yet…". "See the Founding
+   Passes" and the help link open the website. Sign out works from the gate.
+2. **A pass minted a moment ago.** Sign in with Account 1 (no pass yet): the gate shows. On the
+   laptop, mint a pass with Account 1 at `localhost:3000/pass` (the email code prints in
+   terminal 1). Within about 5 seconds the app switches by itself to "Minting your Founder
+   Sneaker…", then Home shows the Founder Sneaker: the dark card, `FOUNDER SNEAKER`, drawn in the
+   pass's design.
+3. **Profile** shows the pass card (`FOUNDER 001`), "Founder 1 of 1,000", "Not laced yet",
+   "Free. It can't be sent or sold." and "See it on stridemon.xyz".
+4. **Transfer.** The Sneaker tab's Send panel is disabled with "Founder Sneakers stay with their
+   founder. They can't be sent or sold."
+5. **Laced.** Walk 2 to 3 minutes and STOP. The summary settles, and a few seconds later "Your
+   shoe is laced" appears with the laced card and one soft buzz. Home's Sneaker and Profile's pass
+   both show the laces.
+6. **Stuck points.** On the gate, Ctrl+C the stack: within about half a minute (after the reads
+   retry) Home says it couldn't read the pass, with Try again, which works once the stack is back. Start the stack again with `--slow-blocks` (a block every 15 s): the
+   Founder Sneaker step stays "Minting on Monad…" with a View link until it lands.
+7. **Opening day.** Start the stack with `--phase openToAll --early-access` and sign in with
+   Account 2: no gate, a normal starter Sneaker as before.
+
+**Afterwards:** `cp apps/mobile/.env.hosted apps/mobile/.env`, then `bunx expo start --clear`.

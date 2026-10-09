@@ -178,7 +178,8 @@ cd website && NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 \
 Email codes print in the stack's terminal. Its flags set up each state to check:
 `--phase preview|waitlistWindow|openMint|openToAll`, `--waitlist-email <email>` (repeatable, joined
 before the window), `--premint 999` (about 3 minutes; the last pass is #0001, for "all minted"),
-`--turnstile fail`, and `--slow-blocks` (a block every 15 seconds). Each run starts from a fresh
+`--turnstile fail`, `--slow-blocks` (a block every 15 seconds) and `--early-access` (the app's gate
+on). It also prints the app's `.env` lines: the app's check is `docs/device-testing.md` §11. Each run starts from a fresh
 chain and database. Wallets connect to their usual Monad Testnet: only the free signature touches
 the wallet, and the mint happens on the stack's Anvil.
 

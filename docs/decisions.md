@@ -1272,3 +1272,55 @@ It fills in D-041's website mint and the brief's §5.3, §6 and §10.3. The API 
   only someone minting downloads them. Four read functions are copied by hand.
 - **Revisit when:** Part 7 builds `/help` (deep links per error), Part 6 ships the founder app
   build (the APK link), or mainnet (embedded wallets, D-041).
+
+## D-046 — How the app shows the Founding Pass
+
+Made 2026-10-09 in Part 6 of the Founding Pass build ([`founding-pass/part-6-app.md`](founding-pass/part-6-app.md)).
+It fills in D-041's app and the brief's §7 and §10.4. The API is unchanged (D-043).
+
+- **Decision:**
+  1. **The app reads the pass from the chain** with wagmi, like the Sneaker: `balanceOf`,
+     `tokenOfOwnerByIndex`, `passOf`, `SneakerNft.founderSneakerTokenIdOf` and `imageSvg`
+     (`features/founding-pass/hooks/useFoundingPass`). It never bundles the design table
+     (D-043's subpath): the card's own picture carries the name and number.
+  2. **Home asks the pass first.** A wallet that holds a pass without a Founder Sneaker gets the
+     minting screen as "Minting your Founder Sneaker…", even when it already owns a normal
+     Sneaker (a founder who joined before the gate). The screen calls the same
+     `POST /v1/onboarding/starter-sneaker`, which queues the Founder Sneaker, and Home switches
+     by itself once the chain shows it. Otherwise Home works as before.
+  3. **The gate screen shows when the API refuses the starter with `FOUNDING_PASS_REQUIRED`.**
+     The app doesn't work out the gate itself: the API's answer is the one source of truth. The
+     screen reads the phase and times from `GET /v1/pass/collection` (public, no sign-in). While
+     it's open it looks for a pass every 5 seconds and asks the collection every minute, and it
+     asks for the starter again by itself once the collection says the gate is off (opening day).
+     "I've minted my pass" checks at once and says "Checking for your pass…". The signed-in
+     address is shown in full with "Minted with another wallet? Sign out and sign in with that
+     one." and a Sign out button.
+  4. **Help links** go to `stridemon.xyz/pass#questions` (`foundingPassHelpUrl` in
+     `src/config/website-urls.ts`), the website's own help until Part 7 builds `/help`.
+  5. **Profile shows the pass:** the on-chain card (`FoundingPass.imageSvg`, so it has the gold
+     frame and `FOUNDER 042`), the founder number, laced or not, "Free. It can't be sent or sold.",
+     and a link to `stridemon.xyz/pass/<number>`. A wallet without a pass shows nothing extra.
+  6. **The laced moment lives on the run summary.** Once the run settles, the screen reads the
+     pass every 3 seconds while it's unlaced. When it turns laced (a change it saw itself, so an
+     old run in History never replays it), the screen shows "Your shoe is laced" with the new
+     card, plays one soft haptic, and re-reads every chain value so Home's Sneaker picture
+     changes too.
+  7. **Transfer:** the Sneaker tab reads `SneakerNft.foundingPassTokenIdOf` for the picked
+     Sneaker. A Founder Sneaker's Send panel is disabled with "Founder Sneakers stay with their
+     founder. They can't be sent or sold." Normal Sneakers transfer as in Phase 7.
+  8. **Testing on the phone uses the local stack**, never testnet: `pass:local-stack` gains
+     `--early-access` (the gate on) and prints the app's `.env` lines. The app gains four optional
+     `EXPO_PUBLIC_*_ADDRESS` settings that replace `@stridemon/chain`'s addresses (all four or
+     none), so it can read the stack's Anvil. Builds never set them. The stack also puts
+     Multicall3 at its usual address on its Anvil (its runtime code, with `anvil_setCode`),
+     because the app's reads batch through the address in the chain definition, and a bare Anvil
+     has nothing there ("Cannot decode zero data").
+- **Why:** the chain stays the truth for the pass and its Founder Sneaker, and the API stays the
+  truth for the gate, so the app can't disagree with either. Showing the gate only on the API's
+  refusal keeps opening day automatic. A laced moment that only plays when the app saw the change
+  can't play twice.
+- **Trade-off:** Home makes a few more chain reads before it shows anything. Someone who leaves
+  the summary before the lacing lands misses the moment (the pictures still change, on the next
+  read). The gate polls the chain while it's open.
+- **Revisit when:** Part 7 builds `/help` (deep links), or mainnet.

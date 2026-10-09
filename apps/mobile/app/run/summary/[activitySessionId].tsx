@@ -5,13 +5,26 @@ import { LoadingScreen } from '../../../src/components/ui/LoadingScreen'
 import { Screen } from '../../../src/components/ui/Screen'
 import { ActivitySessionSummaryCard } from '../../../src/features/activity-session/components/ActivitySessionSummaryCard'
 import { useActivitySession } from '../../../src/features/activity-session/hooks/useActivitySession'
+import { useCurrentUser } from '../../../src/features/auth/hooks/useCurrentUser'
+import { LacedMomentPanel } from '../../../src/features/founding-pass/components/LacedMomentPanel'
+import { useFoundingPassImageSvg } from '../../../src/features/founding-pass/hooks/useFoundingPassImageSvg'
+import { useLacedMoment } from '../../../src/features/founding-pass/hooks/useLacedMoment'
 import { useIsGamePaused } from '../../../src/features/sneaker/hooks/useIsGamePaused'
 
-/** A finished run: settling on Monad, then the STRIDE it earned. Opened after STOP and from History. */
+/**
+ * A finished run: settling on Monad, then the STRIDE it earned, and for a founder's first walk,
+ * the laced moment (D-046). Opened after STOP and from History.
+ */
 export default function ActivitySessionSummaryScreen() {
   const { activitySessionId } = useLocalSearchParams<{ activitySessionId: string }>()
   const activitySessionQuery = useActivitySession(activitySessionId)
   const isGamePaused = useIsGamePaused()
+  const currentUserQuery = useCurrentUser()
+  const lacedFoundingPass = useLacedMoment({
+    walletAddress: currentUserQuery.data?.user.walletAddress,
+    isSettled: activitySessionQuery.data?.status === 'settled',
+  })
+  const lacedPassImageSvgQuery = useFoundingPassImageSvg(lacedFoundingPass?.passTokenId)
 
   if (activitySessionQuery.isError) {
     return (
@@ -33,6 +46,9 @@ export default function ActivitySessionSummaryScreen() {
         activitySession={activitySessionQuery.data}
         isGamePaused={isGamePaused}
       />
+      {lacedFoundingPass !== null && (
+        <LacedMomentPanel foundingPass={lacedFoundingPass} imageSvg={lacedPassImageSvgQuery.data} />
+      )}
       <Button
         label="Done"
         onPress={() => (router.canGoBack() ? router.back() : router.dismissTo('/'))}

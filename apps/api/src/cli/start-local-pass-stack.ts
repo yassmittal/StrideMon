@@ -14,12 +14,16 @@
  *   --slow-blocks                 a block every 15 seconds, so a mint takes a while
  *   --origin <origin>             another site origin to allow, which also becomes the SIWE
  *                                 domain (a phone on the LAN, or a tunnel's https address)
+ *   --early-access                the early-access gate on, so only pass holders get a Sneaker
+ *                                 in the app (D-046)
  *
  * It builds the API's whole environment itself and never reads `apps/api/.env` (the real one
  * holds the game-server key). The Anvil shares chain id 10143 with the testnet, so the contracts
  * go through the API tests' helper, never `forge script`, and `deployments/10143.json` is never
- * touched (D-019). Ctrl+C stops everything.
+ * touched (D-019). It also prints the app's `.env` lines for a phone on the same Wi-Fi (D-046).
+ * Ctrl+C stops everything.
  */
+import { networkInterfaces } from 'node:os'
 import { parseArgs } from 'node:util'
 import { foundingPassAbi, monadTestnet } from '@stridemon/chain'
 import { MongoClient } from 'mongodb'
@@ -30,6 +34,7 @@ import {
   ANVIL_GAME_SERVER_PRIVATE_KEY,
   deployTestContracts,
 } from '../test-support/deploy-test-contracts'
+import { MULTICALL3_RUNTIME_BYTECODE } from '../test-support/multicall3-runtime-bytecode'
 
 const ANVIL_PORT = 8546
 const API_PORT = 3001
@@ -63,6 +68,7 @@ const { values: options } = parseArgs({
     turnstile: { type: 'string', default: 'pass' },
     'slow-blocks': { type: 'boolean', default: false },
     origin: { type: 'string' },
+    'early-access': { type: 'boolean', default: false },
   },
 })
 
@@ -98,6 +104,7 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => pr
 const rpcUrl = `http://127.0.0.1:${ANVIL_PORT}`
 await waitForAnvil(rpcUrl)
 
+await installMulticall3(rpcUrl)
 const contractAddresses = await deployTestContracts(rpcUrl)
 await premintFoundingPasses({ rpcUrl, foundingPass: contractAddresses.foundingPass, premintCount })
 
@@ -147,7 +154,7 @@ const server = await buildServer({
     WAITLIST_ALLOWED_ORIGINS: [SITE_ORIGIN, extraOrigin]
       .filter((origin) => origin !== null)
       .join(','),
-    EARLY_ACCESS_REQUIRED: 'false',
+    EARLY_ACCESS_REQUIRED: String(options['early-access']),
     PASS_WAITLIST_WINDOW_STARTS_AT: scheduleTimes.waitlistWindowStartsAt.toISOString(),
     PASS_WAITLIST_WINDOW_HOURS: String(WAITLIST_WINDOW_HOURS),
     PASS_BACKUP_OPENING_AT: scheduleTimes.backupOpeningAt.toISOString(),
@@ -166,6 +173,7 @@ const server = await buildServer({
   },
 })
 await server.listen({ port: API_PORT, host: '0.0.0.0' })
+const lanAddress = readLanAddress()
 
 process.stdout.write(`
 Local Founding Pass stack (D-045). Nothing here touches testnet.
@@ -173,6 +181,7 @@ Local Founding Pass stack (D-045). Nothing here touches testnet.
   Phase        ${phase} (window ${scheduleTimes.waitlistWindowStartsAt.toISOString()})
   Premints     ${premintCount}${waitlistEmails.length > 0 ? `\n  Waitlist     ${waitlistEmails.join(', ')}` : ''}
   Turnstile    always ${options.turnstile === 'pass' ? 'passes' : 'fails'}${options['slow-blocks'] ? `\n  Blocks       one every ${SLOW_BLOCK_SECONDS} s` : ''}
+  Gate         ${options['early-access'] ? 'on: only pass holders get a Sneaker' : 'off'}
   Anvil        ${rpcUrl} (chain ${monadTestnet.id})
   API          http://localhost:${API_PORT}
   FoundingPass ${contractAddresses.foundingPass}
@@ -185,8 +194,24 @@ Start the website against it (from website/):
   NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA \\
   bun run dev
 
+Point the app at it (apps/mobile/.env, then \`bunx expo start --clear\`; device-testing.md §11):
+
+  EXPO_PUBLIC_API_BASE_URL=http://${lanAddress}:${API_PORT}
+  EXPO_PUBLIC_MONAD_RPC_URL=http://${lanAddress}:${ANVIL_PORT}
+  EXPO_PUBLIC_SNEAKER_NFT_ADDRESS=${contractAddresses.sneakerNft}
+  EXPO_PUBLIC_STRIDE_TOKEN_ADDRESS=${contractAddresses.strideToken}
+  EXPO_PUBLIC_SNEAKER_GAME_ADDRESS=${contractAddresses.sneakerGame}
+  EXPO_PUBLIC_FOUNDING_PASS_ADDRESS=${contractAddresses.foundingPass}
+
 Email codes print here. Ctrl+C stops it all.
 `)
+
+/** This laptop's Wi-Fi address, which a phone on the same network can reach. */
+function readLanAddress(): string {
+  const addresses = Object.values(networkInterfaces()).flatMap((entries) => entries ?? [])
+  const lanAddress = addresses.find((entry) => entry.family === 'IPv4' && !entry.internal)
+  return lanAddress?.address ?? "<this laptop's Wi-Fi IP>"
+}
 
 function readPhase(phaseText: string | undefined): LocalSchedulePhase {
   const matchingPhase = LOCAL_SCHEDULE_PHASES.find((localPhase) => localPhase === phaseText)
@@ -238,6 +263,22 @@ async function waitForAnvil(anvilRpcUrl: string): Promise<void> {
   throw new Error(
     `Anvil didn't start on port ${ANVIL_PORT}. Is Foundry installed, and is the port free?`,
   )
+}
+
+/**
+ * Multicall3 at its usual address (D-046): the app batches its reads through the address in the
+ * chain definition, and a bare Anvil has no contract there.
+ */
+async function installMulticall3(anvilRpcUrl: string): Promise<void> {
+  const testClient = createTestClient({
+    mode: 'anvil',
+    chain: monadTestnet,
+    transport: http(anvilRpcUrl),
+  })
+  await testClient.setCode({
+    address: monadTestnet.contracts.multicall3.address,
+    bytecode: MULTICALL3_RUNTIME_BYTECODE,
+  })
 }
 
 /** Passes minted straight from the game-server key to throwaway wallets, from #1000 down. */

@@ -12,6 +12,9 @@ import { DeleteAccountSheet } from '../../src/features/auth/components/DeleteAcc
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
 import { useDeleteAccount } from '../../src/features/auth/hooks/useDeleteAccount'
 import { useSignOut } from '../../src/features/auth/hooks/useSignOut'
+import { FoundingPassPanel } from '../../src/features/founding-pass/components/FoundingPassPanel'
+import { useFoundingPass } from '../../src/features/founding-pass/hooks/useFoundingPass'
+import { useFoundingPassImageSvg } from '../../src/features/founding-pass/hooks/useFoundingPassImageSvg'
 import { MonBalance } from '../../src/features/wallet/components/MonBalance'
 import { WalletAddress } from '../../src/features/wallet/components/WalletAddress'
 import { useMonBalance } from '../../src/features/wallet/hooks/useMonBalance'
@@ -21,6 +24,10 @@ export default function ProfileScreen() {
   const currentUserQuery = useCurrentUser()
   const walletAddress = currentUserQuery.data?.user.walletAddress
   const monBalanceQuery = useMonBalance(walletAddress)
+  const { foundingPassState } = useFoundingPass(walletAddress)
+  const heldFoundingPass =
+    foundingPassState.status === 'held' ? foundingPassState.foundingPass : undefined
+  const foundingPassImageSvgQuery = useFoundingPassImageSvg(heldFoundingPass?.passTokenId)
   const { signOut, isSigningOut } = useSignOut()
   const deleteAccountMutation = useDeleteAccount()
   const [isDeleteAccountSheetVisible, setIsDeleteAccountSheetVisible] = useState(false)
@@ -57,6 +64,12 @@ export default function ProfileScreen() {
             isError={monBalanceQuery.isError}
           />
         </Panel>
+      )}
+      {heldFoundingPass !== undefined && (
+        <FoundingPassPanel
+          foundingPass={heldFoundingPass}
+          imageSvg={foundingPassImageSvgQuery.data}
+        />
       )}
       <View style={styles.accountActions}>
         <Button label="Sign out" variant="secondary" onPress={signOut} isLoading={isSigningOut} />

@@ -54,7 +54,7 @@ Everyone after the 1,000 gets a **normal Sneaker**: free, today's look, and it c
 | [3](part-3-api.md) | API: email codes, mints, the waitlist window, the gate, Founder Sneakers, lacing | L | **Done** (2026-10-08, D-043; a real code email reached Gmail's inbox from `hello@stridemon.xyz`) |
 | [4](part-4-website-gallery.md) | Website: the gallery, the 1,000 pass pages, preview mode | L | **Done** (2026-10-08, D-044; checked on Yash's phone) |
 | [5](part-5-website-mint.md) | Website: "Get ready", the mint, the reveal, sharing | L | **Done** (2026-10-09, D-045; every error seen on the local stack, and Yash minted with his real MetaMask on the laptop and the phone) |
-| [6](part-6-app.md) | App: the gate, the Founder Sneaker, the pass on Profile, laced | M | Not started |
+| [6](part-6-app.md) | App: the gate, the Founder Sneaker, the pass on Profile, laced | M | **Done** (2026-10-09, D-046; checked on Yash's phone against the local stack: the gate, a fresh mint, the Founder Sneaker, a walk that laced it) |
 | [7](part-7-help.md) | Help: plain-words guides and a next step everywhere | M | Not started |
 | [8](part-8-help-chatbot.md) | Help chatbot on the website (optional, Yash decides the cost first) | M | Not started |
 | [9](part-9-rehearsal.md) | Rehearsal: the whole flow, end to end, so nobody gets stuck | M | Not started |

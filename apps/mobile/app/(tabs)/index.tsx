@@ -1,3 +1,4 @@
+import type { StarterSneakerKind } from '@stridemon/shared/domain'
 import { router } from 'expo-router'
 import type { ReactNode } from 'react'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
@@ -18,6 +19,10 @@ import {
   findStartRunBlockedReason,
 } from '../../src/features/activity-session/start-run-availability'
 import { useCurrentUser } from '../../src/features/auth/hooks/useCurrentUser'
+import { useSignOut } from '../../src/features/auth/hooks/useSignOut'
+import { FoundingPassGate } from '../../src/features/founding-pass/components/FoundingPassGate'
+import { useFoundingPass } from '../../src/features/founding-pass/hooks/useFoundingPass'
+import { useFoundingPassGate } from '../../src/features/founding-pass/hooks/useFoundingPassGate'
 import { StarterSneakerMinting } from '../../src/features/onboarding/components/StarterSneakerMinting'
 import { useStarterSneakerOnboarding } from '../../src/features/onboarding/hooks/useStarterSneakerOnboarding'
 import { RewardBalanceCard } from '../../src/features/rewards/components/RewardBalanceCard'
@@ -41,6 +46,7 @@ import { colors, fontFamilies, spacing, textStyles } from '../../src/theme'
 /**
  * Home: the selected Sneaker (with a picker when the wallet owns several), the starter
  * mint while the player has never had one, or an empty state once they've sent it away.
+ * A Founding Pass comes first: its holder gets their Founder Sneaker before anything else (D-046).
  */
 export default function HomeScreen() {
   const currentUserQuery = useCurrentUser()
@@ -50,6 +56,7 @@ export default function HomeScreen() {
     pickSneaker,
     refetch: refetchSelectedSneaker,
   } = useSelectedSneaker(walletAddress)
+  const { foundingPassState, refetch: refetchFoundingPass } = useFoundingPass(walletAddress)
 
   if (currentUserQuery.isError) {
     return (
@@ -61,6 +68,24 @@ export default function HomeScreen() {
         />
       </Screen>
     )
+  }
+
+  if (foundingPassState.status === 'error') {
+    return (
+      <Screen>
+        <ErrorState
+          message="Couldn’t read your Founding Pass from Monad. Check your connection and try again."
+          onRetryPress={() => void refetchFoundingPass()}
+        />
+      </Screen>
+    )
+  }
+  if (
+    foundingPassState.status === 'held' &&
+    foundingPassState.foundingPass.founderSneakerTokenId === null
+  ) {
+    // Keyed apart from the normal starter's screen, so moving between them asks the API afresh.
+    return <FreeSneakerOnboarding key="founder" starterSneakerKind="founder" />
   }
 
   switch (selectedSneaker.status) {
@@ -81,7 +106,18 @@ export default function HomeScreen() {
         </Screen>
       )
     case 'none':
-      if (!selectedSneaker.hasClaimedStarterSneaker) return <StarterSneakerOnboarding />
+      // The pass decides between the Founder Sneaker and the normal starter, so wait for it.
+      if (foundingPassState.status === 'loading') {
+        return (
+          <LoadingScreen
+            accessibilityLabel="Reading your Sneaker from Monad"
+            message="Reading your Sneaker from Monad…"
+          />
+        )
+      }
+      if (!selectedSneaker.hasClaimedStarterSneaker) {
+        return <FreeSneakerOnboarding key="starter" starterSneakerKind="normal" />
+      }
       return (
         <Screen isScrollable>
           <HomeHeader />
@@ -121,17 +157,74 @@ function HomeHeader() {
   )
 }
 
-/** Shown until the chain says the wallet owns a Sneaker; Home then switches by itself. */
-function StarterSneakerOnboarding() {
+/**
+ * Shown until the chain says the wallet owns its free Sneaker; Home then switches by itself.
+ * While early access is on, the API refuses a wallet without a pass, and the gate shows instead.
+ */
+function FreeSneakerOnboarding({ starterSneakerKind }: { starterSneakerKind: StarterSneakerKind }) {
   const { mintingState, retry, isRetrying } = useStarterSneakerOnboarding()
   const isGamePaused = useIsGamePaused()
+  if (
+    mintingState.phase === 'requestFailed' &&
+    mintingState.errorCode === 'FOUNDING_PASS_REQUIRED'
+  ) {
+    return <FoundingPassGateScreen requestStarterSneakerAgain={retry} />
+  }
   return (
     <Screen tone="dark">
       <StarterSneakerMinting
         mintingState={mintingState}
+        starterSneakerKind={starterSneakerKind}
         isGamePaused={isGamePaused}
         onRetryPress={retry}
         isRetrying={isRetrying}
+      />
+    </Screen>
+  )
+}
+
+/** "Mint a Founding Pass to get in early" (D-046). Home leaves it once the chain shows a pass. */
+function FoundingPassGateScreen({
+  requestStarterSneakerAgain,
+}: {
+  requestStarterSneakerAgain: () => void
+}) {
+  const currentUserQuery = useCurrentUser()
+  const walletAddress = currentUserQuery.data?.user.walletAddress
+  if (walletAddress === undefined) {
+    return <LoadingScreen accessibilityLabel="Loading your account" />
+  }
+  return (
+    <FoundingPassGateContent
+      walletAddress={walletAddress}
+      requestStarterSneakerAgain={requestStarterSneakerAgain}
+    />
+  )
+}
+
+function FoundingPassGateContent({
+  walletAddress,
+  requestStarterSneakerAgain,
+}: {
+  walletAddress: string
+  requestStarterSneakerAgain: () => void
+}) {
+  const { scheduleQuery, passCheck, checkForPass } = useFoundingPassGate({
+    walletAddress,
+    requestStarterSneakerAgain,
+  })
+  const { signOut, isSigningOut } = useSignOut()
+  return (
+    <Screen isScrollable>
+      <HomeHeader />
+      <FoundingPassGate
+        walletAddress={walletAddress}
+        collection={scheduleQuery.data}
+        isCollectionUnavailable={scheduleQuery.isError}
+        passCheck={passCheck}
+        onCheckForPassPress={() => void checkForPass()}
+        onSignOutPress={signOut}
+        isSigningOut={isSigningOut}
       />
     </Screen>
   )
