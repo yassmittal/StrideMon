@@ -31,6 +31,8 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/founding-pass-designs.ts` | **Generated**: the 1,000 designs and their layer labels. Never edit it by hand |
 | `src/content/founding-pass-mint.ts` | The mint's copy: "Get ready", the steps, the reveal, and one plain message per problem (D-045) |
 | `src/content/help.ts` | The help page (`/help`, D-047): every guide and answer as plain strings, each with an `id` that's its anchor. Mint problems and the app link to those ids: don't rename one without changing `mintProblemHelpTopicIds` and the app's `helpTopicIds` |
+| `src/content/help-chat.ts` | The help chatbot's words (D-048). Its answers come from the API, which reads `help.ts` through `bun run help:export-knowledge` (run it after every change to `help.ts`, then redeploy the API) |
+| `src/components/help-chat/` | The "Ask a question" pill on `/pass` and `/help`, and its dialog, which loads only when tapped |
 | `public/help/` | The help guides' website screenshots (378 × 770 WebP, cut from `media-source/pass-mint-screenshots/`) |
 | `src/content/founding-pass-abi.ts` | The four `FoundingPass` reads the site makes, copied by hand (D-045) |
 | `public/pass-art/` | **Generated**: each design's card (`cards/0137.svg`) and laced Sneaker (`laced/0137.svg`) |
@@ -184,6 +186,10 @@ before the window), `--premint 999` (about 3 minutes; the last pass is #0001, fo
 on). It also prints the app's `.env` lines: the app's check is `docs/device-testing.md` §11. Each run starts from a fresh
 chain and database. Wallets connect to their usual Monad Testnet: only the free signature touches
 the wallet, and the mint happens on the stack's Anvil.
+
+**The help chatbot** ("Ask a question" on `/pass` and `/help`, D-048) answers on the local stack
+when `apps/api/.env` has `BEDROCK_API_KEY`: each answer costs about $0.003 of real Bedrock usage.
+Without the key it says it can't answer right now, with a link to the help page.
 
 **On a phone** (MetaMask's browser, or a phone browser with WalletConnect): a phone can't reach
 `localhost`, and wallets want `https`. Give the site and the API public `https` addresses with a

@@ -75,6 +75,16 @@ export {
   mongoConnectionStatusSchema,
 } from './health'
 export {
+  type AskHelpChatBody,
+  type AskHelpChatResponse,
+  askHelpChatBodySchema,
+  askHelpChatResponseSchema,
+  type HelpChatMessage,
+  helpChatMessageSchema,
+  MAX_HELP_CHAT_CONVERSATION_MESSAGE_COUNT,
+  MAX_HELP_CHAT_MESSAGE_LENGTH,
+} from './help-chat'
+export {
   type CurrentUser,
   type CurrentUserResponse,
   currentUserResponseSchema,

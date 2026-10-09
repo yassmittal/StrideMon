@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GetReadySection } from '@/components/founding-pass/get-ready-section'
 import { PassGallery } from '@/components/founding-pass/pass-gallery'
 import { PassMintRoot } from '@/components/founding-pass/pass-mint-root'
+import { HelpChatLauncher } from '@/components/help-chat/help-chat-launcher'
 import { PassHeroSection } from '@/components/sections/pass-hero-section'
 import { PassHowItWorksSection } from '@/components/sections/pass-how-it-works-section'
 import { PassQuestionsSection } from '@/components/sections/pass-questions-section'
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   },
 }
 
-/** The Founding Pass gallery (Part 4, D-044) and its mint (Part 5, D-045). */
+/** The Founding Pass gallery (Part 4, D-044), its mint (Part 5, D-045) and the help chatbot (D-048). */
 export default function PassGalleryPage() {
   return (
     <>
@@ -43,6 +44,7 @@ export default function PassGalleryPage() {
       </main>
       <SiteFooter />
       <PassMintRoot />
+      <HelpChatLauncher />
       <RevealObserver />
     </>
   )

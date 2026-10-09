@@ -492,6 +492,26 @@ settings on the website side:
   waitlist window and the open mint, so check the steps, and leave the mint itself to the
   rehearsal (Part 9) or the window.
 
+## 13. The help chatbot (Part 8, D-048)
+
+The API built from Part 8 on refuses to boot without `HELP_CHAT_MONTHLY_CAP_USD`. Add both lines
+to the server's `.env` before `pm2 restart stridemon-api`:
+
+| Variable | Value on the server |
+|---|---|
+| `BEDROCK_API_KEY` | the Bedrock API key (AWS console → Amazon Bedrock → API keys, `us-east-1`). Without it the chatbot says it can't answer and points at `/help` |
+| `HELP_CHAT_MONTHLY_CAP_USD` | `5` |
+
+- [ ] `curl -s -X POST https://api.stridemon.xyz/v1/help/chat -H 'content-type: application/json'
+  -d '{"messages":[{"role":"visitor","text":"Is it free?"}]}'` prints an answer.
+- [ ] A free backstop for the cap: AWS → Billing → Budgets → a monthly cost budget of $5 with an
+  email alert, in case the list prices change.
+- [ ] After any change to `website/src/content/help.ts`: `bun run help:export-knowledge`, then
+  redeploy the API, so the chatbot reads the same words as the page.
+
+To see this month's spend: `db.helpChatUsage.find()` on the Atlas `stridemon` database (token
+counts; multiply by the prices in `apps/api/src/lib/help-chat/help-chat-cost.ts`).
+
 ---
 
 ## Updating the API later

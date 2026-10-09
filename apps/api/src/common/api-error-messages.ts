@@ -41,4 +41,6 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
   PASS_MINT_FAILED: 'The mint didn’t go through, and nothing was minted. Try again.',
   FOUNDING_PASS_REQUIRED:
     'StrideMon is in early access. Mint a free Founding Pass on stridemon.xyz/pass to get in early.',
+  HELP_CHAT_UNAVAILABLE:
+    'The help assistant can’t answer right now. Every answer is on stridemon.xyz/help.',
 }

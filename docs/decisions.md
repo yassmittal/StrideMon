@@ -1361,3 +1361,74 @@ It replaces D-044's and D-046's stand-in help link (`/pass#questions`).
 - **Trade-off:** the page is long. The app can't check the website's ids at build time (the site
   isn't a workspace), so a renamed id lands on the page's top instead of its answer.
 - **Revisit when:** the help outgrows one page, or iOS ships (the guides say Android).
+
+## D-048 — How the help chatbot works
+
+Made 2026-10-09 in Part 8 of the Founding Pass build ([`founding-pass/part-8-help-chatbot.md`](founding-pass/part-8-help-chatbot.md)).
+Yash chose the AI option, on Amazon Bedrock (his API key, `us-east-1`), with a **$5 monthly cap**.
+
+- **Decision:**
+  1. **`POST /v1/help/chat` on the API** answers from Part 7's help text only. The website sends
+     the conversation so far (at most 8 messages of 500 characters, ending with the visitor's
+     question) and gets `{ status: 'answered', answerText, helpTopicIds }` or
+     `{ status: 'monthlyCapReached' }`. The API keeps no conversation: Mongo holds only each
+     month's token counts.
+  2. **The model is DeepSeek V3.2 (`deepseek.v3.2`)** through Bedrock's OpenAI-compatible endpoint
+     (`bedrock-mantle.us-east-1.api.aws/v1/chat/completions`, the Bedrock API key as a bearer
+     token, plain `fetch`, no AWS SDK). All five of Yash's models ran Part 8's 20-question test list
+     (`bun run help:check-answers --model <id>`). Nemotron Nano 3 30B is ten times cheaper but got
+     facts wrong (it told someone who joined the waitlist today they could mint in the window) and
+     sometimes sent no answer. Nemotron Super 3 120B often sent no answer. Qwen3 Coder and GLM-5
+     passed most of it. DeepSeek V3.2 passed 19 or 20 of 20 on every run, with the shortest, most
+     faithful answers, so it's the smallest model that answers the list well.
+  3. **The help text is generated, not hand-copied.** `bun run help:export-knowledge` renders
+     `website/src/content/help.ts` into `apps/api/src/lib/help-chat/help-knowledge.ts` (the text,
+     one `[topic <id>]` block per guide and answer, and the list of ids). `--check` fails when
+     it's stale. The website still never imports `@stridemon/*`, and the API never imports the
+     website (D-035).
+  4. **Links:** the model ends each reply with a `TOPICS:` line naming one or two topic ids. The
+     API keeps only ids that are anchors on `/help`, and the widget turns each into a link with
+     that answer's title. The model never writes URLs.
+  5. **Safety:**
+     - A question holding a wallet secret (12 or more recovery phrase words in a row, or 32 bytes
+       of hex without `0x`, which is how MetaMask shows a private key) gets a fixed answer
+       ("keep that secret…") and **never reaches the model**.
+     - Before anything reaches the model, every 32-byte hex string (a key, or a transaction hash
+       with `0x`) and any message with a recovery phrase is replaced with `[removed]`. Someone
+       who pastes a transaction hash still gets a real answer.
+     - The rules tell the model to use only the help text, say "I don't know" and point to
+       contact otherwise, never talk about prices, value or investing, never write the words
+       the Founding Pass avoids (README → Words), and redirect off-topic questions.
+  6. **Limits:**
+     - **The monthly cap** (`HELP_CHAT_MONTHLY_CAP_USD`, `5`): before each model call, the API
+       prices this UTC month's tokens (`helpChatUsage`) at the model's list price
+       (`HELP_CHAT_MODEL` in `lib/help-chat/help-chat-cost.ts`, $0.62 in and $1.85 out per
+       million tokens). At or past the cap it answers `monthlyCapReached`, and the widget points
+       at `/help` until the 1st. Replies in flight when the cap is reached can pass it by a
+       fraction of a cent each.
+     - **Per IP:** 30 questions an hour.
+     - **CORS:** `/v1/help/chat` joins the browser routes, for `WAITLIST_ALLOWED_ORIGINS` only.
+     - At most 400 output tokens a reply.
+  7. **No key, no model:** `BEDROCK_API_KEY` is optional. Without it, or when Bedrock fails, the
+     route answers `HELP_CHAT_UNAVAILABLE` (503), and the widget says so with a link to `/help`.
+  8. **The widget** is an "Ask a question" pill fixed at the bottom right of `/pass` and `/help`.
+     Its dialog is loaded with `next/dynamic` (`ssr: false`) only when someone taps it, so the
+     pages ship only the pill. The dialog is a modal `<dialog>` in the pass sheet's look: a
+     bottom sheet on a phone, a narrow centred panel on a desktop. It says that it answers from
+     the help page and can be wrong, never to share a recovery phrase, and that we don't keep
+     what you type. It offers four starter questions, and every state ends in a next step: the
+     answer's help links, "Too many questions" (wait), the cap (read the help page), and
+     unavailable or offline (try again, or read the help page). The conversation lives in page
+     memory only, so it's gone on reload.
+- **Why:** answers from the help page's own words can't drift from it, and a link under every
+  answer means the chatbot never leaves someone worse off than the page. Checking for secrets in
+  code, not only in the prompt, means a pasted recovery phrase never leaves the server. A cap
+  counted from Bedrock's own usage numbers needs no billing API.
+- **Trade-off:** DeepSeek V3.2 costs about $0.003 an answer (the whole help text goes with every
+  question, about 4,400 tokens), so $5 buys about 1,800 answers a month, against about 18,000 on
+  Nano. The cap uses list prices, so AWS's bill can differ slightly. A small model can still be
+  wrong, so the widget says so. The help text must be exported again, and the API redeployed,
+  after every change to `help.ts`.
+- **Revisit when:** the cap is reached in a normal month (raise it, or send only the matching
+  topics instead of the whole text), Bedrock's prices change, or a cheaper model passes the test
+  list.

@@ -650,3 +650,19 @@ export function listHelpTopicIds(): HelpTopicId[] {
     ...helpTroubleshootingGroups.flatMap((group) => group.answers.map((answer) => answer.id)),
   ]
 }
+
+/**
+ * The title of a guide, answer or section, for the chatbot's links (D-048). `null` for an id the
+ * page doesn't have, which the chatbot then doesn't link.
+ */
+export function findHelpTopicTitle(helpTopicId: string): string | null {
+  const topics: readonly { id: HelpTopicId; title: string }[] = [
+    ...helpSections,
+    ...helpGuides,
+    ...helpPlainAnswers.map((answer) => ({ id: answer.id, title: answer.question })),
+    ...helpTroubleshootingGroups.flatMap((group) =>
+      group.answers.map((answer) => ({ id: answer.id, title: answer.question })),
+    ),
+  ]
+  return topics.find((topic) => topic.id === helpTopicId)?.title ?? null
+}

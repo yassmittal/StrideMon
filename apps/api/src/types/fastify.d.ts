@@ -4,6 +4,7 @@ import type { ChainClients } from '../plugins/chain-clients'
 import type { ApiConfig } from '../plugins/env'
 import type { CachedFoundingPassCollectionReader } from '../services/cached-founding-pass-collection-reader'
 import type { EmailSender } from '../services/email-sender'
+import type { HelpChatModel } from '../services/help-chat-model'
 import type { TurnstileVerifier } from '../services/turnstile-verifier'
 
 declare module 'fastify' {
@@ -15,6 +16,7 @@ declare module 'fastify' {
     emailSender: EmailSender
     turnstileVerifier: TurnstileVerifier
     foundingPassCollectionReader: CachedFoundingPassCollectionReader
+    helpChatModel: HelpChatModel
   }
 
   interface FastifyRequest {

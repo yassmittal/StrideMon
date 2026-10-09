@@ -1,14 +1,15 @@
 import fastifyCors from '@fastify/cors'
 import fastifyPlugin from 'fastify-plugin'
 
-// The only routes a browser may call: the landing page's waitlist (D-037), and the Founding Pass
-// page's sign-in and pass routes (D-043). The app is native and sends no Origin, so every other
+// The only routes a browser may call: the landing page's waitlist (D-037), the Founding Pass
+// page's sign-in and pass routes (D-043), and the help chatbot (D-048). The app is native and sends no Origin, so every other
 // route keeps sending no CORS headers at all.
 const BROWSER_ROUTE_PATHS: ReadonlySet<string> = new Set([
   '/v1/waitlist',
   '/v1/auth/nonce',
   '/v1/auth/verify',
   '/v1/auth/refresh',
+  '/v1/help/chat',
 ])
 const BROWSER_ROUTE_PATH_PREFIX = '/v1/pass/'
 

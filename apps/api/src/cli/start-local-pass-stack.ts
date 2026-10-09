@@ -161,6 +161,11 @@ const server = await buildServer({
     TURNSTILE_SECRET_KEY: TURNSTILE_TEST_SECRETS[options.turnstile],
     EMAIL_PROOF_SECRET: 'local-pass-stack-email-proof-secret-'.repeat(3),
     EMAIL_SENDER_ADDRESS: 'hello@stridemon.test',
+    // The help chatbot answers for real when apps/api/.env has the key (D-048); it costs cents.
+    ...(process.env.BEDROCK_API_KEY === undefined
+      ? {}
+      : { BEDROCK_API_KEY: process.env.BEDROCK_API_KEY }),
+    HELP_CHAT_MONTHLY_CAP_USD: '5',
   },
   contractAddresses,
   passServices: {

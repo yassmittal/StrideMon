@@ -25,7 +25,8 @@
     "demo:prepare-wallets": "./scripts/prepare-demo-wallets",
     "demo:energy": "./scripts/demo-energy-config",
     "pass:recover": "./scripts/recover-founding-pass",
-    "website:export-pass-art": "bun packages/contracts/art/founding-pass/export-website-art.ts"
+    "website:export-pass-art": "bun packages/contracts/art/founding-pass/export-website-art.ts",
+    "help:export-knowledge": "bun scripts/export-help-knowledge.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14"

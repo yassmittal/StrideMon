@@ -104,6 +104,13 @@ Phase 10.
 - **The waitlist route** is public, so it has its own limit (5 a minute per IP) and a hidden
   honeypot field: a filled-in honeypot answers `200` and stores nothing, so a bot learns nothing.
   No CAPTCHA (Turnstile is the free next step if junk appears).
+- **The help chatbot** (`POST /v1/help/chat`, D-048) is public too: 30 questions an hour per IP,
+  a hard monthly budget (`HELP_CHAT_MONTHLY_CAP_USD`), and at most 8 messages of 500 characters
+  and 400 output tokens a reply, so nobody can run up the bill. A question holding a wallet
+  secret (a recovery phrase, or a private key) is answered in code and never sent to Bedrock, and
+  any 32-byte hex is removed before a message reaches the model. Questions and answers are never
+  stored or logged; `helpChatUsage` holds monthly token counts only. `BEDROCK_API_KEY` is a
+  secret like the others.
 
 ## Smart contracts
 

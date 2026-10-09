@@ -171,7 +171,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-048.
+for it. The next free decision number is D-049.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -239,3 +239,9 @@ links to its own answer; `website-urls.test.ts` checks the app's ids still exist
 `packages/contracts/art/founding-pass/`, rebuilt with
 `bun packages/contracts/art/founding-pass/build-founding-pass-art.ts`. Its `src/founding-pass-art/`
 data is generated: never edit it by hand.
+**Part 8 (help chatbot) is done** (2026-10-09, D-048), tried by Yash: "Ask a
+question" on `/pass` and `/help` posts to `POST /v1/help/chat`, which answers from the help text
+with DeepSeek V3.2 on Amazon Bedrock (`BEDROCK_API_KEY`, `us-east-1`) under a $5 monthly cap
+(`HELP_CHAT_MONTHLY_CAP_USD`). **After any change to `website/src/content/help.ts`, run
+`bun run help:export-knowledge`** and redeploy the API. `cd apps/api && bun run help:check-answers`
+runs the 20-question test list against the live model.

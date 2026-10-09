@@ -27,6 +27,13 @@ const positiveIntegerStringSchema = z
   .regex(/^[1-9]\d*$/, 'must be a positive whole number')
   .transform(Number)
 
+// A dollar amount such as `5` or `2.50`.
+const positiveUsdAmountStringSchema = z
+  .string()
+  .regex(/^\d+(\.\d{1,2})?$/, 'must be a dollar amount such as 5 or 2.50')
+  .transform(Number)
+  .refine((usdAmount) => usdAmount > 0, 'must be more than 0')
+
 const weiAmountStringSchema = z
   .string()
   .regex(/^[1-9]\d*$/, 'must be a positive whole number of wei')
@@ -103,6 +110,9 @@ const environmentVariablesSchema = z.object({
   EMAIL_SENDER_ADDRESS: z.email(),
   // Optional outside production: development logs codes instead of sending them (D-043).
   BREVO_API_KEY: z.string().min(1).optional(),
+  // Optional: without it the help chatbot answers HELP_CHAT_UNAVAILABLE (D-048).
+  BEDROCK_API_KEY: z.string().min(1).optional(),
+  HELP_CHAT_MONTHLY_CAP_USD: positiveUsdAmountStringSchema,
 })
 
 type SupportedChain = (typeof SUPPORTED_CHAINS)[number]
@@ -132,6 +142,10 @@ export type ApiConfig = {
   emailSenderAddress: string
   /** Never logged. `null` outside production, where codes are logged instead of sent. */
   brevoApiKey: string | null
+  /** Never logged. The help chatbot's model on Amazon Bedrock; `null` turns the chatbot off. */
+  bedrockApiKey: string | null
+  /** The help chatbot's monthly budget at the model's list price (D-048). */
+  helpChatMonthlyCapUsd: number
   contractAddresses: StrideMonContractAddresses
 }
 
@@ -183,6 +197,8 @@ export function parseApiConfig(
     emailProofSecret: variables.EMAIL_PROOF_SECRET,
     emailSenderAddress: variables.EMAIL_SENDER_ADDRESS,
     brevoApiKey: variables.BREVO_API_KEY ?? null,
+    bedrockApiKey: variables.BEDROCK_API_KEY ?? null,
+    helpChatMonthlyCapUsd: variables.HELP_CHAT_MONTHLY_CAP_USD,
     contractAddresses,
   }
 }

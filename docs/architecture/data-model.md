@@ -273,6 +273,25 @@ Privacy).
 
 ---
 
+## `helpChatUsage`
+
+The help chatbot's spend, one document per UTC month (D-048). It holds counts only: never a
+question, an answer or an IP address.
+
+```ts
+type HelpChatUsageDocument = {
+  _id: string               // the month, '2026-10'
+  inputTokenCount: number   // summed from Bedrock's usage numbers
+  outputTokenCount: number
+  answerCount: number       // answers that used the model
+  updatedAt: Date
+}
+```
+
+No extra index: reads and writes go by `_id`. Each answer `$inc`s the counts with an upsert.
+
+---
+
 ## Founding Pass collections (Part 3, D-041, D-043)
 
 **The chain stays the truth** for who holds which pass and Sneaker. These collections hold the

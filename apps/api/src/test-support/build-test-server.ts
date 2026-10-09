@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify'
 import { MongoNotConnectedError } from 'mongodb'
 import { buildServer } from '../build-server'
 import type { PassServicesPluginOptions } from '../plugins/pass-services'
+import type { HelpChatModel } from '../services/help-chat-model'
 import { ANVIL_GAME_SERVER_PRIVATE_KEY } from './deploy-test-contracts'
 import { createCapturingEmailSender, createTestTurnstileVerifier } from './fake-pass-services'
 
@@ -47,6 +48,7 @@ export const TEST_ENVIRONMENT_VARIABLES = {
   TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
   EMAIL_PROOF_SECRET: TEST_EMAIL_PROOF_SECRET,
   EMAIL_SENDER_ADDRESS: 'hello@stridemon.test',
+  HELP_CHAT_MONTHLY_CAP_USD: '5',
 }
 
 /**
@@ -60,12 +62,15 @@ export async function buildTestServer({
   contractAddresses,
   environmentOverrides = {},
   passServices = {},
+  helpChatModel,
 }: {
   monadRpcUrl?: string
   contractAddresses?: StrideMonContractAddresses
   /** For example a schedule moved into the past or the future, or the gate switched on. */
   environmentOverrides?: Record<string, string>
   passServices?: PassServicesPluginOptions
+  /** A fake model for the help chatbot; without one, every question is unavailable. */
+  helpChatModel?: HelpChatModel
 } = {}): Promise<FastifyInstance> {
   const server = await buildServer({
     environmentVariables: {
@@ -79,6 +84,7 @@ export async function buildTestServer({
       emailSender: passServices.emailSender ?? createCapturingEmailSender().emailSender,
       turnstileVerifier: passServices.turnstileVerifier ?? createTestTurnstileVerifier(),
     },
+    ...(helpChatModel === undefined ? {} : { helpChatModel }),
   })
   server.addHook('onClose', async () => {
     try {

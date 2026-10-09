@@ -394,6 +394,47 @@ html:has(.pass-sheet[open]) {
   background: transparent;
 }
 
+/* ---------- The help chatbot (D-048): a pill, and a sheet that holds a conversation ---------- */
+
+.help-chat-launcher {
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Above the pill, when the chat's code couldn't download. */
+.help-chat-load-failed {
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 56px);
+}
+
+/* Tall enough to read a few answers on a phone; a narrow panel on a desktop. */
+.help-chat-sheet {
+  height: 88dvh;
+}
+
+.help-chat-sheet > div {
+  min-height: 0;
+  height: 100%;
+}
+
+@media (width >= 48rem) {
+  .help-chat-launcher {
+    bottom: 24px;
+  }
+
+  .help-chat-load-failed {
+    bottom: 80px;
+  }
+
+  .help-chat-sheet {
+    width: min(560px, calc(100% - 80px));
+    height: min(720px, calc(100dvh - 80px));
+  }
+}
+
+/* The wait line breathes, like the minting dot. */
+.help-chat-thinking {
+  animation: pass-mint-pulse 1600ms ease-in-out infinite;
+}
+
 @keyframes pass-sheet-rise {
   from {
     opacity: 0;

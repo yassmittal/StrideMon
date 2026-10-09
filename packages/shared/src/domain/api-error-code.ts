@@ -36,6 +36,8 @@ export const API_ERROR_CODES = [
   'PASS_ALREADY_MINTED',
   'PASS_MINT_FAILED',
   'FOUNDING_PASS_REQUIRED',
+  // The help chatbot (D-048)
+  'HELP_CHAT_UNAVAILABLE',
 ] as const
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number]

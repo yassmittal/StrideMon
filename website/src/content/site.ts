@@ -18,6 +18,9 @@ export const waitlistApiUrl =
 /** The gallery's live state: minted designs, recent mints, the schedule (D-043, D-044). */
 export const passCollectionApiUrl = `${apiBaseUrl}/v1/pass/collection`
 
+/** The help chatbot on /pass and /help (D-048). */
+export const helpChatApiUrl = `${apiBaseUrl}/v1/help/chat`
+
 /** The mint's routes (D-043, D-045): the app's own sign-in, the email check and the mint. */
 export const passApiUrls = {
   authNonce: `${apiBaseUrl}/v1/auth/nonce`,

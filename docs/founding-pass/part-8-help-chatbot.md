@@ -52,3 +52,17 @@ Each needs an expected answer. Every answer must be correct and safe.
 - Yash has tried it.
 
 Mark Part 8 **Done** (or **Skipped**), then stop.
+
+## As built (D-048)
+
+- **Yash's choice (2026-10-09):** the AI option, on Amazon Bedrock with his API key in `us-east-1`,
+  a **$5 monthly cap**, and a pick from five models he named. The test list chose DeepSeek V3.2.
+- **API:** `POST /v1/help/chat` (`handlers/help-chat/`, `lib/help-chat/`,
+  `services/help-chat-model.ts`, `repositories/help-chat-usage-repository.ts`). Settings:
+  `BEDROCK_API_KEY` and `HELP_CHAT_MONTHLY_CAP_USD` (`deployment.md` §13).
+- **The help text:** `bun run help:export-knowledge` after every change to `website/src/content/help.ts`,
+  then redeploy the API. `bun run help:export-knowledge --check` says whether it's current.
+- **The test list:** `apps/api/src/cli/help-chat-test-list.ts`, 20 questions with the answer each
+  needs. `cd apps/api && bun run help:check-answers` asks the live model each one (about 6 cents a
+  run) and checks it. Add `--model <id>` to try another model.
+- **Widget:** `website/src/components/help-chat/`, its words in `website/src/content/help-chat.ts`.

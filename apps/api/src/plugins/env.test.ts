@@ -22,6 +22,7 @@ const VALID_ENVIRONMENT_VARIABLES = {
   TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
   EMAIL_PROOF_SECRET: 'b'.repeat(128),
   EMAIL_SENDER_ADDRESS: 'hello@stridemon.xyz',
+  HELP_CHAT_MONTHLY_CAP_USD: '5',
 }
 
 const PRODUCTION_ENVIRONMENT_VARIABLES = {
@@ -67,6 +68,8 @@ describe('parseApiConfig', () => {
       emailProofSecret: 'b'.repeat(128),
       emailSenderAddress: 'hello@stridemon.xyz',
       brevoApiKey: null,
+      bedrockApiKey: null,
+      helpChatMonthlyCapUsd: 5,
       contractAddresses: DEPLOYED_CONTRACT_ADDRESSES,
     })
   })
@@ -88,6 +91,18 @@ describe('parseApiConfig', () => {
         TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
       }),
     ).toThrow(/TURNSTILE_SECRET_KEY/)
+  })
+
+  it('rejects a help chat cap that is not a dollar amount above 0', () => {
+    for (const capText of ['0', '-5', '5 USD', '$5']) {
+      expect(() =>
+        parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, HELP_CHAT_MONTHLY_CAP_USD: capText }),
+      ).toThrow(/HELP_CHAT_MONTHLY_CAP_USD/)
+    }
+    expect(
+      parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, HELP_CHAT_MONTHLY_CAP_USD: '2.50' })
+        .helpChatMonthlyCapUsd,
+    ).toBe(2.5)
   })
 
   it('refuses a backup opening date inside the waitlist window', () => {

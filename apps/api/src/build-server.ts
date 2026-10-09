@@ -12,6 +12,7 @@ import { chainClientsPlugin } from './plugins/chain-clients'
 import { corsPlugin } from './plugins/cors'
 import { type ApiConfig, envPlugin, parseApiConfig } from './plugins/env'
 import { errorHandlerPlugin } from './plugins/error-handler'
+import { type HelpChatModelPluginOptions, helpChatModelPlugin } from './plugins/help-chat-model'
 import { mongoPlugin } from './plugins/mongo'
 import { mongoIndexesPlugin } from './plugins/mongo-indexes'
 import { type PassServicesPluginOptions, passServicesPlugin } from './plugins/pass-services'
@@ -20,6 +21,7 @@ import { activitySessionRoutes } from './routes/activity-sessions'
 import { authRoutes } from './routes/auth'
 import { foundingPassRoutes } from './routes/founding-pass'
 import { healthRoutes } from './routes/health'
+import { helpChatRoutes } from './routes/help-chat'
 import { meRoutes } from './routes/me'
 import { onboardingRoutes } from './routes/onboarding'
 import { waitlistRoutes } from './routes/waitlist'
@@ -30,6 +32,8 @@ type BuildServerOptions = {
   contractAddresses?: StrideMonContractAddresses
   /** Tests only: a fake email sender and Turnstile check (D-043). */
   passServices?: PassServicesPluginOptions
+  /** Tests only: a fake help chat model (D-048). */
+  helpChatModel?: HelpChatModelPluginOptions['helpChatModel']
 }
 
 /**
@@ -40,6 +44,7 @@ export async function buildServer({
   environmentVariables,
   contractAddresses,
   passServices = {},
+  helpChatModel,
 }: BuildServerOptions): Promise<FastifyInstance> {
   const apiConfig = parseApiConfig(environmentVariables, contractAddresses)
 
@@ -62,6 +67,7 @@ export async function buildServer({
   await fastify.register(chainClientsPlugin)
   await fastify.register(authenticationPlugin)
   await fastify.register(passServicesPlugin, passServices)
+  await fastify.register(helpChatModelPlugin, helpChatModel === undefined ? {} : { helpChatModel })
   await fastify.register(backgroundJobsPlugin)
   if (apiConfig.nodeEnvironment === 'development') {
     await fastify.register(apiDocsPlugin)
@@ -74,6 +80,7 @@ export async function buildServer({
   await fastify.register(activitySessionRoutes, { prefix: '/v1' })
   await fastify.register(waitlistRoutes, { prefix: '/v1' })
   await fastify.register(foundingPassRoutes, { prefix: '/v1' })
+  await fastify.register(helpChatRoutes, { prefix: '/v1' })
 
   return fastify
 }
