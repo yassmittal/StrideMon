@@ -1,7 +1,7 @@
 import { demoVideo, demoVideoChapters } from '@/content/demo-video'
 import { heroContent } from '@/content/hero'
 import { screenshots } from '@/content/screenshots'
-import { sectionIds } from '@/content/site'
+import { appDownloadUrl, passGalleryPath } from '@/content/site'
 import { hasPublicFile } from '@/lib/read-public-file'
 import { readSneakerArtForDrawing } from '@/lib/read-sneaker-art'
 import { DemoVideoPlayer } from '../ui/demo-video-player'
@@ -15,7 +15,7 @@ type HeroSectionProps = {
 
 const phoneClassName = 'w-[38%] max-w-[296px] shrink-0 self-end'
 
-// With the demo video in public/, it stands beside the Sneaker art in place of the Home screenshot
+// The buttons are what a visitor can do (D-050): get a pass, or try the app. With the demo video in public/, it stands beside the Sneaker art in place of the Home screenshot
 // (its poster is that same screen).
 export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
   const sneakerArtMarkup = readSneakerArtForDrawing()
@@ -35,7 +35,8 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
         </h1>
         <p className="max-w-[17em] text-intro">{heroContent.intro}</p>
         <div className="flex flex-wrap gap-2.5 pt-2">
-          <PillButton href={`#${sectionIds.onChain}`} label={heroContent.seeContractsLabel} />
+          <PillButton href={passGalleryPath} label={heroContent.getPassLabel} />
+          <PillButton href={appDownloadUrl} label={heroContent.getAppLabel} variant="secondary" />
         </div>
       </div>
 

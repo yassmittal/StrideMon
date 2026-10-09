@@ -5,7 +5,6 @@ export type InformationColumn = {
 }
 
 export const fairPlayContent = {
-  metaLabels: ['Fair play', 'Privacy'],
   heading: 'Checked before it pays. Private by design.',
 } as const
 

@@ -24,6 +24,8 @@ laptop, and always knows what to do next.
 3. **"Get ready"** at the top of `/pass`: verify the email (Turnstile, then a 6-digit code) and
    connect the wallet ahead of time. Afterwards, one tap on a pass mints it. **As built (D-045):**
    the email proof and the app's sign-in stay in the browser, so the mint itself needs no wallet.
+   *Changed (D-050):* it shows from 24 hours before the waitlist window, through the open mint,
+   and always for a founder. The mint dialog still has both steps.
 4. **The mint:**
    - pick a design, pass Turnstile, mint
    - a calm pending state, then the **reveal**: the card turns, the founder number counts up,

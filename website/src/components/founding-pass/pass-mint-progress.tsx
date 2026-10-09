@@ -197,7 +197,7 @@ function RevealNextSteps({
           href={`https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-[45px] items-center gap-2 rounded-full bg-surface-muted px-5 text-sm leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard active:bg-surface"
+          className="inline-flex h-[45px] items-center gap-2 rounded-full bg-surface-muted px-5 text-sm leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
         >
           <XLogoIcon />
           {revealContent.postOnXLabel}

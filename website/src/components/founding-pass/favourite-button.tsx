@@ -30,7 +30,7 @@ export function FavouriteButton({
         type="button"
         aria-pressed={isFavourite}
         onClick={() => toggleFavouritePass(designNumber)}
-        className={`inline-flex h-10 items-center gap-2 rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard active:bg-surface ${className}`}
+        className={`inline-flex h-10 items-center gap-2 rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface ${className}`}
       >
         {heart}
         {label}
@@ -43,7 +43,7 @@ export function FavouriteButton({
       aria-pressed={isFavourite}
       aria-label={`${label}: ${formatPassNumber(designNumber)}`}
       onClick={() => toggleFavouritePass(designNumber)}
-      className={`flex size-11 items-center justify-center rounded-full transition-colors duration-300 ease-standard active:bg-surface-muted ${className}`}
+      className={`flex size-11 items-center justify-center rounded-full transition-colors duration-300 ease-standard hover:bg-surface-muted active:bg-surface-muted ${className}`}
     >
       {heart}
     </button>

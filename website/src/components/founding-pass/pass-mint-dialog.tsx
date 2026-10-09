@@ -93,7 +93,7 @@ export function PassMintDialog() {
             type="button"
             onClick={closePassMint}
             aria-label={mintStepContent.closeLabel}
-            className="flex size-11 items-center justify-center rounded-full bg-surface-muted shadow-floating-pill transition-colors duration-300 ease-standard active:bg-surface"
+            className="flex size-11 items-center justify-center rounded-full bg-surface-muted shadow-floating-pill transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
           >
             <svg
               aria-hidden="true"
@@ -392,7 +392,7 @@ function SimilarPassMintButton({ designNumber }: { designNumber: number }) {
         <button
           type="button"
           onClick={() => mintSimilarDesign(design.designNumber)}
-          className="inline-flex h-9 items-center justify-center rounded-full bg-ink px-3 text-[0.6875rem] leading-[1.15] font-medium text-on-dark uppercase transition-colors duration-300 ease-standard active:bg-primary"
+          className="inline-flex h-9 items-center justify-center rounded-full bg-ink px-3 text-[0.6875rem] leading-[1.15] font-medium text-on-dark uppercase transition-colors duration-300 ease-standard hover:bg-primary active:bg-primary"
         >
           {mintProblemActionLabels.mintSimilarPrefix} {formatPassNumber(design.designNumber)}
         </button>

@@ -106,6 +106,15 @@
   [id] {
     scroll-margin-top: 24px;
   }
+
+  /* Tailwind v4's base styles leave buttons on the default arrow: everything pressable points. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="option"]:not([aria-disabled="true"]),
+  select:not(:disabled),
+  label:has(input:not(:disabled)) {
+    cursor: pointer;
+  }
 }
 
 /* ---------- Reveal on scroll: fade and rise 16px, once ---------- */
@@ -256,6 +265,23 @@
   transform: rotate(45deg);
 }
 
+/* "More questions" on /pass (D-050): the same plus, turning to a cross when open. */
+.pass-more-questions > summary {
+  list-style: none;
+}
+
+.pass-more-questions > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pass-more-questions-icon {
+  transition: transform 300ms var(--ease-standard);
+}
+
+.pass-more-questions[open] .pass-more-questions-icon {
+  transform: rotate(45deg);
+}
+
 /* ---------- Help: the answer a link opened (D-047) ---------- */
 
 .help-topic {
@@ -320,9 +346,12 @@
   }
 }
 
-/* The page behind an open sheet stays put. */
+/* The page behind an open sheet stays put, and keeps its scrollbar's space so nothing shifts. */
 html:has(.pass-sheet[open]) {
   overflow: hidden;
+  scrollbar-gutter: stable;
+  /* The kept space sits outside the backdrop: dim it to match. */
+  background-color: color-mix(in srgb, var(--color-page) 50%, black);
 }
 
 /* The mint sheet is narrower than the pass sheet on a desktop. */
@@ -392,6 +421,12 @@ html:has(.pass-sheet[open]) {
 
 .wallet-layer::backdrop {
   background: transparent;
+}
+
+/* ---------- The select menu (D-050): the list fades in under its pill ---------- */
+
+.select-menu-list {
+  animation: pass-sheet-fade 200ms var(--ease-standard);
 }
 
 /* ---------- The help chatbot (D-048): a pill, and a sheet that holds a conversation ---------- */

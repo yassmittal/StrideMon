@@ -24,13 +24,12 @@ export const plannedEarlyAccessStartDateText = 'Saturday 21 November'
 
 /** The `/pass` page's sections, for in-page links. */
 export const passSectionIds = {
-  find: 'find',
   gallery: 'gallery',
   howItWorks: 'how-it-works',
   questions: 'questions',
 } as const
 
-/** Every surface with the pass says this (brief §9). */
+/** Every surface for one pass says this, and Questions does (brief §9, D-050). */
 export const passPromiseLine =
   'Free. It can’t be sent or sold. It isn’t a token and never turns into one.'
 
@@ -41,7 +40,7 @@ export const passPageContent = {
   metaLabels: ['Founding Pass', '1,000 designs', 'Free'],
   headlineWords: ['Founding', 'Pass'],
   intro:
-    '1,000 Sneaker designs, and each one exists once. Pick yours and mint it free. It’s your early access to StrideMon, and the app gives you a Founder Sneaker in the same design.',
+    'Pick one of 1,000 Sneaker designs and mint it free. It’s your early access to StrideMon, and the app gives you a Founder Sneaker in the same design.',
 } as const
 
 export type PassPhaseContent = {
@@ -57,7 +56,7 @@ export type PassPhaseContent = {
 export const passPhaseContent: Record<PassSchedulePhase, PassPhaseContent> = {
   preview: {
     label: 'Preview',
-    headline: 'Browse all 1,000 and pick your favourites. Minting hasn’t started.',
+    headline: 'Minting hasn’t started. Browse and heart your favourites.',
     countdownLabel: 'The waitlist window opens in',
     nextStep: 'Join the waitlist to mint 48 hours before everyone else.',
   },
@@ -99,7 +98,17 @@ export const passScheduleContent = {
   liveLinePrefix: 'Latest',
   joinWaitlistLabel: 'Join the waitlist',
   getAppLabel: 'Get the app',
-  browseLabel: 'Browse all 1,000',
+  browseLabel: 'Browse the collection',
+  findPassLabel: 'Find your pass',
+  getReadyLabel: 'Get ready',
+  /** Under the countdown: when the next phase starts, in the visitor's time (D-050). */
+  nextPhaseAtPrefix: {
+    preview: 'Opens',
+    waitlistWindow: 'Starts',
+  },
+  yourTimeSuffix: 'your time',
+  datesHeading: 'The dates',
+  yourTimeZoneNote: 'Times are in your time zone.',
   openMintUntilPrefix: 'Open until all 1,000 are minted, or until',
   steps: [
     {
@@ -143,20 +152,15 @@ export const passAppAccessContent = {
     'Founders only, each with a Founder Sneaker. It opens to everyone when all 1,000 are minted, or on',
 } as const
 
+/** The ways to find a pass, in the collection's toolbar (D-044, D-050). */
 export const passFindContent = {
-  metaLabels: ['Find yours', '1,000 designs'],
-  heading: 'Find the one.',
-  quizTitle: 'Find your match',
-  quizDescription: 'Three quick questions, six passes that fit you.',
-  quizStartLabel: 'Start the quiz',
-  surpriseTitle: 'Surprise me',
-  surpriseDescription: 'One random pass nobody has minted yet.',
+  quizLabel: 'Take the quiz',
+  quizHint: 'Three questions, six passes that fit you',
   surpriseLabel: 'Surprise me',
+  surpriseHint: 'One random pass nobody has minted yet',
   surpriseNoneLeft: 'There’s no pass left to pick.',
-  searchTitle: 'Search by number',
-  searchDescription: 'Know the one you want? Jump straight to it.',
-  searchLabel: 'Pass number',
-  searchPlaceholder: '#0137',
+  searchLabel: 'Go to a pass number',
+  searchPlaceholder: 'Pass number, like 137',
   searchSubmitLabel: 'Go',
   searchInvalid: 'Pick a number from 1 to 1,000.',
 } as const
@@ -230,7 +234,7 @@ export const passQuizContent = {
 } as const
 
 export const passGalleryContent = {
-  metaLabels: ['The collection', 'One of one each'],
+  metaLabels: ['The collection', '1,000 designs'],
   heading: 'All 1,000',
   filtersLabel: 'Filters',
   hideFiltersLabel: 'Hide filters',
@@ -246,10 +250,12 @@ export const passGalleryContent = {
   clearFiltersLabel: 'Clear filters',
   showAllLabel: 'Show all passes',
   showMoreLabel: 'Show more',
+  shownCountText: (shownCount: number, totalCount: number) =>
+    `Showing ${shownCount.toLocaleString('en-US')} of ${totalCount.toLocaleString('en-US')}`,
   emptyHeading: 'No pass matches these filters.',
   emptyFavouritesHeading: 'No favourites yet.',
   emptyFavouritesText: 'Tap the heart on a pass to keep it here. Hearts stay in this browser.',
-  recentlyMintedUnavailable: 'Recently minted needs the live minted state.',
+  recentlyMintedUnavailable: 'Shows once we can load which passes are minted.',
 } as const
 
 export const passGallerySortOptions: readonly { value: PassGallerySort; label: string }[] = [
@@ -345,9 +351,13 @@ export type PassQuestion = {
   answer: string
 }
 
+/** `/pass` shows this many questions, then "More questions" (D-050). */
+export const PASS_QUESTIONS_SHOWN_FIRST = 6
+
 export const passQuestionsContent = {
   metaLabels: ['Questions', 'Founding Pass'],
   heading: 'Questions',
+  moreQuestionsLabel: (hiddenCount: number) => `${hiddenCount} more questions`,
   helpLabel: 'Read the full help',
   helpPath,
   helpPrompt: 'Still stuck? Write to',
@@ -373,19 +383,6 @@ export const passQuestions: readonly PassQuestion[] = [
       'No, they’re two things. The pass is your membership card: you mint it here, and it shows you’re a founder. The Founder Sneaker is the shoe you walk with: the app gives it to you, drawn in your pass’s design, when you sign in with the wallet that holds the pass.',
   },
   {
-    question: 'Why does my pass have two numbers?',
-    answer:
-      'The pass number, like #0137, is the design: which of the 1,000 you picked. The founder number, like Founder 42, is the order you minted in: the 42nd founder to mint.',
-  },
-  {
-    question: 'Can I play the app before I have a pass?',
-    answer: `Until early access starts on ${plannedEarlyAccessStartDateText}, anyone can try it with a free Sneaker. Then the game starts over, and only founders can play until all 1,000 are minted or the last date in the schedule. Sneakers and STRIDE from before early access don’t carry over.`,
-  },
-  {
-    question: 'How many can I mint?',
-    answer: 'One pass per email and one per wallet.',
-  },
-  {
     question: 'What is the waitlist window?',
     answer:
       'The first 48 hours of minting. Only emails that joined the waitlist before it opened can mint then, so check the same email you joined with. After that, anyone can mint what’s left.',
@@ -394,6 +391,19 @@ export const passQuestions: readonly PassQuestion[] = [
     question: 'Do I need a wallet now?',
     answer:
       'Not to browse, heart passes or join the waitlist. To mint, you need a wallet such as MetaMask. You sign a free message to prove it’s yours: there’s no gas to pay.',
+  },
+  {
+    question: 'Can I play the app before I have a pass?',
+    answer: `Until early access starts on ${plannedEarlyAccessStartDateText}, anyone can try it with a free Sneaker. Then the game starts over, and only founders can play until all 1,000 are minted or the last date in the schedule. Sneakers and STRIDE from before early access don’t carry over.`,
+  },
+  {
+    question: 'Why does my pass have two numbers?',
+    answer:
+      'The pass number, like #0137, is the design: which of the 1,000 you picked. The founder number, like Founder 42, is the order you minted in: the 42nd founder to mint.',
+  },
+  {
+    question: 'How many can I mint?',
+    answer: 'One pass per email and one per wallet.',
   },
   {
     question: 'Which wallet should I use?',
@@ -444,8 +454,8 @@ export const passQuestions: readonly PassQuestion[] = [
 /** The landing page's section (D-044). */
 export const foundingPassSectionContent = {
   id: sectionIds.foundingPass,
-  metaLabels: ['Founding Pass', 'Free', 'One of one'],
-  heading: '1,000 Sneakers. Each one of one.',
+  metaLabels: ['Founding Pass', 'Free', 'Early access'],
+  heading: '1,000 Sneaker designs. Pick yours.',
   intro:
     'Before StrideMon opens to everyone, 1,000 Founding Passes go out free. Each is a different Sneaker design and your early access: the app gives you a Founder Sneaker in the same design.',
   galleryLabel: 'See all 1,000',

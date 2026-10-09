@@ -171,7 +171,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-050.
+for it. The next free decision number is D-051.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -251,3 +251,9 @@ Sat 2026-11-21) is the day Part 10 restarts the game on fresh contracts and turn
 test-period Sneakers and STRIDE don't carry over. `/pass` shows where the app stands from the API's
 `isEarlyAccessGateOn`; the copy explains the pass vs the Founder Sneaker, the two numbers (design
 `#0137` vs "Founder 42"), and that the email must be the waitlist one.
+**The website, read as a first-time visitor (D-050, 2026-10-09):** `/pass` is a short hero, Get
+ready (only from a day before the waitlist window), the collection with the finder in its toolbar
+("Show more" only, never load-on-scroll), How it works with the dates, the waitlist and Questions.
+The landing page's hero buttons are Get your Founding Pass and Get the Android app; the rules, fair
+play, contracts and Why Monad are one tabbed **Under the hood** section (old anchors open their
+tab). The header has three links. Dates show in the visitor's time with no offset.

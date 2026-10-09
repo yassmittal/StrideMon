@@ -43,8 +43,8 @@ export const deployedContracts: readonly DeployedContract[] = [
 ]
 
 /**
- * The Founding Pass (D-041, D-042), from `deployments/10143.json`. It isn't in the footer's list
- * until the hosted API moves to these contracts. Part 10 deploys a fresh one: update it then.
+ * The Founding Pass (D-041, D-042), from `deployments/10143.json`. Part 10 deploys a fresh one:
+ * update it then.
  */
 export const foundingPassContract: DeployedContract = {
   name: 'FoundingPass',
@@ -55,6 +55,12 @@ export const foundingPassContract: DeployedContract = {
     readContractAddress(process.env.NEXT_PUBLIC_FOUNDING_PASS_ADDRESS) ??
     '0xAA2b4891a5057aBafD645986ff5493A4F1027080',
 }
+
+/** The contracts the On-chain list and the footer show (D-050 adds the pass). */
+export const listedContracts: readonly DeployedContract[] = [
+  ...deployedContracts,
+  foundingPassContract,
+]
 
 function readContractAddress(addressText: string | undefined): ContractAddress | null {
   return addressText !== undefined && /^0x[0-9a-fA-F]{40}$/.test(addressText)
@@ -82,7 +88,7 @@ export function shortenAddress(address: ContractAddress): string {
 
 export const onChainContent = {
   heading: 'Everything that matters lives on Monad.',
-  intro: `Four verified contracts on Monad testnet (chain ${monadTestnetChainId}).`,
+  intro: `Five verified contracts on Monad testnet (chain ${monadTestnetChainId}).`,
   artHeading: 'The picture is on-chain too',
   artText:
     'The Sneaker’s picture is an SVG drawn by a contract, so the app, MonadVision and MetaMask show the same image. The app and the explorer redraw it when you repair or upgrade.',

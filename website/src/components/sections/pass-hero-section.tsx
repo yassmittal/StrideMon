@@ -1,8 +1,8 @@
-import { passPageContent, passPromiseLine } from '@/content/founding-pass'
+import { passPageContent } from '@/content/founding-pass'
 import { PassSchedulePanel } from '../founding-pass/pass-schedule-panel'
 import { MetaLabel } from '../ui/meta-label'
 
-/** `/pass`'s first screen: what the Founding Pass is, and where the schedule stands. */
+/** `/pass`'s first screen: what the Founding Pass is, and what's next (D-050: kept short). */
 export function PassHeroSection() {
   return (
     <section
@@ -19,9 +19,6 @@ export function PassHeroSection() {
           ))}
         </h1>
         <p className="max-w-[20em] text-intro">{passPageContent.intro}</p>
-        <p className="max-w-[34em] text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-          {passPromiseLine}
-        </p>
       </div>
       <div className="lg:col-span-6">
         <PassSchedulePanel />

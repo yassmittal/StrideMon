@@ -4,7 +4,6 @@ export type WhyMonadPoint = {
 }
 
 export const whyMonadContent = {
-  metaLabels: ['Why Monad'],
   heading: 'Why Monad',
 } as const
 

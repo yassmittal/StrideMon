@@ -113,7 +113,11 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    Waitlist, FAQ. Two small pills: **Follow** with X's logo (icon only on a phone) and a dark
    **Join waitlist** (D-039; it replaced the **See it on Monad** pill, since the hero already
    links to the contracts).
+   *Changed (D-050):* the links are **Founding Pass**, **The game** (How it works) and **Help**,
+   the same on every page.
 2. **Hero:**
+   - *Changed (D-050):* the CTAs are **Get your Founding Pass** (`/pass`) and **Get the app**
+     (the Android build). "See the contracts" moved into Under the hood.
    - Meta: `STRIDEMON • MOVE TO EARN • MONAD TESTNET`
    - Headline (the app's welcome screen): **Walk. Earn. Upgrade.**
    - Intro: "Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then spend STRIDE to
@@ -132,7 +136,8 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
      pressed, and a press anywhere else pauses or resumes; at the end, a **Watch again** pill. Still
      muted, `preload="none"`, played only on click. Space or K pauses, ← and → step 5 s.
 3. **How it works:** the loop as six numbered steps, each with one line and, where there is one, a
-   screenshot:
+   screenshot. *Changed (D-050):* a compact grid (three across on a desktop, two on a phone), one
+   smaller phone per step:
    1. **Own:** sign in with your wallet and get a free starter Sneaker NFT, plus a little test MON
       for gas.
    2. **Energy:** each Sneaker holds up to 10 energy. One point is one rewarded minute, and a point
@@ -153,6 +158,9 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    chapters.* *Re-cut (2026-10-06) for the STRIDE rename* from one new recording (`video3.mp4`):
    56 s, sign in, walk, +15 STRIDE settled, transfer. How it works' Move step plays a 6 s loop of
    the run screen in place of its screenshot while on screen, unless motion is reduced.
+   *Changed (D-050):* sections 5 to 8 are one dark **Under the hood** section with four tabs
+   (The rules, Fair play, Contracts, Why Monad), placed after the waitlist. The old anchors open
+   their tab. The contract list adds `FoundingPass`.
 5. **The rules are on-chain:** a dark section. The numbers in mono, each with one line of
    explanation. All from `SneakerGame`'s launch config (`docs/architecture/game-rules.md`):
 

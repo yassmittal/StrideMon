@@ -39,6 +39,7 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/lib/founding-pass/` | The design table's helpers, the gallery's filters and quiz, the schedule, the live state and favourites stores, and the mint: its API calls, "Get ready" store, mint flow, Turnstile and chain reads |
 | `src/lib/founding-pass/wallet/` | The wallet code (AppKit + wagmi), loaded on demand only (D-045) |
 | `src/components/founding-pass/` | The gallery, cards, detail sheet, finder, schedule panel, "Get ready", the mint dialog and the reveal |
+| `src/content/under-the-hood.ts` | The landing page's Under the hood section and its four tabs (D-050). Each tab keeps its old section's id, so `/#on-chain` still works |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |

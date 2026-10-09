@@ -232,7 +232,7 @@ export const helpGuides: readonly HelpGuide[] = [
     title: 'Get ready: check your email and sign in',
     intro: 'Do this before you mint, so minting is one tap when the time comes.',
     steps: [
-      'Open stridemon.xyz/pass and find Get ready near the top.',
+      'Open stridemon.xyz/pass. Get ready shows near the top from the day before minting opens.',
       'Type your email and tap Send code. If a robot check shows, let it finish.',
       'Type the 6-digit code from our email. It works for 10 minutes. Look in spam if it isn’t in your inbox.',
       'Tap Connect wallet and pick MetaMask. On a phone, MetaMask opens: approve, then come back.',

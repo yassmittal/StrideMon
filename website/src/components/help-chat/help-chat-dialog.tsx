@@ -117,7 +117,7 @@ export function HelpChatDialog({ isOpen, onClose }: HelpChatDialogProps) {
             type="button"
             onClick={onClose}
             aria-label={helpChatContent.closeLabel}
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-muted transition-colors duration-300 ease-standard active:bg-surface"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-muted transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
           >
             <svg
               aria-hidden="true"
@@ -154,7 +154,7 @@ export function HelpChatDialog({ isOpen, onClose }: HelpChatDialogProps) {
                     <button
                       type="button"
                       onClick={() => askQuestion(question)}
-                      className="min-h-11 rounded-full bg-surface px-4 text-left text-sm leading-[1.25] transition-colors duration-300 ease-standard active:bg-surface-muted"
+                      className="min-h-11 rounded-full bg-surface px-4 text-left text-sm leading-[1.25] transition-colors duration-300 ease-standard hover:bg-surface-muted active:bg-surface-muted"
                     >
                       {question}
                     </button>

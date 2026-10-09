@@ -45,7 +45,8 @@ function HelpChatLoadFailedNote({ isOpen, onClose }: HelpChatDialogProps) {
 }
 
 /**
- * "Ask a question", fixed at the bottom right of /pass and /help (Part 8, D-048). Once opened, the
+ * "Ask a question", fixed at the bottom right of /pass and /help (Part 8, D-048), an icon on a
+ * phone (D-050). Once opened, the
  * dialog stays mounted, so closing and reopening keeps the conversation (in memory only).
  */
 export function HelpChatLauncher() {
@@ -63,7 +64,8 @@ export function HelpChatLauncher() {
         type="button"
         onClick={handleLauncherPress}
         aria-haspopup="dialog"
-        className="help-chat-launcher fixed right-4 z-20 inline-flex h-11 items-center gap-2.5 rounded-full bg-surface pr-5 pl-4 text-xs leading-[1.15] font-medium tracking-[0.04em] text-ink uppercase shadow-floating-pill transition-colors duration-300 ease-standard active:bg-surface-muted md:right-[max(5vw,40px)]"
+        aria-label={helpChatContent.launcherLabel}
+        className="help-chat-launcher fixed right-4 z-20 inline-flex h-11 items-center justify-center gap-2.5 rounded-full bg-surface max-md:w-11 md:pr-5 md:pl-4 text-xs leading-[1.15] font-medium tracking-[0.04em] text-ink uppercase shadow-floating-pill transition-colors duration-300 ease-standard hover:bg-surface-muted active:bg-surface-muted md:right-[max(5vw,40px)]"
       >
         <svg
           aria-hidden="true"
@@ -76,7 +78,10 @@ export function HelpChatLauncher() {
         >
           <path d="M3 4.5A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5v6a1.5 1.5 0 0 1-1.5 1.5H8l-3.5 3v-3h0A1.5 1.5 0 0 1 3 10.5z" />
         </svg>
-        {helpChatContent.launcherLabel}
+        {/* Just the icon on a phone, where the pill covered the page (D-050). */}
+        <span aria-hidden="true" className="max-md:hidden">
+          {helpChatContent.launcherLabel}
+        </span>
       </button>
       {hasOpened ? <HelpChatDialog isOpen={isOpen} onClose={() => setIsOpen(false)} /> : null}
     </>

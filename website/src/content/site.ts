@@ -109,18 +109,16 @@ export const sectionIds = {
   fairPlay: 'fair-play',
   onChain: 'on-chain',
   whyMonad: 'why-monad',
+  underTheHood: 'under-the-hood',
   waitlist: 'waitlist',
   faq: 'faq',
 } as const
 
+/** Three links, the same on every page (D-050). The pills carry the waitlist and X. */
 export const navigationLinks: readonly NavigationLink[] = [
   { label: 'Founding Pass', href: passGalleryPath },
-  { label: 'How it works', href: `/#${sectionIds.howItWorks}` },
-  { label: 'Rules', href: `/#${sectionIds.rules}` },
-  { label: 'Fair play', href: `/#${sectionIds.fairPlay}` },
-  { label: 'On-chain', href: `/#${sectionIds.onChain}` },
-  { label: 'Waitlist', href: `/#${sectionIds.waitlist}` },
-  { label: 'FAQ', href: `/#${sectionIds.faq}` },
+  { label: 'The game', href: `/#${sectionIds.howItWorks}` },
+  { label: 'Help', href: helpPath },
 ]
 
 export const headerContent = {
@@ -133,6 +131,7 @@ export const footerContent = {
   builtOnLine: 'Built on Monad testnet for a hackathon.',
   noValueLine: 'STRIDE has no monetary value.',
   githubLabel: 'GitHub',
+  foundingPassLabel: 'Founding Pass',
   helpLabel: 'Help',
   privacyPolicyLabel: 'Privacy',
   deleteAccountLabel: 'Delete account',

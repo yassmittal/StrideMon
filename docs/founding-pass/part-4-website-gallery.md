@@ -20,6 +20,9 @@ the one they love, read how it all works, and join the waitlist. No wallet yet: 
    writes each design's card (`pass-art/cards/`) and its laced Sneaker (`pass-art/laced/`), both
    drawn by the Solidity renderer, and `src/content/founding-pass-designs.ts`.
 2. **`/pass`:**
+   - *Reordered (D-050):* a short hero with a small status panel, then Get ready (when useful),
+     the collection with the finder in its toolbar, How it works with the dates, the waitlist and
+     Questions (six, then "More questions"). "Show more" grows the grid; it no longer loads on scroll.
    - **Header:** the phase and its countdown. In preview it counts down to the waitlist window,
      during the window to the open mint, and during the open mint it reads "612 of 1,000 minted".
    - **Find:** the match quiz (3 questions → 6 passes), "Surprise me", and search by number.

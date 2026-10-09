@@ -1,14 +1,11 @@
-import { FairPlaySection } from '@/components/sections/fair-play-section'
 import { FaqSection } from '@/components/sections/faq-section'
 import { FoundingPassSection } from '@/components/sections/founding-pass-section'
 import { HeroSection } from '@/components/sections/hero-section'
 import { HowItWorksSection } from '@/components/sections/how-it-works-section'
-import { OnChainSection } from '@/components/sections/on-chain-section'
-import { RulesSection } from '@/components/sections/rules-section'
 import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
+import { UnderTheHoodSection } from '@/components/sections/under-the-hood-section'
 import { WaitlistSection } from '@/components/sections/waitlist-section'
-import { WhyMonadSection } from '@/components/sections/why-monad-section'
 import { RevealObserver } from '@/components/ui/reveal-observer'
 import { demoVideo } from '@/content/demo-video'
 import { buildStructuredData, serializeStructuredData } from '@/lib/build-structured-data'
@@ -32,11 +29,8 @@ export default function HomePage() {
         <HeroSection hasDemoVideo={hasDemoVideo} />
         <FoundingPassSection />
         <HowItWorksSection />
-        <RulesSection />
-        <FairPlaySection />
-        <OnChainSection />
-        <WhyMonadSection />
         <WaitlistSection />
+        <UnderTheHoodSection />
         <FaqSection />
       </main>
       <SiteFooter />

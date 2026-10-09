@@ -2,7 +2,6 @@
 
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  passFindContent,
   passGalleryContent,
   passGallerySortOptions,
   passScheduleContent,
@@ -23,25 +22,29 @@ import { useFavouritePasses } from '@/lib/founding-pass/use-favourite-passes'
 import { retryPassCollection, usePassCollection } from '@/lib/founding-pass/use-pass-collection'
 import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
+import { SelectMenu } from '../ui/select-menu'
 import { PassCard } from './pass-card'
 import { PassDetailSheet } from './pass-detail-sheet'
-import { PassFinder } from './pass-finder'
+import { PassFinderActions, PassQuiz } from './pass-finder'
 
-/** Cards drawn at a time: enough to fill two screens, few enough to keep the page light (D-044). */
+/** Cards drawn at a time, and added by each "Show more" (D-044). Never on scroll (D-050). */
 const GALLERY_PAGE_SIZE = 48
 /** The first row's art loads at once; the rest as it scrolls into view. */
 const EAGER_CARD_COUNT = 6
 const PASS_HASH_PATTERN = /^#(\d{4})$/
 
-/** The finder, the filters, the grid and the detail sheet, which all open the same sheet. */
+/**
+ * The collection (D-044): the finder and the filters in one toolbar (D-050), the quiz, the grid,
+ * and the detail sheet, which they all open.
+ */
 export function PassGallery() {
   const [filters, setFilters] = useState<PassGalleryFilters>(emptyPassGalleryFilters)
   const [sort, setSort] = useState<PassGallerySort>('number')
   const [areFiltersShown, setAreFiltersShown] = useState(false)
+  const [isQuizOpen, setIsQuizOpen] = useState(false)
   const [shownCount, setShownCount] = useState(GALLERY_PAGE_SIZE)
   const [openDesignNumber, setOpenDesignNumber] = useState<number | null>(null)
   const hasPushedSheetEntryRef = useRef(false)
-  const loadMoreRef = useRef<HTMLDivElement>(null)
   const { collection, requestStatus } = usePassCollection()
   const favouriteDesignNumbers = useFavouritePasses()
 
@@ -66,20 +69,6 @@ export function PassGallery() {
     openFromHash()
     window.addEventListener('popstate', openFromHash)
     return () => window.removeEventListener('popstate', openFromHash)
-  }, [])
-
-  // Draws the next cards as the end of the grid comes near. "Show more" does the same by hand.
-  useEffect(() => {
-    const loadMoreElement = loadMoreRef.current
-    if (loadMoreElement === null) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) setShownCount((count) => count + GALLERY_PAGE_SIZE)
-      },
-      { rootMargin: '600px 0px' },
-    )
-    observer.observe(loadMoreElement)
-    return () => observer.disconnect()
   }, [])
 
   function openDesign(designNumber: number) {
@@ -116,23 +105,9 @@ export function PassGallery() {
   return (
     <>
       <section
-        id={passSectionIds.find}
-        aria-labelledby="pass-find-heading"
-        className="page-gutter page-container flex flex-col gap-8 py-12 md:py-16"
-      >
-        <div className="flex flex-col gap-5">
-          <MetaLabel items={passFindContent.metaLabels} />
-          <h2 id="pass-find-heading" className="-ml-[0.04em] text-heading text-balance">
-            {passFindContent.heading}
-          </h2>
-        </div>
-        <PassFinder onOpenDesign={openDesign} />
-      </section>
-
-      <section
         id={passSectionIds.gallery}
         aria-labelledby="pass-gallery-heading"
-        className="page-gutter page-container flex flex-col gap-6 pt-4 pb-16 md:pb-24"
+        className="page-gutter page-container flex flex-col gap-6 pt-10 pb-16 md:pt-16 md:pb-24"
       >
         <div className="flex flex-col gap-5">
           <MetaLabel items={passGalleryContent.metaLabels} />
@@ -142,6 +117,11 @@ export function PassGallery() {
         </div>
 
         <div className="flex flex-col gap-3">
+          <PassFinderActions
+            onOpenDesign={openDesign}
+            isQuizOpen={isQuizOpen}
+            onToggleQuiz={() => setIsQuizOpen(!isQuizOpen)}
+          />
           <div className="flex flex-wrap items-center gap-2">
             <ToggleChip
               isPressed={areFiltersShown}
@@ -174,27 +154,22 @@ export function PassGallery() {
                 <span className="font-mono">({favouriteDesignNumbers.length})</span>
               ) : null}
             </ToggleChip>
-            <label className="ml-auto flex h-10 items-center gap-2 text-xs leading-[1.15] font-medium uppercase">
-              <span className="text-ink-secondary-small">{passGalleryContent.sortLabel}</span>
-              <select
-                value={sort}
-                onChange={(event) => {
-                  setSort(event.target.value as PassGallerySort)
-                  setShownCount(GALLERY_PAGE_SIZE)
-                }}
-                className="h-10 cursor-pointer rounded-full bg-surface-muted pr-3 pl-4 text-xs font-medium uppercase"
-              >
-                {passGallerySortOptions.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                    disabled={option.value === 'recentlyMinted' && collection === null}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectMenu
+              label={passGalleryContent.sortLabel}
+              value={sort}
+              options={passGallerySortOptions.map((option) => ({
+                ...option,
+                disabledReason:
+                  option.value === 'recentlyMinted' && collection === null
+                    ? passGalleryContent.recentlyMintedUnavailable
+                    : undefined,
+              }))}
+              onChange={(nextSort) => {
+                setSort(nextSort)
+                setShownCount(GALLERY_PAGE_SIZE)
+              }}
+              className="ml-auto"
+            />
           </div>
 
           {areFiltersShown ? (
@@ -327,6 +302,10 @@ export function PassGallery() {
           </div>
         </div>
 
+        {isQuizOpen ? (
+          <PassQuiz onOpenDesign={openDesign} onClose={() => setIsQuizOpen(false)} />
+        ) : null}
+
         {designs.length === 0 ? (
           <EmptyGallery
             isFavouritesOnly={filters.isFavouritesOnly && favouriteDesignNumbers.length === 0}
@@ -348,8 +327,11 @@ export function PassGallery() {
           </ul>
         )}
 
-        <div ref={loadMoreRef} className="flex justify-center">
-          {shownCount < designs.length ? (
+        {shownCount < designs.length ? (
+          <div className="flex flex-col items-center gap-3">
+            <p className="font-mono text-sm text-ink-secondary-small">
+              {passGalleryContent.shownCountText(shownDesigns.length, designs.length)}
+            </p>
             <button
               type="button"
               onClick={() => setShownCount(shownCount + GALLERY_PAGE_SIZE)}
@@ -357,8 +339,8 @@ export function PassGallery() {
             >
               <PillContent label={passGalleryContent.showMoreLabel} />
             </button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </section>
 
       <PassDetailSheet
@@ -397,7 +379,9 @@ function ToggleChip({
       aria-controls={ariaControls}
       onClick={onToggle}
       className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard ${
-        isPressed ? 'bg-ink text-on-dark' : 'bg-surface-muted text-ink active:bg-surface'
+        isPressed
+          ? 'bg-ink text-on-dark'
+          : 'bg-surface-muted text-ink hover:bg-surface active:bg-surface'
       }`}
     >
       {children}

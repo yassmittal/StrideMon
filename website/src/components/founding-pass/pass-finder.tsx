@@ -1,6 +1,6 @@
 'use client'
 
-import { type FormEvent, type ReactNode, useId, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
 import {
   type PassQuizOption,
   passFindContent,
@@ -19,6 +19,7 @@ import {
   rankPassQuizMatches,
 } from '@/lib/founding-pass/pass-gallery-view'
 import { usePassCollection } from '@/lib/founding-pass/use-pass-collection'
+import { ArrowIcon } from '../ui/arrow-icon'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { PassCard } from './pass-card'
 
@@ -26,139 +27,181 @@ type PassFinderProps = {
   onOpenDesign: (designNumber: number) => void
 }
 
+type PassFinderActionsProps = PassFinderProps & {
+  isQuizOpen: boolean
+  onToggleQuiz: () => void
+}
+
 const QUIZ_RESULTS_PAGE_SIZE = 6
 
 type QuizAnswers = Partial<Record<(typeof passQuizQuestions)[number]['key'], PassQuizOption>>
 
-/** The three ways to find "the one" without scrolling 1,000 cards (brief §5.2). */
-export function PassFinder({ onOpenDesign }: PassFinderProps) {
-  const [isQuizOpen, setIsQuizOpen] = useState(false)
-  const [surpriseMessage, setSurpriseMessage] = useState<string | null>(null)
-  const { collection } = usePassCollection()
-
-  function openSurprisePass() {
-    const surpriseDesign = pickSurprisePassDesign(listTakenDesignNumbers(collection))
-    if (surpriseDesign === null) {
-      setSurpriseMessage(passFindContent.surpriseNoneLeft)
-      return
-    }
-    setSurpriseMessage(null)
-    onOpenDesign(surpriseDesign.designNumber)
-  }
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
-        <FinderTile title={passFindContent.quizTitle} description={passFindContent.quizDescription}>
-          <button
-            type="button"
-            aria-expanded={isQuizOpen}
-            onClick={() => setIsQuizOpen(true)}
-            className={buildPillClassName('primary', 'regular', 'self-start')}
-          >
-            <PillContent label={passFindContent.quizStartLabel} />
-          </button>
-        </FinderTile>
-        <FinderTile
-          title={passFindContent.surpriseTitle}
-          description={passFindContent.surpriseDescription}
-        >
-          <button
-            type="button"
-            onClick={openSurprisePass}
-            className={buildPillClassName('secondary', 'regular', 'self-start')}
-          >
-            <PillContent label={passFindContent.surpriseLabel} />
-          </button>
-          {surpriseMessage === null ? null : (
-            <p className="text-sm text-ink-secondary-small">{surpriseMessage}</p>
-          )}
-        </FinderTile>
-        <FinderTile
-          title={passFindContent.searchTitle}
-          description={passFindContent.searchDescription}
-        >
-          <PassNumberSearch onOpenDesign={onOpenDesign} />
-        </FinderTile>
-      </div>
-      {isQuizOpen ? (
-        <PassQuiz onOpenDesign={onOpenDesign} onClose={() => setIsQuizOpen(false)} />
-      ) : null}
-    </div>
-  )
-}
-
-function FinderTile({
-  title,
-  description,
-  children,
-}: {
-  title: string
-  description: string
-  children: ReactNode
-}) {
-  return (
-    <div className="flex flex-col justify-between gap-6 rounded-panel bg-surface p-5 md:p-6">
-      <div className="flex flex-col gap-2">
-        <h3 className="text-2xl leading-[1.1] tracking-[-0.01em]">{title}</h3>
-        <p className="text-base leading-[1.4] text-ink-secondary-small">{description}</p>
-      </div>
-      <div className="flex flex-col gap-2">{children}</div>
-    </div>
-  )
-}
-
-function PassNumberSearch({ onOpenDesign }: PassFinderProps) {
+/**
+ * The ways to find a pass without scrolling 1,000 cards (brief §5.2), in the collection's toolbar
+ * (D-050): go to a number, take the quiz, or be surprised. The quiz panel is `PassQuiz`.
+ */
+export function PassFinderActions({
+  onOpenDesign,
+  isQuizOpen,
+  onToggleQuiz,
+}: PassFinderActionsProps) {
   const [searchText, setSearchText] = useState('')
-  const [isInvalid, setIsInvalid] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+  const [isSearchInvalid, setIsSearchInvalid] = useState(false)
+  const { collection } = usePassCollection()
   const inputId = useId()
-  const errorId = `${inputId}-error`
+  const messageId = `${inputId}-message`
 
   function searchPassNumber(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const designNumber = parsePassNumberSearch(searchText)
     if (designNumber === null) {
-      setIsInvalid(true)
+      setIsSearchInvalid(true)
+      setMessage(passFindContent.searchInvalid)
       return
     }
-    setIsInvalid(false)
+    setIsSearchInvalid(false)
+    setMessage(null)
     onOpenDesign(designNumber)
   }
 
+  function openSurprisePass() {
+    const surpriseDesign = pickSurprisePassDesign(listTakenDesignNumbers(collection))
+    if (surpriseDesign === null) {
+      setMessage(passFindContent.surpriseNoneLeft)
+      return
+    }
+    setMessage(null)
+    onOpenDesign(surpriseDesign.designNumber)
+  }
+
   return (
-    <form noValidate onSubmit={searchPassNumber} className="flex flex-col gap-2">
-      <label htmlFor={inputId} className="sr-only">
-        {passFindContent.searchLabel}
-      </label>
-      <div className="flex gap-2">
-        <input
-          id={inputId}
-          type="text"
-          inputMode="numeric"
-          autoComplete="off"
-          spellCheck={false}
-          placeholder={passFindContent.searchPlaceholder}
-          value={searchText}
-          onChange={(event) => {
-            setSearchText(event.target.value)
-            if (isInvalid) setIsInvalid(false)
-          }}
-          aria-invalid={isInvalid}
-          aria-describedby={errorId}
-          className="h-[45px] min-w-0 flex-1 rounded-full border border-hairline bg-page px-5 font-mono text-base placeholder:text-ink-secondary transition-colors duration-300 ease-standard focus-visible:border-ink aria-invalid:border-ink"
-        />
-        <button type="submit" className={buildPillClassName('primary', 'regular', 'shrink-0')}>
-          <PillContent label={passFindContent.searchSubmitLabel} />
-        </button>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form
+          noValidate
+          onSubmit={searchPassNumber}
+          className="flex h-10 items-center rounded-full border border-hairline bg-surface pr-1 pl-4 transition-colors duration-300 ease-standard focus-within:border-ink has-aria-invalid:border-ink sm:w-[300px]"
+        >
+          <label htmlFor={inputId} className="sr-only">
+            {passFindContent.searchLabel}
+          </label>
+          <SearchIcon />
+          <input
+            id={inputId}
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder={passFindContent.searchPlaceholder}
+            value={searchText}
+            onChange={(event) => {
+              setSearchText(event.target.value)
+              if (isSearchInvalid) {
+                setIsSearchInvalid(false)
+                setMessage(null)
+              }
+            }}
+            aria-invalid={isSearchInvalid}
+            aria-describedby={messageId}
+            className="h-full min-w-0 flex-1 bg-transparent px-2.5 text-sm outline-none placeholder:text-ink-secondary"
+          />
+          <button
+            type="submit"
+            aria-label={passFindContent.searchSubmitLabel}
+            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-on-dark transition-colors duration-300 ease-standard hover:bg-ink active:bg-ink"
+          >
+            <ArrowIcon className="size-3.5" />
+          </button>
+        </form>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-expanded={isQuizOpen}
+            aria-controls={isQuizOpen ? PASS_QUIZ_PANEL_ID : undefined}
+            title={passFindContent.quizHint}
+            onClick={onToggleQuiz}
+            className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard ${
+              isQuizOpen
+                ? 'bg-ink text-on-dark'
+                : 'bg-primary text-on-dark hover:bg-ink active:bg-ink'
+            }`}
+          >
+            <SparkIcon />
+            {passFindContent.quizLabel}
+          </button>
+          <button
+            type="button"
+            title={passFindContent.surpriseHint}
+            onClick={openSurprisePass}
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
+          >
+            <ShuffleIcon />
+            {passFindContent.surpriseLabel}
+          </button>
+        </div>
       </div>
-      <p id={errorId} className="min-h-5 text-sm leading-[1.4]">
-        {isInvalid ? passFindContent.searchInvalid : null}
+      <p id={messageId} aria-live="polite" className="text-sm leading-[1.4] empty:hidden">
+        {message}
       </p>
-    </form>
+    </div>
   )
 }
 
-function PassQuiz({
+/** The quiz panel's id, for its button's `aria-controls`. */
+export const PASS_QUIZ_PANEL_ID = 'pass-quiz'
+
+function SearchIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4 shrink-0 text-ink-secondary-small"
+      viewBox="0 0 18 18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    >
+      <circle cx="8" cy="8" r="5" />
+      <path d="m12 12 3.5 3.5" />
+    </svg>
+  )
+}
+
+function SparkIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4 shrink-0"
+      viewBox="0 0 18 18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    >
+      <path d="M9 2.5c.6 3.4 2.6 5.4 6 6-3.4.6-5.4 2.6-6 6-.6-3.4-2.6-5.4-6-6 3.4-.6 5.4-2.6 6-6Z" />
+    </svg>
+  )
+}
+
+function ShuffleIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4 shrink-0"
+      viewBox="0 0 18 18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2.5 5.5h3c3 0 4 7 7 7h3M13 10l2.5 2.5L13 15M2.5 12.5h3c1.2 0 2-1 2.6-2.2M10.4 7.7c.6-1.2 1.4-2.2 2.6-2.2h2.5M13 3l2.5 2.5L13 8" />
+    </svg>
+  )
+}
+
+export function PassQuiz({
   onOpenDesign,
   onClose,
 }: PassFinderProps & {
@@ -172,6 +215,12 @@ function PassQuiz({
     (question) => answers[question.key] === undefined,
   )
   const currentQuestion = passQuizQuestions[questionIndex]
+
+  // Opened from the toolbar: move there, so the first question is in view and read out.
+  useEffect(() => {
+    panelRef.current?.focus({ preventScroll: true })
+    panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [])
 
   function answerQuestion(option: PassQuizOption) {
     if (currentQuestion === undefined) return
@@ -196,6 +245,7 @@ function PassQuiz({
   return (
     <div
       ref={panelRef}
+      id={PASS_QUIZ_PANEL_ID}
       tabIndex={-1}
       aria-live="polite"
       className="quiz-panel relative flex flex-col gap-6 rounded-panel bg-dark p-5 text-on-dark outline-none md:p-[30px]"
@@ -210,7 +260,7 @@ function PassQuiz({
           type="button"
           onClick={onClose}
           aria-label={passQuizContent.closeLabel}
-          className="-mt-2.5 -mr-2.5 flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ease-standard active:bg-dark-track"
+          className="-mt-2.5 -mr-2.5 flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ease-standard hover:bg-dark-track active:bg-dark-track"
         >
           <svg
             aria-hidden="true"

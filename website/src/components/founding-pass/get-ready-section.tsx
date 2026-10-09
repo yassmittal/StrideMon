@@ -13,19 +13,28 @@ import { FounderPassPanel } from './founder-pass-panel'
 import { WalletSignInStep } from './wallet-sign-in-step'
 
 const SCHEDULE_REFRESH_MILLISECONDS = 30_000
+/** Get ready shows this long before the waitlist window (D-050). */
+const SHOWN_BEFORE_MINTING_MILLISECONDS = 24 * 60 * 60 * 1000
 
 /**
- * "Get ready" at the top of /pass (Part 5, D-045): check the email and sign in ahead, so mint
- * day is one tap. A founder sees their pass instead. Gone once minting is over.
+ * "Get ready" near the top of /pass (Part 5, D-045): check the email and sign in ahead, so mint
+ * day is one tap. It shows from a day before the waitlist window until minting is over (D-050);
+ * a founder always sees their pass here instead.
  */
 export function GetReadySection() {
-  const { position } = usePassSchedule(SCHEDULE_REFRESH_MILLISECONDS)
+  const { position, now } = usePassSchedule(SCHEDULE_REFRESH_MILLISECONDS)
   const { emailCheck, signIn, heldPassState } = usePassMintReadiness()
   const flow = usePassMintFlow()
   const phase = position?.phase ?? null
-  const isOver = phase === 'allMinted' || phase === 'openToAll'
   const isFounder = heldPassState.status === 'held'
-  if (isOver && !isFounder) return null
+  const nextPhaseAt = position?.nextPhaseAt ?? null
+  const isMintingSoon =
+    phase === 'preview' &&
+    nextPhaseAt !== null &&
+    now !== null &&
+    nextPhaseAt.getTime() - now.getTime() <= SHOWN_BEFORE_MINTING_MILLISECONDS
+  const isShown = isFounder || isMintingSoon || (phase !== null && isMintingPhase(phase))
+  if (!isShown) return null
 
   const isReady = emailCheck !== null && signIn !== null
   const mintingOpensAt = phase === 'preview' ? (position?.nextPhaseAt ?? null) : null
@@ -81,7 +90,7 @@ export function GetReadySection() {
                 </p>
               </div>
               <a
-                href={`#${passSectionIds.find}`}
+                href={`#${passSectionIds.gallery}`}
                 className={buildPillClassName('callToAction', 'regular')}
               >
                 <PillContent label={getReadyContent.browseLabel} />

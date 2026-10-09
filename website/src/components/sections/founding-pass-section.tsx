@@ -1,4 +1,4 @@
-import { foundingPassSectionContent, passPromiseLine } from '@/content/founding-pass'
+import { foundingPassSectionContent } from '@/content/founding-pass'
 import { passGalleryPath, sectionIds } from '@/content/site'
 import { buildRevealDelayStyle } from '@/lib/build-reveal-delay-style'
 import {
@@ -37,9 +37,6 @@ export function FoundingPassSection() {
           <div data-reveal className="flex flex-col gap-6 md:col-span-5 md:self-end">
             <p className="text-lg leading-[1.4] text-on-dark-secondary">
               {foundingPassSectionContent.intro}
-            </p>
-            <p className="text-label font-medium tracking-[0.08em] text-lime uppercase">
-              {passPromiseLine}
             </p>
             <div className="flex flex-wrap gap-2.5">
               <PillButton

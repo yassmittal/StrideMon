@@ -1,13 +1,10 @@
-import {
-  buildExplorerAddressUrl,
-  deployedContracts,
-  monadTestnetChainId,
-} from '@/content/contracts'
+import { buildExplorerAddressUrl, listedContracts, monadTestnetChainId } from '@/content/contracts'
 import {
   footerContent,
   githubRepositoryUrl,
   helpPath,
   legalPagePaths,
+  passGalleryPath,
   siteName,
   xAccountHandle,
   xAccountUrl,
@@ -34,6 +31,12 @@ export function SiteFooter() {
             className="grid grid-cols-1 gap-x-6 sm:grid-cols-2 md:col-span-6"
           >
             <ul>
+              <li>
+                <a href={passGalleryPath} className={footerLinkClass}>
+                  {footerContent.foundingPassLabel}
+                  <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+                </a>
+              </li>
               <li>
                 <a href={helpPath} className={footerLinkClass}>
                   {footerContent.helpLabel}
@@ -77,7 +80,7 @@ export function SiteFooter() {
               </li>
             </ul>
             <ul>
-              {deployedContracts.map((contract) => (
+              {listedContracts.map((contract) => (
                 <li key={contract.address}>
                   <a
                     href={buildExplorerAddressUrl(contract.address)}

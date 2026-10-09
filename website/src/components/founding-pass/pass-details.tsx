@@ -132,7 +132,7 @@ export function PassDetails({
               href={buildPostOnXUrl(design, passNumberText)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard active:bg-surface"
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
             >
               <XLogoIcon />
               {passDetailContent.postOnXLabel}
@@ -367,7 +367,7 @@ function CopyPassLinkButton({ designNumber }: { designNumber: number }) {
     <button
       type="button"
       onClick={copyPassLink}
-      className="inline-flex h-10 items-center rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard active:bg-surface"
+      className="inline-flex h-10 items-center rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
     >
       <span aria-live="polite">
         {isCopied ? passDetailContent.copiedLabel : passDetailContent.copyLinkLabel}

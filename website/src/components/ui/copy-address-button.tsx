@@ -6,12 +6,18 @@ type CopyAddressButtonProps = {
   address: string
   shortAddress: string
   contractName: string
+  tone?: 'light' | 'dark'
 }
 
 const copiedLabelMilliseconds = 1600
 
 // The address in mono: shortened on phones, in full from tablet up. Clicking copies the full one.
-export function CopyAddressButton({ address, shortAddress, contractName }: CopyAddressButtonProps) {
+export function CopyAddressButton({
+  address,
+  shortAddress,
+  contractName,
+  tone = 'light',
+}: CopyAddressButtonProps) {
   const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
@@ -40,7 +46,11 @@ export function CopyAddressButton({ address, shortAddress, contractName }: CopyA
       <span className="hidden break-all lg:inline">{address}</span>
       <span
         aria-live="polite"
-        className="shrink-0 rounded-full bg-surface-muted px-2.5 py-1 font-sans text-[0.625rem] font-medium tracking-[0.08em] uppercase transition-colors duration-300 ease-standard group-hover:bg-ink group-hover:text-on-dark"
+        className={`shrink-0 rounded-full px-2.5 py-1 font-sans text-[0.625rem] font-medium tracking-[0.08em] uppercase transition-colors duration-300 ease-standard ${
+          tone === 'dark'
+            ? 'bg-dark-track text-on-dark group-hover:bg-on-dark group-hover:text-ink'
+            : 'bg-surface-muted group-hover:bg-ink group-hover:text-on-dark'
+        }`}
       >
         {isCopied ? 'Copied' : 'Copy'}
       </span>

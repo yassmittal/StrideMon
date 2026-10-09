@@ -1472,3 +1472,58 @@ about the contracts, the API or the dates changes.
 - **Trade-off:** one more planned date to keep in sync (Part 10). The help page now says the
   test period's Sneakers don't carry over, which only holds if Part 10's restart happens.
 - **Revisit when:** Part 10 sets the dates, or early access starts without a restart.
+
+## D-050 — The website, read as a first-time visitor
+
+Made 2026-10-09, after Yash read `/pass` and the landing page as a newcomer would. It reorders
+and trims D-044's `/pass`, D-045's "Get ready" and the landing page (`landing-page-prompt.md`
+§5). Nothing about the contracts, the API, the schedule or the designs changes.
+
+- **Decision:**
+  1. **`/pass` shows the collection early.** The order is: a short hero (headline, one sentence,
+     and a small status panel: the phase, a countdown or the minted count, the next date, and one
+     main button for the phase), then "Get ready" when it's useful (point 2), then the
+     collection, then How it works with the dates, the waitlist, and Questions. The "Find the
+     one" section is gone: search by number, "Surprise me" and the quiz sit in the collection's
+     toolbar, and every "Browse" button lands on the grid.
+  2. **"Get ready" shows from 24 hours before the waitlist window**, through the open mint, and
+     always for a founder (their pass). Before that it had an email form whose check expires in
+     6 hours, beside the waitlist's own email form. So in preview the page has one email field
+     (the waitlist), and Turnstile doesn't load for people who only browse. The mint dialog keeps
+     both steps for anyone who mints without getting ready.
+  3. **The grid only grows when asked.** "Show more" adds 48 cards and says how many show. It no
+     longer loads cards on its own as the page scrolls, which pushed everything below it (the
+     waitlist, Questions, the footer) out of reach and broke in-page links.
+  4. **Dates read in the visitor's time, without an offset:** "Sat 28 Nov, 8:00 pm", with the
+     zone named once ("Times are in your time zone") and in the element's tooltip. The static
+     HTML still says UTC until the browser takes over.
+  5. **The schedule's four steps move to How it works**, beside the four user steps, together
+     with D-049's "The app" line. The hero keeps only the next date.
+  6. **Say "one of one" where it matters, not everywhere.** The page's own copy stops repeating
+     it; the detail sheet, the pass page, the mint, the reveal and the founder panel keep it.
+     The promise line (brief §9) stays on every surface for one pass, the mint and Questions,
+     and leaves the two section intros, which say "Free".
+  7. **`/pass` Questions show the six a newcomer asks first**; the other eleven stay on the page
+     behind "More questions", so `/help` and the chatbot's knowledge don't change.
+  8. **A short header:** Founding Pass, The game (the landing page's How it works) and Help, on
+     every page. Seven links wrapped to two rows on a phone, and on `/pass` they pointed at the
+     landing page's sections.
+  9. **The landing page leads with what a visitor can do:** the hero's buttons are **Get your
+     Founding Pass** and **Get the app** (Android). "See the contracts" leaves the hero. How it
+     works is a compact grid of the six steps with smaller phones. The rules, fair play and
+     privacy, the contracts and Why Monad become one tabbed **Under the hood** section after the
+     waitlist; the old anchors (`#rules`, `#fair-play`, `#on-chain`, `#why-monad`) open their
+     tab.
+  10. **Small things everywhere:** every button gets a pointer cursor and a hover state (Tailwind
+      v4's base styles set `cursor: default`); an open sheet keeps the scrollbar's space
+      (`scrollbar-gutter: stable`), so the page doesn't shift; the sort control is our own menu;
+      "Ask a question" is an icon on a phone; `FoundingPass` joins the contract list and the
+      footer.
+- **Why:** on a phone the first Sneaker was about four screens down, below a schedule, an app
+  note and two email forms. Someone who came to see 1,000 designs should see them first, and
+  each fact should be said once, in the place a newcomer looks for it.
+- **Trade-off:** the dates sit lower on `/pass` (the next one stays in the hero). Tabs hide three
+  of the four "under the hood" parts until pressed. A help screenshot of Get ready shows the old
+  page, though the steps are the same.
+- **Revisit when:** minting opens (check the hero and Get ready in the live phases), or a
+  visitor says they couldn't find the schedule or the contracts.

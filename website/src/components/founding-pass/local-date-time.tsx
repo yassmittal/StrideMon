@@ -20,27 +20,35 @@ const utcFormat = new Intl.DateTimeFormat('en-GB', {
 })
 
 /**
- * A date and time from the schedule. The static HTML shows it in UTC, then the browser switches
- * it to the visitor's own time zone, named, so nobody has to convert.
+ * A date and time from the schedule. The static HTML shows it in UTC, named, then the browser
+ * switches it to the visitor's own time without an offset ("Sat 28 Nov, 8:00 pm", D-050). The
+ * zone's name stays in the tooltip.
  */
 export function LocalDateTime({ isoTimestamp, className = '' }: LocalDateTimeProps) {
   const date = new Date(isoTimestamp)
   const [formattedText, setFormattedText] = useState(() => utcFormat.format(date))
+  const [timeZoneText, setTimeZoneText] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    const localFormat = new Intl.DateTimeFormat(undefined, {
+    const localDate = new Date(isoTimestamp)
+    const localFormat = new Intl.DateTimeFormat('en-GB', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
       hour: 'numeric',
       minute: '2-digit',
-      timeZoneName: 'short',
+      hour12: true,
     })
-    setFormattedText(localFormat.format(new Date(isoTimestamp)))
+    setFormattedText(localFormat.format(localDate))
+    setTimeZoneText(
+      new Intl.DateTimeFormat('en-GB', { timeZoneName: 'long' })
+        .formatToParts(localDate)
+        .find((part) => part.type === 'timeZoneName')?.value,
+    )
   }, [isoTimestamp])
 
   return (
-    <time dateTime={isoTimestamp} className={className}>
+    <time dateTime={isoTimestamp} title={timeZoneText} className={className}>
       {formattedText}
     </time>
   )

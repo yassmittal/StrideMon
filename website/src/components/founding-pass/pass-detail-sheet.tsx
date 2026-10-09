@@ -52,7 +52,7 @@ export function PassDetailSheet({ designNumber, onClose, onSelectDesign }: PassD
             type="button"
             onClick={onClose}
             aria-label={passDetailContent.closeLabel}
-            className="flex size-11 items-center justify-center rounded-full bg-surface-muted shadow-floating-pill transition-colors duration-300 ease-standard active:bg-surface"
+            className="flex size-11 items-center justify-center rounded-full bg-surface-muted shadow-floating-pill transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
           >
             <svg
               aria-hidden="true"

@@ -74,7 +74,6 @@ export const starterSneakerStats: readonly StarterSneakerStat[] = [
 ]
 
 export const rulesContent = {
-  metaLabels: ['SneakerGame', 'Launch config'],
   heading: 'The rules are on-chain',
   starterSneakerLabel: 'Starter Sneaker',
   footnote: 'The contract enforces these. The app only estimates.',

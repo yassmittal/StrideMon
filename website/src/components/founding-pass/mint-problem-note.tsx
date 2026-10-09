@@ -57,7 +57,7 @@ export function MintTextButton({
       type="button"
       onClick={onClick}
       disabled={isDisabled}
-      className="inline-flex h-10 items-center rounded-full bg-ink px-4 text-xs leading-[1.15] font-medium text-on-dark uppercase transition-colors duration-300 ease-standard active:bg-primary disabled:opacity-60"
+      className="inline-flex h-10 items-center rounded-full bg-ink px-4 text-xs leading-[1.15] font-medium text-on-dark uppercase transition-colors duration-300 ease-standard hover:bg-primary active:bg-primary disabled:opacity-60"
     >
       {label}
     </button>
