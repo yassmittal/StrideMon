@@ -231,8 +231,8 @@ Yash's phone (`docs/device-testing.md` §11): `features/founding-pass/` (the pas
 the gate on the API's `FOUNDING_PASS_REQUIRED`, "Minting your Founder Sneaker…", the pass on Profile,
 the laced moment on the run summary, a Founder Sneaker's Send disabled). It's checked on the phone
 against `pass:local-stack --early-access`, with the app's four optional `EXPO_PUBLIC_*_ADDRESS`
-overrides (the stack prints them). Builds never set them. **Part 7 (help) is built** (2026-10-09,
-D-047), waiting for Yash's read: `stridemon.xyz/help` from `website/src/content/help.ts` (plain
+overrides (the stack prints them). Builds never set them. **Part 7 (help) is done** (2026-10-09,
+D-047), read by Yash on the website (some guide screenshots still to update): `stridemon.xyz/help` from `website/src/content/help.ts` (plain
 strings, one `id` per answer, which is its anchor). Every website mint problem
 (`mintProblemHelpTopicIds`) and app error (`buildHelpUrl` in `apps/mobile/src/config/website-urls.ts`)
 links to its own answer; `website-urls.test.ts` checks the app's ids still exist on the site. The idea is in `docs/founding-pass-brief.md`, the art in
