@@ -57,15 +57,16 @@ the outbox of transactions the server sends.
 
 | Contract | What it is | Address |
 |----------|------------|---------|
-| `SneakerNft` | ERC-721 holding each Sneaker's stats and energy, with an on-chain `tokenURI` | [`0x6A9B08943f60F0bb779Bd229f907f92CB8002062`](https://testnet.monadvision.com/address/0x6A9B08943f60F0bb779Bd229f907f92CB8002062) |
-| `StrideToken` | ERC-20 + Permit (`STRIDE`, 18 decimals) | [`0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3`](https://testnet.monadvision.com/address/0xf835cd7F9cBf44D76c2d7CE0643B4858437485f3) |
-| `SneakerGame` | The rules: starter mint, settlement, repair, upgrade | [`0x846cd7B8D213Bf516020f22343A69168B81fDE52`](https://testnet.monadvision.com/address/0x846cd7B8D213Bf516020f22343A69168B81fDE52) |
-| `SneakerArtRenderer` | Draws the Sneaker's SVG; swappable by the admin | [`0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229`](https://testnet.monadvision.com/address/0x080Dbf4DD14F0C54E8bA0192c2A315ADA3Bbf229) |
+| `SneakerNft` | ERC-721 holding each Sneaker's stats and energy, with an on-chain `tokenURI` | [`0x6BE031Ff15F944c226832b6D0B99C03662b29337`](https://testnet.monadvision.com/address/0x6BE031Ff15F944c226832b6D0B99C03662b29337) |
+| `StrideToken` | ERC-20 + Permit (`STRIDE`, 18 decimals) | [`0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5`](https://testnet.monadvision.com/address/0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5) |
+| `SneakerGame` | The rules: starter mint, settlement, repair, upgrade | [`0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D`](https://testnet.monadvision.com/address/0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D) |
+| `SneakerArtRenderer` | Draws the Sneaker's SVG; swappable by the admin | [`0xFd44910b780Df3e111EC79835D28CF4919329669`](https://testnet.monadvision.com/address/0xFd44910b780Df3e111EC79835D28CF4919329669) |
 
 ### Transactions from a real session
 
 Played on an Android phone with two MetaMask accounts (wallet A `0xdfAb…1465`, wallet B
-`0xe4ae…356f`) on 2026-10-06 and 2026-10-07 IST.
+`0xe4ae…356f`) on 2026-10-06 and 2026-10-07 IST, on the previous (D-038) game contracts, before
+the Founding Pass redeploy.
 
 | Step | Transaction |
 |------|-------------|
