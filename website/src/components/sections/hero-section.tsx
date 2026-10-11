@@ -28,8 +28,9 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
         <MetaLabel items={heroContent.metaLabels} />
         <h1 id="hero-heading" className="-ml-[0.05em] text-display">
           {heroContent.headlineWords.map((word) => (
+            // The trailing space keeps the words apart in the text crawlers and screen readers get.
             <span key={word} className="block">
-              {word}
+              {word}{' '}
             </span>
           ))}
         </h1>

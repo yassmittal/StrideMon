@@ -43,7 +43,8 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
-| `src/app/` | Layout, home page, `pass/` and `pass/[number]/` (with their Open Graph images), `privacy/` and `delete-account/`, icons, sitemap, robots |
+| `src/app/` | Layout, home page, `pass/`, `pass/all/` (every pass by number, D-051) and `pass/[number]/` (with their Open Graph images), `privacy/` and `delete-account/`, `not-found.tsx`, icons, sitemap, robots |
+| `src/lib/build-page-metadata.ts` | Every page's title, description, canonical and share cards (D-051). Use it for a new page: Next merges metadata shallowly, so a page that sets `openGraph` by hand loses the layout's image and site name |
 
 A contract redeploy or a rule change must update `src/content/` too (D-035).
 
@@ -120,6 +121,8 @@ from what the script prints. Keep the demo under 8 MB and each loop under 1.5 MB
 `/pass` is the gallery of the 1,000 Founding Passes (D-041, D-044), and `/pass/137` is one pass's
 page (1,000 static pages, each with its own Open Graph image, made by `next/og` at build time: the
 whole build takes about 18 seconds). Both mint, in the waitlist window and the open mint (D-045).
+`/pass/all` lists every pass by number and name, and each pass page links the previous and next
+pass, so search engines reach all 1,000 pages within three clicks of the home page (D-051).
 
 **The art and the design table are generated.** After any change to the art (a new renderer),
 export them again from the repo root:

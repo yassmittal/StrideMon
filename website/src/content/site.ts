@@ -55,6 +55,8 @@ export const turnstileSiteKey =
 
 /** The Founding Pass gallery (D-041), and the help page every error links to (D-047). */
 export const passGalleryPath = '/pass'
+/** Every pass by number, so each pass page has a link search engines can follow (D-051). */
+export const passIndexPath = '/pass/all'
 export const helpPath = '/help'
 
 export const siteName = 'StrideMon'

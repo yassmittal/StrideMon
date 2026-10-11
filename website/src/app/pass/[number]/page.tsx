@@ -8,13 +8,15 @@ import { SiteHeader } from '@/components/sections/site-header'
 import { WaitlistSection } from '@/components/sections/waitlist-section'
 import { RevealObserver } from '@/components/ui/reveal-observer'
 import { passDetailContent } from '@/content/founding-pass'
-import { passGalleryPath, sectionIds, xCardMetadata } from '@/content/site'
+import { passGalleryPath, passIndexPath, sectionIds } from '@/content/site'
+import { buildPageMetadata } from '@/lib/build-page-metadata'
 import {
   buildPassPagePath,
   formatPassNumber,
   type PassDesign,
   passDesigns,
   passRarityLabels,
+  readNeighbourPassDesigns,
   readPassDesign,
 } from '@/lib/founding-pass/pass-design'
 
@@ -37,16 +39,14 @@ async function readPageDesign(params: PassPageProps['params']): Promise<PassDesi
 
 export async function generateMetadata({ params }: PassPageProps): Promise<Metadata> {
   const design = await readPageDesign(params)
-  const title = `${formatPassNumber(design.designNumber)} ${design.name}`
+  const title = `Founding Pass ${formatPassNumber(design.designNumber)}: ${design.name}`
   const description = `${passRarityLabels[design.rarity]} Founding Pass: a ${design.template.label} in ${design.colorFamily.label}, ${design.colorway.label} colourway. One of one, free to mint, and it can’t be sent or sold.`
-  const pagePath = buildPassPagePath(design.designNumber)
-  return {
+  return buildPageMetadata({
     title,
     description,
-    alternates: { canonical: pagePath },
-    openGraph: { url: pagePath, title, description },
-    twitter: { ...xCardMetadata, title, description },
-  }
+    path: buildPassPagePath(design.designNumber),
+    hasOwnShareImage: true,
+  })
 }
 
 /** One pass's page, the one people share (brief §8). Its live state loads in the browser. */
@@ -76,6 +76,7 @@ export default async function PassPage({ params }: PassPageProps) {
             {passDetailContent.backToGalleryLabel}
           </a>
           <PassDetails designNumber={design.designNumber} headingLevel="h1" isArtEager />
+          <NeighbourPassLinks designNumber={design.designNumber} />
         </div>
         <PassHowItWorksSection />
         <WaitlistSection />
@@ -84,5 +85,44 @@ export default async function PassPage({ params }: PassPageProps) {
       <PassMintRoot />
       <RevealObserver />
     </>
+  )
+}
+
+/** Previous, every pass and next: plain links, so every pass page has one crawlers follow (D-051). */
+function NeighbourPassLinks({ designNumber }: { designNumber: number }) {
+  const { previousDesign, nextDesign } = readNeighbourPassDesigns(designNumber)
+  const linkClassName =
+    'flex min-h-11 flex-col justify-center gap-0.5 underline-offset-4 hover:underline'
+  const labelClassName =
+    'text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase'
+  return (
+    <nav
+      aria-label={passDetailContent.allPassesLinkLabel}
+      className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-hairline pt-5 md:grid-cols-3"
+    >
+      <a href={buildPassPagePath(previousDesign.designNumber)} className={linkClassName}>
+        <span className={labelClassName}>{passDetailContent.previousPassLabel}</span>
+        <span>
+          {formatPassNumber(previousDesign.designNumber)} {previousDesign.name}
+        </span>
+      </a>
+      <a
+        href={passIndexPath}
+        className={`${linkClassName} order-last col-span-2 md:order-none md:col-span-1 md:items-center`}
+      >
+        <span className="text-label font-medium tracking-[0.08em] uppercase underline decoration-hairline underline-offset-4">
+          {passDetailContent.allPassesLinkLabel}
+        </span>
+      </a>
+      <a
+        href={buildPassPagePath(nextDesign.designNumber)}
+        className={`${linkClassName} items-end text-right`}
+      >
+        <span className={labelClassName}>{passDetailContent.nextPassLabel}</span>
+        <span>
+          {formatPassNumber(nextDesign.designNumber)} {nextDesign.name}
+        </span>
+      </a>
+    </nav>
   )
 }

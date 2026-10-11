@@ -1527,3 +1527,37 @@ and trims D-044's `/pass`, D-045's "Get ready" and the landing page (`landing-pa
   page, though the steps are the same.
 - **Revisit when:** minting opens (check the hero and Get ready in the live phases), or a
   visitor says they couldn't find the schedule or the contracts.
+
+## D-051 — Search engine fixes from a Screaming Frog crawl
+
+Made 2026-10-11, from a Screaming Frog SEO Spider crawl of `https://stridemon.xyz` (the free
+version, which stops at 500 URLs) and a link-graph check of the whole static build.
+
+- **Decision:**
+  1. **Every pass page is linked from the site.** 571 of the 1,000 `/pass/[number]` pages had no
+     link at all (only the sitemap knew them: the gallery draws 48 cards until "Show more", and
+     each pass page links three similar ones), and the rest sat up to 10 clicks deep. A plain
+     index, **`/pass/all`** ("All 1,000 passes", each number and name as a link, in groups of 100),
+     is linked from the gallery under "Show more", from every pass page and from the sitemap, so
+     any pass is three clicks from the home page. Each pass page also links the **previous and
+     next** pass (#0001 and #1000 wrap round).
+  2. **Every page sets its whole share card** through `buildPageMetadata`
+     (`website/src/lib/build-page-metadata.ts`). Next merges metadata shallowly, so `/help` had no
+     share image, `/privacy` and `/delete-account` shared the home page's title and URL, and the
+     pass pages lost `og:site_name`, `og:type` and `og:locale`.
+  3. **A pass page's title leads with the collection:** "Founding Pass #0137: Rose Hiker Night"
+     (at most 54 characters with " | StrideMon"). "#0137 Rose Hiker Night" alone was under 30.
+  4. **Our own 404 page** (`app/not-found.tsx`), with one title, no canonical (Next's pointed at
+     the home page) and links to the home page, the gallery and help.
+  5. **Headlines read as words:** the hero `<h1>`s keep a space between their block lines, so
+     crawlers and screen readers get "Walk. Earn. Upgrade.", not "Walk.Earn.Upgrade.".
+  6. **Security headers** on every response (`vercel.json`): `X-Content-Type-Options: nosniff`,
+     `Referrer-Policy: strict-origin-when-cross-origin` and `X-Frame-Options: SAMEORIGIN`.
+- **Why:** search engines find and rank pages by their links. An orphan page is crawled late
+  and counts for little, and the pass pages are the ones people share.
+- **Trade-off:** one more page to keep. There's no Content-Security-Policy yet: the wallet
+  (AppKit), Turnstile, Vercel Analytics, Fontshare and the inline scripts need a tested policy,
+  and a wrong one breaks the mint. The long screenshot `alt` texts and the repeated section `<h2>`s
+  on pass pages (How it works, the waitlist) stay: Screaming Frog flags them, but they're right.
+  The "403" links to MonadVision are its bot protection, not broken links.
+- **Revisit when:** minting opens (crawl again with the live state), or before adding a CSP.

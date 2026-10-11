@@ -13,8 +13,9 @@ export function PassHeroSection() {
         <MetaLabel items={passPageContent.metaLabels} />
         <h1 id="pass-hero-heading" className="-ml-[0.05em] text-display">
           {passPageContent.headlineWords.map((word) => (
+            // The trailing space keeps the words apart in the text crawlers and screen readers get.
             <span key={word} className="block">
-              {word}
+              {word}{' '}
             </span>
           ))}
         </h1>

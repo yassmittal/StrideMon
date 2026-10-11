@@ -82,6 +82,20 @@ export function readPassDesign(designNumber: number): PassDesign | undefined {
   return Number.isInteger(designNumber) ? passDesigns[designNumber - 1] : undefined
 }
 
+/** The pass before and after this one, wrapping from #0001 to #1000 (D-051). */
+export function readNeighbourPassDesigns(designNumber: number): {
+  previousDesign: PassDesign
+  nextDesign: PassDesign
+} {
+  const designCount = passDesigns.length
+  const previousDesign = readPassDesign(((designNumber - 2 + designCount) % designCount) + 1)
+  const nextDesign = readPassDesign((designNumber % designCount) + 1)
+  if (previousDesign === undefined || nextDesign === undefined) {
+    throw new Error(`Design ${designNumber} is outside the table`)
+  }
+  return { previousDesign, nextDesign }
+}
+
 /** `#0137`: the pass number as the card shows it. */
 export function formatPassNumber(designNumber: number): string {
   return `#${String(designNumber).padStart(4, '0')}`

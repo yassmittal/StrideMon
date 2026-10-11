@@ -250,6 +250,7 @@ export const passGalleryContent = {
   clearFiltersLabel: 'Clear filters',
   showAllLabel: 'Show all passes',
   showMoreLabel: 'Show more',
+  allPassesLinkLabel: 'Every pass by number',
   shownCountText: (shownCount: number, totalCount: number) =>
     `Showing ${shownCount.toLocaleString('en-US')} of ${totalCount.toLocaleString('en-US')}`,
   emptyHeading: 'No pass matches these filters.',
@@ -297,6 +298,9 @@ export const passDetailContent = {
   postOnXLabel: 'Post on X',
   explorerLabel: 'See it on MonadVision',
   backToGalleryLabel: 'All 1,000 passes',
+  previousPassLabel: 'Previous pass',
+  nextPassLabel: 'Next pass',
+  allPassesLinkLabel: 'Every pass by number',
   statusUnknown: 'We can’t tell right now whether it’s minted.',
   takenNextStep: 'This one is taken. These look like it and nobody has minted them yet.',
 } as const
@@ -461,4 +465,18 @@ export const foundingPassSectionContent = {
   galleryLabel: 'See all 1,000',
   waitlistLabel: 'Join the waitlist',
   showcaseDesignNumbers: [137, 185, 162, 153, 155, 200],
+} as const
+
+/** `/pass/all`: every pass by number and name, in groups of 100 (D-051). */
+export const passIndexContent = {
+  metaTitle: 'All 1,000 Founding Passes by number',
+  description:
+    'Every StrideMon Founding Pass from #0001 to #1000, by number and name. Each is a one-of-one Sneaker design, free to mint on Monad testnet.',
+  metaLabels: ['The collection', 'By number'],
+  title: 'All 1,000 passes',
+  intro:
+    'Every Founding Pass by number and name. The gallery has the pictures, filters and search.',
+  galleryLinkLabel: 'Open the gallery',
+  groupHeading: (firstPassNumber: string, lastPassNumber: string) =>
+    `${firstPassNumber} to ${lastPassNumber}`,
 } as const

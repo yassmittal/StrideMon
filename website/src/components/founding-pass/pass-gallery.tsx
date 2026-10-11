@@ -8,6 +8,7 @@ import {
   passSectionIds,
 } from '@/content/founding-pass'
 import { passDesignTables } from '@/content/founding-pass-designs'
+import { passIndexPath } from '@/content/site'
 import { findRecentPassMint, readPassAvailability } from '@/lib/founding-pass/pass-collection'
 import { PASS_RARITIES, type PassRarity, passRarityLabels } from '@/lib/founding-pass/pass-design'
 import {
@@ -341,6 +342,12 @@ export function PassGallery() {
             </button>
           </div>
         ) : null}
+        <a
+          href={passIndexPath}
+          className="self-center font-mono text-sm text-ink-secondary-small underline decoration-hairline underline-offset-4"
+        >
+          {passGalleryContent.allPassesLinkLabel}
+        </a>
       </section>
 
       <PassDetailSheet
