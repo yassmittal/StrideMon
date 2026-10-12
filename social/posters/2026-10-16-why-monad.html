@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Why Monad</title>
+    <link rel="stylesheet" href="poster.css" />
+    <style>
+      .reasons {
+        display: flex;
+        flex-direction: column;
+      }
+      .reason {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        column-gap: 24px;
+        padding: 34px 0;
+        border-top: 1px solid #2a2c2e;
+      }
+      .reason:first-child {
+        border-top: none;
+        padding-top: 8px;
+      }
+      .reason:last-child {
+        padding-bottom: 4px;
+      }
+      .number {
+        font-size: 22px;
+        color: var(--lime);
+        padding-top: 8px;
+      }
+      .title {
+        font-size: 38px;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+      }
+      .body {
+        margin-top: 10px;
+        font-size: 25px;
+        line-height: 1.4;
+        color: #b9bcc5;
+      }
+    </style>
+  </head>
+  <body>
+    <span class="cross page-cross top-left"></span>
+    <span class="cross page-cross top-right"></span>
+    <span class="cross page-cross bottom-left"></span>
+    <span class="cross page-cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • Build notes</span>
+      <span class="meta">Why Monad</span>
+    </div>
+
+    <h1>Why I built<br />it on Monad.</h1>
+
+    <section class="panel">
+      <div class="reasons">
+        <div class="reason">
+          <span class="mono number">01</span>
+          <div>
+            <p class="title">One transaction per run</p>
+            <p class="body">Press STOP, and the run settles on its own. The reward is on the summary screen seconds later.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <span class="mono number">02</span>
+          <div>
+            <p class="title">Gas for every new player</p>
+            <p class="body">Cheap enough to send each one a little, so they repair and upgrade from their own wallet.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <span class="mono number">03</span>
+          <div>
+            <p class="title">Just the EVM</p>
+            <p class="body">Plain ERC-721 and ERC-20 contracts, Foundry, MetaMask. Nothing new to learn.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="meta">Monad testnet</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>
