@@ -10,7 +10,6 @@ One line each: `pillar · account · idea · source`. When an idea gets a date, 
 - build-story · yash · The crash at the first GPS fix: `RECEIVE_BOOT_COMPLETED` and expo/expo#48935 · D-023
 - deep-dive · stridemon · The outbox: sign, save, then broadcast, so a crash never sends twice (thread) · D-012, D-019
 - proof · stridemon · Repair and upgrade from the player's own wallet: 98 → 100, level 1 → 2 (~20 s clip, MetaMask on screen) · FACTS §5
-- build-story · yash · Android hands you a location from 10 minutes before START · D-024
 - deep-dive · stridemon · Why driving earns nothing: 1–20 km/h per minute, 40 km/h jumps, mock locations (thread, walk loop) · D-021
 - build-story · yash · The contract computes the reward; the server only reports minutes · D-007
 - changelog · yash · Week 1 recap · —

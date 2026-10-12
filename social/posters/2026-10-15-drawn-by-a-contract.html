@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Drawn by a contract</title>
+    <link rel="stylesheet" href="poster.css" />
+    <style>
+      /* Both drawings are the live SneakerArtRenderer's own output (read with cast call, 2026-10-12). */
+      .pair {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      .pair img {
+        display: block;
+        width: 100%;
+        border-radius: 10px;
+      }
+      .label {
+        margin-top: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        color: var(--muted-on-light);
+      }
+      .label .what {
+        font-size: 26px;
+        color: var(--black);
+      }
+      .label .mono {
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <span class="cross page-cross top-left"></span>
+    <span class="cross page-cross top-right"></span>
+    <span class="cross page-cross bottom-left"></span>
+    <span class="cross page-cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • Build notes</span>
+      <span class="mono meta">03 / 03</span>
+    </div>
+
+    <h1>No image file.<br />A contract<br />draws it.</h1>
+    <p class="lede">Same Sneaker, two moments. The picture follows its level and durability.</p>
+
+    <div class="pair">
+      <figure>
+        <img src="art/sneaker-level-02-durability-060.svg" alt="" />
+        <figcaption class="label">
+          <span class="what">Worn down</span>
+          <span class="mono">DURABILITY 060</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="art/sneaker-level-03-durability-100.svg" alt="" />
+        <figcaption class="label">
+          <span class="what">Repaired, levelled up</span>
+          <span class="mono">LEVEL 03</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">Monad testnet • Example</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

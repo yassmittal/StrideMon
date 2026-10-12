@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sent once</title>
+    <link rel="stylesheet" href="poster.css" />
+    <style>
+      .flow {
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+      }
+      .step {
+        border: 2px solid #ffffff;
+        border-radius: 999px;
+        padding: 14px 26px;
+        font-size: 22px;
+        white-space: nowrap;
+      }
+      .step .mono {
+        color: var(--muted-on-dark);
+        margin-right: 10px;
+      }
+      .step.good {
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+      .step.good .mono {
+        color: var(--lime);
+        opacity: 0.6;
+      }
+      .link {
+        flex: 1;
+        height: 2px;
+        background: #4a4e57;
+        min-width: 28px;
+      }
+      .link.good {
+        background: var(--lime);
+      }
+      .crash {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin: 0 4px;
+      }
+      .crash .cross {
+        position: relative;
+        color: var(--red);
+        transform: rotate(45deg);
+        width: 36px;
+        height: 36px;
+      }
+      .crash .cross::before {
+        top: 16px;
+        height: 4px;
+      }
+      .crash .cross::after {
+        left: 16px;
+        width: 4px;
+      }
+      .crash .meta {
+        color: var(--red);
+        font-size: 16px;
+      }
+      .caption {
+        margin-top: 26px;
+        font-size: 28px;
+        line-height: 1.35;
+      }
+      .caption.bad {
+        color: var(--muted-on-dark);
+      }
+      .divider {
+        height: 1px;
+        background: #2a2c2e;
+        margin: 40px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <span class="cross page-cross top-left"></span>
+    <span class="cross page-cross top-right"></span>
+    <span class="cross page-cross bottom-left"></span>
+    <span class="cross page-cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • Build notes</span>
+      <span class="mono meta">02 / 03</span>
+    </div>
+
+    <h1>Sent once.<br />Even after<br />a crash.</h1>
+    <p class="lede">How the server sends your run to Monad testnet.</p>
+
+    <section class="panel">
+      <span class="meta">The usual way</span>
+      <div class="flow">
+        <span class="step"><span class="mono">1</span>Send</span>
+        <span class="link"></span>
+        <span class="crash"><span class="cross"></span></span>
+        <span class="link"></span>
+        <span class="step"><span class="mono">2</span>Save</span>
+      </div>
+      <p class="caption bad">Crash in between, and the server wakes up thinking it never sent anything. So it sends it again.</p>
+
+      <div class="divider"></div>
+
+      <span class="meta">What StrideMon does</span>
+      <div class="flow">
+        <span class="step good"><span class="mono">1</span>Sign</span>
+        <span class="link good"></span>
+        <span class="step good"><span class="mono">2</span>Save</span>
+        <span class="link good"></span>
+        <span class="step good"><span class="mono">3</span>Send</span>
+      </div>
+      <p class="caption">Crash anywhere, and it resends the exact transaction it saved. The chain only accepts it once.</p>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="meta">Monad testnet</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>
