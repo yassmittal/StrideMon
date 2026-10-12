@@ -1,5 +1,5 @@
 ---
-status: draft
+status: posted
 account: yash_mittal_dev
 slot: 2026-10-13 16:00 UTC   # proposed. The launch quote promised these "this week": 1 of 3, then the outbox and the art on the next two days
 format: thread
