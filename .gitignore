@@ -56,3 +56,6 @@ launch-video/public/footage/
 launch-video/public/audio/
 # Social (social/, D-036): X-only images and clips, each rebuilt from the command in its post file
 social/media/
+
+# Playwright MCP browser logs and snapshots
+.playwright-mcp/

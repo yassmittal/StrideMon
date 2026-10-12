@@ -1552,12 +1552,19 @@ version, which stops at 500 URLs) and a link-graph check of the whole static bui
   5. **Headlines read as words:** the hero `<h1>`s keep a space between their block lines, so
      crawlers and screen readers get "Walk. Earn. Upgrade.", not "Walk.Earn.Upgrade.".
   6. **Security headers** on every response (`vercel.json`): `X-Content-Type-Options: nosniff`,
-     `Referrer-Policy: strict-origin-when-cross-origin` and `X-Frame-Options: SAMEORIGIN`.
+     `Referrer-Policy: strict-origin-when-cross-origin` and `X-Frame-Options: SAMEORIGIN`. Added
+     2026-10-12: a **Content-Security-Policy** that limits only what nothing on the site needs:
+     `frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self';
+     upgrade-insecure-requests`. Every form submits through JavaScript, so `form-action` blocks
+     none of them.
 - **Why:** search engines find and rank pages by their links. An orphan page is crawled late
   and counts for little, and the pass pages are the ones people share.
-- **Trade-off:** one more page to keep. There's no Content-Security-Policy yet: the wallet
-  (AppKit), Turnstile, Vercel Analytics, Fontshare and the inline scripts need a tested policy,
-  and a wrong one breaks the mint. The long screenshot `alt` texts and the repeated section `<h2>`s
+- **Trade-off:** one more page to keep. The CSP doesn't restrict scripts, connections or
+  images yet: the wallet (AppKit, with WalletConnect's relay and its iframe), Turnstile, Vercel
+  Analytics, Fontshare and Next's inline scripts (a static export can't use nonces) need an
+  allowlist tested on a working mint, and a wrong one breaks the mint. The long screenshot `alt` texts and the repeated section `<h2>`s
   on pass pages (How it works, the waitlist) stay: Screaming Frog flags them, but they're right.
   The "403" links to MonadVision are its bot protection, not broken links.
-- **Revisit when:** minting opens (crawl again with the live state), or before adding a CSP.
+- **Revisit when:** minting opens (crawl again with the live state), or when the mint can be
+  tested end to end (`pass:local-stack --phase waitlistWindow`): then add `script-src`,
+  `connect-src`, `img-src` and `frame-src` as `Content-Security-Policy-Report-Only` first.

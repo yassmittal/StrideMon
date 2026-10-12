@@ -259,4 +259,6 @@ play, contracts and Why Monad are one tabbed **Under the hood** section (old anc
 tab). The header has three links. Dates show in the visitor's time with no offset.
 **SEO (D-051, 2026-10-11):** fixes from a Screaming Frog crawl: `/pass/all` and previous/next links
 make every pass page linked (571 had no link), `buildPageMetadata` sets each page's whole share
-card, a custom 404, and security headers in `website/vercel.json`. Needs a website redeploy.
+card, a custom 404, and security headers in `website/vercel.json`. Deployed and re-crawled
+(2026-10-11): all 1,006 pages 200 and indexable, nothing deeper than 3 clicks. The CSP (2026-10-12)
+needs one more website redeploy.
