@@ -10,9 +10,11 @@ SHEET_SECONDS=15
 TILE_WIDTH_PIXELS=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "$VIDEO_FILE" |
   awk -F, '{ print ($1 > $2) ? 320 : ($1 * 5 == $2 * 4 ? 216 : 180) }')
 FONT_FILE=/System/Library/Fonts/Menlo.ttc
+DURATION_SECONDS=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$VIDEO_FILE")
 
 mkdir -p "$OUTPUT_DIRECTORY"
-for startSeconds in 0 15 30; do
+for startSeconds in $(awk -v duration="$DURATION_SECONDS" -v step="$SHEET_SECONDS" \
+  'BEGIN { for (start = 0; start < duration; start += step) print start }'); do
   endSeconds=$((startSeconds + SHEET_SECONDS))
   ffmpeg -nostdin -v error -y -ss "$startSeconds" -t "$SHEET_SECONDS" -i "$VIDEO_FILE" \
     -vf "select='not(mod(n\,$FRAMES_PER_TILE))',scale=$TILE_WIDTH_PIXELS:-2,drawtext=fontfile=$FONT_FILE:text='%{eif\:t+$startSeconds\:d}.%{eif\:mod(t*10\,10)\:d}s':x=w-tw-6:y=h-th-6:fontsize=16:fontcolor=white:box=1:boxcolor=0x00000099:boxborderw=3,tile=6x5" \

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Downloads the film's music and sound effects and prepares them in public/audio/ (gitignored).
+# Downloads both films' music and sound effects and prepares them in public/audio/ (gitignored).
 # Run from launch-video/: `bash scripts/fetch-audio.sh`. Needs curl, unzip and ffmpeg.
 #
-# Every source and licence is in CREDITS.md. To swap the music, change MUSIC_URL and
-# MUSIC_START_SECONDS here (and BEATS_PER_MINUTE in src/beats.ts), then re-run.
+# Every source and licence is in CREDITS.md, for both films. To swap the music, change MUSIC_URL and
+# MUSIC_START_SECONDS here (and BEATS_PER_MINUTE in src/beats.ts), then re-run. The waitlist
+# film's are the WAITLIST_ ones (and WAITLIST_BEATS_PER_MINUTE in src/waitlist/beats.ts).
 set -euo pipefail
 
 OUTPUT_DIRECTORY=public/audio
@@ -24,6 +25,20 @@ TONE_LOW_HERTZ=392.00
 # The film is 45 s; keep a little extra so the fade, not the file, ends the music.
 MUSIC_DURATION_SECONDS=46
 
+# The waitlist film (docs/waitlist-video-prompt.md): "Deep Minimal Techno" by soundoffreedom,
+# Pixabay Content License, no Content ID (CREDITS.md). 124.052 BPM, D# minor.
+WAITLIST_MUSIC_PAGE_URL=https://pixabay.com/music/techno-trance-deep-minimal-techno-601808/
+WAITLIST_MUSIC_URL='https://cdn.pixabay.com/download/audio/2026/09/12/audio_8e8af8934a.mp3?filename=soundoffreedom-deep-minimal-techno-601808.mp3'
+WAITLIST_MUSIC_FILE_NAME=soundoffreedom-deep-minimal-techno-601808.mp3
+# Two beats before a downbeat in the break with no kick, so the full beat comes back at 77.447 s
+# in the track: film frame 174, beat 6, the flip into the collection.
+WAITLIST_MUSIC_START_SECONDS=74.547
+# The waitlist film is 22.7 s.
+WAITLIST_MUSIC_DURATION_SECONDS=24
+# "You're on the list." tone, in the track's key: D#5 and D#4.
+WAITLIST_TONE_HIGH_HERTZ=622.25
+WAITLIST_TONE_LOW_HERTZ=311.13
+
 # Kenney's packs, CC0 (each zip includes License.txt).
 KENNEY_INTERFACE_SOUNDS_URL=https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip
 KENNEY_UI_AUDIO_URL=https://kenney.nl/media/pages/assets/ui-audio/490d233f68-1677590494/kenney_ui-audio.zip
@@ -41,6 +56,7 @@ download() {
 }
 
 download "$MUSIC_URL" "$MUSIC_FILE_NAME"
+MUSIC_PAGE_URL=$WAITLIST_MUSIC_PAGE_URL download "$WAITLIST_MUSIC_URL" "$WAITLIST_MUSIC_FILE_NAME"
 download "$KENNEY_INTERFACE_SOUNDS_URL" kenney_interface-sounds.zip
 download "$KENNEY_UI_AUDIO_URL" kenney_ui-audio.zip
 download "$KENNEY_IMPACT_SOUNDS_URL" kenney_impact-sounds.zip
@@ -52,14 +68,21 @@ done
 # MUSIC_LOUDNESS_LUFS. Every track then sits at the same level under the sound effects, so
 # src/soundtrack.ts's effect volumes hold whichever track is in.
 MUSIC_LOUDNESS_LUFS=-19
-TRIM_FILTER="atrim=start=$MUSIC_START_SECONDS:duration=$MUSIC_DURATION_SECONDS,asetpts=PTS-STARTPTS"
-music_measurement=$(ffmpeg -nostdin -hide_banner -i "$DOWNLOAD_DIRECTORY/$MUSIC_FILE_NAME" \
-  -af "$TRIM_FILTER,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1:LRA=20:print_format=json" -f null - 2>&1 |
-  sed -n '/^{/,/^}/p')
-read_music_measurement() { sed -n "s/.*\"$1\" : \"\(.*\)\".*/\1/p" <<<"$music_measurement"; }
-ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/$MUSIC_FILE_NAME" \
-  -af "$TRIM_FILTER,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1:LRA=20:measured_I=$(read_music_measurement input_i):measured_TP=$(read_music_measurement input_tp):measured_LRA=$(read_music_measurement input_lra):measured_thresh=$(read_music_measurement input_thresh):offset=$(read_music_measurement target_offset):linear=true" \
-  "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/music.wav"
+level_music() {
+  local sourceFileName=$1 startSeconds=$2 durationSeconds=$3 outputFileName=$4
+  local trimFilter="atrim=start=$startSeconds:duration=$durationSeconds,asetpts=PTS-STARTPTS"
+  local measurement
+  measurement=$(ffmpeg -nostdin -hide_banner -i "$DOWNLOAD_DIRECTORY/$sourceFileName" \
+    -af "$trimFilter,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1:LRA=20:print_format=json" -f null - 2>&1 |
+    sed -n '/^{/,/^}/p')
+  read_measurement() { sed -n "s/.*\"$1\" : \"\(.*\)\".*/\1/p" <<<"$measurement"; }
+  ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/$sourceFileName" \
+    -af "$trimFilter,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1:LRA=20:measured_I=$(read_measurement input_i):measured_TP=$(read_measurement input_tp):measured_LRA=$(read_measurement input_lra):measured_thresh=$(read_measurement input_thresh):offset=$(read_measurement target_offset):linear=true" \
+    "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/$outputFileName"
+}
+level_music "$MUSIC_FILE_NAME" "$MUSIC_START_SECONDS" "$MUSIC_DURATION_SECONDS" music.wav
+level_music "$WAITLIST_MUSIC_FILE_NAME" "$WAITLIST_MUSIC_START_SECONDS" \
+  "$WAITLIST_MUSIC_DURATION_SECONDS" waitlist-music.wav
 
 # Counter landings: a 50 ms tick.
 ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/kenney_interface-sounds/Audio/tick_004.ogg" \
@@ -75,5 +98,9 @@ ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/kenney_ui-audio/Audio/click2
 ffmpeg -nostdin -v error -y -f lavfi \
   -i "aevalsrc='(0.8*sin(2*PI*$TONE_HIGH_HERTZ*t)+0.2*sin(2*PI*$TONE_LOW_HERTZ*t))*min(t/0.005\,1)*exp(-t/0.35)':s=$SAMPLE_RATE:d=1.4" \
   "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/sfx-tone.wav"
+# The waitlist film's "You're on the list.": the same tone, in its track's key.
+ffmpeg -nostdin -v error -y -f lavfi \
+  -i "aevalsrc='(0.8*sin(2*PI*$WAITLIST_TONE_HIGH_HERTZ*t)+0.2*sin(2*PI*$WAITLIST_TONE_LOW_HERTZ*t))*min(t/0.005\,1)*exp(-t/0.35)':s=$SAMPLE_RATE:d=1.4" \
+  "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/waitlist-sfx-tone.wav"
 
 ls -1 "$OUTPUT_DIRECTORY"/*.wav

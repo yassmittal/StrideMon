@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Renders one format of the film and its delivery files into out/.
-# Run from launch-video/: `bash scripts/render.sh 4x5` (or 16x9, 9x16). Needs ffmpeg and jq.
+# Renders one format of a film and its delivery files into out/.
+# Run from launch-video/: `bash scripts/render.sh 4x5` (or 16x9, 9x16) for the launch film, or
+# `bash scripts/render.sh waitlist-4x5` for the Founding Pass waitlist film. Needs ffmpeg and jq.
 # `bash scripts/render.sh 4x5 --audio-only` keeps the last picture render and redoes only the sound
 # (after a music or mix change).
 #
@@ -9,21 +10,27 @@
 #   3. A peak limiter for the few transients that land on a kick, then two-pass loudnorm to
 #      −14 LUFS integrated, −1 dBTP, as one linear gain.
 #   4. The picture and the normalised mix muxed with AAC 320 kbps at 48 kHz, +faststart.
-#   5. The poster: the end card's last frame. For 4:5, also a silent copy for autoplay embeds.
+#   5. The poster: the end card's last frame. For each 4:5 film, also a silent copy for autoplay
+#      embeds.
 set -euo pipefail
 
-FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16 [--audio-only]}
+FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5 [--audio-only]}
 IS_AUDIO_ONLY=$([ "${2:-}" = --audio-only ] && echo yes || echo no)
+# The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts).
+LAUNCH_LAST_FRAME=2699
+WAITLIST_LAST_FRAME=1363
 case "$FORMAT" in
-  4x5) COMPOSITION_ID=Launch4x5 ;;
-  16x9) COMPOSITION_ID=Launch16x9 ;;
-  9x16) COMPOSITION_ID=Launch9x16 ;;
+  4x5) COMPOSITION_ID=Launch4x5 FILM_NAME=stridemon-launch-4x5 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
+  16x9) COMPOSITION_ID=Launch16x9 FILM_NAME=stridemon-launch-16x9 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
+  9x16) COMPOSITION_ID=Launch9x16 FILM_NAME=stridemon-launch-9x16 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
+  waitlist-4x5)
+    COMPOSITION_ID=Waitlist4x5 FILM_NAME=stridemon-waitlist-4x5 LAST_FRAME=$WAITLIST_LAST_FRAME
+    ;;
   *) echo "Unknown format: $FORMAT" >&2 && exit 1 ;;
 esac
 
 OUTPUT_DIRECTORY=out
 WORK_DIRECTORY=out/work
-LAST_FRAME=2699
 TARGET_LOUDNESS_LUFS=-14
 TARGET_TRUE_PEAK_DBTP=-1
 # Wide enough for the calm intro, so loudnorm stays one linear gain (it goes dynamic when the
@@ -36,8 +43,8 @@ PICTURE_FILE=$WORK_DIRECTORY/$FORMAT-picture.mp4
 MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix.wav
 LIMITED_MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix-limited.wav
 NORMALISED_MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix-normalised.wav
-FILM_FILE=$OUTPUT_DIRECTORY/stridemon-launch-$FORMAT.mp4
-POSTER_FILE=$OUTPUT_DIRECTORY/stridemon-launch-$FORMAT-poster.png
+FILM_FILE=$OUTPUT_DIRECTORY/$FILM_NAME.mp4
+POSTER_FILE=$OUTPUT_DIRECTORY/$FILM_NAME-poster.png
 
 mkdir -p "$WORK_DIRECTORY"
 
@@ -76,9 +83,9 @@ ffmpeg -nostdin -v error -y -i "$PICTURE_FILE" -i "$NORMALISED_MIX_FILE" \
   -color_primaries bt709 -color_trc bt709 -colorspace bt709 -color_range tv \
   -c:a aac -b:a 320k -ar 48000 -ac 2 -movflags +faststart "$FILM_FILE"
 
-if [ "$FORMAT" = 4x5 ]; then
+if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ]; then
   ffmpeg -nostdin -v error -y -i "$FILM_FILE" -map 0:v:0 -c:v copy -an -movflags +faststart \
-    "$OUTPUT_DIRECTORY/stridemon-launch-4x5-silent.mp4"
+    "$OUTPUT_DIRECTORY/$FILM_NAME-silent.mp4"
 fi
 
 if [ "$IS_AUDIO_ONLY" = no ]; then

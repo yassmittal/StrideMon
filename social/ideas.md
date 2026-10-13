@@ -24,7 +24,6 @@ One line each: `pillar · account · idea · source`. When an idea gets a date, 
 The first look is drafted: `posts/2026-10-10-founding-pass-first-look.md`. The plan is in
 `docs/founding-pass/`.
 
-- proof · stridemon · The waitlist mints first: 48 hours before the open mint. Only once the site's waitlist section says so (Part 4) · founding-pass-brief §5.1
 - build-story · yash · The first side marks were a "W" and a "V", and the V looked like a brand's logo: drawing 10 silhouettes with no lookalikes · art/founding-pass/README.md
 - deep-dive · stridemon · How 1,000 one-of-ones get picked: a seeded script, fair counts, no two sharing more than 4 of 6 visible layers (thread, the options sheet) · art/founding-pass/README.md
 - proof · stridemon · It changes after your first walk: the same pass unlaced, then laced (two cards, once Part 2 puts it on-chain) · founding-pass-brief §2

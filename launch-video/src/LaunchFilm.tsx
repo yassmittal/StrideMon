@@ -1,5 +1,10 @@
 import { Series, useVideoConfig } from 'remotion'
-import { readSceneDurationInFrames } from './beats'
+import {
+  FILM_DURATION_IN_FRAMES,
+  readSceneDurationInFrames,
+  readSceneStartFrame,
+  toSceneBeatFrame,
+} from './beats'
 import { Soundtrack } from './components/Soundtrack'
 import { EarnScene } from './scenes/EarnScene'
 import { EndCardScene } from './scenes/EndCardScene'
@@ -9,13 +14,24 @@ import { OwnItScene } from './scenes/OwnItScene'
 import type { SceneProps } from './scenes/scene-props'
 import { UpgradeScene } from './scenes/UpgradeScene'
 import { WalkScene } from './scenes/WalkScene'
+import { soundCues } from './sound-cues'
+import { MUSIC_FILE_NAME, soundEffectFileNames } from './soundtrack'
+
+/** The music fades from the end card's beat 2 ("Upgrade.") to silence on the last frame. */
+const MUSIC_FADE_OUT_START_FRAME = readSceneStartFrame('endCard') + toSceneBeatFrame('endCard', 2)
 
 /** The whole film: an intro, four steps, ownership and the end card, every cut on a beat (beats.ts). */
 export function LaunchFilm({ format }: SceneProps) {
   const { fps } = useVideoConfig()
   return (
     <>
-      <Soundtrack />
+      <Soundtrack
+        musicFileName={MUSIC_FILE_NAME}
+        soundEffectFiles={soundEffectFileNames}
+        cues={soundCues}
+        durationInFrames={FILM_DURATION_IN_FRAMES}
+        fadeOutStartFrame={MUSIC_FADE_OUT_START_FRAME}
+      />
       <Series>
         <Series.Sequence
           name="1 Intro"

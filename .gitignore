@@ -54,6 +54,8 @@ website/media-source/
 launch-video/out/
 launch-video/public/footage/
 launch-video/public/audio/
+# The Founding Pass art the waitlist film shows, copied by launch-video/scripts/copy-pass-art.sh
+launch-video/public/pass-art/
 # Social (social/, D-036): X-only images and clips, each rebuilt from the command in its post file
 social/media/
 

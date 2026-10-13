@@ -1,4 +1,4 @@
-# StrideMon launch film
+# StrideMon launch film (and the waitlist film)
 
 A 45-second launch film for StrideMon, built in [Remotion](https://www.remotion.dev) on Bun, in three
 formats: 4:5 (1080 × 1350, the master), 16:9 (1920 × 1080) and 9:16 (1080 × 1920). It's a separate
@@ -9,16 +9,25 @@ project with its own `package.json` and `bun.lock`, not a Bun workspace.
 - `CREDITS.md`: the music and sound effects, their sources and licences.
 - `FOOTAGE.md`: the shot log of the screen recordings.
 
+The same project also holds the **Founding Pass waitlist film** (`Waitlist4x5`, 22.7 s, 4:5), from
+`docs/waitlist-video-prompt.md`: its code is in `src/waitlist/`, its script in `SCRIPT.md`, its facts
+in `FACTS.md` §12 and its music in `CREDITS.md`. It shares the theme, fonts, components and the
+render pipeline; its beat grid is its own (`src/waitlist/beats.ts`, 124.052 BPM).
+
 ## Install
 
 ```bash
 cd launch-video
 bun install
 bash scripts/cut-footage.sh   # public/footage/ from ../website/media-source/ (needs ffmpeg)
-bash scripts/fetch-audio.sh   # public/audio/: the music and sound effects (needs curl, unzip, ffmpeg)
+bash scripts/fetch-audio.sh   # public/audio/: both films' music and sound effects (needs curl, unzip, ffmpeg)
+bash scripts/copy-pass-art.sh # public/pass-art/: the Founding Pass art the waitlist film shows (needs bun)
 ```
 
-`public/footage/`, `public/audio/` and `out/` are gitignored, so a fresh clone needs both scripts.
+`public/footage/`, `public/audio/`, `public/pass-art/` and `out/` are gitignored, so a fresh clone
+needs all three scripts. `copy-pass-art.sh` only reads `../website/public/pass-art/cards/` and
+`../packages/contracts/art/founding-pass/previews/`; the designs it copies are listed in
+`src/waitlist/pass-art.ts`.
 The raw recordings in `../website/media-source/` are gitignored too.
 
 ## Preview
@@ -28,7 +37,8 @@ bunx remotion studio
 ```
 
 `Launch4x5`, `Launch16x9` and `Launch9x16` are the whole film; `Scenes-4x5` has each scene on its
-own. Motion blur (the walk's fast stretch) needs Chrome 149+ with
+own. `Waitlist4x5` is the waitlist film, and `WaitlistScenes-4x5` has its five scenes.
+Motion blur (the walk's fast stretch) needs Chrome 149+ with
 `chrome://flags/#canvas-draw-element` to show in the Studio; renders don't need it.
 
 ## Render
@@ -40,7 +50,11 @@ delivery files into `out/`:
 bash scripts/render.sh 4x5    # out/stridemon-launch-4x5.mp4, -4x5-poster.png, -4x5-silent.mp4
 bash scripts/render.sh 16x9   # out/stridemon-launch-16x9.mp4, -16x9-poster.png
 bash scripts/render.sh 9x16   # out/stridemon-launch-9x16.mp4, -9x16-poster.png
+bash scripts/render.sh waitlist-4x5   # out/stridemon-waitlist-4x5.mp4, -poster.png, -silent.mp4
 ```
+
+The waitlist film goes through exactly the same steps as below, with `Waitlist4x5` and its last
+frame, 1363, for the poster.
 
 What `render.sh` runs (shown for 4:5):
 
@@ -66,10 +80,11 @@ ffmpeg -i out/work/4x5-picture.mp4 -i out/work/4x5-mix-normalised.wav -map 0:v:0
 bunx remotion still Launch4x5 out/stridemon-launch-4x5-poster.png --frame=2699 --image-format=png
 ```
 
-Contact sheets (one frame every 0.5 s, 15 s per sheet):
+Contact sheets (one frame every 0.5 s, 15 s per sheet, as many sheets as the video needs):
 
 ```bash
 bash scripts/contact-sheet.sh out/stridemon-launch-4x5.mp4 out/sheets-4x5
+bash scripts/contact-sheet.sh out/stridemon-waitlist-4x5.mp4 out/sheets-waitlist-4x5
 ```
 
 The YouTube thumbnail (`out/stridemon-launch-thumbnail-1280x720.png`) is the 16:9 frame 1340
@@ -91,6 +106,14 @@ ffmpeg -i out/work/thumbnail-1920.png -vf scale=1280:720:flags=lanczos out/strid
 4. Re-render. `render.sh` prints the normalisation type (it should say linear) and the final
    loudness. If the limiter has to work hard on a new track, lower the loudest effect in
    `src/soundtrack.ts` rather than the ceiling.
+
+### The waitlist film's music
+
+The same steps with the `WAITLIST_` variables in `scripts/fetch-audio.sh` (`WAITLIST_MUSIC_URL`,
+`WAITLIST_MUSIC_START_SECONDS`, `WAITLIST_TONE_*_HERTZ`) and `WAITLIST_BEATS_PER_MINUTE` in
+`src/waitlist/beats.ts`. The start must put the track's hit on frame 174 (beat 6, the flip into the
+collection). A new tempo changes the film's length: set `WAITLIST_LAST_FRAME` in `render.sh` to the
+new last frame. `CREDITS.md` has the two runners-up with their starts.
 
 ## Re-time `beats.ts`
 

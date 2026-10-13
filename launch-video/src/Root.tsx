@@ -9,6 +9,18 @@ import { IntroScene } from './scenes/IntroScene'
 import { OwnItScene } from './scenes/OwnItScene'
 import { UpgradeScene } from './scenes/UpgradeScene'
 import { WalkScene } from './scenes/WalkScene'
+import {
+  readWaitlistSceneDurationInFrames,
+  WAITLIST_DURATION_IN_FRAMES,
+  WAITLIST_FRAMES_PER_SECOND,
+} from './waitlist/beats'
+import { WAITLIST_HEIGHT, WAITLIST_WIDTH } from './waitlist/layout'
+import { AskScene as WaitlistAskScene } from './waitlist/scenes/AskScene'
+import { CollectionScene as WaitlistCollectionScene } from './waitlist/scenes/CollectionScene'
+import { HookScene as WaitlistHookScene } from './waitlist/scenes/HookScene'
+import { PassScene as WaitlistPassScene } from './waitlist/scenes/PassScene'
+import { PromiseScene as WaitlistPromiseScene } from './waitlist/scenes/PromiseScene'
+import { WaitlistFilm } from './waitlist/WaitlistFilm'
 
 export function RemotionRoot() {
   return (
@@ -103,6 +115,56 @@ export function RemotionRoot() {
           fps={FRAMES_PER_SECOND}
           durationInFrames={readSceneDurationInFrames('endCard')}
           defaultProps={{ format: '4x5' as const }}
+        />
+      </Folder>
+      <Composition
+        id="Waitlist4x5"
+        component={WaitlistFilm}
+        width={WAITLIST_WIDTH}
+        height={WAITLIST_HEIGHT}
+        fps={WAITLIST_FRAMES_PER_SECOND}
+        durationInFrames={WAITLIST_DURATION_IN_FRAMES}
+      />
+      <Folder name="WaitlistScenes-4x5">
+        <Composition
+          id="WaitlistHook"
+          component={WaitlistHookScene}
+          width={WAITLIST_WIDTH}
+          height={WAITLIST_HEIGHT}
+          fps={WAITLIST_FRAMES_PER_SECOND}
+          durationInFrames={readWaitlistSceneDurationInFrames('hook')}
+        />
+        <Composition
+          id="WaitlistCollection"
+          component={WaitlistCollectionScene}
+          width={WAITLIST_WIDTH}
+          height={WAITLIST_HEIGHT}
+          fps={WAITLIST_FRAMES_PER_SECOND}
+          durationInFrames={readWaitlistSceneDurationInFrames('collection')}
+        />
+        <Composition
+          id="WaitlistPass"
+          component={WaitlistPassScene}
+          width={WAITLIST_WIDTH}
+          height={WAITLIST_HEIGHT}
+          fps={WAITLIST_FRAMES_PER_SECOND}
+          durationInFrames={readWaitlistSceneDurationInFrames('pass')}
+        />
+        <Composition
+          id="WaitlistPromise"
+          component={WaitlistPromiseScene}
+          width={WAITLIST_WIDTH}
+          height={WAITLIST_HEIGHT}
+          fps={WAITLIST_FRAMES_PER_SECOND}
+          durationInFrames={readWaitlistSceneDurationInFrames('promise')}
+        />
+        <Composition
+          id="WaitlistAsk"
+          component={WaitlistAskScene}
+          width={WAITLIST_WIDTH}
+          height={WAITLIST_HEIGHT}
+          fps={WAITLIST_FRAMES_PER_SECOND}
+          durationInFrames={readWaitlistSceneDurationInFrames('ask')}
         />
       </Folder>
       <Folder name="Checks">

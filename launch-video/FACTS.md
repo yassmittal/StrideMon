@@ -195,3 +195,38 @@ benchmark claims.
 
 Plain and confident. No "revolutionary", "next-gen", "unleash", no exclamation marks, no price,
 earnings or "passive income" claims.
+
+## 12. The waitlist film (2026-10-13)
+
+The Founding Pass waitlist film (`docs/waitlist-video-prompt.md`), for the post
+`social/posts/2026-10-15-waitlist-mints-first.md`. `src/waitlist/content.ts` mirrors this section.
+Sources: the brief is `docs/founding-pass-brief.md`; `founding-pass.ts`, `waitlist.ts` and
+`founding-pass-designs.ts` are in `website/src/content/`. The art is the contract renderer's own
+output: the gallery cards in `website/public/pass-art/cards/`, and the Founder Sneaker pictures in
+`packages/contracts/art/founding-pass/previews/` (`SneakerArtRenderer`, D-042).
+
+**Never on screen in this film:** a date or time, a price, worth, value, floor, airdrop,
+whitelist, a countdown, a sign-up count, mainnet, a store, or a STRIDE amount. The mint times are
+only final after Part 10, so the film gives none.
+
+| On screen | Source | Status |
+|---|---|---|
+| `1,000 Founding Passes.` | Brief §1, §3.1; `passPageContent` ("1,000 Founding Passes") | ✓ |
+| `Each design exists once.` | Brief §3.1 ("Each of the 1,000 designs can be minted once"); every card says `1 OF 1` | ✓ |
+| The grid: 25 real cards (numbers in `src/waitlist/pass-art.ts`) | `cards/NNNN.svg`, unchanged | ✓ Real designs with their own numbers and names |
+| `#0137` · `Rose Hiker Night` · `COMMON · 1 OF 1` (printed on the card) | Design table row 137 (Rose, Hiker, Night; Common); `cards/0137.svg` | ✓ |
+| `#0020` · `Earthshine` · `LEGENDARY · 1 OF 1` (printed on the card) | Design table row 20 (Prism, Runner: the Runner's Legendary name, brief §3.2); `cards/0020.svg` | ✓ |
+| `LEGENDARY  •  10 OF 1,000` | Brief §3.2: 650 Common, 250 Uncommon, 90 Rare, 10 Legendary; the design table counts the same (checked 2026-10-13) | ✓ |
+| `Your way into StrideMon.` | Brief §1 ("It's their early access to the app"); `passPageContent.intro` ("It's your early access to StrideMon") | ✓ |
+| `Your Founder Sneaker, in the same design.` | Brief §7; `passPageContent.intro` ("the app gives you a Founder Sneaker in the same design"); FAQ "Is the pass my Sneaker?" | ✓ |
+| Founder Sneaker picture, cropped to `FOUNDER SNEAKER  #0137`, the shoe, `Rose Hiker Night` and `LACED` | `previews/founder-sneaker-0137-minted.svg` and `-laced.svg`, drawn by `SneakerArtRenderer` for pass #0137 | ⚠ The crop leaves out the level and durability rows: the laced preview shows level 06 and durability 064, which a first walk doesn't give |
+| Unlaced → Laced (the lace slats draw in, `LACED` appears) | Brief §3.2 ("Laced after the holder's first settled walk"), §2 | ✓ |
+| `Free. We pay the gas.` | Brief §1 ("gas-free"), §2 ("the server pays the gas"), §5.3; FAQ "Is it free?" ("there's no gas to pay: StrideMon pays it") | ✓ |
+| `Can't be sold or sent.` | `passPromiseLine` ("It can't be sent or sold"); brief §7 | ✓ |
+| `It stays with you.` | Brief §7 (soulbound: it can't be sent or sold); the post's reply ("It's your way in, and it stays with you"). A lost wallet's pass moves to the founder's new wallet (brief §7), so it still stays with them | ✓ Replaces the brief's draft `Not a token.`: an ERC-721 pass is a token in the technical sense, and the film has no room to say "not a fungible token" |
+| `Waitlist  •  Founding Pass` | `waitlistContent.metaLabels` | ✓ |
+| `Join the waitlist.` · `Mint 48 hours before everyone else.` | `waitlistContent.heading` ("Join the waitlist to mint 48 hours before everyone else."); brief §5.1 | ✓ |
+| The form: `EMAIL`, `you@example.com`, `JOIN THE WAITLIST`, `JOINING` | `waitlistContent` (`emailLabel`, `emailPlaceholder`, `submitLabel`, `submittingLabel`); the press steps `#2B2E3A → #000000` (`active:bg-ink`, `waitlist-form.tsx`) | ✓ A vector rebuild, not a screenshot. The optional phone choice is left out |
+| `One email, when the waitlist window opens, and nothing else.` | `waitlistContent.promise` (its first sentence) | ✓ |
+| `You're on the list.` · `We'll email you once, when the waitlist window opens.` | `waitlistContent.joinedMessage` | ✓ |
+| `stridemon.xyz/pass` · `StrideMon` · `MONAD TESTNET` | D-040; §1 | ✓ |
