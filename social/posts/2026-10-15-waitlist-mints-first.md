@@ -1,5 +1,5 @@
 ---
-status: draft
+status: posted           # Yash, 2026-10-13
 account: stridemon
 slot: 2026-10-15 15:00 UTC   # proposed: the day after the gallery post, so people have seen the designs first
 format: thread           # two posts: @stridemon has no Premium, so 280 characters each
