@@ -29,20 +29,23 @@ deadline.
 
 ## What's already fine
 
-- The GitHub repo (`github.com/yassmittal/StrideMon`) is public, with 43 commits from 2026-09-28
-  to 2026-10-06, all inside the build window (§4.1.4).
-- The four contracts are deployed and verified on Monad testnet (chain 10143). Addresses are in
+*Rechecked 2026-10-13.*
+
+- The GitHub repo (`github.com/yassmittal/StrideMon`) is public, and every commit is from
+  2026-09-28 on, inside the build window (§4.1.4).
+- The six contracts (the game's four plus `FoundingPass` and `FoundingPassArtRenderer`, D-042)
+  are deployed and verified on Monad testnet (chain 10143). Addresses are in `README.md` and
   `packages/contracts/README.md`.
-- The hosted API answers `GET /health` with `ok` and Mongo connected.
-- The live site (`https://stridemon.xyz`) shows the new STRIDE contract addresses.
-- The `demo` APK is current: built 2026-10-06 from `d1fbcc3` (the STRIDE rename), with the new
-  contract addresses. Link:
-  `https://expo.dev/artifacts/eas/Aa0J7FXKPHyaKSGL-74nW66qSugLVcvhOMLyRrGL2iY.apk`
-  *Changed (D-052, 2026-10-13):* the newest `demo` build is `f62511df` (2026-10-12, from
-  `e84ea96`). `README.md` and the site link its expo.dev page, not the APK:
+- The hosted API (`https://api.stridemon.xyz`) answers `GET /health` with `ok` and Mongo
+  connected, and `SneakerGame.paused()` is `false`.
+- The live site (`https://stridemon.xyz`) shows the live contract addresses, and `/pass`,
+  `/help`, `/privacy` and `/delete-account` all load.
+- The app link is the `demo` build `f62511df` (2026-10-12, from `e84ea96`, D-052), built after
+  the D-042 deploy. `README.md` and the site link its expo.dev page, not the APK:
   `https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265`
-- The hosted API is on the new contracts: the 2026-10-06 recording shows a new Sneaker and a
-  STRIDE reward, which the app reads from the new contracts.
+- The hosted API and that build are on the live contracts: the README's transactions (2026-10-12
+  and 10-13) were played on the Android phone against them.
+- Typecheck, lint and every test pass (contracts 162, API 244, mobile 154, shared 44).
 - No secrets in the repo. The only private keys are Anvil's public test keys, and `private.md`
   and the `.env` files are gitignored.
 
@@ -88,6 +91,9 @@ The submission is incomplete without these.
   files, own EAS project), AI disclosure, pre-existing code, credits, the token note and the
   links. One gap is marked `TODO(submission)` in the file: the demo video's URL (the repair and
   upgrade hashes are in, 2026-10-13).
+  *Updated 2026-10-13:* a Founding Pass section, all six contracts in the table and the diagram,
+  and "Run your own stack" deploys `DeployFoundingPass.s.sol` before `DeployGame.s.sol` (which
+  needs `FOUNDING_PASS_ADDRESS`, D-042).
 
 ## 2. Dashboard
 
@@ -96,10 +102,11 @@ The submission is incomplete without these.
 - [ ] Write the description. Paste the one under "Dashboard copy" (the README's problem, user and
   "why Monad" text, shortened).
 - [ ] Post at least one progress update (it unlocks mentor support). A draft is below.
-- [ ] Add the repo URL, the video link, the contract addresses and the APK link.
-- [ ] Submit by 2026-10-12, then keep editing until the deadline if needed.
+- [ ] Add the repo URL, the video link, the contract addresses and the app link (the expo.dev
+  build page in `README.md`, not a bare APK).
+- [ ] Submit now, then keep editing until the deadline (2026-10-14 09:29 IST) if needed.
 
-### Dashboard copy (drafted 2026-10-07)
+### Dashboard copy (drafted 2026-10-07, updated 2026-10-13)
 
 **Tagline:**
 
@@ -119,34 +126,42 @@ The submission is incomplete without these.
 > minutes and distance go on-chain, never the route. The Sneaker's picture is an SVG drawn by a
 > contract, so the app, MonadVision and MetaMask show the same image.
 >
+> Early access comes as 1,000 Founding Passes, each a one-of-one design drawn on-chain and minted
+> free and gas-free on stridemon.xyz/pass. A pass's wallet gets a Founder Sneaker in the pass's
+> design, and neither can be sent or sold, so early access can't be flipped.
+>
 > Why Monad: fast settlement makes one transaction per run practical, so the real reward shows
 > seconds after STOP; cheap gas makes the drip affordable; and it's plain EVM, so standard
 > ERC-721 and ERC-20 contracts work in MetaMask.
 >
-> Built on Android with Expo and React Native, a Fastify API on Bun with MongoDB, and four
-> verified Foundry contracts. Monad testnet. STRIDE has no monetary value.
+> Built on Android with Expo and React Native, a Fastify API on Bun with MongoDB, a Next.js site,
+> and six verified Foundry contracts. Monad testnet. STRIDE has no monetary value.
 
 **Progress update:**
 
-> The full loop runs on an Android phone against four verified contracts on Monad testnet: sign
+> The full loop runs on an Android phone against six verified contracts on Monad testnet: sign
 > in with MetaMask, a free starter Sneaker and gas drip, a walk that settles STRIDE on-chain,
 > repair and upgrade signed in the player's wallet, and a Sneaker sent to a second wallet with its
-> stats intact. The API is hosted, the landing page is live with a waitlist, and the token was
-> renamed SOLE → STRIDE with a fresh deploy. Next: the demo video and the submission.
+> stats intact. New since the first update: the Founding Pass, 1,000 one-of-one designs drawn by a
+> contract, with a gallery and a page for each at stridemon.xyz/pass, a free gas-free mint, and a
+> Founder Sneaker in the app in the pass's design. The site also has a help center with a
+> chatbot that answers from it. The API runs at api.stridemon.xyz. Next: the demo video.
 
 ## 3. Keep it working through judging (2026-10-14 to 10-27)
 
 - [ ] Keep the EC2 API and PM2 running, and keep the Atlas cluster awake. (`/health` answered
-  `ok` with Mongo connected on 2026-10-07.)
-- [x] Keep the game-server key funded. Checked 2026-10-07: `0xa7a0…C7F1F` holds 13.53 MON, about
-  100 new players at 0.13 MON each. Check again on 10-14.
-- [x] Don't pause `SneakerGame`, and keep the demo energy setting reverted. Checked 2026-10-07:
+  `ok` with Mongo connected on 2026-10-13.)
+- [x] Keep the game-server key funded. Checked 2026-10-13: `0xa7a0…C7F1F` holds 23.06 MON, about
+  170 new players at 0.13 MON each. The deployer holds 28.7 MON.
+- [x] Don't pause `SneakerGame`, and keep the demo energy setting reverted. Checked again on the
+  live (D-042) contracts on 2026-10-13: `paused()` is `false`, and `getGameConfig()` returns the
+  launch values (energy regenerates every 1,800 s, max energy 10). Earlier, on 2026-10-07:
   `paused()` is `false`, and the only `GameConfigUpdated` event is the deploy's, so the launch
   energy setting (30 minutes) was never changed. Run `bun run demo:energy revert` after any demo
   that applies it.
-- [x] Keep the APK link alive. EAS keeps build artifacts for about 30 days on the free plan, so the
-  2026-10-06 `demo` build lasts until about 2026-11-05, past judging (10-27). The 2026-10-12 build
-  (`f62511df`, D-052) lasts until about 2026-11-11. Check the expiry
+- [x] Keep the app link alive. EAS keeps build artifacts for about 30 days on the free plan, so the
+  2026-10-12 build (`f62511df`, D-052), the one linked, lasts until about 2026-11-11, past
+  judging (10-27). Check the expiry
   shown on the build's expo.dev page. **A new `demo` build gets a new link:** if you rebuild,
   update `README.md` and the dashboard.
 

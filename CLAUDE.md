@@ -202,9 +202,10 @@ without his say. The Chunky Legendary (#0542) is **Nacreous**, not Steve (Yash, 
 on testnet (`packages/contracts/README.md`), with test pass #0137 and Founder Sneaker #1 minted to the
 deployer. Deploy order: `DeployFoundingPass.s.sol`, then `DeployGame.s.sol` with
 `FOUNDING_PASS_ADDRESS` (a fresh pass means a fresh game too). **The hosted API is redeployed
-on these contracts** (Yash, by 2026-10-09). **The current APK still has the D-038 addresses** until
-a new app build. The hosted database still holds starter mints from the D-038 contracts, so those
-wallets wait on "Loading your Sneaker from Monad…" until the records are cleared. The lost-wallet move is `scripts/recover-founding-pass` (ask Yash first: it sends
+on these contracts** (Yash, by 2026-10-09), and so is the `demo` build `f62511df` (2026-10-12):
+the README's transactions were played on it. A wallet whose hosted record still points at a D-038
+starter mint waits on "Loading your Sneaker from Monad…" until its record is cleared (wallet A's
+was: it got Sneaker #2 on 2026-10-12). The lost-wallet move is `scripts/recover-founding-pass` (ask Yash first: it sends
 testnet transactions). **Part 3 (API) is done** (2026-10-08, D-043): email codes, mints, the
 schedule, the gate (`EARLY_ACCESS_REQUIRED`, off until 2026-10-27), Founder Sneakers, lacing, and
 `bun run pass:send-waitlist-emails` / `pass:send-test-email` (from `apps/api`). Development never

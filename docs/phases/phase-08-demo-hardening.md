@@ -166,11 +166,16 @@ checks and a full rehearsal on Android.
 
 **Status (2026-10-05):** built in `website/` (`website/README.md` covers running it, adding
 screenshots and deploying). Lighthouse mobile on the local static build: Performance 97–99,
-Accessibility, Best Practices and SEO 100, CLS 0. Screenshots added and prepared (2026-10-05). Waiting on Yash: confirming
-`githubRepositoryUrl`, and the Vercel project. The live-URL check above still needs the deploy.
+Accessibility, Best Practices and SEO 100, CLS 0. Screenshots added and prepared (2026-10-05).
+*Done (2026-10-06):* the site is live on Vercel, now at `https://stridemon.xyz` (D-040), and
+`github.com/yassmittal/StrideMon` is public.
 
 ## Definition of done
 - [ ] Two full rehearsals on the hosted stack, on both iOS and Android, without touching a laptop.
-- [ ] The explorer links in the app open the right pages.
-- [ ] The pause switch has been tested: pausing `SneakerGame` shows a friendly "maintenance" state.
-- [ ] No raw hex, pixel or font values outside `src/theme/`, and every screen matches the design-system §9 treatment.
+  Android: the hosted stack passed every `deployment.md` step on the phone (8.6, 2026-10-05), and
+  the README's session was played on it (2026-10-12 and 10-13). iOS is deferred (8.7, D-035).
+- [x] The explorer links in the app open the right pages (8.4, 2026-10-04).
+- [x] The pause switch has been tested: pausing `SneakerGame` shows a friendly "maintenance" state
+  (8.4, a testnet pause and unpause on the phone, 2026-10-04).
+- [x] No raw hex, pixel or font values outside `src/theme/`, and every screen matches the
+  design-system §9 treatment (8.2, 2026-10-03).

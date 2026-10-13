@@ -17,7 +17,8 @@
       "!launch-video/public",
       "!launch-video/out",
       "!launch-video/.agents",
-      "!launch-video/.claude"
+      "!launch-video/.claude",
+      "!social/posters/art"
     ]
   },
   "formatter": {

@@ -103,8 +103,8 @@ the JSON only: nothing off-chain calls them).
 
 **The hosted API runs on these contracts** (Yash, by 2026-10-09), and the root `README.md`,
 `website/src/content/contracts.ts` and `docs/rehearsal-checklist.md` list them (the briefs, the
-prompts and the social posts keep the old ones on purpose). **The current APK still has the D-038
-addresses** until a new app build: an APK reads the addresses it was built with.
+prompts and the social posts keep the old ones on purpose). The `demo` build `f62511df`
+(2026-10-12) reads them too: an APK reads the addresses it was built with.
 
 The test mint (2026-10-08, from the game-server key): Founding Pass
 [#0137](https://testnet.monadvision.com/nft/0xAA2b4891a5057aBafD645986ff5493A4F1027080/137)
@@ -116,8 +116,8 @@ contract: Part 10 deploys a fresh one before launch.
 Three earlier deployments are abandoned: the first (2026-09-29, `SneakerNft` `0x082072B5…`, no
 image), the 8.3 one (2026-10-03, `SneakerNft` `0xC116917b…`, `SoleToken` `0xe52DC9df…`) and the
 D-038 one (2026-10-06, `SneakerNft` `0x6A9B0894…`, `StrideToken` `0xf835cd7F…`, `SneakerGame`
-`0x846cd7B8…`). Their Sneakers and tokens stay on-chain; the D-038 ones are still what the current
-APK reads, as above.
+`0x846cd7B8…`). Their Sneakers and tokens stay on-chain; only builds from before 2026-10-08 still
+read the D-038 ones.
 
 Admin, pauser and recovery: deployer `0xFCe46e8CAFcf766003897e2aD6ab7a4d0E8befD6`.
 `GAME_SERVER_ROLE` and the pass's `MINTER_ROLE`: `0xa7a04224FEBE644C7d4d99Cfc8dd694270C7Cf1F`.

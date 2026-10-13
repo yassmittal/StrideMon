@@ -39,6 +39,22 @@ get a free Sneaker → walk or run → STOP → STRIDE settles on Monad → repa
 Every number is in [`docs/architecture/game-rules.md`](docs/architecture/game-rules.md), and the
 contract enforces it.
 
+## The Founding Pass
+
+Early access comes as **1,000 Founding Passes**, each a one-of-one design drawn by a contract.
+The whole collection is browsable at <https://stridemon.xyz/pass>, with a page for every design.
+
+- A founder mints one **free and gas-free** on the website: the game server sends the mint, and
+  people on the waitlist get the first 48 hours.
+- In the app, the pass's wallet gets a **Founder Sneaker** drawn in the pass's design. Its first
+  run "laces" the pass on-chain.
+- Neither can be sent or sold (the pass is ERC-5192), so early access can't be flipped.
+- Minting opens on 2026-11-28. Until early access starts, anyone can play with a free starter
+  Sneaker, as in "Try it" below.
+
+The idea and the flow are in [`docs/founding-pass-brief.md`](docs/founding-pass-brief.md), and the
+decision is D-041 in [`docs/decisions.md`](docs/decisions.md).
+
 ## How it uses Monad, and why Monad
 
 The chain is the source of truth. A Sneaker's level, efficiency, durability and energy live in
@@ -61,6 +77,8 @@ the outbox of transactions the server sends.
 | `StrideToken` | ERC-20 + Permit (`STRIDE`, 18 decimals) | [`0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5`](https://testnet.monadvision.com/address/0xaa665bB572A1375c624ae0affbCa28bF64D3B7c5) |
 | `SneakerGame` | The rules: starter mint, settlement, repair, upgrade | [`0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D`](https://testnet.monadvision.com/address/0x4DD989bc2844cEa9a5eb53b3c52bd86FD6bB8f8D) |
 | `SneakerArtRenderer` | Draws the Sneaker's SVG; swappable by the admin | [`0xFd44910b780Df3e111EC79835D28CF4919329669`](https://testnet.monadvision.com/address/0xFd44910b780Df3e111EC79835D28CF4919329669) |
+| `FoundingPass` | ERC-721 + ERC-5192 (can't be sent): the 1,000 one-of-one passes | [`0xAA2b4891a5057aBafD645986ff5493A4F1027080`](https://testnet.monadvision.com/address/0xAA2b4891a5057aBafD645986ff5493A4F1027080) |
+| `FoundingPassArtRenderer` | Draws the pass art (the 1,000 frozen designs); swappable by the admin | [`0xB5324561cF64330D96D1B07B3ff2aA3fa7D601bE`](https://testnet.monadvision.com/address/0xB5324561cF64330D96D1B07B3ff2aA3fa7D601bE) |
 
 ### Transactions from a real session
 
@@ -108,11 +126,15 @@ Testnet in MetaMask, clear StrideMon's app data, and connect again.
  ├─ GPS tracking during a run                          ├─ SneakerNft   (ERC-721: stats, energy)
  ├─ MetaMask through Reown AppKit ──── player signs ──→├─ StrideToken  (ERC-20: STRIDE)
  │    (repair, upgrade, transfer)                      ├─ SneakerGame  (the rules)
- └─ HTTPS + JWT                                        └─ SneakerArtRenderer (on-chain SVG)
-        ↓                                                       ↑
- Game API (Fastify on Bun) ── outbox: starter mint, gas drip, settlement (GAME_SERVER_ROLE)
-        ↓
- MongoDB (users, auth sessions, activity sessions, GPS samples with a 30-day TTL, outbox)
+ └─ HTTPS + JWT                                        ├─ SneakerArtRenderer (on-chain SVG)
+        │                                              ├─ FoundingPass (ERC-721 + ERC-5192)
+        │   Website (Next.js): /pass gallery and mint  └─ FoundingPassArtRenderer
+        │     │                                                 ↑
+        ↓     ↓                                                 │
+ Game API (Fastify on Bun) ── outbox: starter mint, gas drip, settlement, pass and
+        ↓                     Founder Sneaker mints (GAME_SERVER_ROLE, MINTER_ROLE)
+ MongoDB (users, auth sessions, activity sessions, GPS samples with a 30-day TTL, outbox,
+          waitlist, Founding Pass mints and email codes)
 ```
 
 1. **Sign-in** is Sign-In With Ethereum. The API builds the message and issues a JWT.
@@ -147,8 +169,10 @@ apps/mobile         Expo + React Native + Expo Router
 apps/api            Fastify 5 on Bun, MongoDB, viem
 packages/shared     zod API contracts, domain types, game-rule mirror
 packages/chain      ABIs, deployed addresses, Monad chain definitions
-packages/contracts  Foundry: SneakerNft, SneakerArtRenderer, StrideToken, SneakerGame
-website             The landing page (Next.js, its own install, not a workspace)
+packages/contracts  Foundry: SneakerNft, SneakerArtRenderer, StrideToken, SneakerGame,
+                    FoundingPass, FoundingPassArtRenderer
+website             The site: landing page, Founding Pass gallery and mint, help (Next.js, its
+                    own install, not a workspace)
 docs                Architecture, decisions and the phased build plan (start at docs/README.md)
 ```
 
@@ -190,18 +214,23 @@ cp packages/contracts/.env.example packages/contracts/.env
 vim packages/contracts/.env                    # both addresses and private keys
 ```
 
-Fund both addresses from <https://faucet.monad.xyz>. The deploy uses about 7.5M gas and Monad
-charges the full gas limit, so give the deployer about 1.5 MON. The game server pays for every
-starter mint and gas drip (about 0.13 MON per new player).
+Fund both addresses from <https://faucet.monad.xyz>. Monad charges the full gas limit. The
+Founding Pass deploy uses about 23M gas (its art renderer is about 66 KB) and the game about 8M,
+so give the deployer about 6 MON. The game server pays for every starter mint and gas drip (about
+0.13 MON per new player).
+
+The Founding Pass goes first, because the game is wired to it:
 
 ```sh
 cd packages/contracts
 set -a && source .env && set +a
+forge script script/DeployFoundingPass.s.sol --rpc-url monad_testnet --broadcast
+export FOUNDING_PASS_ADDRESS=$(jq -r .foundingPass deployments/10143.json)
 forge script script/DeployGame.s.sol --rpc-url monad_testnet --broadcast
 cd ../.. && bun run chain:export-abis          # your addresses + ABIs → packages/chain
 ```
 
-The script grants every role and writes your addresses to
+The scripts grant every role and write your addresses to
 `packages/contracts/deployments/10143.json`, replacing ours. To verify the contracts too, see
 [`packages/contracts/README.md`](packages/contracts/README.md).
 
