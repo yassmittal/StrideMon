@@ -67,14 +67,15 @@ of the Home screenshot (otherwise the screenshot stays). Its facts live in
 
 | File | What | Size |
 |---|---|---|
-| `public/videos/stridemon-demo.mp4` | 56 s demo: sign in, a 3:31 walk at 16×, +15 STRIDE settled, the Sneaker tab, transfer to wallet B. 540 × 1134, 30 fps, H.264, no audio | 1.6 MB |
+| `public/videos/stridemon-demo.mp4` | 56 s demo: sign in, a 3:31 walk at 16×, +15 STRIDE settled, the Sneaker tab, transfer to wallet B. 540 × 1134, 30 fps, H.264, with music (AAC 128 kbps, -16 LUFS, D-052) | 2.5 MB |
 | `public/videos/stridemon-demo-poster.webp` | Its poster: the run summary, +15 STRIDE settled | 21 KB |
 | `public/videos/stridemon-walk-loop.mp4` | 6 s run-screen loop (12×, +10 → +15 STRIDE) for How it works' Move step, 540 × 1170 | 96 KB |
 
 The demo loads nothing but its poster until the visitor presses play. It uses our own controls
 (`src/components/ui/demo-video-player.tsx`), not the browser's: a play button on the poster, chapter
 bars on a frosted strip while it plays (pressing one jumps there), a press anywhere else to pause,
-and a replay button at the end. The chapter times are `demoVideoChapters` in
+a sound button (or M) in the bottom corner, and a replay button at the end. It plays with sound,
+only ever from a press. The chapter times are `demoVideoChapters` in
 `src/content/demo-video.ts`; they follow the scene starts that `cut-demo-video.sh` prints, so update
 them after a re-cut. The loop loads
 when its step nears the viewport, plays only on screen, and never shows with reduced motion (the
@@ -83,7 +84,8 @@ screenshot stays).
 The raw screen recordings live in **`media-source/`**, which is gitignored: they are hundreds of MB
 and must never be committed or deployed. The cut uses `video3.mp4` (2026-10-06, STRIDE);
 `video1.mp4` and `video2.mp4` are the older SOLE recordings, no longer used. To redo the cut
-(from `website/`, with ffmpeg and cwebp):
+(from `website/`, with ffmpeg, curl and cwebp). The music, "Fresh" by Bransboynd from Pixabay
+(free, no attribution), downloads into `media-source/` on the first run:
 
 ```bash
 bash scripts/cut-demo-video.sh
@@ -103,6 +105,10 @@ ffmpeg -f concat -safe 0 -i scene-N.txt -c copy scene-N.mp4
 ffmpeg -i scene-1.mp4 … -filter_complex "[0:v][1:v]xfade=transition=fade:duration=0.2:offset=<t>[faded1];…" \
   -an -c:v libx264 -profile:v high -preset slow -crf 23 -pix_fmt yuv420p -r 30 -movflags +faststart \
   public/videos/stridemon-demo.mp4
+# 3b. Music: from 6.4 s in, faded in and out, levelled to -16 LUFS (two-pass loudnorm), muxed as AAC
+ffmpeg -i demo-silent.mp4 -i media-source/bransboynd-fresh-457883.mp3 \
+  -filter_complex "[1:a]atrim=start=6.4:duration=<demo length>,…,afade=…,loudnorm=…:linear=true[music]" \
+  -map 0:v -map "[music]" -c:v copy -c:a aac -b:a 128k public/videos/stridemon-demo.mp4
 # 4. Poster
 ffmpeg -ss 34.5 -i public/videos/stridemon-demo.mp4 -frames:v 1 poster.png
 cwebp -q 80 poster.png -o public/videos/stridemon-demo-poster.webp

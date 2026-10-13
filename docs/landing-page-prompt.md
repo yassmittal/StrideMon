@@ -135,6 +135,9 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
      bars across the top of the screen (Sign in, Walk, Earn, Send) that jump to a chapter when
      pressed, and a press anywhere else pauses or resumes; at the end, a **Watch again** pill. Still
      muted, `preload="none"`, played only on click. Space or K pauses, ← and → step 5 s.
+   - *Changed (D-052):* the demo has music and plays with sound (still only from a click, so never
+     autoplaying), with a sound button in the bottom corner (or M) beside the chapter bars. "Get the
+     Android app" opens the build's expo.dev page, with "App review is in progress" under it.
 3. **How it works:** the loop as six numbered steps, each with one line and, where there is one, a
    screenshot. *Changed (D-050):* a compact grid (three across on a desktop, two on a phone), one
    smaller phone per step:

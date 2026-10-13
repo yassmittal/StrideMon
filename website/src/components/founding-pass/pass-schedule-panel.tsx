@@ -7,7 +7,7 @@ import {
   passSectionIds,
 } from '@/content/founding-pass'
 import { getReadyContent } from '@/content/founding-pass-mint'
-import { appDownloadUrl, sectionIds } from '@/content/site'
+import { appInstallPageUrl, sectionIds } from '@/content/site'
 import type { PassCollection } from '@/lib/founding-pass/pass-collection'
 import { formatPassNumber, readPassDesign } from '@/lib/founding-pass/pass-design'
 import {
@@ -124,7 +124,7 @@ export function PassSchedulePanel() {
             </a>
           ) : null}
           {isOver ? (
-            <a href={appDownloadUrl} className={buildPillClassName('callToAction', 'regular')}>
+            <a href={appInstallPageUrl} className={buildPillClassName('callToAction', 'regular')}>
               <PillContent label={passScheduleContent.getAppLabel} />
             </a>
           ) : null}
@@ -251,7 +251,7 @@ function AppAccessLine({
           <>
             {passAppAccessContent.testPeriodText}{' '}
             <a
-              href={appDownloadUrl}
+              href={appInstallPageUrl}
               className="text-on-dark underline decoration-hairline-on-dark underline-offset-4"
             >
               {passAppAccessContent.getAppLabel}

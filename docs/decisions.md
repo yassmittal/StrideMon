@@ -1263,7 +1263,7 @@ It fills in D-041's website mint and the brief's §5.3, §6 and §10.3. The API 
       codes in the log. It never reads `apps/api/.env`. Flags pick the phase, add waitlist
       emails, mint passes ahead (up to all 1,000) and slow the blocks down.
   13. **"Get the app"** links to the current APK (`appDownloadUrl` in `site.ts`). Part 6's build
-      replaces it.
+      replaces it. *Changed (D-052):* it opens the build's expo.dev page (`appInstallPageUrl`).
 - **Why:** the brief's one-tap mint on mint day, without a wallet prompt at that moment, and no
   wallet code for anyone who only browses. The chain stays the source of truth for the picture
   and for who already holds a pass. A local stack keeps every test off testnet (`CLAUDE.md`).
@@ -1568,3 +1568,27 @@ version, which stops at 500 URLs) and a link-graph check of the whole static bui
 - **Revisit when:** minting opens (crawl again with the live state), or when the mint can be
   tested end to end (`pass:local-stack --phase waitlistWindow`): then add `script-src`,
   `connect-src`, `img-src` and `frame-src` as `Content-Security-Policy-Report-Only` first.
+
+## D-052 — The demo video gets music, and "Get the app" opens the Expo build page
+
+Made 2026-10-13, from Yash's feedback on the live site.
+
+- **Decision:**
+  1. **The landing page's demo video has music:** "Fresh" by Bransboynd
+     (<https://pixabay.com/music/soft-house-fresh-457883/>), soft house at about 114 BPM, under the
+     Pixabay Content License (free for commercial use, no attribution). `cut-demo-video.sh` starts it
+     6.4 s in, so its beat comes in just before the Walk chapter and its drop lands on Earn, fades it
+     in and out, levels it to -16 LUFS and muxes it as 128 kbps AAC. The video frames are unchanged
+     (2.5 MB, was 1.6 MB). The player is no longer muted: sound starts only from the visitor's press
+     on play, never on its own, and a sound button (or M) sits in the bottom corner beside the
+     chapter bars. A browser that refuses sound still plays the picture, muted. The walk loop in How
+     it works stays silent.
+  2. **Every "Get the app" button opens the `demo` build's page on expo.dev**
+     (`appInstallPageUrl` in `website/src/content/site.ts`, build `f62511df`, 2026-10-12), not the
+     bare `.apk`: a visitor sees what they're installing, with an Install button on a phone and a
+     QR code on a laptop. The hero says "App review is in progress" under its buttons until the
+     Google Play listing is live, and the help's Get the app answer says the same.
+- **Why:** a silent demo felt unfinished, and nobody trusts a link that starts downloading a file.
+- **Trade-off:** EAS build pages expire with the free plan's artifacts (about 30 days), and a new
+  `demo` build gets a new page, so the link is updated by hand with each build until Google Play
+  replaces it. The music adds 0.9 MB, loaded only after a press on play.

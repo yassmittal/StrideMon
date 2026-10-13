@@ -1,7 +1,7 @@
 import { demoVideo, demoVideoChapters } from '@/content/demo-video'
 import { heroContent } from '@/content/hero'
 import { screenshots } from '@/content/screenshots'
-import { appDownloadUrl, passGalleryPath } from '@/content/site'
+import { appInstallPageUrl, passGalleryPath } from '@/content/site'
 import { hasPublicFile } from '@/lib/read-public-file'
 import { readSneakerArtForDrawing } from '@/lib/read-sneaker-art'
 import { DemoVideoPlayer } from '../ui/demo-video-player'
@@ -37,8 +37,16 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
         <p className="max-w-[17em] text-intro">{heroContent.intro}</p>
         <div className="flex flex-wrap gap-2.5 pt-2">
           <PillButton href={passGalleryPath} label={heroContent.getPassLabel} />
-          <PillButton href={appDownloadUrl} label={heroContent.getAppLabel} variant="secondary" />
+          <PillButton
+            href={appInstallPageUrl}
+            label={heroContent.getAppLabel}
+            variant="secondary"
+            isExternal
+          />
         </div>
+        <p className="max-w-[26em] text-sm leading-[1.45] text-ink-secondary-small">
+          {heroContent.appReviewNote}
+        </p>
       </div>
 
       <div className="flex items-stretch gap-2.5 lg:col-span-6 lg:justify-end">

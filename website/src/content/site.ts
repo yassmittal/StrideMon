@@ -73,11 +73,13 @@ export const legalPagePaths = {
 export const githubRepositoryUrl = 'https://github.com/yassmittal/StrideMon'
 
 /**
- * "Get the app" after a mint (D-045): the Android demo build, as in the README's "Try it". Part 6's
- * founder build replaces it.
+ * Every "Get the app" button (D-045, D-052): the Android `demo` build's page on expo.dev, as in the
+ * README's "Try it". A page, not the bare APK, so nobody gets a file they didn't ask for: it shows
+ * an Install button on a phone and a QR code on a laptop. A new `demo` build means a new link here.
+ * The Google Play listing replaces it once its review passes.
  */
-export const appDownloadUrl =
-  'https://expo.dev/artifacts/eas/Aa0J7FXKPHyaKSGL-74nW66qSugLVcvhOMLyRrGL2iY.apk'
+export const appInstallPageUrl =
+  'https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265'
 
 // The product's X account and the builder's (D-036). Handles keep their `@`.
 export const xAccountHandle = '@stridemon'

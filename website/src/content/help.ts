@@ -2,7 +2,7 @@ import { plannedEarlyAccessStartDateText } from './founding-pass'
 import { walletStepContent } from './founding-pass-mint'
 import type { screenshots } from './screenshots'
 import {
-  appDownloadUrl,
+  appInstallPageUrl,
   legalPagePaths,
   passGalleryPath,
   supportEmail,
@@ -125,7 +125,7 @@ const helpLinks = {
   lostWallet: { label: 'Lost your wallet?', href: '#lost-wallet' },
   contact: { label: 'Write to us', href: '#contact' },
   gallery: { label: 'See the Founding Passes', href: passGalleryPath },
-  getApp: { label: 'Download the app', href: appDownloadUrl },
+  getApp: { label: 'Get the app', href: appInstallPageUrl },
 } as const satisfies Record<string, HelpLink>
 
 export const helpPageContent = {
@@ -285,11 +285,11 @@ export const helpGuides: readonly HelpGuide[] = [
     id: 'get-the-app',
     title: 'Get the app',
     steps: [
-      'On your Android phone, tap Get the app after your mint, or the link below. It downloads the StrideMon app.',
-      'Open the downloaded file. If Android asks, allow installs from your browser.',
+      'On your Android phone, tap Get the app after your mint, or the link below. It opens the StrideMon test build’s page on Expo, where our app builds live.',
+      'Tap Install, then open the downloaded file. If Android asks, allow installs from your browser.',
       'Open StrideMon.',
     ],
-    note: 'Android may say the app isn’t from Google Play. That’s expected for this test build.',
+    note: 'App review on Google Play is in progress. Until then, Android may say the app isn’t from Google Play. That’s expected for this test build.',
     links: [helpLinks.getApp],
   },
   {

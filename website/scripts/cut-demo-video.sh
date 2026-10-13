@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 # Cuts the raw Android screen recording in media-source/ (gitignored) into the landing page's
-# demo video, its poster, and the How it works walk loop, all in public/videos/.
-# Run from website/: `bash scripts/cut-demo-video.sh`. Needs ffmpeg, ffprobe, bc and cwebp.
+# demo video (with its music), its poster, and the How it works walk loop, all in public/videos/.
+# Run from website/: `bash scripts/cut-demo-video.sh`. Needs ffmpeg, ffprobe, bc, curl and cwebp.
 #
 # Source (2026-10-06, after the STRIDE rename, D-038): video3.mp4, 880 × 1920, ~24 fps variable,
 # silent. Wallet A signs in, walks 3:31, earns 15 STRIDE, then sends Sneaker #1 to wallet B.
 # (video1/video2 are the older SOLE recordings, no longer used.)
+#
+# Music (D-052): "Fresh" by Bransboynd (https://pixabay.com/music/soft-house-fresh-457883/), soft
+# house at about 114 BPM, under the Pixabay Content License (free for commercial use, no
+# attribution needed). Downloaded into media-source/ on the first run. Its beat comes in at 16.9 s
+# and its drop at 33.8 s, so starting it 6.4 s in puts the beat just before Walk and the drop on the
+# Earn chapter (27.4 s in the demo). It fades out over the held last frame.
 set -euo pipefail
 
 SOURCE_FILE=media-source/video3.mp4
@@ -17,6 +23,12 @@ DEMO_CRF=23
 LOOP_CRF=22
 FADE_SECONDS=0.2
 POSTER_SECONDS=34.5
+MUSIC_URL="https://cdn.pixabay.com/download/audio/2025/12/28/audio_ff45db1db1.mp3?filename=bransboynd-fresh-457883.mp3"
+MUSIC_FILE=media-source/bransboynd-fresh-457883.mp3
+MUSIC_START_SECONDS=6.4
+MUSIC_FADE_IN_SECONDS=1
+MUSIC_FADE_OUT_SECONDS=2.5
+MUSIC_LOUDNESS_LUFS=-16
 WEB_ENCODE=(-an -c:v libx264 -profile:v high -preset slow -pix_fmt yuv420p -r 30 -movflags +faststart)
 
 # The demo crops the status bar (top 72 px: clock, battery) and scales to 540 × 1134, 30 fps.
@@ -81,7 +93,26 @@ for ((index = 1; index < ${#sceneFiles[@]}; index++)); do
 done
 filter+="[$previousLabel]format=yuv420p[out]"
 ffmpeg -nostdin -v error -y "${inputs[@]}" -filter_complex "$filter" -map "[out]" \
-  "${WEB_ENCODE[@]}" -crf "$DEMO_CRF" "$OUTPUT_DIRECTORY/stridemon-demo.mp4"
+  "${WEB_ENCODE[@]}" -crf "$DEMO_CRF" "$WORK_DIRECTORY/demo-silent.mp4"
+
+# 3b. The music, cut to the demo's length with a fade at each end, levelled to -16 LUFS in two
+# passes (`linear=true` keeps its dynamics), then muxed in as AAC without touching the video.
+if [ ! -f "$MUSIC_FILE" ]; then
+  curl -fsSL -A "Mozilla/5.0" -e https://pixabay.com/ "$MUSIC_URL" -o "$MUSIC_FILE"
+fi
+demoDurationSeconds=$(ffprobe -v error -show_entries format=duration -of csv=p=0 \
+  "$WORK_DIRECTORY/demo-silent.mp4")
+fadeOutStartSeconds=$(echo "$demoDurationSeconds - $MUSIC_FADE_OUT_SECONDS" | bc)
+musicFilter="atrim=start=$MUSIC_START_SECONDS:duration=$demoDurationSeconds,asetpts=PTS-STARTPTS,afade=t=in:d=$MUSIC_FADE_IN_SECONDS,afade=t=out:st=$fadeOutStartSeconds:d=$MUSIC_FADE_OUT_SECONDS"
+loudnessJson=$(ffmpeg -nostdin -hide_banner -i "$MUSIC_FILE" \
+  -af "$musicFilter,loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1.5:LRA=11:print_format=json" -f null - 2>&1 |
+  sed -n '/^{/,/^}/p')
+readLoudness() { echo "$loudnessJson" | sed -n "s/.*\"$1\" : \"\(.*\)\".*/\1/p"; }
+loudnormFilter="loudnorm=I=$MUSIC_LOUDNESS_LUFS:TP=-1.5:LRA=11:linear=true:measured_I=$(readLoudness input_i):measured_TP=$(readLoudness input_tp):measured_LRA=$(readLoudness input_lra):measured_thresh=$(readLoudness input_thresh):offset=$(readLoudness target_offset)"
+ffmpeg -nostdin -v error -y -i "$WORK_DIRECTORY/demo-silent.mp4" -i "$MUSIC_FILE" \
+  -filter_complex "[1:a]$musicFilter,$loudnormFilter,aresample=44100[music]" \
+  -map 0:v -map "[music]" -c:v copy -c:a aac -b:a 128k -ac 2 -shortest -movflags +faststart \
+  "$OUTPUT_DIRECTORY/stridemon-demo.mp4"
 
 # 4. The poster: Home with Sneaker #1 and the 15 STRIDE just earned, from the finished demo.
 ffmpeg -nostdin -v error -y -ss "$POSTER_SECONDS" -i "$OUTPUT_DIRECTORY/stridemon-demo.mp4" \

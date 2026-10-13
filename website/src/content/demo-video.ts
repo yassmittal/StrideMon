@@ -1,5 +1,5 @@
-// The demo video, cut from one Android screen recording of the demo build (website/README.md has
-// the ffmpeg commands). Its width and height are the encode's, with the status bar cropped off.
+// The demo video, cut from one Android screen recording of the demo build, with music (D-052;
+// website/README.md has the ffmpeg commands). Its width and height are the encode's, with the status bar cropped off.
 // The hero shows it in place of the Home screenshot when the file exists in public/.
 
 export const demoVideo = {

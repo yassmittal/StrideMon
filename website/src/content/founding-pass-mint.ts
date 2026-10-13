@@ -1,5 +1,5 @@
 import type { HelpTopicId } from './help'
-import { appDownloadUrl, xAccountHandle } from './site'
+import { appInstallPageUrl, xAccountHandle } from './site'
 
 // The mint on /pass (Part 5, D-045): "Get ready", the steps, the mint, the reveal, and every
 // problem with a plain next step (docs/founding-pass/README.md → Nobody gets stuck). Words:
@@ -105,7 +105,7 @@ export const revealContent = {
   transactionLabel: 'See the mint on MonadVision',
   postOnXLabel: 'Post on X',
   getAppLabel: 'Get the app',
-  getAppUrl: appDownloadUrl,
+  getAppUrl: appInstallPageUrl,
   sameWalletPrefix: 'Sign in to the app with this same wallet:',
   nextStepText:
     'Next: install StrideMon on Android and sign in with this wallet. The app gives you a Founder Sneaker in this design, and your first walk laces both.',

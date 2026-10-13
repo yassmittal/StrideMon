@@ -49,8 +49,10 @@ function readChapterFraction(
 
 // The demo in the same plain phone frame as the screenshots, with our own controls instead of the
 // browser's: a pill on the poster, story-style chapter bars while it plays (press one to jump
-// there), a press anywhere else to pause, and a replay pill at the end. Muted, `preload="none"`:
-// nothing but the poster loads until the visitor presses play. Without JavaScript the poster stays.
+// there), a press anywhere else to pause, a sound button beside the bars, and a replay pill at the
+// end. It plays with its music (D-052), only ever from a press, so the sound never starts on its own.
+// `preload="none"`: nothing but the poster loads until the visitor presses play. Without JavaScript
+// the poster stays.
 export function DemoVideoPlayer({
   filePath,
   posterPath,
@@ -72,6 +74,7 @@ export function DemoVideoPlayer({
   const [currentSeconds, setCurrentSeconds] = useState(0)
   const [knownDurationSeconds, setKnownDurationSeconds] = useState(durationSeconds)
   const [areControlsRecent, setAreControlsRecent] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
 
   // Smooth bars: read the clock every frame while playing (`timeupdate` only fires ~4 times a second).
   useEffect(() => {
@@ -103,10 +106,23 @@ export function DemoVideoPlayer({
     if (!video) return
     setHasStarted(true)
     video.play().catch(() => {
-      // Playback refused (for example a data saver): the poster and the pill stay.
-      setHasStarted(false)
+      if (video.muted) {
+        // Playback refused (for example a data saver): the poster and the pill stay.
+        setHasStarted(false)
+        return
+      }
+      // A browser that refuses sound still plays the picture, with the sound button showing off.
+      video.muted = true
+      video.play().catch(() => setHasStarted(false))
     })
   }, [])
+
+  const toggleSound = () => {
+    const video = videoRef.current
+    if (!video) return
+    video.muted = !video.muted
+    showControlsForAWhile()
+  }
 
   const togglePlayback = () => {
     const video = videoRef.current
@@ -135,12 +151,15 @@ export function DemoVideoPlayer({
     if (videoRef.current?.paused) playVideo()
   }
 
-  // Space and Enter press the focused button themselves; K and the arrows work from any control.
+  // Space and Enter press the focused button themselves; K, M and the arrows work from any control.
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!hasStarted) return
     if (event.key === 'k') {
       event.preventDefault()
       togglePlayback()
+    } else if (event.key === 'm') {
+      event.preventDefault()
+      toggleSound()
     } else if (event.key === 'ArrowLeft') {
       event.preventDefault()
       seekTo(currentSeconds - keyboardStepSeconds)
@@ -169,6 +188,7 @@ export function DemoVideoPlayer({
       onPointerMove={hasStarted ? showControlsForAWhile : undefined}
     >
       <div className="@container relative overflow-hidden rounded-[23px] bg-ink">
+        {/* biome-ignore lint/a11y/useMediaCaption: the only sound is instrumental music, with no words to caption. */}
         <video
           ref={videoRef}
           className="block h-auto w-full"
@@ -178,7 +198,6 @@ export function DemoVideoPlayer({
           height={heightPixels}
           aria-label={label}
           preload="none"
-          muted
           playsInline
           disablePictureInPicture
           disableRemotePlayback
@@ -187,6 +206,7 @@ export function DemoVideoPlayer({
             setHasEnded(false)
           }}
           onPause={() => setIsPlaying(false)}
+          onVolumeChange={(event) => setIsMuted(event.currentTarget.muted)}
           onWaiting={() => setIsWaiting(true)}
           onPlaying={() => setIsWaiting(false)}
           onSeeked={(event) => setCurrentSeconds(event.currentTarget.currentTime)}
@@ -295,8 +315,44 @@ export function DemoVideoPlayer({
             </span>
           </p>
         </div>
+
+        {/* Sound on or off, in the bottom corner while the chapter bars show. */}
+        <button
+          type="button"
+          aria-label={isMuted ? 'Turn the sound on' : 'Turn the sound off'}
+          aria-pressed={isMuted}
+          tabIndex={areChaptersVisible ? 0 : -1}
+          className={`absolute right-2.5 bottom-2.5 grid size-10 cursor-pointer place-items-center rounded-full bg-ink/55 text-on-dark backdrop-blur-sm transition-[opacity,background-color] duration-300 ease-standard hover:bg-ink/75 ${
+            areChaptersVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+          onClick={toggleSound}
+        >
+          <SpeakerIcon isMuted={isMuted} className="size-[18px]" />
+        </button>
       </div>
     </div>
+  )
+}
+
+function SpeakerIcon({ isMuted, className = '' }: { isMuted: boolean; className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      viewBox="0 0 18 18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2.5 7v4h2.8L9 14V4L5.3 7H2.5Z" />
+      {isMuted ? (
+        <path d="m12 7 4 4m0-4-4 4" />
+      ) : (
+        <path d="M11.8 6.6a3.4 3.4 0 0 1 0 4.8M14 4.6a6.2 6.2 0 0 1 0 8.8" />
+      )}
+    </svg>
   )
 }
 

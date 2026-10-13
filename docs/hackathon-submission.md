@@ -38,6 +38,9 @@ deadline.
 - The `demo` APK is current: built 2026-10-06 from `d1fbcc3` (the STRIDE rename), with the new
   contract addresses. Link:
   `https://expo.dev/artifacts/eas/Aa0J7FXKPHyaKSGL-74nW66qSugLVcvhOMLyRrGL2iY.apk`
+  *Changed (D-052, 2026-10-13):* the newest `demo` build is `f62511df` (2026-10-12, from
+  `e84ea96`). `README.md` and the site link its expo.dev page, not the APK:
+  `https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265`
 - The hosted API is on the new contracts: the 2026-10-06 recording shows a new Sneaker and a
   STRIDE reward, which the app reads from the new contracts.
 - No secrets in the repo. The only private keys are Anvil's public test keys, and `private.md`
@@ -63,7 +66,7 @@ The submission is incomplete without these.
   (§4.1.2, §9.4). The current videos don't meet the rules:
   - The 45 s launch film (`launch-video/out/`) is mostly motion graphics, and its run screen is a
     vector rebuild, which reads as a mockup.
-  - The 56 s site demo (`website/public/videos/stridemon-demo.mp4`) is real but silent.
+  - The 56 s site demo (`website/public/videos/stridemon-demo.mp4`) is real, with music since D-052, but has no voiceover or captions.
 
   The new one should be about 2:30 of real phone footage with a voiceover or captions. Show:
   1. Sign-in with MetaMask on Monad testnet.
@@ -138,7 +141,8 @@ The submission is incomplete without these.
   energy setting (30 minutes) was never changed. Run `bun run demo:energy revert` after any demo
   that applies it.
 - [x] Keep the APK link alive. EAS keeps build artifacts for about 30 days on the free plan, so the
-  2026-10-06 `demo` build lasts until about 2026-11-05, past judging (10-27). Check the expiry
+  2026-10-06 `demo` build lasts until about 2026-11-05, past judging (10-27). The 2026-10-12 build
+  (`f62511df`, D-052) lasts until about 2026-11-11. Check the expiry
   shown on the build's expo.dev page. **A new `demo` build gets a new link:** if you rebuild,
   update `README.md` and the dashboard.
 
