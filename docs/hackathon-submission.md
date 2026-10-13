@@ -56,7 +56,7 @@ The submission is incomplete without these.
   from the contracts' event logs since the deploy block. They're in `README.md` → "Transactions
   from a real session": two starter mints, three settlements (+15 STRIDE each) and the two
   transfers (#1 A → B, #2 B → A).
-- [ ] **Record one repair and one upgrade on the new contracts.** The new contracts have **no
+- [x] **Record one repair and one upgrade on the new contracts.** The new contracts have **no
   `SneakerRepaired` or `SneakerUpgraded` event yet** (checked 2026-10-07), so those two rows in
   `README.md` say "added after the next recorded run". Wallet A (`0xdfAb…1465`) owns Sneaker #2
   with 45 STRIDE, durability 98, level 1. One 3-minute walk (+15) brings it to 60, enough to
@@ -64,8 +64,8 @@ The submission is incomplete without these.
   both hashes into `README.md` (search `TODO(submission)`).
   *Update 2026-10-13:* those were the D-038 contracts. `README.md`'s table now lists the live
   (D-042) contracts' transactions instead: the test pass and Founder Sneaker, Sneaker #2's mint,
-  three settlements and the **repair** (`0x48fb…55ac`). **The upgrade is still missing:** wallet A
-  holds 47.2 STRIDE and level 2 costs 50, so one more walk of a minute or more (+5) first.
+  four settlements, the **repair** (`0x48fb…55ac`) and the **upgrade** to level 2 (`0xd6e6…4642`,
+  2026-10-13 14:02 IST, 50 STRIDE).
 - [ ] **Make the demo video (3 minutes or less) and upload it publicly** to YouTube, Loom or Vimeo
   (§4.1.2, §9.4). The current videos don't meet the rules:
   - The 45 s launch film (`launch-video/out/`) is mostly motion graphics, and its run screen is a
@@ -86,8 +86,8 @@ The submission is incomplete without these.
   architecture, tech stack, "Try it" (APK, Monad Testnet first, the `setDefaultChain` fix, the
   gas drip), "Run your own stack" (own keys, `DeployGame.s.sol`, `chain:export-abis`, `.env`
   files, own EAS project), AI disclosure, pre-existing code, credits, the token note and the
-  links. Two gaps are marked `TODO(submission)` in the file: the demo video's URL, and the
-  upgrade hash from the next recorded run (the repair is in, 2026-10-13).
+  links. One gap is marked `TODO(submission)` in the file: the demo video's URL (the repair and
+  upgrade hashes are in, 2026-10-13).
 
 ## 2. Dashboard
 

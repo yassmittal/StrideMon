@@ -67,7 +67,7 @@ the outbox of transactions the server sends.
 On the live contracts above. The first two rows are the deploy's own test mint (2026-10-08, to
 the deployer); the rest were played on an Android phone with MetaMask (wallet A `0xdfAb…1465`) on
 2026-10-12 and 2026-10-13 IST. The game server sends the mints and the settlements; the player
-signs the repair in MetaMask.
+signs the repair and the upgrade in MetaMask.
 
 | Step | Transaction |
 |------|-------------|
@@ -78,7 +78,8 @@ signs the repair in MetaMask.
 | A 7-minute walk settled: 884 m, +35 STRIDE, durability −3 | [`0x00e66e63…4bd4`](https://testnet.monadvision.com/tx/0x00e66e639a98ee74703f96f6de9e360e234db5448ac090b5518c6fefe6104bd4) |
 | Repair, signed in MetaMask: +4 durability for 2.8 STRIDE | [`0x48fb1630…55ac`](https://testnet.monadvision.com/tx/0x48fb1630f466fc84bc557e31248f7ba581bf0ff3464990ebbf54ba9dea1255ac) |
 | A 1-minute walk settled: 31 m, +5 STRIDE, durability −1 | [`0x6547771d…2bad`](https://testnet.monadvision.com/tx/0x6547771dd09b5d05162144d734bbe5b7f46781c06389d592844447ed9c292bad) |
-| Upgrade to level 2, signed in MetaMask | _added after the next run_ <!-- TODO(submission) --> |
+| A 3-minute walk settled: 136 m, +15 STRIDE, durability −1 | [`0xc197dd31…cc5d`](https://testnet.monadvision.com/tx/0xc197dd31d1918593018a479a04d1a1326b2e49fc65db8aec217945263beacc5d) |
+| Upgrade to level 2, signed in MetaMask: efficiency 12, for 50 STRIDE | [`0xd6e61081…4642`](https://testnet.monadvision.com/tx/0xd6e61081c0c6939e63770b03712d49334dda4a439a0f143468ce9ff7fe744642) |
 
 ## Try it
 

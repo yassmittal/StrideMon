@@ -182,8 +182,8 @@ monetary value." StrideMon is entered in Monad's **Metropolis** hackathon (submi
 **8.8 is done** (2026-10-06). **Now: the Metropolis submission**, tracked in
 `docs/hackathon-submission.md`. Done 2026-10-07: `LICENSE` (MIT), the README rewrite (Monad, "Try it",
 "Run your own stack", the session's transaction hashes), the dashboard copy and the submission post
-draft. Left: a recorded run with a repair and an upgrade on the new contracts (none exist yet), the
-≤ 3-minute demo video, the dashboard itself, and the two `TODO(submission)` gaps in `README.md`.
+draft. The repair and upgrade on the live contracts are recorded in `README.md` (2026-10-13). Left:
+the ≤ 3-minute demo video, the dashboard itself, and the demo video's `TODO(submission)` in `README.md`.
 **UI polish and store readiness (D-039, 2026-10-07):** the app's own icon and splash (the website's
 line-Sneaker mark, drawn by `apps/mobile/scripts/build-app-icons.sh`), the website header's logo,
 X and waitlist pills, `/privacy` and `/delete-account`, `DELETE /v1/me` with Profile → Delete
