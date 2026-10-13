@@ -14,6 +14,23 @@ The same project also holds the **Founding Pass waitlist film** (`Waitlist4x5`, 
 in `FACTS.md` §12 and its music in `CREDITS.md`. It shares the theme, fonts, components and the
 render pipeline; its beat grid is its own (`src/waitlist/beats.ts`, 124.052 BPM).
 
+The **Metropolis pitch video** (`Pitch16x9`, 1920 × 1080, 30 fps, about 1:24) lives here too:
+Yash's voiceover over the submission reel, one scene per part of the script, captions burned in.
+Its code is in `src/pitch/`, its words in `src/pitch/script.ts`, and it is cut to the voice's
+timing in `src/pitch/voice-timing.json`. To re-record it:
+
+```bash
+bun scripts/pitch-voice.ts recording <take.m4a>   # public/pitch/voice.wav: cleaned, −16 LUFS
+# Transcribe public/pitch/voice.wav with mlx-whisper (word timestamps) into words.json, then:
+bun scripts/pitch-voice.ts words words.json        # src/pitch/voice-timing.json
+bash scripts/render-pitch.sh preview               # out/pitch/preview-lowres.mp4 + contact sheets
+bash scripts/render-pitch.sh final                 # out/pitch/stridemon-pitch-16x9.mp4
+```
+
+`bun scripts/pitch-voice.ts say` makes a scratch track with macOS `say` instead. The raw take is
+`../website/media-source/yash-pitch-voice.ogg`; `public/pitch/` (gitignored) holds the cleaned voice,
+the music bed and a copy of `../website/media-source/submission-reel.mp4`.
+
 ## Install
 
 ```bash

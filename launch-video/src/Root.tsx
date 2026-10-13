@@ -2,6 +2,13 @@ import { Composition, Folder, Still } from 'remotion'
 import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
 import { RunScreenCheck } from './checks/RunScreenCheck'
 import { LaunchFilm } from './LaunchFilm'
+import { PitchFilm } from './pitch/PitchFilm'
+import {
+  PITCH_DURATION_IN_FRAMES,
+  PITCH_FRAMES_PER_SECOND,
+  PITCH_HEIGHT,
+  PITCH_WIDTH,
+} from './pitch/timeline'
 import { EarnScene } from './scenes/EarnScene'
 import { EndCardScene } from './scenes/EndCardScene'
 import { GetSneakerScene } from './scenes/GetSneakerScene'
@@ -167,6 +174,14 @@ export function RemotionRoot() {
           durationInFrames={readWaitlistSceneDurationInFrames('ask')}
         />
       </Folder>
+      <Composition
+        id="Pitch16x9"
+        component={PitchFilm}
+        width={PITCH_WIDTH}
+        height={PITCH_HEIGHT}
+        fps={PITCH_FRAMES_PER_SECOND}
+        durationInFrames={PITCH_DURATION_IN_FRAMES}
+      />
       <Folder name="Checks">
         <Still id="RunScreenCheck" component={RunScreenCheck} width={1080} height={2340} />
       </Folder>

@@ -6,7 +6,8 @@ transaction.
 
 - **Live site:** <https://stridemon.xyz>
 - **X:** [@stridemon](https://x.com/stridemon) (the product) and [@yash_mittal_dev](https://x.com/yash_mittal_dev) (the builder)
-- **Demo video:** _link added once uploaded_ <!-- TODO(submission): the ≤ 3 min video's public URL -->
+- **Demo video:** <https://youtu.be/2faqgOi0d8Y>
+- **Pitch video:** <https://youtu.be/vUiliHJ99YY>
 - **Android demo build:** <https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265> (Install on the phone, or scan its QR code. Google Play review is in progress.)
 - **Network:** Monad testnet (chain id 10143)
 

@@ -56,8 +56,12 @@ launch-video/public/footage/
 launch-video/public/audio/
 # The Founding Pass art the waitlist film shows, copied by launch-video/scripts/copy-pass-art.sh
 launch-video/public/pass-art/
+# The pitch video's reel copy, voice and music bed (launch-video/scripts/pitch-voice.ts, render-pitch.sh)
+launch-video/public/pitch/
 # Social (social/, D-036): X-only images and clips, each rebuilt from the command in its post file
 social/media/
+# The Metropolis submission video: Recordly takes and the render cut from them (about 330 MB)
+SubmissionVideos/
 
 # Playwright MCP browser logs and snapshots
 .playwright-mcp/

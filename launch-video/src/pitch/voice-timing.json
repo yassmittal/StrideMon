@@ -1,0 +1,106 @@
+{
+  "source": "words: out/work/pitch-voice/words.json",
+  "durationSeconds": 79.574,
+  "lines": [
+    {
+      "startSeconds": 1.04,
+      "endSeconds": 2.9
+    },
+    {
+      "startSeconds": 3.38,
+      "endSeconds": 5.6
+    },
+    {
+      "startSeconds": 6.14,
+      "endSeconds": 10
+    },
+    {
+      "startSeconds": 10.96,
+      "endSeconds": 13.52
+    },
+    {
+      "startSeconds": 14.28,
+      "endSeconds": 17.44
+    },
+    {
+      "startSeconds": 17.86,
+      "endSeconds": 21.6
+    },
+    {
+      "startSeconds": 22.4,
+      "endSeconds": 23.88
+    },
+    {
+      "startSeconds": 24.52,
+      "endSeconds": 27
+    },
+    {
+      "startSeconds": 27,
+      "endSeconds": 29.32
+    },
+    {
+      "startSeconds": 29.92,
+      "endSeconds": 31.82
+    },
+    {
+      "startSeconds": 32.16,
+      "endSeconds": 34.78
+    },
+    {
+      "startSeconds": 34.78,
+      "endSeconds": 36.48
+    },
+    {
+      "startSeconds": 37.02,
+      "endSeconds": 39.9
+    },
+    {
+      "startSeconds": 40.5,
+      "endSeconds": 41.22
+    },
+    {
+      "startSeconds": 41.5,
+      "endSeconds": 44.66
+    },
+    {
+      "startSeconds": 45.28,
+      "endSeconds": 48.18
+    },
+    {
+      "startSeconds": 48.9,
+      "endSeconds": 52.16
+    },
+    {
+      "startSeconds": 52.9,
+      "endSeconds": 57.3
+    },
+    {
+      "startSeconds": 58.1,
+      "endSeconds": 62.02
+    },
+    {
+      "startSeconds": 62.42,
+      "endSeconds": 64.94
+    },
+    {
+      "startSeconds": 66.05,
+      "endSeconds": 69.22
+    },
+    {
+      "startSeconds": 69.22,
+      "endSeconds": 71.38
+    },
+    {
+      "startSeconds": 71.6,
+      "endSeconds": 73.14
+    },
+    {
+      "startSeconds": 74.58,
+      "endSeconds": 77.98
+    },
+    {
+      "startSeconds": 77.98,
+      "endSeconds": 78.82
+    }
+  ]
+}

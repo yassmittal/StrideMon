@@ -1,7 +1,7 @@
 ---
 status: draft
 account: stridemon
-slot: 2026-10-12 15:00 UTC   # proposed: move it to the day the submission actually goes in, before 2026-10-14 09:29 IST
+slot: 2026-10-14 04:30 UTC   # proposed: 10:00 IST, the morning after submitting, before the gallery post at 15:00 UTC
 format: single
 pillar: proof
 media:
@@ -32,5 +32,6 @@ Monad testnet. STRIDE has no monetary value.
 
 ## Reply (the link)
 
+The demo: https://youtu.be/2faqgOi0d8Y
 The code is open: github.com/yassmittal/StrideMon
 The site and the waitlist: https://stridemon.xyz/?source=x-stridemon

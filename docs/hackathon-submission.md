@@ -69,8 +69,8 @@ The submission is incomplete without these.
   (D-042) contracts' transactions instead: the test pass and Founder Sneaker, Sneaker #2's mint,
   four settlements, the **repair** (`0x48fb…55ac`) and the **upgrade** to level 2 (`0xd6e6…4642`,
   2026-10-13 14:02 IST, 50 STRIDE).
-- [ ] **Make the demo video (3 minutes or less) and upload it publicly** to YouTube, Loom or Vimeo
-  (§4.1.2, §9.4). The current videos don't meet the rules:
+- [x] **Make the demo video (3 minutes or less) and upload it publicly** to YouTube, Loom or Vimeo
+  (§4.1.2, §9.4). Done 2026-10-14: <https://youtu.be/2faqgOi0d8Y>, linked in `README.md`. The current videos don't meet the rules:
   - The 45 s launch film (`launch-video/out/`) is mostly motion graphics, and its run screen is a
     vector rebuild, which reads as a mockup.
   - The 56 s site demo (`website/public/videos/stridemon-demo.mp4`) is real, with music since D-052, but has no voiceover or captions.
@@ -84,27 +84,28 @@ The submission is incomplete without these.
   6. The on-chain SVG art.
 
   Say or show "Monad testnet. STRIDE has no monetary value."
+  The clips, timings and script are in `demo-video-script.md` (2026-10-13).
 - [x] **Rewrite `README.md` to cover what the rules require** (§4.1.1, §4.1.3–5, §9.1–9.2). Done
   2026-10-07: problem and user, why Monad, contract links and the session's transactions,
   architecture, tech stack, "Try it" (APK, Monad Testnet first, the `setDefaultChain` fix, the
   gas drip), "Run your own stack" (own keys, `DeployGame.s.sol`, `chain:export-abis`, `.env`
   files, own EAS project), AI disclosure, pre-existing code, credits, the token note and the
-  links. One gap is marked `TODO(submission)` in the file: the demo video's URL (the repair and
-  upgrade hashes are in, 2026-10-13).
+  links. The demo video's URL went in on 2026-10-14, so no `TODO(submission)` is left.
   *Updated 2026-10-13:* a Founding Pass section, all six contracts in the table and the diagram,
   and "Run your own stack" deploys `DeployFoundingPass.s.sol` before `DeployGame.s.sol` (which
   needs `FOUNDING_PASS_ADDRESS`, D-042).
 
 ## 2. Dashboard
 
-- [ ] Select **Consumer Products & Payments**.
-- [ ] Fix the tagline. It still says "earn SOLE". Paste the one under "Dashboard copy".
-- [ ] Write the description. Paste the one under "Dashboard copy" (the README's problem, user and
+- [x] Select **Consumer Products & Payments**.
+- [x] Fix the tagline. It still says "earn SOLE". Paste the one under "Dashboard copy".
+- [x] Write the description. Paste the one under "Dashboard copy" (the README's problem, user and
   "why Monad" text, shortened).
 - [ ] Post at least one progress update (it unlocks mentor support). A draft is below.
-- [ ] Add the repo URL, the video link, the contract addresses and the app link (the expo.dev
+- [x] Add the repo URL, the video link, the contract addresses and the app link (the expo.dev
   build page in `README.md`, not a bare APK).
-- [ ] Submit now, then keep editing until the deadline (2026-10-14 09:29 IST) if needed.
+- [x] Submit now, then keep editing until the deadline (2026-10-14 09:29 IST) if needed.
+  **Submitted 2026-10-14 01:57 IST** (dashboard: "Ready for judging", checklist 6/6, no bounties).
 
 ### Dashboard copy (drafted 2026-10-07, updated 2026-10-13)
 
@@ -146,6 +147,162 @@ The submission is incomplete without these.
 > contract, with a gallery and a page for each at stridemon.xyz/pass, a free gas-free mint, and a
 > Founder Sneaker in the app in the pass's design. The site also has a help center with a
 > chatbot that answers from it. The API runs at api.stridemon.xyz. Next: the demo video.
+
+### The dashboard's other fields (drafted 2026-10-14)
+
+The dashboard grew fields after the copy above was drafted. Each answer below is ready to paste.
+
+- **Primary track:** Consumer Products & Payments. **Bounties:** none.
+- **Logo:** `apps/mobile/assets/icon.png` (1024 × 1024 PNG, 29 KB: the app icon's line Sneaker).
+- **Demo video:** <https://youtu.be/2faqgOi0d8Y>. Tick "let the organizers show it".
+- **Pitch video (≤ 2 min):** <https://youtu.be/vUiliHJ99YY> (2026-10-14, 1:24, voiceover over the
+  app: `launch-video/out/pitch/stridemon-pitch-16x9.mp4`). The script is
+  `launch-video/src/pitch/script.ts`; how it's built is in `launch-video/README.md`.
+
+**Describe the problem, your solution, and what makes it useful:**
+
+> **The problem.** Step-counter apps give you a number and nothing to do with it. Move-to-earn
+> games give movement a use, but most start by asking you to buy an NFT and a token, and then
+> keep the rewards in an off-chain balance you have to trust. That shuts out the people they're
+> meant for: people who walk or run, not traders.
+>
+> **The solution.** StrideMon is a move-to-earn game on Monad. Your Sneaker is an NFT. Press
+> START, walk outside, press STOP, and the run settles on Monad as its own transaction: the game
+> contract caps the rewarded minutes by the Sneaker's energy, mints STRIDE to your wallet and
+> lowers the Sneaker's durability. Spend STRIDE to repair the Sneaker or level it up for more
+> STRIDE per minute, or send it to another wallet with its stats intact.
+>
+> **What makes it useful.**
+> - Nobody has to buy anything to start. The first Sneaker is free, and a one-time drip of 0.1
+>   testnet MON covers the player's own repair, upgrade and transfer transactions.
+> - The chain is the source of truth. Level, efficiency, durability and energy live in the NFT
+>   contract, and every reward is a real mint, so the summary screen shows the settled reward
+>   seconds after STOP, with a link to the transaction.
+> - Fair play without giving up privacy. The server checks every run before it pays (1–20 km/h per
+>   minute, GPS jumps dropped, mock locations rejected), and only minutes and distance go
+>   on-chain, never the route.
+> - The Sneaker's picture is an SVG drawn by a contract, so the app, MonadVision and MetaMask show
+>   the same image.
+> - Early access comes as 1,000 Founding Passes, each a one-of-one design drawn on-chain, minted
+>   free and gas-free on stridemon.xyz/pass. A pass's wallet gets a Founder Sneaker in the pass's
+>   design, and neither can be sent or sold, so early access can't be flipped.
+>
+> **Why Monad.** Fast settlement makes one transaction per run practical, with no batching or
+> off-chain balance. Cheap gas makes the drip affordable. And it's plain EVM, so standard ERC-721
+> and ERC-20 contracts work in MetaMask with the usual Foundry and viem tooling.
+>
+> **What's built.** An Android app (Expo, React Native), a Fastify API on Bun with MongoDB at
+> api.stridemon.xyz, the site and Founding Pass gallery at stridemon.xyz, and six Foundry
+> contracts, deployed and verified on Monad testnet. The README lists the contracts and the
+> transactions from a real session: mints, settlements, a repair and an upgrade.
+>
+> Monad testnet. STRIDE has no monetary value.
+
+**Who are your first users, and how will you reach them?**
+
+> **Who.** People who already walk or run most days and would like that habit to count for
+> something. They may never have thought of themselves as crypto users. StrideMon asks them for
+> no money: the Sneaker is free and the gas is covered.
+>
+> The first cohort is the overlap of that group with the Monad community: people who already have
+> a wallet on Monad testnet, so connecting takes a minute, and who will tell us honestly what's
+> confusing.
+>
+> **How we'll reach them.**
+> 1. **The waitlist on stridemon.xyz.** It asks for an email only, never a wallet.
+> 2. **The Founding Pass.** 1,000 free passes give the first players a reason to join early and a
+>    reason to stay: each one is a one-of-one design with its own page at stridemon.xyz/pass, and
+>    it can't be sold. Waitlist emails get the first 48 hours of minting (from 28 November), then
+>    anyone can mint what's left.
+> 3. **X.** @stridemon posts what ships, with real transactions, and the builder posts the build at
+>    @yash_mittal_dev. Every post that mentions STRIDE says it has no monetary value.
+> 4. **Monad's community**, through this hackathon and the ecosystem's channels.
+> 5. **Google Play.** The app is in review now. Until it's live, anyone can install the Android
+>    build from stridemon.xyz.
+>
+> **Keeping them.** A short loop that fits a daily walk (energy refills over the day, so a few
+> minutes counts), a visible reward seconds after STOP, and a Sneaker that gets better as you use
+> it. No one should get stuck: every error in the app and on the site links to its own answer in
+> the help center at stridemon.xyz/help, which also has a chatbot that answers from it.
+
+**Go-to-market and user acquisition strategy:**
+
+> **Who we start with.** People who already walk or run most days, not traders. The first cohort
+> is where that group overlaps with the Monad community: people who already have a wallet on
+> Monad testnet, so getting started takes a minute, and who will give honest feedback.
+>
+> **The wedge: nothing to buy.** Most move-to-earn games ask for an NFT and a token before your
+> first step. StrideMon gives every new player a free Sneaker and a one-time drip of testnet MON for
+> gas. That costs us about 0.13 MON per player, paid by the game server, so a new player's first
+> run costs them nothing.
+>
+> **Phase 1: testnet, now.** Anyone can install the Android build from stridemon.xyz and play with
+> a free Sneaker. We use this period to fix whatever confuses people. Every error in the app and on
+> the site links to its own answer in the help center, which also has a chatbot.
+>
+> **Phase 2: the Founding Pass.** 1,000 free passes, each a one-of-one design drawn by a contract.
+> - **The waitlist** on stridemon.xyz takes an email only, never a wallet. Waitlist emails get the
+>   first 48 hours of minting (from 28 November). After that, anyone can mint what's left.
+> - **The mint is free and gas-free.** The game server sends it.
+> - **The pass can't be sold or sent** (ERC-5192), and neither can the Founder Sneaker it unlocks,
+>   so the passes go to people who want to play, not to flippers.
+> - **Every design has its own page** with its own share card (1,006 pages, all indexable), plus a
+>   quiz that matches you to passes. Each page is something to share and a way in from search.
+> - **Early access restarts the game on fresh contracts** for founders, so test-period Sneakers and
+>   STRIDE don't carry over and everyone starts even.
+>
+> **Phase 3: open to everyone.** Once all 1,000 passes are minted, or on the last date in the
+> schedule, the game opens to everyone, and the app is on Google Play. It's in review now.
+>
+> **Channels.**
+> - **X:** @stridemon posts what ships, with real transactions, and @yash_mittal_dev posts the
+>   build. Every post that mentions STRIDE says it has no monetary value.
+> - **Monad's community:** this hackathon and the ecosystem's channels.
+> - **Search and sharing:** the pass gallery's pages and share cards.
+> - **Next:** local running and walking groups, where one person who joins can bring a whole group.
+>
+> **Retention.** The loop fits a daily walk. Energy refills over the day, so a few minutes still
+> counts. The reward settles seconds after STOP, and the Sneaker improves as you use it.
+>
+> **What we measure.** Waitlist signups by source (links carry a source tag), passes minted, the
+> share of new players who finish a first run, and how many come back for a second run within a
+> week.
+>
+> Monad testnet. STRIDE has no monetary value.
+
+**Steps to try (private to judges):**
+
+> No login or test account is needed: you sign in with your own wallet, and the game gives you a
+> free Sneaker and gas.
+>
+> **On an Android phone (7 or later) with MetaMask, about 10 minutes:**
+> 1. In MetaMask, add Monad Testnet (chain id 10143, RPC https://testnet-rpc.monad.xyz) and make
+>    sure it's enabled. If MetaMask's connect sheet doesn't list Monad Testnet, it connects with
+>    no accounts and sign-in fails.
+> 2. Open https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265
+>    on the phone and tap Install (allow installs from the browser when Android asks).
+> 3. Open StrideMon, tap Connect wallet, choose MetaMask and sign the sign-in message (free, no
+>    transaction). The game mints a free starter Sneaker and sends 0.1 testnet MON for gas. You
+>    don't need any MON of your own.
+> 4. Press START and walk outside for 2–3 minutes, then press STOP. The summary shows the STRIDE
+>    that settled on Monad, with a link to the transaction on MonadVision. A minute only counts at
+>    1–20 km/h, so walk outside, not indoors or in a car.
+> 5. On the Sneaker tab, repair or upgrade the Sneaker and confirm in MetaMask. An upgrade costs 50
+>    STRIDE, so it needs about 10 rewarded minutes; a repair costs less than 1 STRIDE. You can
+>    also send the Sneaker to a second wallet there.
+>
+> If connecting fails with "Cannot read property 'setDefaultChain' of undefined", enable Monad
+> Testnet in MetaMask, clear StrideMon's app data in Android settings, and connect again. Every
+> other problem has an answer at https://stridemon.xyz/help.
+>
+> **Without a phone:**
+> - The Founding Pass gallery: https://stridemon.xyz/pass (1,000 designs drawn by a contract).
+> - The contracts and a real session's transactions (starter mint, settlements, repair, upgrade)
+>   are in the README: https://github.com/yassmittal/StrideMon#transactions-from-a-real-session
+> - The Sneaker's on-chain art: open any Sneaker on
+>   https://testnet.monadvision.com/address/0x6BE031Ff15F944c226832b6D0B99C03662b29337
+>
+> Monad testnet. STRIDE has no monetary value.
 
 ## 3. Keep it working through judging (2026-10-14 to 10-27)
 
