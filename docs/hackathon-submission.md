@@ -62,6 +62,10 @@ The submission is incomplete without these.
   with 45 STRIDE, durability 98, level 1. One 3-minute walk (+15) brings it to 60, enough to
   repair (about 2.1) and then upgrade (50). Record this run for the demo video too, then paste
   both hashes into `README.md` (search `TODO(submission)`).
+  *Update 2026-10-13:* those were the D-038 contracts. `README.md`'s table now lists the live
+  (D-042) contracts' transactions instead: the test pass and Founder Sneaker, Sneaker #2's mint,
+  three settlements and the **repair** (`0x48fb…55ac`). **The upgrade is still missing:** wallet A
+  holds 47.2 STRIDE and level 2 costs 50, so one more walk of a minute or more (+5) first.
 - [ ] **Make the demo video (3 minutes or less) and upload it publicly** to YouTube, Loom or Vimeo
   (§4.1.2, §9.4). The current videos don't meet the rules:
   - The 45 s launch film (`launch-video/out/`) is mostly motion graphics, and its run screen is a
@@ -82,8 +86,8 @@ The submission is incomplete without these.
   architecture, tech stack, "Try it" (APK, Monad Testnet first, the `setDefaultChain` fix, the
   gas drip), "Run your own stack" (own keys, `DeployGame.s.sol`, `chain:export-abis`, `.env`
   files, own EAS project), AI disclosure, pre-existing code, credits, the token note and the
-  links. Two gaps are marked `TODO(submission)` in the file: the demo video's URL, and the repair
-  and upgrade hashes from the next recorded run.
+  links. Two gaps are marked `TODO(submission)` in the file: the demo video's URL, and the
+  upgrade hash from the next recorded run (the repair is in, 2026-10-13).
 
 ## 2. Dashboard
 

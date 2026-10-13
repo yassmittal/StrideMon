@@ -64,21 +64,21 @@ the outbox of transactions the server sends.
 
 ### Transactions from a real session
 
-Played on an Android phone with two MetaMask accounts (wallet A `0xdfAb…1465`, wallet B
-`0xe4ae…356f`) on 2026-10-06 and 2026-10-07 IST, on the previous (D-038) game contracts, before
-the Founding Pass redeploy.
+On the live contracts above. The first two rows are the deploy's own test mint (2026-10-08, to
+the deployer); the rest were played on an Android phone with MetaMask (wallet A `0xdfAb…1465`) on
+2026-10-12 and 2026-10-13 IST. The game server sends the mints and the settlements; the player
+signs the repair in MetaMask.
 
 | Step | Transaction |
 |------|-------------|
-| Starter Sneaker #1 minted to wallet A | [`0x4abdbba3…b7f9`](https://testnet.monadvision.com/tx/0x4abdbba364b85a857628885bbf00a81478e9a1ef2661ed2423bea2d2e62eb7f9) |
-| A 3-minute walk settled: 217 m, +15 STRIDE, durability −1 | [`0xa76e8796…336d`](https://testnet.monadvision.com/tx/0xa76e8796a3fc41ed50ac25548d9996064b8d5fd273cc8d11d3ed77f94350336d) |
-| Starter Sneaker #2 minted to wallet B | [`0x87543d46…66aa`](https://testnet.monadvision.com/tx/0x87543d46e57baf5eb9f022d777371fd9a9d4abc62ec8d7abc6c074bf52d666aa) |
-| Sneaker #1 sent from A to B, stats intact | [`0x30ba33d4…b775`](https://testnet.monadvision.com/tx/0x30ba33d4435e042def886d9dcb750e7a3f1344f8c2fa49b91a8dcf5de7eeb775) |
-| Sneaker #2 sent from B to A | [`0x22a5ad1d…d5fd`](https://testnet.monadvision.com/tx/0x22a5ad1da6843a72348dec1934cab0a0295e8b31d3e75bf6bf3f014d3229d5fd) |
-| A walk on Sneaker #2 settled: 165 m, +15 STRIDE | [`0x7ea2f0b0…e829`](https://testnet.monadvision.com/tx/0x7ea2f0b081af234f4a62e468a32db5ba25fdfa37aebab280b19e388c5633e829) |
-| Another walk on Sneaker #2 settled: 197 m, +15 STRIDE | [`0x79f5308b…c317`](https://testnet.monadvision.com/tx/0x79f5308b870efb3052c140adfb07530db595aa28b901fd24157b0b214331c317) |
-| Repair, signed in MetaMask | _added after the next recorded run_ <!-- TODO(submission) --> |
-| Upgrade to level 2, signed in MetaMask | _added after the next recorded run_ <!-- TODO(submission) --> |
+| Founding Pass #0137 minted (the deploy's test pass) | [`0x2a315c55…1f13`](https://testnet.monadvision.com/tx/0x2a315c557a7e93090d006387ca187497944c1adf13c607b821b0f25332611f13) |
+| Founder Sneaker #1 minted with it | [`0xfaf728ac…880c`](https://testnet.monadvision.com/tx/0xfaf728ac33eaf45308b9c2a69d28e90e83e334ccb5a9af2c0defff1f17f3880c) |
+| Starter Sneaker #2 minted to wallet A | [`0x687d3181…247e`](https://testnet.monadvision.com/tx/0x687d318166c71e8839c062bb574eb95b29bee1335c7ec0302ee019959573247e) |
+| A 2-minute walk settled: 95 m, +10 STRIDE, durability −1 | [`0xd7123519…a6c8`](https://testnet.monadvision.com/tx/0xd7123519bb9349e44bb443f157ff34382355bd4b6c121d5dbdf122beb8c8a6c8) |
+| A 7-minute walk settled: 884 m, +35 STRIDE, durability −3 | [`0x00e66e63…4bd4`](https://testnet.monadvision.com/tx/0x00e66e639a98ee74703f96f6de9e360e234db5448ac090b5518c6fefe6104bd4) |
+| Repair, signed in MetaMask: +4 durability for 2.8 STRIDE | [`0x48fb1630…55ac`](https://testnet.monadvision.com/tx/0x48fb1630f466fc84bc557e31248f7ba581bf0ff3464990ebbf54ba9dea1255ac) |
+| A 1-minute walk settled: 31 m, +5 STRIDE, durability −1 | [`0x6547771d…2bad`](https://testnet.monadvision.com/tx/0x6547771dd09b5d05162144d734bbe5b7f46781c06389d592844447ed9c292bad) |
+| Upgrade to level 2, signed in MetaMask | _added after the next run_ <!-- TODO(submission) --> |
 
 ## Try it
 
