@@ -133,3 +133,30 @@ The launch film's Kenney CC0 files (above), cued from the film's own beats in
 
 The music ducks 4 dB under the thumps, the tap and the tone, as in the launch film. No whooshes,
 risers or coin sounds.
+
+# The Sneaker drop film
+
+The Sneaker drop film (`SneakerDrop4x5`, `SneakerDrop9x16`, `docs/sneaker-drop-video-prompt.md`).
+Music only: no sound effects, because the track's own hits are the sync. Its file is in
+`public/audio/` too, made by the same `bash scripts/fetch-audio.sh`.
+
+## Music
+
+**"Drift Phonk" by Sub_Clair** (chosen by Yash, 2026-10-14)
+
+- Page: https://pixabay.com/music/phonk-drift-phonk-607579/
+- File: `https://cdn.pixabay.com/download/audio/2026/09/21/audio_6f38020d16.mp3?filename=sub_clair-drift-phonk-607579.mp3` (2:12.6, 256 kbps)
+- Licence: **Pixabay Content License** (free for commercial use, no attribution required). Genre
+  Phonk. Not marked as AI generated, not tagged Vocal.
+- **Content ID registered.** X has no Content ID. On YouTube, expect an automatic claim on the
+  Short: dispute it with the Pixabay Content License (the track page states it).
+- Used: clip A, Yash's cut: source bar 1 to bar 11 (the intro bar, the build, the drop and one
+  8-bar section), then bar 50 to the end (the last bar and its tail), 96.004 BPM. Each cut point
+  sits 45 ms before the approved one (5.0149, 30.0139 and 127.5096 s instead of 5.0599, 30.0589 and
+  127.5546 s): every kick's attack starts about 35 ms before the measured grid, so a cut on the
+  grid fell inside the join's kick and the 15 ms fades notched it. Now the join is in the bass just
+  before the bar-50 kick, which keeps its whole attack, and each kick starts on its beat's frame.
+  The bars and their order are unchanged. Levelled to −19 LUFS like the other films' music; the
+  film is `sneaker-drop-music.wav` (30.09 s).
+- The hit map (`src/sneaker-drop/hits.ts`) is measured from that file by
+  `scripts/build-sneaker-drop-hits.py`.

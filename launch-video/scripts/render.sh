@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Renders one format of a film and its delivery files into out/.
 # Run from launch-video/: `bash scripts/render.sh 4x5` (or 16x9, 9x16) for the launch film, or
-# `bash scripts/render.sh waitlist-4x5` for the Founding Pass waitlist film. Needs ffmpeg and jq.
+# `bash scripts/render.sh waitlist-4x5` for the Founding Pass waitlist film, or
+# `bash scripts/render.sh sneaker-drop-4x5` (or sneaker-drop-9x16) for the Sneaker drop film.
+# Needs ffmpeg and jq.
 # `bash scripts/render.sh 4x5 --audio-only` keeps the last picture render and redoes only the sound
 # (after a music or mix change).
 #
@@ -14,17 +16,27 @@
 #      embeds.
 set -euo pipefail
 
-FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5 [--audio-only]}
+FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5|sneaker-drop-4x5|sneaker-drop-9x16 [--audio-only]}
 IS_AUDIO_ONLY=$([ "${2:-}" = --audio-only ] && echo yes || echo no)
-# The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts).
+# The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts); the
+# Sneaker drop film 1802 (src/sneaker-drop/beats.ts).
 LAUNCH_LAST_FRAME=2699
 WAITLIST_LAST_FRAME=1363
+SNEAKER_DROP_LAST_FRAME=1801
 case "$FORMAT" in
   4x5) COMPOSITION_ID=Launch4x5 FILM_NAME=stridemon-launch-4x5 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
   16x9) COMPOSITION_ID=Launch16x9 FILM_NAME=stridemon-launch-16x9 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
   9x16) COMPOSITION_ID=Launch9x16 FILM_NAME=stridemon-launch-9x16 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
   waitlist-4x5)
     COMPOSITION_ID=Waitlist4x5 FILM_NAME=stridemon-waitlist-4x5 LAST_FRAME=$WAITLIST_LAST_FRAME
+    ;;
+  sneaker-drop-4x5)
+    COMPOSITION_ID=SneakerDrop4x5 FILM_NAME=stridemon-sneaker-drop-4x5
+    LAST_FRAME=$SNEAKER_DROP_LAST_FRAME
+    ;;
+  sneaker-drop-9x16)
+    COMPOSITION_ID=SneakerDrop9x16 FILM_NAME=stridemon-sneaker-drop-9x16
+    LAST_FRAME=$SNEAKER_DROP_LAST_FRAME
     ;;
   *) echo "Unknown format: $FORMAT" >&2 && exit 1 ;;
 esac
@@ -83,7 +95,7 @@ ffmpeg -nostdin -v error -y -i "$PICTURE_FILE" -i "$NORMALISED_MIX_FILE" \
   -color_primaries bt709 -color_trc bt709 -colorspace bt709 -color_range tv \
   -c:a aac -b:a 320k -ar 48000 -ac 2 -movflags +faststart "$FILM_FILE"
 
-if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ]; then
+if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ] || [ "$FORMAT" = sneaker-drop-4x5 ]; then
   ffmpeg -nostdin -v error -y -i "$FILM_FILE" -map 0:v:0 -c:v copy -an -movflags +faststart \
     "$OUTPUT_DIRECTORY/$FILM_NAME-silent.mp4"
 fi

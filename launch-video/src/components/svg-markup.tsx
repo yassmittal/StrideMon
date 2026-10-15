@@ -8,7 +8,7 @@ import { cancelRender, continueRender, delayRender } from 'remotion'
 /** Loads the given SVG files once, holding the render until they're in. Keyed by path. */
 export function useSvgMarkups(paths: readonly string[]): ReadonlyMap<string, string> | null {
   const [markups, setMarkups] = useState<ReadonlyMap<string, string> | null>(null)
-  const [delayHandle] = useState(() => delayRender('Loading the Founding Pass art'))
+  const [delayHandle] = useState(() => delayRender('Loading the pass and Sneaker art'))
   const pathsKey = paths.join('|')
 
   useEffect(() => {
@@ -16,7 +16,9 @@ export function useSvgMarkups(paths: readonly string[]): ReadonlyMap<string, str
       pathsKey.split('|').map(async (path) => {
         const response = await fetch(path)
         if (!response.ok) {
-          throw new Error(`Missing pass art: ${path}. Run bash scripts/copy-pass-art.sh`)
+          throw new Error(
+            `Missing art: ${path}. Run bash scripts/copy-pass-art.sh and scripts/copy-sneaker-drop-art.sh`,
+          )
         }
         return [path, await response.text()] as const
       }),

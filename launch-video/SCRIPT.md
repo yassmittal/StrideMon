@@ -122,3 +122,81 @@ with you." (1.3 s needed, 1.7 s up).
   optional phone choice.
 - **The pass art** is the renderer's own SVGs, animated (drawn, revealed, cropped, the laced
   picture's slats drawn over the minted one, which shares every coordinate), never edited.
+
+# The Sneaker drop film
+
+The Sneaker drop film (`SneakerDrop4x5` for X, `SneakerDrop9x16` for YouTube Shorts), from
+`docs/sneaker-drop-video-prompt.md`. 60 fps, 1,802 frames (30.0 s), music only: clip A of "Drift
+Phonk" (`CREDITS.md`), 96.004 BPM, so a beat is 37.5 frames (`src/sneaker-drop/beats.ts`).
+
+**One job:** something to watch. The Sneakers hit the beat, with almost no words. Every cut and
+move is a hit from the measured hit map (`src/sneaker-drop/hits.ts`, made by
+`scripts/build-sneaker-drop-hits.py`), named by its beat and kind in `src/sneaker-drop/timeline.ts`,
+never a typed frame. The words are in `src/sneaker-drop/content.ts`, and `FACTS.md` §13 sources
+each one.
+
+## The mapping (decided once, `content.ts`)
+
+| Hit | One shoe on screen | A split (2, 4 or 9) | The flood |
+|---|---|---|---|
+| kick | cut to the next shoe; on a bar's downbeat, flip black ↔ off-white | the next cell stamps a new shoe; on a downbeat, the next split cuts in | a step back |
+| clap (0.65 strength and up; quieter ones are ghost notes) | cut | stamp | step |
+| cowbell | a 3% punch, eased back over 14 frames | stamp | step |
+| hat | nothing | nothing | step |
+| stop (the music falls silent) | cut | | |
+
+## Storyboard as built
+
+| # | Frames | Beats | Section | What happens | On which hits |
+|---|---|---|---|---|---|
+| 1 Cold open | 0–149 | 0–3 | black | #0137 Rose Hiker Night draws itself in white: its outline is part drawn on frame 0 (the X thumbnail) and closes on the second cowbell note; its panels draw through the bar | cowbells on 16ths 3 and 6 punch it |
+| 2 Build | 150–299 | 4–7 | black → off-white → black | The laces fill in. A punch-in on the heel. Flip to off-white with the drawing in ink. In the silence before the drop, back to black with the drawing small | cowbell beat 4 (laces), cowbells punch; clap beat 5¼ (punch-in); beat 7's hit (flip); the stop on 7¾ |
+| 3 Drop | 300–449 | 8–11 | black | #0137 in colour, edge to edge, with the renderer's light rim; `#0137  ROSE HIKER NIGHT` rises. Punch-in on the heel, then the toe, then down to the size every shoe after it shares | the four kicks; cowbells punch |
+| 4 One per kick | 450–899 | 12–23 | off-white, black, off-white | 12 shoes, one per beat, each on the same ground line and heel | kicks cut, downbeats flip, cowbells punch |
+| 5 Escalation | 900–1349 | 24–35 | black, off-white, black | 2-up, 4-up, then 9-up splits; each new split cuts in on the downbeat, then every kick and cowbell stamps a new shoe into the next cell | downbeat kicks; kicks and cowbells stamp |
+| 5 The flood | 1350–1499 | 36–39 | off-white | All 1,000 from the atlas: ten hard steps back around #0020's cell, from 4 columns to all 25 × 40 | every hit in the bar, hats included |
+| 6 Legendary | 1500–1649 | 40–43 | black | Out of the flood to #0020 Earthshine alone. `#0020  EARTHSHINE` and `LEGENDARY` (lime) rise and stay. Cut to its Founder Sneaker picture as `SneakerArtRenderer` draws it | the join's kick; the clap on 41; the clap on 43 |
+| 7 End card | 1650–1801 | 44 → | black | The music stops: the white `stridemon.xyz →` pill, then `StrideMon` and a lime dot with `MONAD TESTNET`. Holds through the tail; the last frame is the poster | the stop on beat 44 |
+
+9:16 is the same timeline, laid out on its own (`src/sneaker-drop/layout.ts`): the shoes stand
+higher so their toes clear the Shorts buttons, the splits fill the taller frame, the flood is
+20 × 50, and no text sits below y 1536 or on the right edge.
+
+## On-screen text, in order
+
+1. (no words: the drawing)
+2. `#0137  ROSE HIKER NIGHT`
+3. `#0020  EARTHSHINE` · `LEGENDARY` · (`FOUNDER SNEAKER`, `#0020`, `Earthshine`, `LEVEL 01 / 30`,
+   `DURABILITY 100 / 100`, in the art)
+4. `stridemon.xyz →` · `StrideMon` · `MONAD TESTNET`
+
+## Reading time
+
+Each line stays up at least `0.4 s + words ÷ 3.5`. `#0137 ROSE HIKER NIGHT` (1.5 s needed) is up
+2.5 s; `#0020 EARTHSHINE / LEGENDARY` (1.3 s) is up 1.9 s; the end card holds 2.5 s.
+
+## Checks
+
+- **Cut sync:** `bun scripts/check-sneaker-drop-cuts.ts <render> [threshold]` finds every cut
+  (ffmpeg scene detection) and matches it to the hit map. On the final renders: 4:5, 23 cuts at
+  the brief's 0.3 and 59 at 0.05; 9:16, 22 and 53. Every one sits on its hit's frame (offset 0).
+- **The picture against the sound:** in the sync check's encoded file, each kick's frame starts
+  8–26 ms before the onset's peak, so the picture never trails the hit.
+
+## What changed from the brief, and why
+
+- **The clip's cut points are 45 ms earlier** (`CREDITS.md`): every kick's attack starts about
+  35 ms before the measured grid, so the approved join fell inside a kick and notched it. The
+  bars, their order and the timeline are unchanged.
+- **The build doesn't speed up to 16ths:** the music's build doesn't. It has the cowbell, two
+  real claps, one big hit on beat 7 and 200 ms of near silence before the drop, so the picture
+  follows exactly that, and the silence is its own beat (`stop`, a fifth kind in the hit map).
+- **One scale for every shoe, not one height:** the renderer already registers all ten templates
+  (ground at y 520, heel near x 56, about 890 units long). Equal heights would make a spike 1.57×
+  longer than a hoop; one scale keeps the heel and ground fixed, so a cut reads as one Sneaker
+  changing.
+- **The drop holds #0137 for a bar,** framed four ways on its four kicks, so the biggest moment
+  isn't one beat long and its label can be read.
+- **Cowbells stamp the splits** (rather than straight 8ths, which would mean cutting on hats).
+- **The Legendary is #0020 Earthshine:** its Founder Sneaker picture is the only Legendary one in
+  a committed file. The picture cuts in on beat 43's clap (beat 42 has only a hat).

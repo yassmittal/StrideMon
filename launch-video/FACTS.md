@@ -230,3 +230,24 @@ only final after Part 10, so the film gives none.
 | `One email, when the waitlist window opens, and nothing else.` | `waitlistContent.promise` (its first sentence) | ✓ |
 | `You're on the list.` · `We'll email you once, when the waitlist window opens.` | `waitlistContent.joinedMessage` | ✓ |
 | `stridemon.xyz/pass` · `StrideMon` · `MONAD TESTNET` | D-040; §1 | ✓ |
+
+## 13. The Sneaker drop film (2026-10-14)
+
+The Sneaker drop film (`docs/sneaker-drop-video-prompt.md`): the Founder Sneaker designs cut to
+music, with almost no words. `src/sneaker-drop/content.ts` mirrors this section. The art is the
+contract renderers' own output, unchanged: the laced Sneakers in `website/public/pass-art/laced/`
+(`FoundingPassArtRenderer`), and #0020's Founder Sneaker picture from
+`packages/contracts/art/founding-pass/previews/8-founder-sneakers.svg` (`SneakerArtRenderer`,
+D-042). Which designs, and why: `src/sneaker-drop/sneakers.ts`.
+
+**Never on screen in this film:** a price, worth, value, floor, "mint", a drop date or any date,
+airdrop, whitelist, "limited", "don't miss out", a STRIDE amount, mainnet, or a store badge. Nothing
+about the Founding Pass beyond the Legendary's picture.
+
+| On screen | Source | Status |
+|---|---|---|
+| The Sneakers: 49 designs one by one and in splits, and all 1,000 in the flood | `laced/NNNN.svg`, unchanged (numbers in `src/sneaker-drop/sneakers.ts`) | ✓ Real designs. On black each gets `SneakerArtRenderer`'s own light rim (the Founder Sneaker's, D-042); in the cold open the hero's own strokes draw in one colour |
+| `#0137  ROSE HIKER NIGHT` | Design table row 137 (Rose, Hiker, Night; Common); §12 | ✓ |
+| `#0020  EARTHSHINE` · `LEGENDARY` | Design table row 20 (Prism, Runner: the Runner's Legendary name, brief §3.2); §12 | ✓ |
+| #0020's Founder Sneaker picture: `FOUNDER SNEAKER`, `#0020`, the shoe, `Earthshine`, `LEVEL 01 / 30`, `DURABILITY 100 / 100` | `previews/8-founder-sneakers.svg`, the cell captioned `#0020 · MINTED · LV 1`, drawn by `SneakerArtRenderer` for a stand-in pass (`PreviewFoundingPass`); a new Sneaker starts at level 1 of 30 and durability 100 (`game-rules.md`, Sneaker attributes) | ⚠ It shows what #0020's Founder Sneaker looks like when minted. #0020 isn't minted yet, and the film never says it is |
+| `stridemon.xyz` · `StrideMon` · `MONAD TESTNET` | D-040; §1 | ✓ |

@@ -17,6 +17,16 @@ import { OwnItScene } from './scenes/OwnItScene'
 import { UpgradeScene } from './scenes/UpgradeScene'
 import { WalkScene } from './scenes/WalkScene'
 import {
+  readSneakerDropSceneDurationInFrames,
+  SNEAKER_DROP_DURATION_IN_FRAMES,
+  SNEAKER_DROP_FRAMES_PER_SECOND,
+  type SneakerDropSceneName,
+} from './sneaker-drop/beats'
+import { sneakerDropLayouts } from './sneaker-drop/layout'
+import { SneakerDropFilm } from './sneaker-drop/SneakerDropFilm'
+import { SneakerDropScene } from './sneaker-drop/SneakerDropScene'
+import { SneakerDropSyncCheck } from './sneaker-drop/SyncCheck'
+import {
   readWaitlistSceneDurationInFrames,
   WAITLIST_DURATION_IN_FRAMES,
   WAITLIST_FRAMES_PER_SECOND,
@@ -28,6 +38,15 @@ import { HookScene as WaitlistHookScene } from './waitlist/scenes/HookScene'
 import { PassScene as WaitlistPassScene } from './waitlist/scenes/PassScene'
 import { PromiseScene as WaitlistPromiseScene } from './waitlist/scenes/PromiseScene'
 import { WaitlistFilm } from './waitlist/WaitlistFilm'
+
+const SNEAKER_DROP_SCENES: readonly { id: string; sceneName: SneakerDropSceneName }[] = [
+  { id: 'SneakerDropColdOpen', sceneName: 'coldOpen' },
+  { id: 'SneakerDropBuild', sceneName: 'build' },
+  { id: 'SneakerDropDrop', sceneName: 'drop' },
+  { id: 'SneakerDropEscalation', sceneName: 'escalation' },
+  { id: 'SneakerDropLegendary', sceneName: 'legendary' },
+  { id: 'SneakerDropEndCard', sceneName: 'endCard' },
+]
 
 export function RemotionRoot() {
   return (
@@ -175,6 +194,38 @@ export function RemotionRoot() {
         />
       </Folder>
       <Composition
+        id="SneakerDrop4x5"
+        component={SneakerDropFilm}
+        width={sneakerDropLayouts['4x5'].width}
+        height={sneakerDropLayouts['4x5'].height}
+        fps={SNEAKER_DROP_FRAMES_PER_SECOND}
+        durationInFrames={SNEAKER_DROP_DURATION_IN_FRAMES}
+        defaultProps={{ format: '4x5' as const }}
+      />
+      <Composition
+        id="SneakerDrop9x16"
+        component={SneakerDropFilm}
+        width={sneakerDropLayouts['9x16'].width}
+        height={sneakerDropLayouts['9x16'].height}
+        fps={SNEAKER_DROP_FRAMES_PER_SECOND}
+        durationInFrames={SNEAKER_DROP_DURATION_IN_FRAMES}
+        defaultProps={{ format: '9x16' as const }}
+      />
+      <Folder name="SneakerDropScenes-4x5">
+        {SNEAKER_DROP_SCENES.map(({ id, sceneName }) => (
+          <Composition
+            key={id}
+            id={id}
+            component={SneakerDropScene}
+            width={sneakerDropLayouts['4x5'].width}
+            height={sneakerDropLayouts['4x5'].height}
+            fps={SNEAKER_DROP_FRAMES_PER_SECOND}
+            durationInFrames={readSneakerDropSceneDurationInFrames(sceneName)}
+            defaultProps={{ sceneName }}
+          />
+        ))}
+      </Folder>
+      <Composition
         id="Pitch16x9"
         component={PitchFilm}
         width={PITCH_WIDTH}
@@ -183,6 +234,14 @@ export function RemotionRoot() {
         durationInFrames={PITCH_DURATION_IN_FRAMES}
       />
       <Folder name="Checks">
+        <Composition
+          id="SneakerDropSync"
+          component={SneakerDropSyncCheck}
+          width={1080}
+          height={1350}
+          fps={SNEAKER_DROP_FRAMES_PER_SECOND}
+          durationInFrames={SNEAKER_DROP_DURATION_IN_FRAMES}
+        />
         <Still id="RunScreenCheck" component={RunScreenCheck} width={1080} height={2340} />
       </Folder>
     </>

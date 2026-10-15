@@ -14,6 +14,11 @@ The same project also holds the **Founding Pass waitlist film** (`Waitlist4x5`, 
 in `FACTS.md` §12 and its music in `CREDITS.md`. It shares the theme, fonts, components and the
 render pipeline; its beat grid is its own (`src/waitlist/beats.ts`, 124.052 BPM).
 
+The **Sneaker drop film** (`SneakerDrop4x5` for X, `SneakerDrop9x16` for YouTube Shorts, 30 s, 60
+fps), from `docs/sneaker-drop-video-prompt.md`: the Founder Sneaker designs cut to "Drift Phonk",
+every change on a hit measured from the music. Its code is in `src/sneaker-drop/`, its storyboard in
+`SCRIPT.md`, its facts in `FACTS.md` §13 and its music in `CREDITS.md`. Music only, no sound effects.
+
 The **Metropolis pitch video** (`Pitch16x9`, 1920 × 1080, 30 fps, about 1:24) lives here too:
 Yash's voiceover over the submission reel, one scene per part of the script, captions burned in.
 Its code is in `src/pitch/`, its words in `src/pitch/script.ts`, and it is cut to the voice's
@@ -39,10 +44,12 @@ bun install
 bash scripts/cut-footage.sh   # public/footage/ from ../website/media-source/ (needs ffmpeg)
 bash scripts/fetch-audio.sh   # public/audio/: both films' music and sound effects (needs curl, unzip, ffmpeg)
 bash scripts/copy-pass-art.sh # public/pass-art/: the Founding Pass art the waitlist film shows (needs bun)
+bash scripts/copy-sneaker-drop-art.sh # public/pass-art/: the Sneaker drop film's 1,000 laced Sneakers,
+                                      # #0020's Founder Sneaker picture and the flood's atlas (needs rsvg-convert, ffmpeg)
 ```
 
 `public/footage/`, `public/audio/`, `public/pass-art/` and `out/` are gitignored, so a fresh clone
-needs all three scripts. `copy-pass-art.sh` only reads `../website/public/pass-art/cards/` and
+needs all four scripts. `copy-pass-art.sh` only reads `../website/public/pass-art/cards/` and
 `../packages/contracts/art/founding-pass/previews/`; the designs it copies are listed in
 `src/waitlist/pass-art.ts`.
 The raw recordings in `../website/media-source/` are gitignored too.
@@ -55,6 +62,8 @@ bunx remotion studio
 
 `Launch4x5`, `Launch16x9` and `Launch9x16` are the whole film; `Scenes-4x5` has each scene on its
 own. `Waitlist4x5` is the waitlist film, and `WaitlistScenes-4x5` has its five scenes.
+`SneakerDrop4x5` and `SneakerDrop9x16` are the Sneaker drop film, `SneakerDropScenes-4x5` has its
+six scenes, and `Checks/SneakerDropSync` is its sync check (a flash per hit over the music).
 Motion blur (the walk's fast stretch) needs Chrome 149+ with
 `chrome://flags/#canvas-draw-element` to show in the Studio; renders don't need it.
 
@@ -68,6 +77,16 @@ bash scripts/render.sh 4x5    # out/stridemon-launch-4x5.mp4, -4x5-poster.png, -
 bash scripts/render.sh 16x9   # out/stridemon-launch-16x9.mp4, -16x9-poster.png
 bash scripts/render.sh 9x16   # out/stridemon-launch-9x16.mp4, -9x16-poster.png
 bash scripts/render.sh waitlist-4x5   # out/stridemon-waitlist-4x5.mp4, -poster.png, -silent.mp4
+bash scripts/render.sh sneaker-drop-4x5   # out/stridemon-sneaker-drop-4x5.mp4, -poster.png, -silent.mp4
+bash scripts/render.sh sneaker-drop-9x16  # out/stridemon-sneaker-drop-9x16.mp4, -poster.png
+```
+
+The Sneaker drop film's poster is its last frame, 1801 (the end card). After rendering, check
+every cut against the hit map (it exits non-zero if one is more than a frame off):
+
+```bash
+bun scripts/check-sneaker-drop-cuts.ts out/stridemon-sneaker-drop-4x5.mp4        # the brief's 0.3
+bun scripts/check-sneaker-drop-cuts.ts out/stridemon-sneaker-drop-4x5.mp4 0.05   # partial-frame cuts too
 ```
 
 The waitlist film goes through exactly the same steps as below, with `Waitlist4x5` and its last
@@ -131,6 +150,21 @@ The same steps with the `WAITLIST_` variables in `scripts/fetch-audio.sh` (`WAIT
 `src/waitlist/beats.ts`. The start must put the track's hit on frame 174 (beat 6, the flip into the
 collection). A new tempo changes the film's length: set `WAITLIST_LAST_FRAME` in `render.sh` to the
 new last frame. `CREDITS.md` has the two runners-up with their starts.
+
+## The Sneaker drop film's music, hit map and designs
+
+Everything it cuts on comes from the music, so a change starts there:
+
+1. **The clip:** the `SNEAKER_DROP_` variables in `scripts/fetch-audio.sh` (`CREDITS.md` has why the
+   cut points sit 45 ms before the approved ones). Run it.
+2. **The hit map:** `uv run --no-project --with librosa==1.0.0 python scripts/build-sneaker-drop-hits.py`
+   measures every kick, clap, cowbell, hat and stop on the 16th grid and writes
+   `src/sneaker-drop/hits.ts` (never edit it). It prints the per-bar pattern and flags any hit more
+   than a frame off its 16th. If the pattern changes, rewrite `PATTERN_IN_WORDS` in the script.
+3. **The designs:** `bun scripts/pick-sneaker-drop-designs.ts` (after `copy-sneaker-drop-art.sh`)
+   writes `src/sneaker-drop/sneakers.ts`. Its part counts must match what `timeline.ts` uses up,
+   or the film throws and says by how much.
+4. `src/sneaker-drop/timeline.ts` names each move's hit; `content.ts` holds the mapping.
 
 ## Re-time `beats.ts`
 
