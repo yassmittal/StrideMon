@@ -235,7 +235,8 @@ invent one.
 ### 1. Folder: `social/` at the repo root
 
 `social/` rather than `x/`, because a bare `x` reads as a typo. Today it holds X content only. If
-another platform is ever added, it gets its own subfolder then, not now.
+another platform is ever added, it gets its own subfolder then, not now. (Instagram was added
+this way on 2026-10-16: `social/instagram/`, D-053.)
 
 ```text
 social/

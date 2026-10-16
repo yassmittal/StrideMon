@@ -1,0 +1,108 @@
+/* Product Hunt's gallery canvas (1270 × 760, its recommended size). It reuses the Instagram look
+   (voice.md §6) and only adds the landscape canvas and the phone frame. */
+@import url("../../instagram/design/instagram.css");
+
+body.gallery {
+  width: 1270px;
+  height: 760px;
+  padding: 52px 72px 44px;
+}
+
+.gallery .cross.top-left,
+.gallery .cross.top-right {
+  top: 22px;
+}
+.gallery .cross.bottom-left,
+.gallery .cross.bottom-right {
+  bottom: 18px;
+}
+.gallery .cross.top-left,
+.gallery .cross.bottom-left {
+  left: 30px;
+}
+.gallery .cross.top-right,
+.gallery .cross.bottom-right {
+  right: 30px;
+}
+
+.gallery .meta {
+  font-size: 16px;
+}
+.gallery h1 {
+  font-size: 76px;
+  margin-top: 40px;
+}
+.gallery h1.large {
+  font-size: 92px;
+}
+.gallery .lede {
+  font-size: 23px;
+  margin-top: 20px;
+  max-width: 470px;
+}
+.gallery .footer {
+  margin-top: 20px;
+}
+.gallery .disclaimer {
+  font-size: 16px;
+}
+/* No one-word last lines. */
+.gallery h1,
+.gallery .lede,
+.gallery .title,
+.gallery .body {
+  text-wrap: balance;
+}
+
+/* Text on the left, the picture on the right. */
+.split {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 56px;
+}
+.split .text {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The website's plain phone frame (website/src/components/ui/phone-frame.tsx). Never a photoreal
+   iPhone: it's an Android app. The screenshots are 1080 × 2340. */
+.phones {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.phone {
+  width: 268px;
+  border-radius: 26px;
+  padding: 5px;
+  background: var(--black);
+}
+.dark .phone {
+  background: #2a2c2e;
+}
+.phone img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 21px;
+}
+
+/* Numbered rows, smaller than Instagram's. */
+.gallery .row {
+  grid-template-columns: 56px 1fr;
+  column-gap: 20px;
+  padding: 18px 0;
+}
+.gallery .row .figure {
+  font-size: 30px;
+}
+.gallery .row .title {
+  font-size: 25px;
+}
+.gallery .row .body {
+  margin-top: 6px;
+  font-size: 18px;
+}

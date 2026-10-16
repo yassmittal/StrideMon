@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1270x760" />
+    <title>Gallery 2: How a run works</title>
+    <link rel="stylesheet" href="product-hunt.css" />
+    <style>
+      .split {
+        grid-template-columns: 1fr auto 330px;
+        column-gap: 44px;
+      }
+      .rows {
+        margin-top: auto;
+      }
+      /* The contract's rules (launch-video/FACTS.md §2, docs/architecture/game-rules.md). */
+      .panel {
+        align-self: end;
+        padding: 30px 32px 28px;
+      }
+      .rule {
+        padding: 16px 0;
+        border-top: 1px solid var(--line-on-dark);
+      }
+      .rule:first-of-type {
+        margin-top: 14px;
+      }
+      .rule .figure {
+        font-size: 30px;
+        letter-spacing: -0.02em;
+      }
+      .rule .body {
+        margin-top: 6px;
+        font-size: 16px;
+        line-height: 1.35;
+        color: var(--body-on-dark);
+      }
+    </style>
+  </head>
+  <body class="gallery">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">How a run works</span>
+      <span class="mono meta">02 / 06</span>
+    </div>
+
+    <div class="split">
+      <div class="text">
+        <h1>One run,<br />settled<br />on Monad.</h1>
+        <div class="rows">
+          <div class="row">
+            <span class="mono figure">01</span>
+            <div><p class="title">Press START and walk.</p></div>
+          </div>
+          <div class="row">
+            <span class="mono figure">02</span>
+            <div><p class="title">Press STOP.</p><p class="body">The server checks the run.</p></div>
+          </div>
+          <div class="row">
+            <span class="mono figure">03</span>
+            <div><p class="title">The contract settles it.</p><p class="body">STRIDE lands in your wallet.</p></div>
+          </div>
+        </div>
+      </div>
+      <!-- A real settled run on the demo build (screenshots.ts: runSummary). -->
+      <div class="phones">
+        <div class="phone"><img src="../../../website/public/screenshots/04-run-summary.png" alt="" /></div>
+      </div>
+      <section class="panel">
+        <span class="meta">Today’s rules, in the contract</span>
+        <div class="rule"><p class="mono figure">10</p><p class="body">energy. 1 point = 1 rewarded minute.</p></div>
+        <div class="rule"><p class="mono figure">30 min</p><p class="body">for 1 point of energy to come back.</p></div>
+        <div class="rule"><p class="mono figure">0.5 × eff.</p><p class="body">STRIDE per rewarded minute.</p></div>
+      </section>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="disclaimer">Monad testnet. STRIDE has no monetary value.</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

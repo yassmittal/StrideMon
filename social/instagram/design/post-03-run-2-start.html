@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>How a run works, 2 of 5</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* The live readout at 1:53 of the recorded walk (launch-video/FACTS.md §3). */
+      .panel {
+        margin-top: auto;
+        padding: 40px 48px 44px;
+      }
+      .timer {
+        font-size: 176px;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        margin-top: 30px;
+      }
+      .distance {
+        font-size: 72px;
+        line-height: 1;
+        margin-top: 14px;
+      }
+      .readouts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 32px;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid var(--line-on-dark);
+      }
+      .readouts .value {
+        font-size: 34px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body class="post">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Step 1</span>
+      <span class="mono meta">02 / 05</span>
+    </div>
+
+    <h1 class="medium">Press START<br />and walk.</h1>
+    <p class="lede">Time, distance and speed are live on screen. The reward you see is only an estimate.</p>
+
+    <section class="panel">
+      <span class="meta">Run in progress • Sneaker #2</span>
+      <p class="mono timer">1:53</p>
+      <p class="mono distance">64 m</p>
+      <div class="readouts">
+        <div>
+          <span class="meta">Speed</span>
+          <p class="mono value">4.0 km/h</p>
+        </div>
+        <div>
+          <span class="meta">Estimated reward</span>
+          <p class="mono value lime">+5 STRIDE</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="disclaimer">Monad testnet. STRIDE has no monetary value.</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

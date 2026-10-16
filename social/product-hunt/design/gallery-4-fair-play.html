@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1270x760" />
+    <title>Gallery 4: Fair play</title>
+    <link rel="stylesheet" href="product-hunt.css" />
+    <style>
+      /* website/src/content/fair-play.ts. The speed band and the GPS checks run in the API, not the
+         contract (FACTS §2), so they sit under "checked", never under "on-chain". */
+      .columns {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr 330px;
+        column-gap: 36px;
+        align-items: end;
+      }
+      .column .meta {
+        color: var(--muted-on-light);
+      }
+      .column .rows {
+        margin-top: 10px;
+      }
+      .gallery .column .row {
+        grid-template-columns: 1fr;
+        padding: 16px 0;
+      }
+      .column .row:first-child {
+        border-top: 1px solid var(--line-on-light);
+      }
+      .nowrap {
+        white-space: nowrap;
+      }
+      .column .title {
+        font-size: 22px;
+        line-height: 1.25;
+      }
+      .panel {
+        padding: 30px 32px 30px;
+      }
+      .panel p {
+        margin-top: 18px;
+        font-size: 27px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      .panel .disclaimer {
+        margin-top: 22px;
+        font-size: 17px;
+        color: var(--body-on-dark);
+      }
+    </style>
+  </head>
+  <body class="gallery">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Fair play and privacy</span>
+      <span class="mono meta">04 / 06</span>
+    </div>
+
+    <h1>Driving earns nothing.<br />Your route stays yours.</h1>
+
+    <div class="columns">
+      <div class="column">
+        <span class="meta">Checked before it pays</span>
+        <div class="rows">
+          <div class="row"><p class="title">A minute counts at <span class="nowrap">1–20 km/h</span> on average.</p></div>
+          <div class="row"><p class="title">GPS jumps over <span class="nowrap">40 km/h</span> are dropped.</p></div>
+          <div class="row"><p class="title">Mock locations are rejected.</p></div>
+        </div>
+      </div>
+      <div class="column">
+        <span class="meta">Private by design</span>
+        <div class="rows">
+          <div class="row"><p class="title">Only minutes and distance go on-chain.</p></div>
+          <div class="row"><p class="title">Never your route.</p></div>
+          <div class="row"><p class="title">GPS points are deleted after 30 days.</p></div>
+        </div>
+      </div>
+      <!-- voice.md §4: no token sale, no airdrop, nothing to buy. -->
+      <section class="panel">
+        <span class="meta">Nothing to buy</span>
+        <p>No token sale.<br />No airdrop.<br /><span class="lime">The game is the point.</span></p>
+        <p class="disclaimer">Monad testnet. STRIDE has no monetary value.</p>
+      </section>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">Open source</span>
+      <span class="mono meta">github.com/yassmittal/StrideMon</span>
+    </div>
+  </body>
+</html>

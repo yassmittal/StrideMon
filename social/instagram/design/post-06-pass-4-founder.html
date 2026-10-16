@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>Founding Pass, 4 of 4</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* Both pictures are the renderers' own previews for #0137 (packages/contracts/art/founding-pass/
+         previews/): the pass as FoundingPassArtRenderer draws it once minted, and the Founder
+         Sneaker as SneakerArtRenderer draws it at level 1. "FOUNDER 042" on the card is the
+         preview's example number, so the footer says Example. */
+      .pair {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 24px;
+      }
+      .card {
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .card.light {
+        outline: 1px solid var(--line-on-light);
+        outline-offset: -1px;
+      }
+      .label {
+        margin-top: 18px;
+        color: var(--muted-on-light);
+      }
+      .label .what {
+        display: block;
+        font-size: 28px;
+        color: var(--black);
+        margin-bottom: 8px;
+      }
+      .promise {
+        margin-top: 44px;
+        padding-top: 26px;
+        border-top: 2px solid var(--black);
+        display: flex;
+        justify-content: space-between;
+        font-size: 28px;
+      }
+    </style>
+  </head>
+  <body class="post">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Founding Pass</span>
+      <span class="mono meta">04 / 04</span>
+    </div>
+
+    <h1 class="medium">Your way into<br />StrideMon.</h1>
+    <p class="lede">The pass is your early access. In the app, it comes with a Founder Sneaker in the same design.</p>
+
+    <div class="pair">
+      <figure>
+        <div class="card light art" data-svg="../../../packages/contracts/art/founding-pass/previews/pass-0137-minted.svg"></div>
+        <figcaption class="label">
+          <span class="what">The pass</span>
+          <span class="mono meta">On the website</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="card art" data-svg="../../../packages/contracts/art/founding-pass/previews/founder-sneaker-0137-minted.svg"></div>
+        <figcaption class="label">
+          <span class="what">Your Founder Sneaker</span>
+          <span class="mono meta">In the app</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="promise">
+      <span>Free.</span>
+      <span>Can’t be sold or sent.</span>
+      <span>It stays with you.</span>
+    </p>
+
+    <div class="meta-row footer">
+      <span class="meta">Example: #0137</span>
+      <span class="mono meta">stridemon.xyz/pass</span>
+    </div>
+
+    <script src="inline-svg.js"></script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1920" />
+    <title>Story: how it works</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      .rows {
+        margin-top: auto;
+        border-top: 2px solid var(--black);
+      }
+      .row {
+        grid-template-columns: 96px 1fr;
+        padding: 40px 0;
+      }
+      .row:first-child {
+        border-top: none;
+      }
+      .row .number {
+        font-size: 24px;
+      }
+      .row .title {
+        font-size: 44px;
+      }
+      .row .body {
+        font-size: 28px;
+      }
+    </style>
+  </head>
+  <body class="story">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • How it works</span>
+      <span class="meta">Monad testnet</span>
+    </div>
+
+    <h1 class="large">How a<br />run works.</h1>
+
+    <div class="rows">
+      <div class="row">
+        <span class="mono number">01</span>
+        <div>
+          <p class="title">Press START and walk</p>
+          <p class="body">Time, distance and speed are live on screen.</p>
+        </div>
+      </div>
+      <div class="row">
+        <span class="mono number">02</span>
+        <div>
+          <p class="title">Press STOP</p>
+          <p class="body">The server checks how much of the run counted.</p>
+        </div>
+      </div>
+      <div class="row">
+        <span class="mono number">03</span>
+        <div>
+          <p class="title">It settles on Monad</p>
+          <p class="body">The contract pays STRIDE into your wallet.</p>
+        </div>
+      </div>
+      <div class="row">
+        <span class="mono number">04</span>
+        <div>
+          <p class="title">Repair it. Level it up.</p>
+          <p class="body">Spend STRIDE from your own wallet. Each level pays more per minute.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">Android demo</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

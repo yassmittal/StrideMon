@@ -59,5 +59,5 @@ Change the number and the pass. Keep the middle line, or swap it with one of the
 post doesn't read the same every day:
 
 - Every pass is one of one. If someone on the waitlist mints the one you like, it's gone.
-- The waitlist is 7 people so far. 1,000 designs. (update the count from `waitlistSignups`)
+- The waitlist is 18 people so far. 1,000 designs. (update the count from `waitlistSignups`)
 - Minting is free and the gas is on us. The only thing the waitlist changes is who picks first.

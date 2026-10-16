@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>How a run works, 3 of 5</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      .panel {
+        margin-top: auto;
+        padding: 44px 48px 48px;
+      }
+      .checks {
+        margin-top: 8px;
+      }
+      .checks .row {
+        grid-template-columns: 200px 1fr;
+        border-top-color: var(--line-on-dark);
+        padding: 28px 0;
+      }
+      .checks .row:first-child {
+        padding-top: 22px;
+      }
+      .checks .figure {
+        font-size: 44px;
+      }
+      .checks .body {
+        margin-top: 0;
+        font-size: 27px;
+        color: var(--body-on-dark);
+      }
+    </style>
+  </head>
+  <body class="post">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Step 2</span>
+      <span class="mono meta">03 / 05</span>
+    </div>
+
+    <h1 class="medium">Press STOP.</h1>
+    <p class="lede">GPS stops, and the server checks how much of the run counted.</p>
+
+    <!-- Checked by the API, not on-chain (FACTS §2, fair-play.ts). -->
+    <section class="panel">
+      <span class="meta">What counts</span>
+      <div class="rows checks">
+        <div class="row">
+          <span class="mono figure">1–20</span>
+          <p class="body">km/h on average, or the minute doesn’t count. Riding in a car earns nothing.</p>
+        </div>
+        <div class="row">
+          <span class="mono figure">40+</span>
+          <p class="body">km/h jumps between GPS fixes are dropped.</p>
+        </div>
+        <div class="row">
+          <span class="mono figure lime">→</span>
+          <p class="body">Then the contract settles the run, once and only once.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="meta">Monad testnet</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

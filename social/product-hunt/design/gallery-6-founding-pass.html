@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1270x760" />
+    <title>Gallery 6: Founding Pass</title>
+    <link rel="stylesheet" href="product-hunt.css" />
+    <style>
+      /* The same four designs as Instagram's post 06 (one per rarity), cropped to the shoe from
+         each gallery card. Rarity counts: docs/founding-pass-brief.md, the frozen design table. */
+      .lede {
+        max-width: 760px;
+      }
+      .designs {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 24px;
+      }
+      .shoe svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .label {
+        margin-top: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line-on-light);
+      }
+      .label .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 30px;
+        color: var(--muted-on-light);
+      }
+      .label .number {
+        font-size: 16px;
+        color: var(--black);
+      }
+      .label .name {
+        margin-top: 6px;
+        font-size: 22px;
+      }
+      .legendary {
+        background: var(--black);
+        color: var(--lime);
+        border-radius: 999px;
+        padding: 5px 10px 4px;
+      }
+      .rarity {
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body class="gallery">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Early access</span>
+      <span class="mono meta">06 / 06</span>
+    </div>
+
+    <h1>1,000 Founding Passes.</h1>
+    <!-- website/src/content/founding-pass.ts: passPageContent.intro and passPromiseLine. -->
+    <p class="lede">Each one is a different Sneaker design that exists once, drawn on-chain. Mint one free, and the app gives you a Founder Sneaker in the same design. It can’t be sent or sold.</p>
+
+    <div class="designs">
+      <figure>
+        <div class="shoe art" data-svg="../../../website/public/pass-art/cards/0627.svg" data-view-box="50 200 900 520"></div>
+        <figcaption class="label">
+          <div class="top"><span class="mono number">#0627</span><span class="meta rarity">Common</span></div>
+          <p class="name">Lime Runner Day</p>
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="shoe art" data-svg="../../../website/public/pass-art/cards/0749.svg" data-view-box="50 200 900 520"></div>
+        <figcaption class="label">
+          <div class="top"><span class="mono number">#0749</span><span class="meta rarity">Uncommon</span></div>
+          <p class="name">Rose Sock Day</p>
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="shoe art" data-svg="../../../website/public/pass-art/cards/0888.svg" data-view-box="50 200 900 520"></div>
+        <figcaption class="label">
+          <div class="top"><span class="mono number">#0888</span><span class="meta rarity">Rare</span></div>
+          <p class="name">Clay Spike Frost</p>
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="shoe art" data-svg="../../../website/public/pass-art/cards/0298.svg" data-view-box="50 200 900 520"></div>
+        <figcaption class="label">
+          <div class="top"><span class="mono number">#0298</span><span class="meta rarity legendary">Legendary</span></div>
+          <p class="name">Fogbow</p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">Free • No gas to pay • Not a token</span>
+      <span class="mono meta">stridemon.xyz/pass</span>
+    </div>
+
+    <script src="../../instagram/design/inline-svg.js"></script>
+  </body>
+</html>

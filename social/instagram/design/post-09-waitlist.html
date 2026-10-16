@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>The waitlist mints first</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* The form is a vector rebuild of the website's (waitlistContent, FACTS §12), not a
+         screenshot. The date is the planned waitlist window (founding-pass.ts). */
+      .stats {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 24px;
+        padding-bottom: 36px;
+      }
+      .stats .value {
+        font-size: 64px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin-bottom: 14px;
+      }
+      .stats .meta {
+        color: var(--muted-on-dark);
+        font-size: 18px;
+      }
+      .panel {
+        padding: 36px 40px 40px;
+      }
+      .field {
+        margin-top: 14px;
+        border: 2px solid #4a4e57;
+        border-radius: 999px;
+        padding: 22px 30px;
+        font-size: 28px;
+        color: var(--muted-on-dark);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        column-gap: 16px;
+        align-items: end;
+      }
+      .pill.solid {
+        padding: 22px 34px;
+        font-weight: 500;
+        font-size: 22px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .promise {
+        margin-top: 24px;
+        font-size: 24px;
+        color: var(--body-on-dark);
+      }
+    </style>
+  </head>
+  <body class="post dark">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Waitlist • Founding Pass</span>
+      <span class="meta">Link in bio</span>
+    </div>
+
+    <h1 class="large">The waitlist<br />mints first.</h1>
+    <p class="lede">For 48 hours, only the waitlist can mint a Founding Pass. Joining takes an email, never a wallet.</p>
+
+    <div class="stats">
+      <div>
+        <p class="mono value lime">28 NOV</p>
+        <span class="meta">Waitlist window</span>
+      </div>
+      <div>
+        <p class="mono value">48 h</p>
+        <span class="meta">Before everyone else</span>
+      </div>
+      <div>
+        <p class="mono value">1,000</p>
+        <span class="meta">Designs, 1 of 1</span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="form-row">
+        <div>
+          <span class="meta">Email</span>
+          <p class="field">you@example.com</p>
+        </div>
+        <span class="pill solid">Join the waitlist</span>
+      </div>
+      <p class="promise">One email, when the waitlist window opens, and nothing else.</p>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="meta">Planned • 14:30 UTC</span>
+      <span class="mono meta">stridemon.xyz/pass</span>
+    </div>
+  </body>
+</html>

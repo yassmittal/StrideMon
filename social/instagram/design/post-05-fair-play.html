@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>Fair play</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* website/src/content/fair-play.ts. The speed checks run in the API, not on-chain (FACTS §2). */
+      .rows {
+        margin-top: auto;
+      }
+      .row {
+        padding: 34px 0;
+        align-items: start;
+      }
+      .row .figure {
+        font-size: 72px;
+      }
+      .row .unit {
+        display: block;
+        margin-top: 12px;
+        font-size: 18px;
+        color: var(--page-muted);
+      }
+    </style>
+  </head>
+  <body class="post dark">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • Fair play</span>
+      <span class="meta">Checked before it pays</span>
+    </div>
+
+    <h1 class="large">Driving<br />earns<br />nothing.</h1>
+
+    <div class="rows">
+      <div class="row">
+        <div>
+          <span class="mono figure lime">1–20</span>
+          <span class="meta unit">km/h on average</span>
+        </div>
+        <div>
+          <p class="title">Walking or running speed</p>
+          <p class="body">Or the minute doesn’t count. Idling and riding in a car earn nothing.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <span class="mono figure">40</span>
+          <span class="meta unit">km/h jumps</span>
+        </div>
+        <div>
+          <p class="title">GPS jumps are dropped</p>
+          <p class="body">And mock locations are rejected on Android.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <span class="mono figure">30</span>
+          <span class="meta unit">days</span>
+        </div>
+        <div>
+          <p class="title">Your route stays yours</p>
+          <p class="body">Only minutes and distance go on-chain. Raw GPS is deleted after 30 days.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">Checked by the server</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>
