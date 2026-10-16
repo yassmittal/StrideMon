@@ -1,5 +1,6 @@
 import { loadFont as loadLocalFont } from '@remotion/fonts'
 import { loadFont as loadIbmPlexMono } from '@remotion/google-fonts/IBMPlexMono'
+import { loadFont as loadKnewave } from '@remotion/google-fonts/Knewave'
 import satoshiMediumUrl from '../../apps/mobile/assets/fonts/Satoshi-Medium.ttf'
 import satoshiRegularUrl from '../../apps/mobile/assets/fonts/Satoshi-Regular.ttf'
 import { fontFamilies } from './theme'
@@ -12,4 +13,7 @@ export function loadFilmFonts(): void {
   void loadLocalFont({ family: fontFamilies.satoshi, url: satoshiRegularUrl, weight: '400' })
   void loadLocalFont({ family: fontFamilies.satoshi, url: satoshiMediumUrl, weight: '500' })
   loadIbmPlexMono('normal', { weights: ['400', '500'], subsets: ['latin'] })
+  // The Pass chat film's script face (its lime keywords and the handwritten "isn’t"): Knewave by
+  // Tyler Finck, SIL Open Font License 1.1, which allows use in video. Only that film uses it.
+  loadKnewave('normal', { weights: ['400'], subsets: ['latin'] })
 }

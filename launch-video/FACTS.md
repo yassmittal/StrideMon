@@ -251,3 +251,34 @@ about the Founding Pass beyond the Legendary's picture.
 | `#0020  EARTHSHINE` · `LEGENDARY` | Design table row 20 (Prism, Runner: the Runner's Legendary name, brief §3.2); §12 | ✓ |
 | #0020's Founder Sneaker picture: `FOUNDER SNEAKER`, `#0020`, the shoe, `Earthshine`, `LEVEL 01 / 30`, `DURABILITY 100 / 100` | `previews/8-founder-sneakers.svg`, the cell captioned `#0020 · MINTED · LV 1`, drawn by `SneakerArtRenderer` for a stand-in pass (`PreviewFoundingPass`); a new Sneaker starts at level 1 of 30 and durability 100 (`game-rules.md`, Sneaker attributes) | ⚠ It shows what #0020's Founder Sneaker looks like when minted. #0020 isn't minted yet, and the film never says it is |
 | `stridemon.xyz` · `StrideMon` · `MONAD TESTNET` | D-040; §1 | ✓ |
+
+## 14. The Pass chat film (2026-10-16)
+
+The Pass chat film (`docs/pass-chat-video-prompt.md`): a group chat on a lime phone picks a pass,
+the phone spins into a card where #0627 floats in the same sky, ten other passes burst out, and it
+ends on "This isn't a JPEG." `src/pass-chat/content.ts` mirrors this section. The art is the
+gallery cards' own shoes (`website/public/pass-art/cards/NNNN.svg`, `FoundingPassArtRenderer`),
+cropped to the shoe and unchanged, unlaced as `/pass` shows them. Which designs, and why:
+`src/pass-chat/sneakers.ts`.
+
+**Never on screen in this film:** a STRIDE amount or the STRIDE disclaimer (Yash, 2026-10-16: the
+film shows no STRIDE amount), a price, worth, value, floor, "mint", airdrop, whitelist, "limited",
+"don't miss out", any date, mainnet, a store badge, an Apple logo, "iMessage", emoji, or the
+reference's own objects.
+
+| On screen | Source | Status |
+|---|---|---|
+| "Founding Passes" | `founding-pass.ts` (`passPageContent`), brief §1 | ✓ |
+| "the free ones" | Brief §1 ("gas-free"), FAQ "Is it free?"; §12 `Free. We pay the gas.` | ✓ |
+| "on Monad" | Brief §1 (minted on Monad testnet) | ⚠ A friend's casual words in the chat. The end card no longer shows `MONAD TESTNET` (Yash, STOP 1, 2026-10-16), so the post's text and alt text say "Monad testnet" |
+| "1,000 designs. all 1 of 1" | Brief §1, §3.1; §12 (`1,000 Founding Passes.`, `Each design exists once.`) | ✓ |
+| "i'm taking #0627" | Design table row 627 (Lime, Runner, Day; Common). Picking a pass in the gallery before the mint is what `/pass` is for (D-044, D-050) | ⚠ #0627 must be unminted and not pending on `GET https://api.stridemon.xyz/v1/pass/collection`: checked 2026-10-16 and again on delivery (2026-10-16, after the sound change): only #0137 minted, none pending. If it's taken before the post goes out, the hero changes (ask Yash) |
+| `Today 7:30 AM` | A made-up chat time | ✓ No date, nothing claimed |
+| The compose bar's `Message` and its `+` and mic | A generic chat app's chrome | ✓ Never "iMessage", no Apple logo, no iPhone silhouette: a generic Android phone |
+| #0627's shoe, unlaced | `cards/0627.svg`, cropped to the shoe, unchanged | ✓ As the gallery shows it |
+| `#0627  LIME RUNNER DAY` | Design table row 627 | ✓ |
+| The ten burst shoes | `cards/NNNN.svg`, cropped, unchanged; all ten unminted and not pending on 2026-10-16 (`scripts/pick-pass-chat-designs.ts` checks the collection), and again on delivery the same day | ✓ Real designs |
+| The phone's back: the StrideMon mark in ink | `website/src/app/icon.svg`'s three strokes | ✓ Our own mark, never a logo we don't own |
+| "This isn't a JPEG." | The pass art is SVG drawn on-chain by `FoundingPassArtRenderer` (D-041, D-042); the pass can't be sold or sent (brief §7) and is early access to the app (brief §1) | ⚠ The joke holds because it's literally true (it's an on-chain SVG) and the point is true (it's a way in, not a picture to trade). Say nothing about other NFTs |
+| `It’s your way into StrideMon.` | §12 (`Your way into StrideMon.`, sourced there); brief §1 | ✓ |
+| `stridemon.xyz/pass` (the end card's pill; no wordmark or network line under it, Yash, STOP 1) | D-040; §1, §12 | ✓ |

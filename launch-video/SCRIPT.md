@@ -200,3 +200,79 @@ Each line stays up at least `0.4 s + words ÷ 3.5`. `#0137 ROSE HIKER NIGHT` (1.
 - **Cowbells stamp the splits** (rather than straight 8ths, which would mean cutting on hats).
 - **The Legendary is #0020 Earthshine:** its Founder Sneaker picture is the only Legendary one in
   a committed file. The picture cuts in on beat 43's clap (beat 42 has only a hat).
+
+# The Pass chat film
+
+The Pass chat film (`PassChat16x9`), from `docs/pass-chat-video-prompt.md`. 16:9 only, 1920 ×
+1080, 60 fps, 702 frames (11.7 s). It copies the motion of a silent 7.5 s reference clip closely
+(measured in `src/pass-chat/reference.md`), for StrideMon. Every frame is named once in
+`src/pass-chat/timeline.ts`, every word is in `src/pass-chat/content.ts`, and `FACTS.md` §14
+sources each one. Set to "Brazilian Phonk" by ScrewedQueen with Pixabay effects (`CREDITS.md`).
+
+**One job:** a friend picks a pass in a group chat, and the film shows what it is: a Sneaker drawn
+on-chain, one of 1,000, and a way into StrideMon, not a picture.
+
+## Storyboard as built
+
+| # | Scene | Frames | What happens | Sound |
+|---|---|---|---|---|
+| 1 | Phone in | 0–30 | The lime 3D phone swings in from the right over the sky photo, motion blurred. Frame 0 (the X thumbnail) already shows its back swinging in | a whoosh; the music fades in over 6 frames |
+| 2 | Chat | 24–300 | Bubbles land on 24, 90, 156 and 222, each popping from its tail corner; the older ones scroll up 2 frames before each pop, so a new one never overlaps the last. The camera never stops: the phone turns, rolls and pushes in so the newest bubble sits near the middle. The sky pans | a pop per bubble (sent ones two semitones higher), over the track's lighter, bass-less part; a riser from the last bubble into the spin |
+| 3 | Spin | 300–336 | The phone spins on Y, faster and faster, through its edge to its lime back with the StrideMon mark, motion blurred from 312 | a deep whoosh peaking on 336 |
+| 4 | Card | 336–420 | A whip into the off-white page: the card arrives blurred and too big and settles in 12 frames. #0627 Lime Runner Day floats in the same sky, bobbing. `#0627  LIME RUNNER DAY` rises on 348 and drops out from 408 | **the drop** lands on 336 |
+| 5 | Burst | 420–478 | The card grows to about 90% of the frame and ten other passes' shoes burst out from behind #0627 on a 2-frame stagger (first on 426), spinning and blurred, past the card's edges, then drift. Shoes over sky only, no track | a whoosh on 426, the music dipping 4 dB under it |
+| 6 | Ring | 478–504 | The card shrinks into the middle, accelerating, and on 488 the frame flips to black. A lime scalloped ring closes in on `This`, fading over its last half | **the music stops dead** on 488, under a boom |
+| 7 | "isn't" | 500–568 | "isn't" writes itself on in lime Knewave, stroke by stroke (7 strokes, 37 frames). Then the camera whips back (542) as `a JPEG.` slides in from the right with a horizontal blur (544) | a marker stroke per pen stroke over the boom's tail; a swoosh on 544, and **the drop again** from 543 |
+| 8 | End | 568–701 | `It’s your way into StrideMon.` rises under the line (572). The white `stridemon.xyz/pass →` pill lands on 612. The last frame is the poster | a pop on the pill; the music fades out over the last 72 frames |
+
+## On-screen text, in order
+
+1. `Today 7:30 AM` · `Message`
+2. did u see the **Founding Passes**? · the free ones on **Monad**? · yeah, **1,000** designs. all
+   1 of 1 · i’m taking **#0627** (the bold words in lime script)
+3. `#0627  LIME RUNNER DAY`
+4. This **isn’t** a JPEG.
+5. It’s your way into StrideMon. · `stridemon.xyz/pass →`
+
+## Reading time
+
+Each line stays up at least `0.4 s + words ÷ 3.5`.
+
+- **The bubbles:** each stays on screen until the spin at 300, except bubble 1, which scrolls off
+  the top as bubble 4 lands. Bubble 1 (needs 2.1 s) is up about 3.4 s, bubble 2 (1.8 s) 3.5 s,
+  bubble 3 (2.4 s) 2.4 s and bubble 4 (1.3 s) 1.3 s.
+- **The card's label** (1.5 s needed) is up 1.2 s, from 348 to 420, and fully risen for 0.8 s of
+  that. It's under the rule, by choice: it repeats bubble 4's `#0627`, which the viewer has just
+  read, and a longer hold stalls the reference's pace. It was already 0.2 s longer after STOP 2.
+- **"This isn’t a JPEG."** (1.5 s) is whole from 558 to the end, 2.4 s. **"It’s your way into
+  StrideMon."** (1.8 s) is up 2.2 s, and the pill 1.5 s.
+
+At 390 px wide (a phone in the X feed) the bubble text, the label and the end card still read
+(`out/pass-chat/delivery/at-390-sheet.png`).
+
+## What changed from the brief, and why
+
+- **No running track in the burst** (Yash, STOP 1: "remove these circles and black background,
+  only sky background will look good"). The shoes burst out over the sky only.
+- **The end card has no `StrideMon` wordmark or `MONAD TESTNET`** (Yash, STOP 1). The X post and
+  its alt text say "Monad testnet" instead (`FACTS.md` §14).
+- **The shoes have no ground ellipse:** a shoe floating in the sky has nothing to cast it on (Yash
+  left the call to Claude at STOP 1).
+- **Knewave**, not one of the three faces the brief named: the closest OFL match to the
+  reference's heavy, slanted, round-ended marker (Yash's pick at STOP 1).
+- **12 frames longer (702, not 690):** the card holds 84 frames, not 72, so its label gets more
+  time and the growing card never runs into it. Every later scene follows from `timeline.ts`, so
+  the flip is on 488 (not 476) and the pill on 612 (not 600). The pen takes 37 frames (the brief
+  said about 34) for a natural hand.
+- **The card's exit accelerates** (progress², as measured in the reference) instead of the
+  standard ease, which stalled before the flip.
+- **The sound** (Yash, 2026-10-16, after STOP 3: "i don't like the sound and stuff, put some good
+  trendy song"): the brief asked for Kenney effects and, at most, a quiet music bed. The film now
+  has "Brazilian Phonk" up front, cut like an edit (the drop on the whip, a dead stop on the
+  flip, the drop again on "a JPEG."), and Pixabay effects: whooshes, a riser, a boom, a recorded
+  marker and pops (`CREDITS.md`).
+- **Motion blur is the film's own sub-frame sampler** (`components/SubFrameMotionBlur.tsx`):
+  Remotion's canvas blur drew the 3D phone black, and `CameraMotionBlur` froze the wrong frames
+  inside an offset `Sequence`. The phone's faces each carry their own full transform with
+  `backface-visibility: hidden`, because Chrome's sorting dropped faces under a shared
+  `preserve-3d`.

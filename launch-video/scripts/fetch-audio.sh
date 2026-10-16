@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Downloads the three films' music and sound effects and prepares them in public/audio/ (gitignored).
+# Downloads the films' music and sound effects and prepares them in public/audio/ (gitignored).
 # Run from launch-video/: `bash scripts/fetch-audio.sh`. Needs curl, unzip and ffmpeg.
 #
 # Every source and licence is in CREDITS.md, for both films. To swap the music, change MUSIC_URL and
@@ -58,6 +58,18 @@ SNEAKER_DROP_FIRST_PART_START_SECONDS=$(awk -v lead="$SNEAKER_DROP_CUT_LEAD_SECO
 SNEAKER_DROP_FIRST_PART_END_SECONDS=$(awk -v lead="$SNEAKER_DROP_CUT_LEAD_SECONDS" 'BEGIN { printf "%.4f", 30.0589 - lead }')
 SNEAKER_DROP_SECOND_PART_START_SECONDS=$(awk -v lead="$SNEAKER_DROP_CUT_LEAD_SECONDS" 'BEGIN { printf "%.4f", 127.5546 - lead }')
 
+# The Pass chat film (docs/pass-chat-video-prompt.md): "Brazilian Phonk" by ScrewedQueen, Pixabay
+# Content License, Content ID registered (CREDITS.md; the film isn't going on YouTube). Started so
+# the drop's first kick (58.850 s in the track) lands on film 5.6 s, the whip into the card: the
+# chat sits on the track's bass-less part, the bass comes in on the whip. The film cuts it on the
+# flip to black and plays the drop again from "a JPEG." (src/pass-chat/components/PassChatSoundtrack.tsx).
+PASS_CHAT_MUSIC_PAGE_URL=https://pixabay.com/music/phonk-brazilian-phonk-468913/
+PASS_CHAT_MUSIC_URL='https://cdn.pixabay.com/download/audio/2026/01/19/audio_4c8ea2f921.mp3?filename=screwedqueen-brazilian-phonk-468913.mp3'
+PASS_CHAT_MUSIC_FILE_NAME=screwedqueen-brazilian-phonk-468913.mp3
+PASS_CHAT_MUSIC_START_SECONDS=53.250
+# The film plays up to 8.2 s of the file (the drop, again, under the end card); keep extra.
+PASS_CHAT_MUSIC_DURATION_SECONDS=12
+
 # Kenney's packs, CC0 (each zip includes License.txt).
 KENNEY_INTERFACE_SOUNDS_URL=https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip
 KENNEY_UI_AUDIO_URL=https://kenney.nl/media/pages/assets/ui-audio/490d233f68-1677590494/kenney_ui-audio.zip
@@ -78,6 +90,7 @@ download "$MUSIC_URL" "$MUSIC_FILE_NAME"
 MUSIC_PAGE_URL=$WAITLIST_MUSIC_PAGE_URL download "$WAITLIST_MUSIC_URL" "$WAITLIST_MUSIC_FILE_NAME"
 MUSIC_PAGE_URL=$SNEAKER_DROP_MUSIC_PAGE_URL download "$SNEAKER_DROP_MUSIC_URL" \
   "$SNEAKER_DROP_MUSIC_FILE_NAME"
+MUSIC_PAGE_URL=$PASS_CHAT_MUSIC_PAGE_URL download "$PASS_CHAT_MUSIC_URL" "$PASS_CHAT_MUSIC_FILE_NAME"
 download "$KENNEY_INTERFACE_SOUNDS_URL" kenney_interface-sounds.zip
 download "$KENNEY_UI_AUDIO_URL" kenney_ui-audio.zip
 download "$KENNEY_IMPACT_SOUNDS_URL" kenney_impact-sounds.zip
@@ -104,6 +117,8 @@ level_music() {
 level_music "$MUSIC_FILE_NAME" "$MUSIC_START_SECONDS" "$MUSIC_DURATION_SECONDS" music.wav
 level_music "$WAITLIST_MUSIC_FILE_NAME" "$WAITLIST_MUSIC_START_SECONDS" \
   "$WAITLIST_MUSIC_DURATION_SECONDS" waitlist-music.wav
+level_music "$PASS_CHAT_MUSIC_FILE_NAME" "$PASS_CHAT_MUSIC_START_SECONDS" \
+  "$PASS_CHAT_MUSIC_DURATION_SECONDS" pass-chat-music.wav
 
 # The Sneaker drop film's clip A, cut exactly as approved (first part's tail and second part's head
 # faded 15 ms, so the join on the downbeat doesn't click), then levelled like the others. The
@@ -136,5 +151,61 @@ ffmpeg -nostdin -v error -y -f lavfi \
 ffmpeg -nostdin -v error -y -f lavfi \
   -i "aevalsrc='(0.8*sin(2*PI*$WAITLIST_TONE_HIGH_HERTZ*t)+0.2*sin(2*PI*$WAITLIST_TONE_LOW_HERTZ*t))*min(t/0.005\,1)*exp(-t/0.35)':s=$SAMPLE_RATE:d=1.4" \
   "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/waitlist-sfx-tone.wav"
+
+# The Pass chat film's effects (docs/pass-chat-video-prompt.md §5, CREDITS.md): Pixabay sound
+# effects, Pixabay Content License, none tagged AI generated. Each is trimmed to start on its sound
+# (src/pass-chat/sound-cues.ts places each by where its hit or peak then falls).
+prepare_effect() {
+  local pageUrl=$1 url=$2 startSeconds=$3 outputFileName=$4 filters=${5:-anull}
+  local fileName=${url##*filename=}
+  MUSIC_PAGE_URL=$pageUrl download "$url" "$fileName"
+  ffmpeg -nostdin -v error -y -i "$DOWNLOAD_DIRECTORY/$fileName" \
+    -af "atrim=start=$startSeconds,asetpts=PTS-STARTPTS,$filters" \
+    "${TO_WAV[@]}" "$OUTPUT_DIRECTORY/$outputFileName"
+}
+# The phone swings in: "Simple Whoosh" by DRAGON-STUDIO.
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-simple-whoosh-382724/ \
+  'https://cdn.pixabay.com/download/audio/2025/07/30/audio_b3087a581e.mp3?filename=dragon-studio-simple-whoosh-382724.mp3' \
+  0.06 pass-chat-sfx-whoosh-in.wav
+# A bubble lands: "Pop" by DRAGON-STUDIO, a short mouth pop. A received bubble as it is; a sent one
+# two semitones higher, as chat apps pitch their own messages up.
+PASS_CHAT_POP_PAGE_URL=https://pixabay.com/sound-effects/film-special-effects-pop-402324/
+PASS_CHAT_POP_URL='https://cdn.pixabay.com/download/audio/2025/09/09/audio_3023b9bde2.mp3?filename=dragon-studio-pop-402324.mp3'
+prepare_effect "$PASS_CHAT_POP_PAGE_URL" "$PASS_CHAT_POP_URL" 0.16 pass-chat-sfx-pop-received.wav \
+  "atrim=end=0.4"
+prepare_effect "$PASS_CHAT_POP_PAGE_URL" "$PASS_CHAT_POP_URL" 0.16 pass-chat-sfx-pop-sent.wav \
+  "atrim=end=0.4,aresample=$SAMPLE_RATE,asetrate=$SAMPLE_RATE*1.12246,aresample=$SAMPLE_RATE"
+# The last message read, the build into the spin: "Sharp Riser" by CreatorsHome, which ends on its
+# peak.
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-sharp-riser-327342/ \
+  'https://cdn.pixabay.com/download/audio/2025/04/14/audio_743d7b17e6.mp3?filename=creatorshome-sharp-riser-327342.mp3' \
+  0.04 pass-chat-sfx-riser.wav
+# The spin's whip into the card: "Whoosh Cinematic" by LordSonny, a deep whoosh (its decoded peak
+# is over 0 dBFS, so it comes down 3 dB before the 16-bit file).
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-whoosh-cinematic-161021/ \
+  'https://cdn.pixabay.com/download/audio/2023/08/06/audio_766a043a34.mp3?filename=lordsonny-whoosh-cinematic-161021.mp3' \
+  0.06 pass-chat-sfx-whip.wav "volume=-3dB"
+# The shoes burst out: "Quick Whoosh" by DRAGON-STUDIO.
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-quick-whoosh-405448/ \
+  'https://cdn.pixabay.com/download/audio/2025/09/16/audio_6839dcc6b7.mp3?filename=dragon-studio-quick-whoosh-405448.mp3' \
+  0.14 pass-chat-sfx-burst.wav
+# The flip to black, where the music cuts: "Cinematic Boom" by LordSonny, its tail ringing under the
+# pen.
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-cinematic-boom-171285/ \
+  'https://cdn.pixabay.com/download/audio/2023/10/13/audio_98eec69070.mp3?filename=lordsonny-cinematic-boom-171285.mp3' \
+  0.42 pass-chat-sfx-boom.wav "volume=-1dB"
+# The pen: one second of a continuous stroke from "fast and slow marker strokes"
+# (freesound_community), its rumble cut; each stroke of "isn’t" plays its own part of it.
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-fast-and-slow-marker-strokes-82047/ \
+  'https://cdn.pixabay.com/download/audio/2022/03/15/audio_744997de40.mp3?filename=freesound_community-fast-and-slow-marker-strokes-82047.mp3' \
+  0.10 pass-chat-sfx-pen.wav "atrim=end=1.0,highpass=f=300:poles=2,volume=14dB"
+# "a JPEG." slides in: "Swoosh Sound Effect for Fight Scenes or Transitions 2" by dheerajakam4jor.
+prepare_effect https://pixabay.com/sound-effects/film-special-effects-swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890/ \
+  'https://cdn.pixabay.com/download/audio/2023/05/15/audio_0a21fc7692.mp3?filename=dheerajakam4jor-swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890.mp3' \
+  0.04 pass-chat-sfx-slide.wav
+# The pill lands: "Clean Minimal Pop" by DRAGON-STUDIO.
+prepare_effect https://pixabay.com/sound-effects/clean-minimal-pop-467466/ \
+  'https://cdn.pixabay.com/download/audio/2026/01/16/audio_01a85379c2.mp3?filename=dragon-studio-clean-minimal-pop-467466.mp3' \
+  0.14 pass-chat-sfx-pill.wav "atrim=end=0.5"
 
 ls -1 "$OUTPUT_DIRECTORY"/*.wav

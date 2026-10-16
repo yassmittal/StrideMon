@@ -2,6 +2,15 @@ import { Composition, Folder, Still } from 'remotion'
 import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
 import { RunScreenCheck } from './checks/RunScreenCheck'
 import { LaunchFilm } from './LaunchFilm'
+import { PassChatFilm, PassChatScene } from './pass-chat/PassChatFilm'
+import {
+  PASS_CHAT_DURATION_IN_FRAMES,
+  PASS_CHAT_FRAMES_PER_SECOND,
+  PASS_CHAT_HEIGHT,
+  PASS_CHAT_WIDTH,
+  type PassChatSceneName,
+  passChatScenes,
+} from './pass-chat/timeline'
 import { PitchFilm } from './pitch/PitchFilm'
 import {
   PITCH_DURATION_IN_FRAMES,
@@ -233,6 +242,30 @@ export function RemotionRoot() {
         fps={PITCH_FRAMES_PER_SECOND}
         durationInFrames={PITCH_DURATION_IN_FRAMES}
       />
+      <Composition
+        id="PassChat16x9"
+        component={PassChatFilm}
+        width={PASS_CHAT_WIDTH}
+        height={PASS_CHAT_HEIGHT}
+        fps={PASS_CHAT_FRAMES_PER_SECOND}
+        durationInFrames={PASS_CHAT_DURATION_IN_FRAMES}
+      />
+      <Folder name="PassChatScenes-16x9">
+        {(Object.keys(passChatScenes) as PassChatSceneName[]).map((sceneName) => (
+          <Composition
+            key={sceneName}
+            id={`PassChat-${sceneName}`}
+            component={PassChatScene}
+            width={PASS_CHAT_WIDTH}
+            height={PASS_CHAT_HEIGHT}
+            fps={PASS_CHAT_FRAMES_PER_SECOND}
+            durationInFrames={
+              passChatScenes[sceneName].endFrame - passChatScenes[sceneName].startFrame
+            }
+            defaultProps={{ sceneName }}
+          />
+        ))}
+      </Folder>
       <Folder name="Checks">
         <Composition
           id="SneakerDropSync"

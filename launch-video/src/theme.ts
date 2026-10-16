@@ -29,10 +29,33 @@ export const colors = {
   crossMark: '#999999',
 } as const
 
+/**
+ * The Pass chat film's own colours (docs/pass-chat-video-prompt.md §3). Each is a token above or
+ * one flat step from it. The sky photo is the film's only gradient; the shoes keep the art's own.
+ */
+export const passChatColors = {
+  /** The phone's front and back: the lime itself, as a fill. */
+  phoneBody: colors.highlight,
+  /** Derived: the phone's sides, lime one flat step darker (80%), so its depth reads without shading. */
+  phoneSide: '#9ACC00',
+  /** Derived: the side buttons and the camera block's rim, a second step darker (64%). */
+  phoneDetail: '#7BA300',
+  /** The bezel round the screen, the punch-hole and the lenses: the art's ink. */
+  phoneInk: colors.darkPanel,
+  /** The chat's screen: Lusion's dark white, as the app's secondary surfaces use it. */
+  chatScreen: colors.surfaceMuted,
+  /** The compose field and the "+" button: white, floating on the screen. */
+  chatField: colors.surface,
+  /** The bubbles: the site's grey-blue pill colour, almost exactly the reference's slate. */
+  chatBubble: colors.primary,
+} as const
+
 /** apps/mobile/src/theme/fonts.ts. The families are loaded in fonts.ts. */
 export const fontFamilies = {
   satoshi: 'Satoshi',
   mono: 'IBM Plex Mono',
+  /** The Pass chat film's script face, for its lime keywords and "isn’t" (fonts.ts). */
+  script: 'Knewave',
 } as const
 
 /** Satoshi 400 for everything readable, 500 only for uppercase meta and pills. */
