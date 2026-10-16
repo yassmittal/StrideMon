@@ -1,5 +1,5 @@
 ---
-status: draft
+status: posted
 account: yash_mittal_dev
 slot: 2026-10-14 16:00 UTC   # proposed: the day after 1 of 3 (the GPS checks)
 format: thread

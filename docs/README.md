@@ -36,6 +36,7 @@ these documents, and when a decision changes, the doc changes first.
 | 23 | [`play-store-release.md`](play-store-release.md) | Publishing the Android app on Google Play, from the developer account to the production rollout. |
 | 24 | [`founding-pass-brief.md`](founding-pass-brief.md) | The Founding Pass: 1,000 one-of-a-kind designs, minted gas-free as early access, each with a Founder Sneaker. The idea, flow, research and architecture; the decision is D-041. |
 | 25 | [`founding-pass/`](founding-pass/README.md) | Building the Founding Pass: one file per part and one part per session, with the prompt to start each one. Read its `README.md` first, then the part you're on. |
+| 26 | [`sweatcoin-todo.md`](sweatcoin-todo.md) | Planning what's next: what we can learn from Sweatcoin, as a TODO before early access, after it, and later. Nothing in it is decided yet. |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1270x760" />
+    <title>Gallery 5: Drawn by a contract</title>
+    <link rel="stylesheet" href="product-hunt.css" />
+    <style>
+      /* SneakerArtRenderer's own output for Sneaker #2 at level 1, durability 98 (launch-video/public/
+         sneaker/, FACTS §8): the state the MonadVision screenshot beside it shows (FACTS §7: say "the
+         app and the explorer", not MetaMask). */
+      .split .text h1 {
+        margin-top: auto;
+        font-size: 68px;
+      }
+      .picture {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+      }
+      .picture .phone {
+        width: 236px;
+      }
+      .card {
+        width: 360px;
+        border-radius: 10px;
+        overflow: hidden;
+        outline: 1px solid var(--line-on-dark);
+        outline-offset: -1px;
+      }
+      .label {
+        margin-top: 14px;
+        color: var(--muted-on-dark);
+      }
+    </style>
+  </head>
+  <body class="gallery dark">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">On-chain art</span>
+      <span class="mono meta">05 / 06</span>
+    </div>
+
+    <div class="split">
+      <div class="text">
+        <h1>No image file.<br />A contract<br />draws it.</h1>
+        <p class="lede">The Sneaker’s picture is an SVG drawn from its own stats, so it changes as the Sneaker does. The app and the explorer show the same one.</p>
+      </div>
+      <div class="picture">
+        <figure>
+          <div class="card art" data-svg="../../../launch-video/public/sneaker/sneaker-0002-level-01-durability-098.svg"></div>
+          <figcaption class="meta label">From the contract • tokenURI</figcaption>
+        </figure>
+        <figure>
+          <!-- screenshots.ts: explorerNft. -->
+          <div class="phone"><img src="../../../website/public/screenshots/09-explorer-nft.png" alt="" /></div>
+          <figcaption class="meta label">On MonadVision</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">ERC-721 • Verified on Monad testnet</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+
+    <script src="../../instagram/design/inline-svg.js"></script>
+  </body>
+</html>

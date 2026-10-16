@@ -1592,3 +1592,90 @@ Made 2026-10-13, from Yash's feedback on the live site.
 - **Trade-off:** EAS build pages expire with the free plan's artifacts (about 30 days), and a new
   `demo` build gets a new page, so the link is updated by hand with each build until Google Play
   replaces it. The music adds 0.9 MB, loaded only after a press on play.
+
+## D-053 — StrideMon on Instagram, from `social/instagram/`
+
+Made 2026-10-16, when Yash asked for Instagram launch assets.
+
+- **Decision:**
+  1. **Same setup as X (D-036):** Markdown post files with `approved:` as the only gate, the same
+     `voice.md`, facts and disclaimers, and posting by hand. Claude drafts and never posts,
+     schedules, logs in or connects a tool. Site links carry `?source=ig-stridemon` (D-037).
+  2. **`social/instagram/`** holds the profile copy, the first nine feed posts (in posting order,
+     so the grid alternates dark and light), seven Stories for five Highlights, and `design/`: one
+     HTML page per image, a shared `instagram.css`, and `render.sh`, which screenshots each page at
+     the size in its `<meta name="canvas">` with headless Chrome into the gitignored
+     `social/media/instagram/`. The art is read from `website/public/`, `launch-video/public/` and
+     `packages/contracts/art/`, never copied, and inlined so IBM Plex Mono reaches the contract's
+     own SVGs.
+  3. **Sizes:** feed images are 1080 × 1350 (4:5) with nothing that matters within 84 px of a side,
+     because the profile grid shows a 3:4 crop. Stories, Reel covers and Highlight covers are
+     1080 × 1920. Reels reuse the films' 9:16 cuts in `launch-video/out/`.
+  4. **Hashtags:** up to three plain topical ones a post (Instagram's cap is five), never
+     crypto-farming ones. **No Boost or ads.**
+- **Why:** Instagram reaches people who walk and run, not only crypto readers, and the films and
+  art already exist. HTML pages share the X posters' look and rebuild in one command.
+- **Trade-off:** captions can't hold links, so everything goes through the bio link and Story link
+  stickers. The films' Pixabay music is Content ID registered, so Instagram may flag a Reel; the
+  answer is the licence, and both films read muted. The planned mint dates are baked into four
+  images, so a date change means a re-render.
+- **Revisit when:** the mint dates are final (Part 10), or the Android app is on Google Play.
+
+## D-054 — The Product Hunt launch, from `social/product-hunt/`
+
+Made 2026-10-16, when Yash asked for help launching StrideMon on Product Hunt.
+
+- **Decision:**
+  1. **Same rules as X and Instagram (D-036, D-053):** `social/product-hunt/README.md` holds every
+     form field ready to paste, the first comment, answers for the comments and the launch-day
+     checks, under `voice.md`. `approved:` is the only gate. Claude drafts and never submits,
+     schedules, logs in or comments.
+  2. **The gallery** is six 1270 × 760 HTML pages in `social/product-hunt/design/`. They reuse
+     `instagram.css` and `inline-svg.js`, and `render.sh` screenshots them with headless Chrome
+     into the gitignored `social/media/product-hunt/`, with a 240 × 240 thumbnail from the app
+     icon. Phone screens and art are read from `website/public/` and `launch-video/public/`, never
+     copied.
+  3. **Links stay plain** (`https://stridemon.xyz`): Product Hunt rejects tracking links, so no
+     `?source=`.
+  4. **Proposed date: Tue 2026-12-01, 12:01 AM PST**, the day after the open mint opens (Yash
+     decides). The description holds on any date; the first comment has a variant for launching
+     before early access starts.
+- **Why:** a product gets one real launch, so it should land when a visitor can mint a pass and
+  play the same day, with nothing reset afterwards (D-049). Before then, the only actions are a
+  waitlist and a demo build whose progress resets on 21 November.
+- **Trade-off:** six more weeks without the launch's reach. On launch day every mint needs an email
+  code, and Brevo's free plan sends 300 a day.
+- **Revisit when:** Part 10 sets the final dates, or the Android app is on Google Play.
+
+## D-055 — The waitlist's joined card and its X share page
+
+Made 2026-10-16, when Yash asked for a proper card after joining the waitlist, with a way to share
+it on X.
+
+- **Decision:**
+  1. **Joining shows a card, not a line.** The form gives way to a light ticket in the Founding
+     Pass card's look (hairlines, "+" marks, mono labels): three passes' shoes, "You're on the
+     list.", the email that was entered (so a typo shows) and when the waitlist window opens, in
+     the visitor's time. Under it: the one-email promise, **Post on X**, **Heart your favourites**
+     (`/pass#gallery`) and **Use a different email**, which brings the form back with the email
+     filled in. A new and a repeat email still see the same thing (D-037).
+  2. **Post on X opens X's composer in a new tab** (`x.com/intent/post`) with the post written
+     out under `social/voice.md`: what StrideMon is in one line, the waitlist's 48 hours, one
+     `@stridemon` tag, no hashtags, no emoji and no STRIDE amount. Nothing is posted for anyone:
+     they edit and send it themselves.
+  3. **The shared link is a page of its own, `/waitlist`**, so X shows a card made for it: its
+     own 1200 × 630 Open Graph image ("Join the waitlist", four shoes, the 48 hours). The page is
+     the waitlist section as its `<h1>`, then the Founding Pass section and How it works, so a
+     friend who taps the card can join without scrolling a whole landing page. It's in the
+     sitemap. The link carries `?source=x-waitlist`, which the form stores (D-037), so we can count
+     sign-ups that came from a shared post.
+  4. **No image to download.** X's composer can't take an attachment from a link, so a picture
+     would have to be saved and attached by hand; the link's card does the same job in one press.
+- **Why:** the moment after someone joins is when they're most likely to tell a friend, and a bare
+  line gave them nothing to do. The site is a static export (D-035), so a card per person (their
+  name, a place in the queue) would need a server, and the API never says whether an email is new.
+- **Trade-off:** one more page and share image to keep in step with the waitlist copy. Every
+  shared card is the same picture. After the waitlist window opens, old posts still say "Join the
+  waitlist", and the page shows the closed state (`WaitlistPhaseGate`).
+- **Revisit when:** the waitlist window opens (retire or repoint the page), or `x-waitlist`
+  sign-ups show the share isn't used.

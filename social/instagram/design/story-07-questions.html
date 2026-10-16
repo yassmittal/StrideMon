@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1920" />
+    <title>Story: questions</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* The website's own answers (website/src/content/faq.ts) and voice.md's standing answers.
+         If one changes there, change it here. */
+      .rows {
+        margin-top: auto;
+        border-top: 2px solid var(--black);
+      }
+      .row {
+        display: block;
+        padding: 30px 0;
+      }
+      .row:first-child {
+        border-top: none;
+      }
+      .row .title {
+        font-size: 36px;
+      }
+      .row .body {
+        font-size: 27px;
+      }
+    </style>
+  </head>
+  <body class="story">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • Questions</span>
+      <span class="meta">Monad testnet</span>
+    </div>
+
+    <h1 class="large">Questions.</h1>
+
+    <div class="rows">
+      <div class="row">
+        <p class="title">Is it live?</p>
+        <p class="body">Yes, on Monad testnet, on Android. iOS comes later.</p>
+      </div>
+      <div class="row">
+        <p class="title">Do I need crypto?</p>
+        <p class="body">No money. A free wallet such as MetaMask, with Monad Testnet added. New players get a little testnet MON for gas.</p>
+      </div>
+      <div class="row">
+        <p class="title">Is STRIDE worth money?</p>
+        <p class="body">No. It’s a testnet token for the game. There’s no token sale and no airdrop.</p>
+      </div>
+      <div class="row">
+        <p class="title">Is the Founding Pass free?</p>
+        <p class="body">Yes. Minting is free, and there’s no gas to pay. It can’t be sent or sold.</p>
+      </div>
+      <div class="row">
+        <p class="title">Can I cheat by driving?</p>
+        <p class="body">No. Minutes above 20 km/h don’t count.</p>
+      </div>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">More answers</span>
+      <span class="mono meta">stridemon.xyz/help</span>
+    </div>
+  </body>
+</html>

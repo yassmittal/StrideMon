@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>The rules</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* Today's on-chain values (SneakerGame.getGameConfig, game-rules.md, launch-video/FACTS.md §2). */
+      .rows {
+        margin-top: auto;
+        border-top: 2px solid var(--black);
+      }
+      .row {
+        padding: 30px 0 28px;
+      }
+      .row:first-child {
+        border-top: none;
+      }
+      .row .figure {
+        font-size: 72px;
+      }
+    </style>
+  </head>
+  <body class="post">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • The rules</span>
+      <span class="meta">Monad testnet</span>
+    </div>
+
+    <h1 class="medium">The rules live<br />in the contract.</h1>
+
+    <div class="rows">
+      <div class="row">
+        <span class="mono figure">10</span>
+        <div>
+          <p class="title">Energy</p>
+          <p class="body">1 point is 1 rewarded minute. One point comes back every 30 minutes.</p>
+        </div>
+      </div>
+      <div class="row">
+        <span class="mono figure">0.5</span>
+        <div>
+          <p class="title">STRIDE a minute, per efficiency point</p>
+          <p class="body">A new Sneaker has efficiency 10, so 5 STRIDE a minute.</p>
+        </div>
+      </div>
+      <div class="row">
+        <span class="mono figure">+2</span>
+        <div>
+          <p class="title">Efficiency per level</p>
+          <p class="body">An upgrade costs 50 STRIDE × the level. Up to level 30.</p>
+        </div>
+      </div>
+      <div class="row">
+        <span class="mono figure">0.3</span>
+        <div>
+          <p class="title">Durability per minute</p>
+          <p class="body">Rounded up for each run. A repair costs STRIDE.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="disclaimer">The app only estimates. Monad testnet. STRIDE has no monetary value.</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

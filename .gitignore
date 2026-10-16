@@ -58,6 +58,9 @@ launch-video/public/audio/
 launch-video/public/pass-art/
 # The pitch video's reel copy, voice and music bed (launch-video/scripts/pitch-voice.ts, render-pitch.sh)
 launch-video/public/pitch/
+# The Pass chat film's shoes (cropped from the gallery cards) and sky photo, by
+# launch-video/scripts/copy-pass-chat-art.sh
+launch-video/public/pass-chat/
 # Social (social/, D-036): X-only images and clips, each rebuilt from the command in its post file
 social/media/
 # The Metropolis submission video: Recordly takes and the render cut from them (about 330 MB)

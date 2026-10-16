@@ -1,16 +1,21 @@
 type CrossMarksProps = {
   tone?: 'light' | 'dark'
+  /** How far in from the parent's corners the marks sit. A section's by default. */
+  insetClassName?: string
 }
 
 const corners = ['top-0 left-0', 'top-0 right-0', 'bottom-0 left-0', 'bottom-0 right-0'] as const
 
 // "+" marks on a section's four corners. The parent must be `relative`.
-export function CrossMarks({ tone = 'light' }: CrossMarksProps) {
+export function CrossMarks({
+  tone = 'light',
+  insetClassName = 'inset-3 md:inset-5',
+}: CrossMarksProps) {
   const colorClass = tone === 'dark' ? 'text-on-dark-secondary' : 'text-cross-mark'
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-3 md:inset-5 ${colorClass}`}
+      className={`pointer-events-none absolute ${insetClassName} ${colorClass}`}
     >
       {corners.map((cornerClass) => (
         <svg

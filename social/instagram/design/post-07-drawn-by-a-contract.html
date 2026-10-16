@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>Drawn by a contract</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* Both drawings are SneakerArtRenderer's own output for Sneaker #2, read with eth_call
+         (launch-video/public/sneaker/, FACTS §8). No Sneaker has reached level 5: the footer says
+         Example, and the captions describe how the art works, not a player's Sneaker. */
+      .pair {
+        margin-top: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 24px;
+      }
+      .card {
+        border-radius: 10px;
+        overflow: hidden;
+        outline: 1px solid var(--line-on-dark);
+        outline-offset: -1px;
+      }
+      .label {
+        margin-top: 18px;
+        color: var(--muted-on-dark);
+      }
+      .label .what {
+        display: block;
+        font-size: 28px;
+        color: #ffffff;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body class="post dark">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • On-chain art</span>
+      <span class="meta">Monad testnet</span>
+    </div>
+
+    <h1>No image file.<br />A contract<br />draws it.</h1>
+    <p class="lede">Your Sneaker’s picture is an SVG drawn from its own stats, so it changes as the Sneaker does.</p>
+
+    <div class="pair">
+      <figure>
+        <div class="card art" data-svg="../../../launch-video/public/sneaker/sneaker-0002-level-02-durability-060.svg"></div>
+        <figcaption class="label">
+          <span class="what">The lime fades as it wears</span>
+          <span class="mono meta">Durability 060</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="card art" data-svg="../../../launch-video/public/sneaker/sneaker-0002-level-05-durability-100.svg"></div>
+        <figcaption class="label">
+          <span class="what">One speed line per level</span>
+          <span class="mono meta">Level 05</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="meta-row footer">
+      <span class="meta">Example • Renderer output</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+
+    <script src="inline-svg.js"></script>
+  </body>
+</html>

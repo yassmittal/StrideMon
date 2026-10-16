@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1920" />
+    <title>Story: Founding Pass</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* All 1,000 designs, in number order, from the website's laced art. The open middle is for
+         Instagram's countdown sticker (stories.md). */
+      .flood {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: repeat(20, 1fr);
+        grid-template-rows: repeat(50, 1fr);
+        align-items: center;
+        justify-items: center;
+      }
+      .flood img {
+        width: 47px;
+        height: auto;
+      }
+      .box {
+        position: relative;
+        background: var(--off-white);
+        border-radius: 10px;
+      }
+      .headline {
+        padding: 44px 48px 48px;
+      }
+      .headline h1 {
+        margin-top: 48px;
+      }
+      .headline .lede {
+        margin-top: 24px;
+      }
+      .bottom {
+        margin-top: auto;
+        padding: 36px 48px 40px;
+      }
+      .bottom .date {
+        font-size: 64px;
+        line-height: 1;
+        margin-top: 18px;
+      }
+      .bottom .lede {
+        margin-top: 14px;
+      }
+    </style>
+  </head>
+  <body class="story">
+    <div class="flood"></div>
+
+    <div class="box headline">
+      <div class="meta-row">
+        <span class="meta">StrideMon • Founding Pass</span>
+        <span class="meta">Free</span>
+      </div>
+      <h1>1,000 Founding<br />Passes.</h1>
+      <p class="lede">Each design exists once. Mint one free, and the app gives you a Founder Sneaker in the same design.</p>
+    </div>
+
+    <div class="box bottom">
+      <div class="meta-row">
+        <span class="meta">The waitlist mints first</span>
+        <span class="mono meta">Planned</span>
+      </div>
+      <p class="mono date">28 NOV, 14:30 UTC</p>
+      <p class="lede">Then anyone can mint what’s left, from 30 November.</p>
+    </div>
+
+    <script>
+      const flood = document.querySelector('.flood')
+      for (let designNumber = 1; designNumber <= 1000; designNumber++) {
+        const image = document.createElement('img')
+        image.src = `../../../website/public/pass-art/laced/${String(designNumber).padStart(4, '0')}.svg`
+        flood.append(image)
+      }
+    </script>
+  </body>
+</html>

@@ -133,3 +133,134 @@ The launch film's Kenney CC0 files (above), cued from the film's own beats in
 
 The music ducks 4 dB under the thumps, the tap and the tone, as in the launch film. No whooshes,
 risers or coin sounds.
+
+# The Sneaker drop film
+
+The Sneaker drop film (`SneakerDrop4x5`, `SneakerDrop9x16`, `docs/sneaker-drop-video-prompt.md`).
+Music only: no sound effects, because the track's own hits are the sync. Its file is in
+`public/audio/` too, made by the same `bash scripts/fetch-audio.sh`.
+
+## Music
+
+**"Drift Phonk" by Sub_Clair** (chosen by Yash, 2026-10-14)
+
+- Page: https://pixabay.com/music/phonk-drift-phonk-607579/
+- File: `https://cdn.pixabay.com/download/audio/2026/09/21/audio_6f38020d16.mp3?filename=sub_clair-drift-phonk-607579.mp3` (2:12.6, 256 kbps)
+- Licence: **Pixabay Content License** (free for commercial use, no attribution required). Genre
+  Phonk. Not marked as AI generated, not tagged Vocal.
+- **Content ID registered.** X has no Content ID. On YouTube, expect an automatic claim on the
+  Short: dispute it with the Pixabay Content License (the track page states it).
+- Used: clip A, Yash's cut: source bar 1 to bar 11 (the intro bar, the build, the drop and one
+  8-bar section), then bar 50 to the end (the last bar and its tail), 96.004 BPM. Each cut point
+  sits 45 ms before the approved one (5.0149, 30.0139 and 127.5096 s instead of 5.0599, 30.0589 and
+  127.5546 s): every kick's attack starts about 35 ms before the measured grid, so a cut on the
+  grid fell inside the join's kick and the 15 ms fades notched it. Now the join is in the bass just
+  before the bar-50 kick, which keeps its whole attack, and each kick starts on its beat's frame.
+  The bars and their order are unchanged. Levelled to −19 LUFS like the other films' music; the
+  film is `sneaker-drop-music.wav` (30.09 s).
+- The hit map (`src/sneaker-drop/hits.ts`) is measured from that file by
+  `scripts/build-sneaker-drop-hits.py`.
+
+# The Pass chat film
+
+The Pass chat film (`PassChat16x9`, `docs/pass-chat-video-prompt.md`). Its music and effects are in
+`public/audio/` too, made by the same `bash scripts/fetch-audio.sh`; its sky and shoes are in
+`public/pass-chat/`, made by `bash scripts/copy-pass-chat-art.sh`.
+
+## The sky photo
+
+**"Sky Clouds Atmosphere" by elg21** (Yash's pick of three, 2026-10-16)
+
+- Page: https://pixabay.com/photos/sky-clouds-atmosphere-weather-7158340/
+- File: the original, 5568 × 3712, `elg21-sky-7158340.jpg` (SHA-256 in `copy-pass-chat-art.sh`),
+  downloaded 2026-10-16. Pixabay serves the original only through the page's Download button, so
+  it's downloaded by hand into `public/pass-chat/source/`; the script checks it and scales it to
+  3840 px wide.
+- Licence: **Pixabay Content License** (free for commercial use, no attribution required), checked
+  on the page 2026-10-16. Not tagged as AI generated.
+- Runners-up: "Sky Clouds Blue White" by engin_akyurt
+  (https://pixabay.com/photos/sky-clouds-blue-white-atmosphere-3027856/) and "Clouds Weather Blue"
+  by elg21 (https://pixabay.com/photos/clouds-weather-blue-shapes-cumulus-9560672/), same licence.
+
+## The script face
+
+**Knewave** by Tyler Finck, **SIL Open Font License 1.1**, loaded from Google Fonts by
+`@remotion/google-fonts` (`src/fonts.ts`). The OFL allows its use in video. Chosen over Kaushan
+Script, Caveat Brush and Permanent Marker (Yash, 2026-10-16) as the closest to the reference's
+heavy, slanted, round-ended marker. `scripts/build-pass-chat-handwriting.py` reads the same file
+for the handwritten "isn’t".
+
+## Music
+
+**"Brazilian Phonk" by ScrewedQueen** (2026-10-16, after Yash asked for a trendier song and new
+sounds in place of "Playful Future Bass" and the Kenney effects)
+
+- Page: https://pixabay.com/music/phonk-brazilian-phonk-468913/
+- File: `https://cdn.pixabay.com/download/audio/2026/01/19/audio_4c8ea2f921.mp3?filename=screwedqueen-brazilian-phonk-468913.mp3` (1:23)
+- Licence: **Pixabay Content License** (free for commercial use, no attribution required), checked
+  on the page 2026-10-16. Genre Phonk, Beats, Rap; not tagged as AI generated or Vocal. 301k
+  plays and 72k downloads on Pixabay.
+- **Content ID registered.** X has no Content ID. The film isn't going on YouTube (Yash), but if it
+  ever does, expect an automatic claim and dispute it with the Pixabay licence.
+- Used: from 53.250 s of the track (`PASS_CHAT_MUSIC_START_SECONDS`), levelled to −19 LUFS like
+  the other films' music and played at that level, up front (`PassChatSoundtrack.tsx`). The drop's
+  first kick (58.850 s in the track) lands on film frame 336, the spin's whip into the card: the
+  chat sits on the track's lighter, bass-less part (lifted 2 dB), the bass comes in on the whip.
+  The music dips 4 dB under the burst, stops dead on the flip to black (under the boom), and the
+  drop plays again from "a JPEG." (frame 543), fading out over the end card's last 1.2 s. The film
+  is `pass-chat-music.wav`.
+
+### Why it fits
+
+Picked by analysis (Claude can't listen): 673 Pixabay tracks from 18 searches (phonk, Brazilian
+phonk, funk, trap, hip hop beat, jersey club, hype, trending, TikTok, viral, fashion, sneakers,
+drill, hyperpop, bass house, energetic sport, stylish, swag), the 160 most downloaded without AI or
+Vocal tags measured with `librosa` for a drop (the bass rising at least 6 dB on a beat) that could
+land on the whip with a lighter stretch before it for the chat. This one is the most downloaded
+track with that shape, and the kick after the drop falls on the flip to black (film frame 488),
+so the music stops on a beat.
+
+### Runners-up (16:9 previews in `out/previews/`)
+
+| File | Track | Notes |
+|---|---|---|
+| `stridemon-pass-chat-16x9-music-A-screwedqueen-brazilian-phonk.mp4` | "Brazilian Phonk" by ScrewedQueen | The pick |
+| `…-music-B-screwedqueen-brazilian-phonk-122.mp4` | "Brazilian Phonk" by ScrewedQueen (https://pixabay.com/music/beats-brazilian-phonk-259862/), 122 BPM, from 2.810 s | The full beat from the first frame, a break under the spin, the drop on the whip. 63k downloads. Content ID registered |
+| `…-music-C-jersey-club.mp4` | "J Club Gyat Beat" by u_o2cq9r2jwj (https://pixabay.com/music/upbeat-j-club-gyat-beat-233516/), jersey club, 125 BPM, from 48.220 s | Bouncier; its bass drops out just before the whip and comes back on it. **No Content ID** |
+
+To switch, put its URL, file name and start in `scripts/fetch-audio.sh` (each start puts its drop
+on frame 336), run it, then `bash scripts/render.sh pass-chat-16x9 --audio-only`.
+
+Passed on: "Playful Future Bass" by penguinmusic (the STOP 3 bed; Yash, 2026-10-16: "i don't like
+the sound"), and its STOP 2 runners-up "Future Beats" by penguinmusic and "Lofi Upbeat" by
+Kulakovka.
+
+## Sound effects
+
+Pixabay sound effects, **Pixabay Content License** (free for commercial use, no attribution
+required), none tagged AI generated, each among the most downloaded for its search. They replace
+the Kenney set and the generated pen the brief asked for first (§5), because Yash asked for new
+sounds. `scripts/fetch-audio.sh` downloads each and trims it to start on its sound; the cues are in
+`src/pass-chat/sound-cues.ts`, placed so each hit or peak lands on its picture frame.
+
+| File | Used for | Source | Processing |
+|---|---|---|---|
+| `pass-chat-sfx-whoosh-in.wav` | the phone swings in | "Simple Whoosh" by DRAGON-STUDIO (https://pixabay.com/sound-effects/film-special-effects-simple-whoosh-382724/) | from 0.06 s |
+| `pass-chat-sfx-pop-received.wav` | a received bubble lands | "Pop" by DRAGON-STUDIO (https://pixabay.com/sound-effects/film-special-effects-pop-402324/) | from 0.16 s, 0.4 s long |
+| `pass-chat-sfx-pop-sent.wav` | a sent bubble lands | the same file | two semitones higher (`asetrate`), as chat apps pitch their own messages up |
+| `pass-chat-sfx-riser.wav` | the build from the last bubble into the spin, ending on the whip | "Sharp Riser" by CreatorsHome (https://pixabay.com/sound-effects/film-special-effects-sharp-riser-327342/) | from 0.04 s |
+| `pass-chat-sfx-whip.wav` | the spin's whip into the card, peaking on it | "Whoosh Cinematic" by LordSonny (https://pixabay.com/sound-effects/film-special-effects-whoosh-cinematic-161021/) | from 0.06 s, −3 dB (its decoded peak is over 0 dBFS) |
+| `pass-chat-sfx-burst.wav` | the shoes burst out | "Quick Whoosh" by DRAGON-STUDIO (https://pixabay.com/sound-effects/film-special-effects-quick-whoosh-405448/) | from 0.14 s |
+| `pass-chat-sfx-boom.wav` | the flip to black, where the music cuts; its tail rings under the pen | "Cinematic Boom" by LordSonny (https://pixabay.com/sound-effects/film-special-effects-cinematic-boom-171285/) | from 0.42 s, −1 dB |
+| `pass-chat-sfx-pen.wav` | each stroke of "isn’t", each on its own part of the file | "fast and slow marker strokes" by freesound_community (https://pixabay.com/sound-effects/film-special-effects-fast-and-slow-marker-strokes-82047/) | 0.10 s to 1.10 s (one continuous stroke), high-passed at 300 Hz, +14 dB |
+| `pass-chat-sfx-slide.wav` | the camera whips back as "a JPEG." slides in | "Swoosh Sound Effect for Fight Scenes or Transitions 2" by dheerajakam4jor (https://pixabay.com/sound-effects/film-special-effects-swoosh-sound-effect-for-fight-scenes-or-transitions-2-149890/) | from 0.04 s |
+| `pass-chat-sfx-pill.wav` | the pill lands | "Clean Minimal Pop" by DRAGON-STUDIO (https://pixabay.com/sound-effects/clean-minimal-pop-467466/) | from 0.14 s, 0.5 s long |
+
+## Mix
+
+The music is up front now, at full level, and the effects sit on it. Measured in each effect's
+loudest 100 ms against the music under it: the pops 7–9 dB over it, the whip, the slide and the
+burst 6–10 dB (the music dips 4 dB for the burst), the riser 2 dB as it peaks, the boom alone on
+black. The pops are tonal (600–1200 Hz) and the track's cowbells and hats fill 1–5 kHz, so they
+read by pitch rather than level there. `scripts/render.sh pass-chat-16x9` masters it like the other films (limiter at
+−3 dBFS, two-pass loudnorm to −14 LUFS, −1 dBTP).

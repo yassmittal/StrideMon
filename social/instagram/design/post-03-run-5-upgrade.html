@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1350" />
+    <title>How a run works, 5 of 5</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* The recorded repair and upgrade (launch-video/FACTS.md §5); 6 STRIDE a minute is 0.5 × 12. */
+      .panel {
+        margin-top: auto;
+        padding: 36px 48px 36px;
+      }
+      .changes .row {
+        grid-template-columns: 1fr auto;
+        border-top-color: var(--line-on-dark);
+        padding: 28px 0;
+      }
+      .changes .row:first-child {
+        padding-top: 14px;
+      }
+      .changes .row:last-child {
+        padding-bottom: 10px;
+      }
+      .change {
+        font-size: 40px;
+        text-align: right;
+      }
+      .change .from {
+        color: var(--muted-on-dark);
+      }
+    </style>
+  </head>
+  <body class="post">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Step 4</span>
+      <span class="mono meta">05 / 05</span>
+    </div>
+
+    <h1 class="medium">Repair it.<br />Level it up.</h1>
+    <p class="lede">Spend STRIDE from your own wallet. Each level adds 2 efficiency, so every minute pays more.</p>
+
+    <section class="panel">
+      <div class="rows changes">
+        <div class="row">
+          <span class="meta">Durability</span>
+          <span class="mono change"><span class="from">098 →</span> 100</span>
+        </div>
+        <div class="row">
+          <span class="meta">Level</span>
+          <span class="mono change"><span class="from">01 →</span> 02</span>
+        </div>
+        <div class="row">
+          <span class="meta">Efficiency</span>
+          <span class="mono change"><span class="from">10 →</span> 12</span>
+        </div>
+        <div class="row">
+          <span class="meta">STRIDE a minute</span>
+          <span class="mono change"><span class="from">5 →</span> <span class="lime">6</span></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="disclaimer">Monad testnet. STRIDE has no monetary value.</span>
+      <span class="mono meta">stridemon.xyz</span>
+    </div>
+  </body>
+</html>

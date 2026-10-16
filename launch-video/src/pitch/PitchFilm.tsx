@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { AbsoluteFill, interpolate, Sequence, staticFile } from 'remotion'
 import { ArrowIcon } from '../components/ArrowIcon'
 import { toSneakerArtFileName } from '../components/SneakerArt'
+import { SvgArt, useSvgMarkups } from '../components/svg-markup'
 import {
   colors,
   floatingPillShadow,
@@ -13,7 +14,6 @@ import {
   readSectionText,
   type SectionTone,
 } from '../theme'
-import { SvgArt, useSvgMarkups } from '../waitlist/components/svg-markup'
 import { toPassCardPath } from '../waitlist/pass-art'
 import {
   Captions,

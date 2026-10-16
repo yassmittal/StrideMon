@@ -21,6 +21,8 @@ The two accounts never post the same text: the second one quotes or reposts, and
 | `templates/` | Start every post from one of these |
 | `reviews.md` | The weekly review, newest first |
 | `media/` | X-only images and clips. **Gitignored**: each file's post says the command that rebuilds it |
+| `instagram/` | Instagram: profile, launch posts, Stories, Highlights and the HTML that renders their images (D-053). Its README says what differs from X |
+| `product-hunt/` | The Product Hunt launch: form copy, first comment, answers, checks, and the HTML that renders the gallery (D-054) |
 | `deltav/` | The DeltaV profile: rewards, unlock timeline, weekly update drafts (`updates/`), and how to earn believers and feedback |
 
 No tooling, no `package.json`, not a Bun workspace. Images and clips come from `ffmpeg` and

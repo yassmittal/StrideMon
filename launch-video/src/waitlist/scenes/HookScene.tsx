@@ -3,14 +3,14 @@ import { createElement, type ReactNode } from 'react'
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion'
 import { Drift } from '../../components/Drift'
 import { MaskedRise } from '../../components/MaskedRise'
-import { colors, easings, letterSpacings } from '../../theme'
-import { readWaitlistSceneDurationInFrames, toWaitlistSceneBeatFrame } from '../beats'
 import {
   parseSvgMarkup,
   readSvgAttributes,
   renderSvgElement,
   useSvgMarkups,
-} from '../components/svg-markup'
+} from '../../components/svg-markup'
+import { colors, easings, letterSpacings } from '../../theme'
+import { readWaitlistSceneDurationInFrames, toWaitlistSceneBeatFrame } from '../beats'
 import { hookContent } from '../content'
 import { waitlistLayout } from '../layout'
 import { founderSneakerFileNames, toFounderSneakerPath } from '../pass-art'

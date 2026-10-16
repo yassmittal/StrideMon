@@ -161,7 +161,8 @@ its own install (**not** a Bun workspace: never add it to the root `package.json
 The site is live and `github.com/yassmittal/StrideMon` is public; both are final (Yash, 2026-10-06).
 The page has a **waitlist** (D-037): `#waitlist` posts an email to the API's `POST /v1/waitlist`
 (`waitlistSignups`), the only route with CORS (`WAITLIST_ALLOWED_ORIGINS`). Email only, never a
-wallet; call it a waitlist, never a whitelist.
+wallet; call it a waitlist, never a whitelist. Joining shows a card with **Post on X**, which links
+`/waitlist?source=x-waitlist`, a page with its own share image (D-055).
 **Domain (D-040, 2026-10-07):** **`stridemon.xyz`** (Namecheap DNS) is the main domain. The site is
 `https://stridemon.xyz`; `www` and the old `stridemon.yashmittal.xyz` 308-redirect to it (Vercel
 domain redirects, not `vercel.json`, which missed the home page). The API is at `https://api.stridemon.xyz` (new builds and the
@@ -171,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-053.
+for it. The next free decision number is D-056.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -179,6 +180,16 @@ there and **never posts, schedules, logs in to X or calls its API**. Only Yash p
 posts with his name in `approved:`. Every STRIDE amount carries "Monad testnet. STRIDE has no
 monetary value." StrideMon is entered in Monad's **Metropolis** hackathon (submission deadline
 2026-10-14 09:29 IST).
+**Instagram (D-053, 2026-10-16):** `social/instagram/` holds the launch kit: profile copy, nine
+feed posts, seven Stories and five Highlight covers, rendered from `social/instagram/design/*.html`
+by `render.sh` into the gitignored `social/media/instagram/`. Same voice and rules as X: Claude
+drafts and never posts. Feed images are 4:5 with nothing that matters within 84 px of a side
+(the grid crops to 3:4).
+**Product Hunt (D-054, 2026-10-16):** `social/product-hunt/README.md` is the launch kit: every form
+field ready to paste, the first comment, answers and launch-day checks. Its six 1270 × 760 gallery
+images are rendered from `design/*.html` by `render.sh` into the gitignored
+`social/media/product-hunt/`. Claude drafts and never submits. The proposed launch is Tue 2026-12-01,
+the day after the open mint (Yash decides).
 **8.8 is done** (2026-10-06). **Now: the Metropolis submission**, tracked in
 `docs/hackathon-submission.md`. Done 2026-10-07: `LICENSE` (MIT), the README rewrite (Monad, "Try it",
 "Run your own stack", the session's transaction hashes), the dashboard copy and the submission post

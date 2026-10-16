@@ -4,15 +4,15 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion'
 import { ClipRise } from '../../components/ClipRise'
 import { Drift } from '../../components/Drift'
 import { MaskedRise } from '../../components/MaskedRise'
-import { colors, easings, letterSpacings } from '../../theme'
-import { readWaitlistSceneDurationInFrames, toWaitlistSceneBeatFrame } from '../beats'
 import {
   readSvgAttributes,
   SvgArt,
   type SvgElementDecorator,
   splitSubpaths,
   useSvgMarkups,
-} from '../components/svg-markup'
+} from '../../components/svg-markup'
+import { colors, easings, letterSpacings } from '../../theme'
+import { readWaitlistSceneDurationInFrames, toWaitlistSceneBeatFrame } from '../beats'
 import { passContent } from '../content'
 import { waitlistLayout } from '../layout'
 import {

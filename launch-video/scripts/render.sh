@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Renders one format of a film and its delivery files into out/.
 # Run from launch-video/: `bash scripts/render.sh 4x5` (or 16x9, 9x16) for the launch film, or
-# `bash scripts/render.sh waitlist-4x5` for the Founding Pass waitlist film. Needs ffmpeg and jq.
+# `bash scripts/render.sh waitlist-4x5` for the Founding Pass waitlist film, or
+# `bash scripts/render.sh sneaker-drop-4x5` (or sneaker-drop-9x16) for the Sneaker drop film, or
+# `bash scripts/render.sh pass-chat-16x9` for the Pass chat film.
+# Needs ffmpeg and jq.
 # `bash scripts/render.sh 4x5 --audio-only` keeps the last picture render and redoes only the sound
 # (after a music or mix change).
 #
@@ -14,17 +17,35 @@
 #      embeds.
 set -euo pipefail
 
-FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5 [--audio-only]}
+FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5|sneaker-drop-4x5|sneaker-drop-9x16|pass-chat-16x9 [--audio-only]}
 IS_AUDIO_ONLY=$([ "${2:-}" = --audio-only ] && echo yes || echo no)
-# The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts).
+# The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts); the
+# Sneaker drop film 1802 (src/sneaker-drop/beats.ts).
 LAUNCH_LAST_FRAME=2699
 WAITLIST_LAST_FRAME=1363
+SNEAKER_DROP_LAST_FRAME=1801
+# The Pass chat film is 702 frames (src/pass-chat/timeline.ts).
+PASS_CHAT_LAST_FRAME=701
 case "$FORMAT" in
   4x5) COMPOSITION_ID=Launch4x5 FILM_NAME=stridemon-launch-4x5 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
   16x9) COMPOSITION_ID=Launch16x9 FILM_NAME=stridemon-launch-16x9 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
   9x16) COMPOSITION_ID=Launch9x16 FILM_NAME=stridemon-launch-9x16 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
   waitlist-4x5)
     COMPOSITION_ID=Waitlist4x5 FILM_NAME=stridemon-waitlist-4x5 LAST_FRAME=$WAITLIST_LAST_FRAME
+    ;;
+  sneaker-drop-4x5)
+    COMPOSITION_ID=SneakerDrop4x5 FILM_NAME=stridemon-sneaker-drop-4x5
+    LAST_FRAME=$SNEAKER_DROP_LAST_FRAME
+    ;;
+  sneaker-drop-9x16)
+    COMPOSITION_ID=SneakerDrop9x16 FILM_NAME=stridemon-sneaker-drop-9x16
+    LAST_FRAME=$SNEAKER_DROP_LAST_FRAME
+    ;;
+  pass-chat-16x9)
+    COMPOSITION_ID=PassChat16x9 FILM_NAME=stridemon-pass-chat-16x9 LAST_FRAME=$PASS_CHAT_LAST_FRAME
+    # Its pops are sharper than the other films' effects, and the AAC encode overshot −1 dBTP by
+    # 0.3 dB at −2 dBFS: the limiter sits a dB lower for it.
+    LIMITER_CEILING_LINEAR=0.708
     ;;
   *) echo "Unknown format: $FORMAT" >&2 && exit 1 ;;
 esac
@@ -37,7 +58,7 @@ TARGET_TRUE_PEAK_DBTP=-1
 # mix's range is over the target, which would squash the intro).
 TARGET_LOUDNESS_RANGE_LU=20
 # −2 dBFS: a dB under the true-peak target, for inter-sample peaks and the AAC encode's overshoot.
-LIMITER_CEILING_LINEAR=0.794
+LIMITER_CEILING_LINEAR=${LIMITER_CEILING_LINEAR:-0.794}
 
 PICTURE_FILE=$WORK_DIRECTORY/$FORMAT-picture.mp4
 MIX_FILE=$WORK_DIRECTORY/$FORMAT-mix.wav
@@ -83,7 +104,8 @@ ffmpeg -nostdin -v error -y -i "$PICTURE_FILE" -i "$NORMALISED_MIX_FILE" \
   -color_primaries bt709 -color_trc bt709 -colorspace bt709 -color_range tv \
   -c:a aac -b:a 320k -ar 48000 -ac 2 -movflags +faststart "$FILM_FILE"
 
-if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ]; then
+if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ] || [ "$FORMAT" = sneaker-drop-4x5 ] ||
+  [ "$FORMAT" = pass-chat-16x9 ]; then
   ffmpeg -nostdin -v error -y -i "$FILM_FILE" -map 0:v:0 -c:v copy -an -movflags +faststart \
     "$OUTPUT_DIRECTORY/$FILM_NAME-silent.mp4"
 fi

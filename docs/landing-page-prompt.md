@@ -286,7 +286,8 @@ video isn't a screenshot any more: it, its poster and the walk loop live in `pub
 - Don't claim mainnet, real earnings or token value.
 - Don't add a cookie banner, analytics or newsletter form.
   *As built (2026-10-06, D-037):* one form was added later, the waitlist (`#waitlist`), which
-  posts an email to the StrideMon API. Still no newsletter, cookies or analytics.
+  posts an email to the StrideMon API. Still no newsletter, cookies or analytics. Joining shows a
+  card with a Post on X button that links `/waitlist`, a page with its own share image (D-055).
 - Don't copy Lusion's fonts, images or code. Use only the tokens above.
 
 ### 10. When it's built

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1920" />
+    <title>Sneaker drop film, Reel cover</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* Cover for launch-video/out/stridemon-sneaker-drop-9x16.mp4. The hero is the film's own,
+         #0137 Rose Hiker Night, and the small row is the film's first cuts (FACTS §13). */
+      .hero {
+        margin-top: auto;
+      }
+      .hero img {
+        display: block;
+        width: 100%;
+      }
+      .hero-label {
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted-on-light);
+      }
+      .hero-label .mono {
+        font-size: 22px;
+        color: var(--black);
+      }
+      .row-of-shoes {
+        margin-top: 56px;
+        padding-top: 32px;
+        border-top: 1px solid var(--line-on-light);
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        column-gap: 18px;
+      }
+      .row-of-shoes img {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="reel-cover">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">StrideMon • Film</span>
+      <span class="mono meta">0:30</span>
+    </div>
+
+    <h1 class="large">1,000<br />Sneakers.<br />One beat.</h1>
+
+    <figure class="hero">
+      <img src="../../../website/public/pass-art/laced/0137.svg" alt="" />
+      <figcaption class="hero-label">
+        <span class="mono">#0137 ROSE HIKER NIGHT</span>
+        <span class="meta">Common • 1 of 1</span>
+      </figcaption>
+    </figure>
+
+    <div class="row-of-shoes">
+      <img src="../../../website/public/pass-art/laced/0129.svg" alt="" />
+      <img src="../../../website/public/pass-art/laced/0868.svg" alt="" />
+      <img src="../../../website/public/pass-art/laced/0429.svg" alt="" />
+      <img src="../../../website/public/pass-art/laced/0291.svg" alt="" />
+      <img src="../../../website/public/pass-art/laced/0382.svg" alt="" />
+    </div>
+  </body>
+</html>
