@@ -41,6 +41,15 @@
       ]
     },
     {
+      "source": "/waitlist/(opengraph-image|twitter-image)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/png"
+        }
+      ]
+    },
+    {
       "source": "/pass/:number/(opengraph-image|twitter-image)",
       "headers": [
         {

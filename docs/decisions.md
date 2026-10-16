@@ -1646,3 +1646,36 @@ Made 2026-10-16, when Yash asked for help launching StrideMon on Product Hunt.
 - **Trade-off:** six more weeks without the launch's reach. On launch day every mint needs an email
   code, and Brevo's free plan sends 300 a day.
 - **Revisit when:** Part 10 sets the final dates, or the Android app is on Google Play.
+
+## D-055 — The waitlist's joined card and its X share page
+
+Made 2026-10-16, when Yash asked for a proper card after joining the waitlist, with a way to share
+it on X.
+
+- **Decision:**
+  1. **Joining shows a card, not a line.** The form gives way to a light ticket in the Founding
+     Pass card's look (hairlines, "+" marks, mono labels): three passes' shoes, "You're on the
+     list.", the email that was entered (so a typo shows) and when the waitlist window opens, in
+     the visitor's time. Under it: the one-email promise, **Post on X**, **Heart your favourites**
+     (`/pass#gallery`) and **Use a different email**, which brings the form back with the email
+     filled in. A new and a repeat email still see the same thing (D-037).
+  2. **Post on X opens X's composer in a new tab** (`x.com/intent/post`) with the post written
+     out under `social/voice.md`: what StrideMon is in one line, the waitlist's 48 hours, one
+     `@stridemon` tag, no hashtags, no emoji and no STRIDE amount. Nothing is posted for anyone:
+     they edit and send it themselves.
+  3. **The shared link is a page of its own, `/waitlist`**, so X shows a card made for it: its
+     own 1200 × 630 Open Graph image ("Join the waitlist", four shoes, the 48 hours). The page is
+     the waitlist section as its `<h1>`, then the Founding Pass section and How it works, so a
+     friend who taps the card can join without scrolling a whole landing page. It's in the
+     sitemap. The link carries `?source=x-waitlist`, which the form stores (D-037), so we can count
+     sign-ups that came from a shared post.
+  4. **No image to download.** X's composer can't take an attachment from a link, so a picture
+     would have to be saved and attached by hand; the link's card does the same job in one press.
+- **Why:** the moment after someone joins is when they're most likely to tell a friend, and a bare
+  line gave them nothing to do. The site is a static export (D-035), so a card per person (their
+  name, a place in the queue) would need a server, and the API never says whether an email is new.
+- **Trade-off:** one more page and share image to keep in step with the waitlist copy. Every
+  shared card is the same picture. After the waitlist window opens, old posts still say "Join the
+  waitlist", and the page shows the closed state (`WaitlistPhaseGate`).
+- **Revisit when:** the waitlist window opens (retire or repoint the page), or `x-waitlist`
+  sign-ups show the share isn't used.

@@ -294,7 +294,7 @@
   box-shadow: 0 0 0 12px var(--color-surface);
 }
 
-/* ---------- Waitlist: the joined line fades in where the form was ---------- */
+/* ---------- Waitlist: the joined card fades in where the form was (D-055) ---------- */
 
 .waitlist-joined {
   animation: waitlist-joined 500ms var(--ease-standard) both;

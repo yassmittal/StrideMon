@@ -58,6 +58,8 @@ export const passGalleryPath = '/pass'
 /** Every pass by number, so each pass page has a link search engines can follow (D-051). */
 export const passIndexPath = '/pass/all'
 export const helpPath = '/help'
+/** The waitlist on a page of its own, the link a joined visitor posts on X (D-055). */
+export const waitlistPagePath = '/waitlist'
 
 export const siteName = 'StrideMon'
 

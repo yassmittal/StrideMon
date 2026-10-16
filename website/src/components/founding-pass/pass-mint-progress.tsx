@@ -10,6 +10,7 @@ import {
   revealContent,
 } from '@/content/founding-pass-mint'
 import { siteUrl } from '@/content/site'
+import { buildXPostUrl } from '@/lib/build-x-post-url'
 import type { PassMint } from '@/lib/founding-pass/pass-api'
 import {
   buildPassPagePath,
@@ -194,7 +195,7 @@ function RevealNextSteps({
           <PillContent label={revealContent.getAppLabel} />
         </a>
         <a
-          href={`https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
+          href={buildXPostUrl(shareText, shareUrl)}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex h-[45px] items-center gap-2 rounded-full bg-surface-muted px-5 text-sm leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"

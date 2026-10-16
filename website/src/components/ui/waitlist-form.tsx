@@ -1,6 +1,6 @@
 'use client'
 
-import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
+import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from 'react'
 import { waitlistApiUrl } from '@/content/site'
 import { waitlistContent, waitlistPhonePlatformOptions } from '@/content/waitlist'
 import {
@@ -10,29 +10,48 @@ import {
   type WaitlistPhonePlatform,
 } from '@/lib/waitlist-request'
 import { buildPillClassName, PillContent } from './pill-button'
+import { WaitlistJoinedCard } from './waitlist-joined-card'
 
 type FormStatus = 'idle' | 'submitting' | 'joined'
 
 // The honeypot's field name in the request body. People never see the field; bots fill it in.
 const HONEYPOT_FIELD_NAME = 'website'
 
+type WaitlistFormProps = {
+  /** The joined card's shoes, drawn by the server so this island never ships the design table. */
+  joinedShowcase: ReactNode
+}
+
 // Email and an optional phone platform, posted to the StrideMon API (D-037). On success the form
-// is replaced by one line, the same for a new and a repeat email.
-export function WaitlistForm() {
+// is replaced by the joined card (D-055), the same for a new and a repeat email.
+export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
   const [email, setEmail] = useState('')
   const [phonePlatform, setPhonePlatform] = useState<WaitlistPhonePlatform | null>(null)
   const [status, setStatus] = useState<FormStatus>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const joinedMessageRef = useRef<HTMLParagraphElement>(null)
+  const joinedHeadingRef = useRef<HTMLParagraphElement>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
+  const shouldFocusEmailRef = useRef(false)
   const fieldId = useId()
   const emailInputId = `${fieldId}-email`
   const errorMessageId = `${fieldId}-error`
   const promiseId = `${fieldId}-promise`
 
   useEffect(() => {
-    // The form is gone, so keep keyboard focus on what replaced it.
-    if (status === 'joined') joinedMessageRef.current?.focus()
+    // The form is gone, so keep keyboard focus on what replaced it, and back again.
+    if (status === 'joined') {
+      joinedHeadingRef.current?.focus()
+    } else if (status === 'idle' && shouldFocusEmailRef.current) {
+      shouldFocusEmailRef.current = false
+      emailInputRef.current?.focus()
+      emailInputRef.current?.select()
+    }
   }, [status])
+
+  function showEmailForm() {
+    shouldFocusEmailRef.current = true
+    setStatus('idle')
+  }
 
   async function joinWaitlist(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -65,15 +84,14 @@ export function WaitlistForm() {
   }
 
   return (
-    <div aria-live="polite">
+    <div>
       {status === 'joined' ? (
-        <p
-          ref={joinedMessageRef}
-          tabIndex={-1}
-          className="waitlist-joined text-[clamp(1.625rem,3vw,2.5rem)] leading-[1.05] tracking-[-0.01em] outline-none"
-        >
-          {waitlistContent.joinedMessage}
-        </p>
+        <WaitlistJoinedCard
+          email={email.trim()}
+          showcase={joinedShowcase}
+          headingRef={joinedHeadingRef}
+          onUseAnotherEmail={showEmailForm}
+        />
       ) : (
         <form noValidate onSubmit={joinWaitlist} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2.5">
@@ -84,6 +102,7 @@ export function WaitlistForm() {
               {waitlistContent.emailLabel}
             </label>
             <input
+              ref={emailInputRef}
               id={emailInputId}
               name="email"
               type="email"
@@ -101,7 +120,7 @@ export function WaitlistForm() {
               aria-describedby={`${errorMessageId} ${promiseId}`}
               className="h-[52px] w-full rounded-full border border-hairline bg-page px-5 text-base placeholder:text-ink-secondary transition-colors duration-300 ease-standard focus-visible:border-ink aria-invalid:border-ink"
             />
-            <p id={errorMessageId} className="min-h-5 text-sm leading-[1.4]">
+            <p id={errorMessageId} aria-live="polite" className="min-h-5 text-sm leading-[1.4]">
               {errorMessage}
             </p>
           </div>

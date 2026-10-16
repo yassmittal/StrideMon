@@ -5,15 +5,23 @@ type SectionHeadingProps = {
   metaLabels: readonly string[]
   heading: string
   tone?: 'light' | 'dark'
+  /** `h1` when the section leads its page, as the waitlist does on `/waitlist`. */
+  headingLevel?: 'h1' | 'h2'
 }
 
-export function SectionHeading({ id, metaLabels, heading, tone = 'light' }: SectionHeadingProps) {
+export function SectionHeading({
+  id,
+  metaLabels,
+  heading,
+  tone = 'light',
+  headingLevel: HeadingTag = 'h2',
+}: SectionHeadingProps) {
   return (
     <div data-reveal className="flex flex-col gap-5">
       <MetaLabel items={metaLabels} tone={tone} />
-      <h2 id={id} className="-ml-[0.04em] text-heading text-balance">
+      <HeadingTag id={id} className="-ml-[0.04em] text-heading text-balance">
         {heading}
-      </h2>
+      </HeadingTag>
     </div>
   )
 }

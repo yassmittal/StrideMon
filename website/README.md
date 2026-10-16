@@ -25,7 +25,7 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/` | Every piece of copy, number, link and address, as typed data |
 | `src/content/site.ts` | `siteUrl` (the one place the domain lives), `apiBaseUrl` and the API routes, `githubRepositoryUrl`, `supportEmail`, the legal and pass page paths |
 | `src/content/legal/` | The privacy policy (`/privacy`) and account deletion (`/delete-account`) pages Google Play asks for (D-039). Keep them true to the app and API |
-| `src/content/waitlist.ts` | The waitlist section's copy and error lines |
+| `src/content/waitlist.ts` | The waitlist section's copy and error lines, the joined card, the X post's text and the `/waitlist` page's words (D-055) |
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
 | `src/content/founding-pass.ts` | The Founding Pass page's copy, the planned schedule, the match quiz and the questions (D-044) |
 | `src/content/founding-pass-designs.ts` | **Generated**: the 1,000 designs and their layer labels. Never edit it by hand |
@@ -43,7 +43,7 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
-| `src/app/` | Layout, home page, `pass/`, `pass/all/` (every pass by number, D-051) and `pass/[number]/` (with their Open Graph images), `privacy/` and `delete-account/`, `not-found.tsx`, icons, sitemap, robots |
+| `src/app/` | Layout, home page, `pass/`, `pass/all/` (every pass by number, D-051) and `pass/[number]/` (with their Open Graph images), `waitlist/` (the page a shared post links to, with its own Open Graph image, D-055), `privacy/` and `delete-account/`, `not-found.tsx`, icons, sitemap, robots |
 | `src/lib/build-page-metadata.ts` | Every page's title, description, canonical and share cards (D-051). Use it for a new page: Next merges metadata shallowly, so a page that sets `openGraph` by hand loses the layout's image and site name |
 
 A contract redeploy or a rule change must update `src/content/` too (D-035).
@@ -214,6 +214,12 @@ The `#waitlist` section (D-037) posts `{ email, phonePlatform?, source?, website
 StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a hidden honeypot. The
 page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link such as
 `https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it.
+
+After joining, the form gives way to a card (D-055) with **Post on X**, which opens X's composer
+with `waitlistShareText` and links `https://stridemon.xyz/waitlist?source=x-waitlist`. That page
+leads with the same form and has its own share image (`app/waitlist/opengraph-image.tsx`), so X
+shows a card made for the post. Sign-ups from shared posts count under `x-waitlist`. If you change
+the post, keep it under 280 characters with the link (X counts a link as 23).
 
 The API only answers browsers from the origins in its `WAITLIST_ALLOWED_ORIGINS`. To try the form
 locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port, and

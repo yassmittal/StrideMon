@@ -10,6 +10,7 @@ import {
   passScheduleContent,
 } from '@/content/founding-pass'
 import { sectionIds, siteUrl } from '@/content/site'
+import { buildXPostUrl } from '@/lib/build-x-post-url'
 import {
   findRecentPassMint,
   listTakenDesignNumbers,
@@ -378,8 +379,7 @@ function CopyPassLinkButton({ designNumber }: { designNumber: number }) {
 
 function buildPostOnXUrl(design: PassDesign, passNumberText: string): string {
   const pageUrl = `${siteUrl}${buildPassPagePath(design.designNumber)}?source=x-share`
-  const text = buildPassShareText(passNumberText, design.name)
-  return `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`
+  return buildXPostUrl(buildPassShareText(passNumberText, design.name), pageUrl)
 }
 
 /** "a, b and c". */
