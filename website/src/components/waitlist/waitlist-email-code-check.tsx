@@ -16,8 +16,17 @@ import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { readWaitlistProblemKey, WaitlistProblemNote } from './waitlist-problem-note'
 
 type WaitlistEmailCodeCheckProps = {
-  /** The email to check, when it's already known (the joined card). Otherwise it asks. */
+  /** The email to check, when it's already known. Otherwise it asks. */
   fixedEmail?: string
+  /** What the email box starts with, say after a join that was refused. */
+  initialEmail?: string
+  /** The button that sends the code: Join the waitlist on the form (D-060), Send code elsewhere. */
+  sendCodeLabel?: string
+  sendingLabel?: string
+  /** Text that describes the email box, such as the form's promise. */
+  emailDescriptionId?: string
+  /** A code is on its way: a good moment to start the next step's checks. */
+  onCodeSent?: () => void
   onEmailProof: (emailProof: EmailProof) => void
 }
 
@@ -35,13 +44,21 @@ const CODE_PATTERN = new RegExp(`^\\d{${CODE_LENGTH}}$`)
 const COUNTDOWN_TICK_MILLISECONDS = 1000
 
 /**
- * The waitlist's email check with a 6-digit code (D-056, D-057): the code is sent with the
+ * The waitlist's email check with a 6-digit code (D-056, D-057, D-060): the code is sent with the
  * waitlist's words and counts toward the day's email budget. Turnstile stays out of sight unless it
- * needs a tap. Every refusal says what to do next.
+ * needs a tap. Every refusal says what to do next, and a typo can be fixed from the code step.
  */
-export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEmailCodeCheckProps) {
+export function WaitlistEmailCodeCheck({
+  fixedEmail,
+  initialEmail = '',
+  sendCodeLabel = waitlistEmailCheckContent.sendCodeLabel,
+  sendingLabel = waitlistEmailCheckContent.sendingLabel,
+  emailDescriptionId,
+  onCodeSent,
+  onEmailProof,
+}: WaitlistEmailCodeCheckProps) {
   const [phase, setPhase] = useState<Phase>('enterEmail')
-  const [email, setEmail] = useState(fixedEmail ?? '')
+  const [email, setEmail] = useState(fixedEmail ?? initialEmail)
   const [sentToEmail, setSentToEmail] = useState<string | null>(null)
   const [code, setCode] = useState('')
   const [problem, setProblem] = useState<CheckProblem | null>(null)
@@ -52,12 +69,28 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
     { isLazy: true },
   )
   const codeInputRef = useRef<HTMLInputElement>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
+  const shouldFocusEmailRef = useRef(false)
   const now = useNow(COUNTDOWN_TICK_MILLISECONDS)
   const fieldId = useId()
 
   useEffect(() => {
     if (phase === 'enterCode') codeInputRef.current?.focus()
+    if (phase === 'enterEmail' && shouldFocusEmailRef.current) {
+      shouldFocusEmailRef.current = false
+      emailInputRef.current?.focus()
+      emailInputRef.current?.select()
+    }
   }, [phase])
+
+  /** Back to the email box, with the email still in it, to fix a typo. */
+  function returnToEmailStep() {
+    shouldFocusEmailRef.current = true
+    setProblem(null)
+    setSentToEmail(null)
+    setCode('')
+    setPhase('enterEmail')
+  }
 
   async function sendCode(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault()
@@ -88,6 +121,7 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
       setCode('')
       setPhase('enterCode')
       if (!result.isOk) setProblem({ key: 'codeRecentlySent' })
+      onCodeSent?.()
       return
     }
     setPhase(sentToEmail === trimmedEmail ? 'enterCode' : 'enterEmail')
@@ -197,6 +231,15 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
               `${waitlistEmailCheckContent.resendWaitPrefix} ${resendInSeconds} s.`
             )}
           </p>
+          {fixedEmail === undefined ? (
+            <button
+              type="button"
+              onClick={returnToEmailStep}
+              className="inline-flex min-h-11 items-center self-start text-sm leading-[1.4] text-ink-secondary-small underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:text-ink hover:decoration-current"
+            >
+              {waitlistEmailCheckContent.useDifferentEmailLabel}
+            </button>
+          ) : null}
         </form>
       ) : (
         <form
@@ -210,6 +253,7 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
                 {waitlistContent.emailLabel}
               </label>
               <input
+                ref={emailInputRef}
                 id={emailInputId}
                 name="email"
                 type="email"
@@ -223,7 +267,8 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
                   setEmail(event.target.value)
                   if (problem !== null) setProblem(null)
                 }}
-                aria-invalid={problem?.key === 'emailInvalid'}
+                aria-invalid={problem?.key === 'emailInvalid' || problem?.key === 'emailDisposable'}
+                aria-describedby={emailDescriptionId}
                 className={mintFieldClassName}
               />
             </>
@@ -233,13 +278,7 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
             disabled={phase === 'sending'}
             className={buildPillClassName('primary', 'regular', 'self-start disabled:opacity-60')}
           >
-            <PillContent
-              label={
-                phase === 'sending'
-                  ? waitlistEmailCheckContent.sendingLabel
-                  : waitlistEmailCheckContent.sendCodeLabel
-              }
-            />
+            <PillContent label={phase === 'sending' ? sendingLabel : sendCodeLabel} />
           </button>
         </form>
       )}

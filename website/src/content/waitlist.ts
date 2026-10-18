@@ -3,9 +3,10 @@ import { earlyHourRules } from './founding-pass'
 import { siteUrl, waitlistPagePath, xAccountHandle } from './site'
 
 // The waitlist (D-037) and its invite loop (D-056), simplified in D-059: one job per screen. Email
-// only, never a wallet. Its promise (D-056): a code only when you ask for one, and one email when
-// the waitlist window opens. Words (social/voice.md): invite, confirmed friends, the early hour.
-// Never whitelist, WL, allowlist, points, rank, unlock, or anything about value.
+// only, never a wallet, and always checked (D-060): Google, or a 6-digit code. Its promise: a code
+// to check it's you, and one email when the waitlist window opens. Words (social/voice.md): invite,
+// confirmed friends, the early hour. Never whitelist, WL, allowlist, points, rank, unlock, or
+// anything about value.
 
 export const waitlistContent = {
   metaLabels: ['Waitlist', 'Founding Pass'],
@@ -18,13 +19,15 @@ export const waitlistContent = {
   orLabel: 'or',
   emailLabel: 'Email',
   emailPlaceholder: 'you@example.com',
+  /** It sends the code that checks the email; the join follows the code (D-060). */
   submitLabel: 'Join the waitlist',
-  submittingLabel: 'Joining',
+  sendingCodeLabel: 'Sending your code',
+  joiningLabel: 'Joining',
   googleJoiningLabel: 'Joining with Google',
   /** While a sign-up saved in this browser loads its invites (D-059). */
   restoringLabel: 'Loading your invites',
   promise:
-    'We email you a code only when you ask for one, and once when the waitlist window opens. Nothing else, and nothing is for sale.',
+    'We email you a code to check it’s you, and once when the waitlist window opens. Nothing else, and nothing is for sale.',
   privacyLabel: 'Privacy',
   /** From 1,000 sign-ups only (D-056): the waitlist is then bigger than the collection. */
   buildCountLine: (signupCount: number) =>
@@ -45,17 +48,21 @@ export const waitlistJoinedContent = {
   ticketLabel: 'Waitlist',
   ticketStatus: 'Joined',
   heading: 'You’re on the list.',
-  windowLabel: 'Window opens',
+  /** One sentence, the time in the medium weight (D-060). */
+  windowSentencePrefix: 'Your window to mint opens',
   changeEmailLabel: 'Change',
   changeEmailAccessibleLabel: 'Change your email',
 } as const
 
 /** The invite link, the share links and the early hour, on the card and on /waitlist/invites. */
 export const inviteContent = {
-  earlyHourHeading: 'Open your window an hour early',
-  /** D-056 point 9: the rule, the cap and that the waitlist promises no pass, in one paragraph. */
-  earlyHourRulePrefix: `Bring ${earlyHourRules.requiredFriendCount} friends who join with your link and confirm their email. Your window then opens`,
-  earlyHourRuleSuffix: `, while the ${earlyHourRules.mintLimit} early passes last. The waitlist doesn’t promise a pass.`,
+  /**
+   * One line (D-060). Joining checks the email, so a friend who joins counts. The cap is on passes
+   * minted in that hour, not on people, so there's no count of spots left. "The waitlist doesn't
+   * promise a pass" (D-056 point 9) is in the help answer "How invites count" links.
+   */
+  inviteRulePrefix: `Invite friends. When ${earlyHourRules.requiredFriendCount} join with your link, your window opens an hour early:`,
+  inviteRuleSuffix: `. Only ${earlyHourRules.mintLimit} passes go in that hour.`,
   linkLabel: 'Your invite link',
   copyLabel: 'Copy',
   copiedLabel: 'Copied',
@@ -73,7 +80,7 @@ export const inviteContent = {
       : `${confirmedFriendCount} of ${requiredFriendCount} friends confirmed`,
   hasEarlyHourHeading: 'You have the early hour.',
   hasEarlyHourPrefix: 'Your window opens',
-  hasEarlyHourSuffix: `, an hour before the rest of the waitlist, while the ${earlyHourRules.mintLimit} early passes last. It doesn’t promise a pass.`,
+  hasEarlyHourSuffix: `, an hour before the rest of the waitlist, while the ${earlyHourRules.mintLimit} early passes last.`,
   reminderLabel: 'Add a reminder',
   googleCalendarLabel: 'Google Calendar',
   icsLabel: 'Apple or Outlook',
@@ -94,12 +101,8 @@ export const inviteContent = {
   invitesPageLabel: 'Your invites page',
 } as const
 
-/** "Confirm your email" on the card after an email join, and the check on /waitlist/invites. */
+/** The 6-digit code that checks an email: joining (D-060), and on /waitlist/invites. */
 export const waitlistEmailCheckContent = {
-  /** Only after joining through a friend's link: the code makes them count (D-059). */
-  confirmForFriendHeading: 'Confirm your email to count for your friend',
-  confirmForFriendText:
-    'You joined through a friend’s link. We send a 6-digit code, and it takes a minute.',
   sendCodeLabel: 'Send code',
   sendingLabel: 'Sending',
   codeLabel: '6-digit code',
@@ -110,6 +113,7 @@ export const waitlistEmailCheckContent = {
   noCodePrompt: 'No email? Check spam, or',
   resendLabel: 'send a new code',
   resendWaitPrefix: 'You can ask for a new code in',
+  useDifferentEmailLabel: 'Use a different email',
   confirmedLine: 'Email confirmed.',
 } as const
 
@@ -194,7 +198,7 @@ export const waitlistProblemContent: Record<WaitlistProblemKey, { title: string;
   },
   emailDailyLimitReached: {
     title: 'We’ve sent all the codes we can for today.',
-    text: 'Continue with Google instead, or come back tomorrow. You’re still on the waitlist either way.',
+    text: 'Continue with Google instead, or come back after 05:30 IST, when codes start again.',
   },
   googleUnavailable: {
     title: 'Google sign-in isn’t working right now.',
@@ -266,7 +270,7 @@ export const inviteShareText =
 export const waitlistPageContent = {
   title: 'Join the waitlist',
   description:
-    'Leave your email to mint a free StrideMon Founding Pass 48 hours before everyone else. We email you a code only when you ask for one, and once when the waitlist window opens.',
+    'Leave your email to mint a free StrideMon Founding Pass 48 hours before everyone else. We email you a code to check it’s you, and once when the waitlist window opens.',
   shareImageAlt:
     'Join the StrideMon waitlist: mint a free Founding Pass 48 hours before everyone else.',
   shareImageMetaLabels: ['StrideMon', 'Waitlist', 'Founding Pass'],

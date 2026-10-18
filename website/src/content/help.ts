@@ -389,7 +389,7 @@ export const helpPlainAnswers: readonly HelpAnswer[] = [
     id: 'invites',
     question: 'How do invites work?',
     paragraphs: [
-      `Everyone on the waitlist has their own invite link. Bring ${earlyHourRules.requiredFriendCount} friends who join through it and confirm their email, and your waitlist window opens at 19:00 IST on Sat 28 Nov, an hour before everyone else’s.`,
+      `Everyone on the waitlist has their own invite link. When ${earlyHourRules.requiredFriendCount} friends join through it, your waitlist window opens at 19:00 IST on Sat 28 Nov, an hour before everyone else’s. Joining checks each friend’s email, with Google or a 6-digit code.`,
       `At most ${earlyHourRules.mintLimit} passes go in that early hour. Nobody else’s 48 hours change, and the waitlist doesn’t promise a pass: there are 1,000, first come, first served.`,
       'Find your link and your count on your invites page. There’s no ranking and no prize: only the early hour.',
     ],
@@ -434,8 +434,8 @@ export const helpTroubleshootingGroups: readonly HelpAnswerGroup[] = [
         id: 'friend-not-counting',
         question: 'Why doesn’t my friend count yet?',
         paragraphs: [
-          'A friend counts once they join through your link and confirm their email, with Google or a 6-digit code. Joining alone isn’t enough.',
-          'Ask them to open their invites page and confirm. If they joined before through someone else’s link, or without one, the first way they joined stays.',
+          'A friend counts once they join through your link. Joining checks their email, with Google or a 6-digit code.',
+          'If they joined a while ago without checking their email, ask them to open their invites page and check it there. If they joined before through someone else’s link, or without one, the first way they joined stays.',
           'Friends count until 19:00 IST on Sat 28 Nov. Your own other addresses never count.',
         ],
         links: [helpLinks.invites],
@@ -462,7 +462,7 @@ export const helpTroubleshootingGroups: readonly HelpAnswerGroup[] = [
         question: 'Why did codes stop for today?',
         paragraphs: [
           'We send a limited number of emails each day, and today’s waitlist codes are used up. They start again at 05:30 IST (00:00 UTC).',
-          'Continue with Google checks your email without sending one. Either way, you’re already on the waitlist: confirming only makes an invite count.',
+          'Continue with Google checks your email without sending one, so you can join or see your invites with it now. In an app’s own browser, open the page in Chrome or Safari first. Or come back after 05:30 IST.',
         ],
       },
       {

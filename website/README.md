@@ -233,14 +233,17 @@ such as `https://stridemon.xyz/?source=x-stridemon` credits the X account that s
   with Copy, and the share icons (`components/ui/share-links.tsx`: WhatsApp, Telegram, X and the
   phone's share sheet, each in its own colour). Every share link carries `ref` and its own
   `source` (`invite-whatsapp`, `invite-telegram`, `invite-x`, `invite-share`, `invite-copy`).
-  After a Google join, or once the email is confirmed, the count shows above the rule. After an
-  email join through a friend's link, the card offers the optional 6-digit code that makes them
-  count (a `waitlist` code, counted in the API's daily budget). Everyone else gets a link to their
-  invites page.
-- **Coming back (D-059).** Joining saves `stridemon:waitlist-joined` in `localStorage`: the email,
-  the invite link and whether a friend's link brought them. With it, or with the invites token,
-  the form shows the joined card instead, and the token adds the live count. Change (on the card)
-  and Use a different email (on `/waitlist/invites`) clear both.
+  The count shows above the rule. A sign-up from before D-060, or one whose token ran out, gets a
+  link to its invites page instead.
+- **Joining checks the email (D-060).** Continue with Google, or Join the waitlist with an email,
+  which sends a 6-digit `waitlist` code (counted in the API's daily budget) and joins with the
+  proof once the code checks. No code, no join: when today's codes are used up, the page offers
+  Google or tomorrow. The API still takes a join without a proof (the old live form), but the site
+  never sends one.
+- **Coming back (D-059).** Joining saves `stridemon:waitlist-joined` in `localStorage` (the email
+  and the invite link), beside the invites token. With them, the form shows the joined card
+  instead, and the token adds the live count. Change (on the card) and Use a different email (on
+  `/waitlist/invites`) clear both.
 - **`/waitlist/invites`** (static, `noindex`): check your email (Google or a code), then see the
   count, the link and the early hour. The invites token stays in `localStorage` for 30 days
   (`stridemon:waitlist-invites`).

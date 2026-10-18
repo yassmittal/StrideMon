@@ -21,10 +21,10 @@ const reminderLinkClassName =
   'inline-flex h-10 items-center rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard active:bg-surface'
 
 /**
- * A sign-up's invites (D-056, D-059), the same on the joined card and on /waitlist/invites: the
- * count once the email is checked, then the early hour's rule, the link and the share links. With
- * the early hour, its news, a reminder and the night's steps come first, and sharing moves last.
- * Quiet: no badges, no countdown pressure.
+ * A sign-up's invites (D-056, D-059, D-060), the same on the joined card and on /waitlist/invites:
+ * the count once the email is checked, then the invite rule in one line, the link and the share
+ * links. With the early hour, its news, a reminder and the night's steps come first, and sharing
+ * moves last. Quiet: no badges, no countdown pressure, no count of spots left.
  */
 export function InvitePanel({ inviteUrl, invites }: InvitePanelProps) {
   if (invites?.hasEarlyHour) {
@@ -53,14 +53,11 @@ export function InvitePanel({ inviteUrl, invites }: InvitePanelProps) {
   return (
     <div className="flex flex-col gap-4">
       {invites === null ? null : <InviteProgress invites={invites} />}
-      <div className="flex flex-col gap-1.5">
-        <p className="text-lg leading-[1.25]">{inviteContent.earlyHourHeading}</p>
-        <p className="text-sm leading-[1.45] text-ink-secondary-small">
-          {inviteContent.earlyHourRulePrefix}{' '}
-          <LocalDateTime isoTimestamp={plannedEarlyHourStartsAt} />
-          {inviteContent.earlyHourRuleSuffix}
-        </p>
-      </div>
+      <p className="text-base leading-[1.45]">
+        {inviteContent.inviteRulePrefix}{' '}
+        <LocalDateTime isoTimestamp={plannedEarlyHourStartsAt} className="whitespace-nowrap" />
+        {inviteContent.inviteRuleSuffix}
+      </p>
       <InviteShare inviteUrl={inviteUrl} />
     </div>
   )

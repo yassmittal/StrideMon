@@ -1784,6 +1784,9 @@ are D-057.
   email provider changes after 11-03, or the waitlist window opens (the links stop mattering).
 - **Changed in part (2026-10-19):** by D-059, the waitlist form reads the stored invites token
   too, so someone coming back to it sees their card and count without checking their email again.
+- **Changed in part (2026-10-19):** by D-060, the website no longer joins anyone without a checked
+  email, so confirming isn't optional there any more (point 5); the API still accepts it. The
+  no-promise line (point 9) moves to the help answer the card links.
 
 ## D-057 — Checking an email with Google, and a daily budget for code emails
 
@@ -1836,6 +1839,8 @@ Made 2026-10-18 in Part 0 of the referral build, with D-056.
   tests until 00:00 UTC.
 - **Revisit when:** the email provider changes after 11-03 (raise or drop the limit), or Google
   refuses or changes its sign-in for the site.
+- **Changed in part (2026-10-19):** by D-060, every email join on the website takes a waitlist code,
+  so the 250-a-day budget also caps email sign-ups. Google sign-ups cost none.
 
 ## D-058 — The early hour on mint night
 
@@ -1942,3 +1947,54 @@ linked.
   takes a tap.
 - **Revisit when:** the share links' sources show a channel nobody uses, iOS planning needs the
   phone count, or the waitlist window opens (the form gives way, D-043).
+- **Changed in part (2026-10-19):** by D-060, joining checks the email, so the card's Confirm block
+  goes; the ticket loses its "+" marks and says when the window opens in one sentence; and the
+  invite rule is one line.
+
+## D-060 — Joining the waitlist checks the email
+
+Made 2026-10-19, when Yash looked at D-059's build: no joining without a checked email, "either by
+email with OTP, or by Google, that's it". Asked whether to let people join anyway once the day's
+codes run out, he chose strictly no. He also asked for simpler words on the card.
+
+- **Decision:**
+  1. **The website joins only with a checked email.** Continue with Google, or an email and its
+     6-digit `waitlist` code (D-057): Join the waitlist sends the code, the next step checks it,
+     and the join goes with the email proof. Every new sign-up is confirmed, and counts for
+     whoever invited it, the moment it joins, and the card shows the count at once, as after
+     Google.
+  2. **Strictly.** When today's waitlist codes are used up (`EMAIL_DAILY_LIMIT_REACHED`) or a code
+     can't be sent, nobody joins by email: the page offers Continue with Google, or 05:30 IST. In
+     apps' own browsers, where Google doesn't work, that means opening the page in Chrome or
+     Safari, or waiting.
+  3. **The API doesn't change.** `POST /v1/waitlist` still takes a join without a proof, so the
+     live site's old form keeps working until the website is redeployed, and nothing needs an API
+     deploy. A join without a proof still never counts as a friend (D-056 point 2). Making the
+     API refuse one is a follow-up, deployed together with the website.
+  4. **Every email join costs one code** from the 250-a-day waitlist budget (D-057), so email
+     sign-ups top out near 250 a day. Google sign-ups cost none. The growth plan's 244 a day works
+     only while most people use Google: watch `emailDailyCounts`.
+  5. **The card's words** (changes D-059 points 3 and 4):
+     - no "+" marks on the ticket;
+     - one sentence for the window, "Your window to mint opens **Sat 28 Nov, 8:00 pm**.", with the
+       time in the medium weight (the site has no bold);
+     - one line for the invite: "Invite friends. When 3 join with your link, your window opens an
+       hour early: Sat 28 Nov, 7:00 pm. Only 250 passes go in that hour." It needs no "confirm
+       their email" (joining does it) and shows no count of spots left: the 250 caps passes
+       minted in that hour, not people, and nothing mints before 28 Nov, so a falling number
+       would be invented;
+     - "the waitlist doesn't promise a pass" (D-056 point 9) lives in the help answer the card
+       links ("How invites count"), with the 1,000 and first come, first served;
+     - "Confirm your email to count for your friend" goes. A sign-up from before this change, or
+       one whose 30-day token ran out, sees a link to its invites page.
+  6. **The promise:** "We email you a code to check it's you, and once when the waitlist window
+     opens. Nothing else, and nothing is for sale."
+- **Why:** one rule anyone can say in a line ("3 friends join"), no second step after joining, no
+  unconfirmed sign-ups whose invites never count, and the window's email goes only to inboxes
+  that were checked.
+- **Trade-off:** one more step for email users, and a code that lands in spam stops them. Email
+  joins are capped by the day's codes, so on a busy day someone in Instagram's or LinkedIn's
+  browser can't join until 05:30 IST unless they open the page in Chrome. A direct API call could
+  still join without a proof until the API refuses one.
+- **Revisit when:** `EMAIL_DAILY_LIMIT_REACHED` shows up on joining (a bigger email plan, D-057),
+  or the API is next deployed (make it refuse a join without a proof).

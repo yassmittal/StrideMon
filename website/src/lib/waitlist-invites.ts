@@ -29,8 +29,6 @@ export type StoredInvitesSession = {
 export type StoredWaitlistSignup = {
   email: string
   inviteUrl: string
-  /** Joined through a friend's link: confirming the email makes them count for that friend. */
-  isJoinedThroughFriend: boolean
 }
 
 const ARRIVAL_INVITE_CODE_STORAGE_KEY = 'stridemon:waitlist-arrival-invite-code'
@@ -155,12 +153,7 @@ export function forgetWaitlistSignup(): void {
 }
 
 function isStoredWaitlistSignup(value: unknown): value is StoredWaitlistSignup {
-  return (
-    isRecord(value) &&
-    typeof value.email === 'string' &&
-    typeof value.inviteUrl === 'string' &&
-    typeof value.isJoinedThroughFriend === 'boolean'
-  )
+  return isRecord(value) && typeof value.email === 'string' && typeof value.inviteUrl === 'string'
 }
 
 function isStoredInvitesSession(value: unknown): value is StoredInvitesSession {

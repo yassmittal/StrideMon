@@ -11,7 +11,6 @@ import {
   readArrivalInviteCode,
   readInviteCodeFromUrl,
   readStoredInvitesSession,
-  readStoredWaitlistSignup,
   saveInvitesSession,
   saveOwnInviteCode,
   saveWaitlistSignup,
@@ -64,13 +63,7 @@ export function WaitlistInvitesView() {
       if (invites.isOnWaitlist) {
         const ownInviteCode = readInviteCodeFromUrl(invites.inviteUrl)
         if (ownInviteCode !== null) saveOwnInviteCode(ownInviteCode)
-        const storedSignup = readStoredWaitlistSignup()
-        saveWaitlistSignup({
-          email,
-          inviteUrl: invites.inviteUrl,
-          isJoinedThroughFriend:
-            storedSignup?.email === email && storedSignup.isJoinedThroughFriend,
-        })
+        saveWaitlistSignup({ email, inviteUrl: invites.inviteUrl })
       }
       setViewState({ kind: 'shown', email, invites, emailProof })
     },
