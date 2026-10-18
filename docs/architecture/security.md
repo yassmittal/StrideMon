@@ -13,6 +13,7 @@ starting with it.
 | `JWT_ACCESS_TOKEN_SECRET` | API env | mobile app |
 | Refresh tokens | device secure store; **SHA-256 hash** in Mongo | logs, plain-text Mongo |
 | MongoDB URI | API env | mobile app |
+| `WAITLIST_INVITE_CODE_SECRET` | API env (the server's `.env` only) | website, logs, docs. Never changed mid-campaign: it would change every invite link (D-056) |
 
 - `.env` files are gitignored, and `.env.example` documents every variable with
   fake values.
@@ -84,9 +85,14 @@ Phase 10.
 - `locationSamples` get a 30-day TTL (Phase 8).
 - The app explains location use before the OS prompt appears.
 - The landing page's waitlist (D-037) stores an email, an optional phone platform and the
-  page's `?source=`, never a wallet address, an IP address or a user agent. An email is deleted
-  on request (the form says so): `db.waitlistSignups.deleteOne({ email: '<lowercased email>' })`
-  against the Atlas `stridemon` database.
+  page's `?source=`, never a wallet address, an IP address or a user agent. The invite loop
+  (D-056) adds the folded email, the sign-up's invite code, **who invited whom** (the inviter's
+  code), and when and how the email was confirmed (`google` or `code`). From Google it keeps only
+  the email: never the name, photo or Google account id (D-057). An email is deleted on request
+  (the form says so): `db.waitlistSignups.deleteOne({ email: '<lowercased email>' })` against the
+  Atlas `stridemon` database (or by `canonicalEmail` once it's filled). Deleting a sign-up drops
+  it from its inviter's count.
+- `emailDailyCounts` holds one number per day, never an address (D-057).
 
 ## API hardening
 
@@ -98,12 +104,24 @@ Phase 10.
 - Stack traces are never returned to clients.
 - The gas drip is one per wallet, ever, recorded in `users.hasReceivedGasDrip`
   and the outbox idempotency key.
-- **CORS** is off everywhere except the website's routes (`POST /v1/waitlist`, the Founding Pass
-  routes below), which allow only the origins in `WAITLIST_ALLOWED_ORIGINS` (D-037, D-043). The
+- **CORS** is off everywhere except the website's routes (`/v1/waitlist` and `/v1/waitlist/*`, the
+  Founding Pass routes below), which allow only the origins in `WAITLIST_ALLOWED_ORIGINS` (D-037, D-043). The
   app is native and sends no origin.
-- **The waitlist route** is public, so it has its own limit (5 a minute per IP) and a hidden
-  honeypot field: a filled-in honeypot answers `200` and stores nothing, so a bot learns nothing.
-  No CAPTCHA (Turnstile is the free next step if junk appears).
+- **The waitlist routes** are public (D-037, D-056):
+  - Joining checks a hidden honeypot field first (a filled-in one answers `200` and stores
+    nothing, so a bot learns nothing), then **Turnstile** (action `join-waitlist`), then refuses
+    temporary inboxes from a vendored, CC0 disposable-domain list. Its limit is 30 a minute per
+    IP: Turnstile does the bot work now, and many Indian mobile users share one IP (carrier NAT).
+  - Emails are folded (dots and `+tags`, data-model.md) and unique by the folded form, so one
+    inbox is one sign-up and counts once as an invited friend. Your own invite code never counts
+    for you.
+  - **Invite codes** are HMAC-SHA256 of the folded email, keyed with `WAITLIST_INVITE_CODE_SECRET`,
+    so a code can't be guessed from an email, and the same email always gets the same link (the
+    form still never reveals who's on the list). A code reveals nothing: progress shows only to
+    someone who checked the email (a code or Google), through a 30-day invites token (HS256 with
+    `EMAIL_PROOF_SECRET`, its own audience, so it can't pass as an email proof or the reverse).
+  - The only public number is the total count of sign-ups. No per-person numbers, ranks or
+    leaderboard.
 - **The help chatbot** (`POST /v1/help/chat`, D-048) is public too: 30 questions an hour per IP,
   a hard monthly budget (`HELP_CHAT_MONTHLY_CAP_USD`), and at most 8 messages of 500 characters
   and 400 output tokens a reply, so nobody can run up the bill. A question holding a wallet
@@ -188,8 +206,20 @@ The deploy scripts wire exactly this, and `DeployGame.t.sol` checks it (D-042).
   a Founder Sneaker to whoever holds its pass, so even `RECOVERY_ROLE` can't send a Sneaker
   anywhere else (D-042).
 
-**Secrets** (API env only, like the others): `BREVO_API_KEY`, `TURNSTILE_SECRET_KEY` and
-`EMAIL_PROOF_SECRET`. The Turnstile **site** key is public and lives in the website. Production
+**Checking an email with Google** (D-057): the website's Sign in with Google button gives an ID
+token, and `POST /v1/pass/email-google` checks it on the server, never trusting the browser: the
+signature against Google's published keys, the issuer, our `GOOGLE_CLIENT_ID` as the audience (so
+a token minted for another site doesn't pass), the expiry, and `email_verified: true`. It then
+answers the same email proof as a code. The client ID is public; there's no client secret, since
+the site uses no OAuth code flow. Google sees that someone signed in to StrideMon, and the privacy
+page says so.
+
+**The email budget** (D-057): the API counts its own sends per UTC day and stops waitlist codes at
+`WAITLIST_CODE_DAILY_EMAIL_LIMIT`, so bots or a busy day can't use up Brevo's 300 and block mint
+codes. Turnstile guards both kinds of Send code.
+
+**Secrets** (API env only, like the others): `BREVO_API_KEY`, `TURNSTILE_SECRET_KEY`,
+`EMAIL_PROOF_SECRET` and `WAITLIST_INVITE_CODE_SECRET`. The Turnstile **site** key is public and lives in the website. Production
 refuses Cloudflare's Turnstile test secrets, and an email-proof secret equal to the access-token
 one.
 

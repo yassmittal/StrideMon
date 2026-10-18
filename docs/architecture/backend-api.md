@@ -120,7 +120,8 @@ All endpoints are prefixed `/v1`. `🔒` means an access token is required.
 | POST | `/v1/activity-sessions/:activitySessionId/finish` | 4/5 | 🔒 validate + enqueue settlement |
 | GET | `/v1/activity-sessions/:activitySessionId` | 4 | 🔒 one session (the app polls this while settling) |
 | GET | `/v1/activity-sessions` | 5 | 🔒 history, cursor-paginated |
-| POST | `/v1/waitlist` | 8.8 | `{ email, phonePlatform?, source? }` → `{ status: 'joined' }`. Called from the landing page (D-037) |
+| POST | `/v1/waitlist` | 8.8 | `{ email, turnstileToken, phonePlatform?, source?, inviteCode?, emailProof? }` → `{ status: 'joined', inviteUrl }`. Called from the landing page (D-037, D-056) |
+| POST/GET | `/v1/waitlist/*` | Referral | the invites session, the invites and the public count: see "The waitlist" below (D-056) |
 | POST/GET | `/v1/pass/*` | Founding Pass | email codes, mints and the collection: see "The Founding Pass" below (D-041, D-043) |
 | POST | `/v1/help/chat` | Founding Pass | `{ messages }` → an answer from the help page's text: see "The help chatbot" below (D-048) |
 
@@ -185,6 +186,11 @@ upgrade: the app reads and writes those on-chain directly.
 | `EMAIL_PROOF_SECRET` | 64 random bytes | signs email proofs and keys the code hashes; not the access-token secret |
 | `EMAIL_SENDER_ADDRESS` | `hello@stridemon.xyz` | the From of every email |
 | `BREVO_API_KEY` | Brevo's | required in production; development logs codes instead of sending |
+| `WAITLIST_INVITE_CODE_SECRET` | 32 random bytes | keys the invite codes (D-056). **Never change it during the campaign**: a new one changes every invite link |
+| `WAITLIST_CODE_DAILY_EMAIL_LIMIT` | `250` | waitlist codes go only while the UTC day's email count is under it; mint codes and window emails always go (D-057) |
+| `GOOGLE_CLIENT_ID` | `…apps.googleusercontent.com` | the Sign in with Google client (D-057). Public, not a secret. Optional: without it `email-google` answers `GOOGLE_SIGN_IN_UNAVAILABLE` |
+| `PASS_EARLY_HOUR_MINUTES` | `60` | the early hour starts this long before the waitlist window (D-058). From the referral's Part 1, invited friends count until then (`countsUntil`) |
+| `PASS_EARLY_HOUR_MINT_LIMIT` | `250` | the most passes the early hour mints (D-058, Part 4) |
 | `BEDROCK_API_KEY` | Bedrock's | the help chatbot's model (D-048). Optional: without it the chatbot answers `HELP_CHAT_UNAVAILABLE` |
 | `HELP_CHAT_MONTHLY_CAP_USD` | `5` | the chatbot's monthly budget at the model's list price (D-048) |
 
@@ -303,24 +309,82 @@ Except the sample upload, which answers `{ newSampleCount, duplicateSampleCount 
   under its own lease. It marks every `active` session whose `updatedAt` is 30 minutes old as `abandoned`.
 - Sample uploads have their own rate-limit budget (security.md → API hardening).
 
-## The waitlist (Phase 8.8, D-037)
+## The waitlist (Phase 8.8, D-037; the invite loop, D-056)
 
-The landing page is a static site, so its waitlist form posts straight to the API.
+The landing page is a static site, so its waitlist form posts straight to the API. The invite
+loop (D-056, D-057) is built in Part 1 of [`../waitlist-referral-prompt.md`](../waitlist-referral-prompt.md).
 
-- **`POST /v1/waitlist`** takes `{ email, phonePlatform?, source?, website? }` and always
-  answers `200 { status: 'joined' }`, for a new email and a repeat one alike, so the response
-  never reveals who signed up. A malformed email is `VALIDATION_FAILED` 400.
-- `email` is trimmed and lowercased. A `source` that isn't 1–32 characters of `[a-z0-9-]` is
-  dropped, not refused.
-- `website` is a **honeypot**: the form hides it, so only a bot fills it in. When it's set the
-  handler answers `200` and stores nothing.
-- The repository upserts with `$setOnInsert` on the unique `email` index (`waitlistSignups`,
-  data-model.md), so a repeat is a no-op.
-- Its own rate limit: 5 requests a minute per IP.
-- **CORS** (`plugins/cors.ts`, `@fastify/cors`): `/v1/waitlist` answers browser requests, but
-  only for an origin in `WAITLIST_ALLOWED_ORIGINS`. The Founding Pass adds its own routes to the
-  list (below). Every other route sends no CORS headers, so browsers still can't call it. The
-  mobile app sends no `Origin` and is unaffected.
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/v1/waitlist` | `{ email, turnstileToken, phonePlatform?, source?, inviteCode?, emailProof?, website? }` → `{ status: 'joined', inviteUrl }` |
+| POST | `/v1/waitlist/invites-session` | `{ emailProof }` → `{ invitesToken, invitesTokenExpiresAt, invites }`. Confirms the sign-up if the email is on the list |
+| GET | `/v1/waitlist/invites` | `Authorization: Bearer <invitesToken>` → `{ invites }` |
+| GET | `/v1/waitlist/count` | `{ signupCount }`, cached for about a minute |
+
+**Joining** always answers `200 { status: 'joined', inviteUrl }`, the same for a new email and a
+repeat one (and for a dot or `+tag` variant of one), so the response never reveals who signed
+up. `inviteUrl` is `https://stridemon.xyz/waitlist?ref=<inviteCode>`, computed from the folded
+email. The checks run cheapest first:
+
+1. `website` is a **honeypot**: the form hides it, so only a bot fills it in. When it's set the
+   handler answers `200` (with the link the email would get) and stores nothing.
+2. **Turnstile**, action `join-waitlist` (as the pass routes check it, below): `TURNSTILE_FAILED`
+   403 when it's missing or fails.
+3. **A temporary inbox** (the vendored disposable-domain list): `EMAIL_DOMAIN_DISPOSABLE` 400.
+4. **Fold and upsert.** `email` is trimmed and lowercased and folded to `canonicalEmail`
+   (data-model.md). The repository upserts on `canonicalEmail` with `$setOnInsert` only, with its
+   own `inviteCode` and the inviter's. An `inviteCode` that isn't a valid code, or is the
+   sign-up's own, is dropped. A `source` that isn't 1–32 characters of `[a-z0-9-]` is dropped
+   too. Neither is refused. A duplicate key on the old `email` index (an old sign-up the backfill
+   hasn't reached) is a repeat, not an error.
+5. **An `emailProof` for the same inbox** (from a code or Google) confirms the sign-up
+   (`emailConfirmedAt`, set once). A proof for another inbox, or an invalid one, is ignored.
+
+A malformed email is `VALIDATION_FAILED` 400.
+
+**The invites** (D-056: progress only to its owner). `invites-session` takes an email proof and
+answers a 30-day **invites token** (HS256 with `EMAIL_PROOF_SECRET`, audience
+`stridemon:waitlist-invites`, the email as its subject), so the page can come back without
+another email. An email proof carries how the email was checked (`emailCheckMethod`: `code` or
+`google`; a proof without it counts as `code`), which becomes `emailConfirmedBy`. An invalid proof
+is `EMAIL_PROOF_INVALID` 401; an invalid or expired invites
+token is `INVITES_TOKEN_INVALID` 401. Both routes answer the same `invites`:
+
+```json
+{
+  "invites": {
+    "isOnWaitlist": true,
+    "inviteUrl": "https://stridemon.xyz/waitlist?ref=K7M2QX9P",
+    "confirmedFriendCount": 1,
+    "requiredFriendCount": 3,
+    "hasEarlyHour": false,
+    "isEmailConfirmed": true,
+    "countsUntil": "2026-11-28T13:30:00.000Z"
+  }
+}
+```
+
+- `confirmedFriendCount`: sign-ups that joined through this code, confirmed before `countsUntil`
+  (the early hour's start, D-058), and aren't this inbox. `hasEarlyHour` is that count reaching
+  `requiredFriendCount` (3).
+- Not on the list: `isOnWaitlist: false`, the counts 0, and the link the email would get, so the
+  page can show the form.
+
+**The count** answers the number of sign-ups, cached in the process for about a minute. The site
+shows it only from 1,000 (D-056).
+
+**Limits per IP and minute:** joining 30 (D-056; it was 5 before Turnstile), `invites-session`
+10, `GET invites` 30, `count` 60.
+
+**CORS** (`plugins/cors.ts`, `@fastify/cors`): `/v1/waitlist` and every `/v1/waitlist/*` route
+answer browser requests, but only for an origin in `WAITLIST_ALLOWED_ORIGINS`. The Founding Pass
+adds its own routes to the list (below). Every other route sends no CORS headers, so browsers
+still can't call it. The mobile app sends no `Origin` and is unaffected.
+
+**The backfill:** `bun run waitlist:backfill-canonical-emails` (once, on the server, right after
+the deploy that adds `canonicalEmail`) fills `canonicalEmail` and `inviteCode` on old sign-ups.
+It's idempotent, and it stops and prints both when two old sign-ups fold to one inbox, so Yash
+decides which to keep.
 
 ## The Founding Pass (Part 3, D-041, D-043)
 
@@ -329,8 +393,9 @@ The website's `/pass` page is the second client of these routes. The brief's §1
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| POST | `/v1/pass/email-code` | `{ email, turnstileToken }` → `{ status: 'sent' }`. Emails a 6-digit code. The same answer for new and known emails |
-| POST | `/v1/pass/email-verify` | `{ email, code }` → `{ emailProof, emailProofExpiresAt }`, a signed proof good for 6 hours ("Get ready" before mint day) |
+| POST | `/v1/pass/email-code` | `{ email, turnstileToken, purpose? }` → `{ status: 'sent' }`. Emails a 6-digit code. The same answer for new and known emails. `purpose` is `mint` (the default) or `waitlist` (D-057) |
+| POST | `/v1/pass/email-verify` | `{ email, code }` → `{ email, emailProof, emailProofExpiresAt }`, a signed proof good for 6 hours ("Get ready" before mint day) |
+| POST | `/v1/pass/email-google` | `{ googleIdToken }` → the same as `email-verify`: an email proof for the Google account's verified email, which `email` names, so the site can show it (D-057) |
 | POST | `/v1/pass/mints` | 🔒 `{ designNumber, emailProof, turnstileToken }` → `201 { mint }` (or `200` with the same mint, for a repeat from the same wallet for the same design). Queues `mintFoundingPass` in the outbox |
 | GET | `/v1/pass/mints/:mintId` | 🔒 `{ mint }`; 404 for another wallet's mint. The website polls it for the reveal |
 | GET | `/v1/pass/collection` | the minted designs, the pending ones, the counts, the last 10 mints, the schedule and the gate |
@@ -392,12 +457,15 @@ The collection:
 
 | Route | Errors |
 |-------|--------|
-| `email-code` | `TURNSTILE_FAILED` 403, `EMAIL_CODE_RECENTLY_SENT` 429 (`details.retryAfterSeconds`), `EMAIL_SEND_FAILED` 503 |
+| `email-code` | `TURNSTILE_FAILED` 403, `EMAIL_CODE_RECENTLY_SENT` 429 (`details.retryAfterSeconds`), `EMAIL_DAILY_LIMIT_REACHED` 429 (`purpose: 'waitlist'` only, `details.retryAfterSeconds` until 00:00 UTC, D-057), `EMAIL_SEND_FAILED` 503 |
+| `email-google` | `GOOGLE_SIGN_IN_UNAVAILABLE` 503 (no `GOOGLE_CLIENT_ID`, or Google's keys can't be fetched), `GOOGLE_SIGN_IN_FAILED` 401 (a bad signature or issuer, another audience, expired, or `email_verified` not true) |
 | `email-verify` | `EMAIL_CODE_INCORRECT` 400 (`details.attemptsLeft`), `EMAIL_CODE_EXPIRED` 400 (none pending, expired or used), `EMAIL_CODE_TOO_MANY_ATTEMPTS` 429 |
-| `POST mints` | `TURNSTILE_FAILED` 403, `EMAIL_PROOF_INVALID` 401, `PASS_MINT_NOT_OPEN` 409 (`details.opensAt`), `PASS_WAITLIST_WINDOW_ONLY` 403 (`details.openMintStartsAt`), `PASS_ALL_MINTED` 409, `PASS_MINT_CLOSED` 409, `PASS_EMAIL_ALREADY_USED` 409 (`details.designNumber`), `PASS_WALLET_ALREADY_USED` 409 (`details.designNumber`, and `details.mintId` when the API minted it), `PASS_ALREADY_MINTED` 409 (`details.similarAvailableDesignNumbers`: 3 similar designs still free) |
+| `POST mints` | `TURNSTILE_FAILED` 403, `EMAIL_PROOF_INVALID` 401, `PASS_MINT_NOT_OPEN` 409 (`details.opensAt`), `PASS_WAITLIST_WINDOW_ONLY` 403 (`details.openMintStartsAt`), `PASS_ALL_MINTED` 409, `PASS_MINT_CLOSED` 409, `PASS_EMAIL_ALREADY_USED` 409 (`details.designNumber`), `PASS_WALLET_ALREADY_USED` 409 (`details.designNumber`, and `details.mintId` when the API minted it), `PASS_ALREADY_MINTED` 409 (`details.similarAvailableDesignNumbers`: 3 similar designs still free); from Part 4 of the referral build (D-058), `PASS_EARLY_HOUR_ONLY` 403 and `PASS_EARLY_HOUR_FULL` 409, both with `details.waitlistWindowStartsAt` |
 
 **Turnstile** (D-043, D-045): siteverify must answer `success`, the route's action (`send-code`
-for `email-code`, `mint` for `POST mints`) and a hostname of `WAITLIST_ALLOWED_ORIGINS`. Answers
+for `email-code` with `purpose: 'mint'`, `send-waitlist-code` with `purpose: 'waitlist'`, `mint`
+for `POST mints`, and `join-waitlist` for `POST /v1/waitlist`, D-056, D-057) and a hostname of
+`WAITLIST_ALLOWED_ORIGINS`. Answers
 from Cloudflare's test keys (development and tests; production refuses them at boot) carry no
 action and the hostname `example.com`, so they count on `success` alone.
 
@@ -410,14 +478,26 @@ through, and the second gets `PASS_ALREADY_MINTED`.
 an HMAC-SHA-256 hash, valid for 10 minutes and 5 tries, one email a minute per address. Each try
 counts, the right code included; the right code deletes the record, so it works once. Sending a
 code answers `sent` whether or not the email is on the waitlist or already has a pass.
-A failed send deletes the record, so the person can try again at once.
+A failed send deletes the record, so the person can try again at once. The purpose picks the
+email's words: a mint code's as today, a waitlist code's from D-057.
+
+**The daily email budget** (D-057, `emailDailyCounts`): every email the API sends (codes of both
+purposes and window emails) takes a place in the UTC day's count before it goes, and gives it back
+if Brevo refuses it. A waitlist code is refused with `EMAIL_DAILY_LIMIT_REACHED` once the count
+reaches `WAITLIST_CODE_DAILY_EMAIL_LIMIT`; mint codes and window emails are never refused by it.
+
+**Google** (D-057, `services/google-id-token-verifier.ts`, injected like the Turnstile check, with
+a fake in tests): `jose` verifies the ID token against Google's published keys (cached), the
+issuer `accounts.google.com` or `https://accounts.google.com`, `GOOGLE_CLIENT_ID` as the audience,
+the expiry, and `email_verified: true`. Only the email is used, never the name, photo or `sub`.
 
 **The schedule** (`lib/founding-pass/pass-schedule.ts`): from `PASS_WAITLIST_WINDOW_STARTS_AT`,
 `PASS_WAITLIST_WINDOW_HOURS` and `PASS_BACKUP_OPENING_AT`, the clock and the minted count:
 
 | Phase | When | Minting | Gate (if `EARLY_ACCESS_REQUIRED`) |
 |-------|------|---------|------|
-| `preview` | before the window | no (`PASS_MINT_NOT_OPEN`) | on |
+| `preview` | before the early hour | no (`PASS_MINT_NOT_OPEN`) | on |
+| `earlyHour` | `PASS_EARLY_HOUR_MINUTES` (60) before the window (D-058, built in the referral's Part 4) | waitlist emails that joined before it started and have 3 confirmed friends, at most `PASS_EARLY_HOUR_MINT_LIMIT` (250) passes (`PASS_EARLY_HOUR_ONLY`, `PASS_EARLY_HOUR_FULL`) | on |
 | `waitlistWindow` | the window's 48 hours | waitlist emails that joined **before** it opened | on |
 | `openMint` | from the window's end to the backup opening date | anyone | on |
 | `allMinted` | all 1,000 minted (whatever the date) | no (`PASS_ALL_MINTED`) | off |
@@ -451,7 +531,8 @@ frees the design, email and wallet. A confirmed `mintFounderSneaker` sets
 
 **CORS and limits:** the `/v1/pass/*` routes and `/v1/auth/nonce`, `/v1/auth/verify` and
 `/v1/auth/refresh` answer the origins in `WAITLIST_ALLOWED_ORIGINS` (D-043). Per IP and minute:
-`email-code` 5, `email-verify` 10, `POST mints` 10, `GET mints/:mintId` 60, `collection` 60. In
+`email-code` 5, `email-verify` 10, `email-google` 10, `POST mints` 10, `GET mints/:mintId` 60,
+`collection` 60. In
 `bun test`, each injected request gets its own `remoteAddress`.
 
 **The waitlist email** (`jobs/send-waitlist-window-emails.ts`, run by hand with
@@ -462,7 +543,10 @@ sends 300 a day). It stamps `windowEmailSentAt` before sending, so an address is
 twice, and prints what it sent. A run stops at the first failed send: a refusal from Brevo (the
 daily limit, say) gives that address back for the next run, while an unknown outcome (a timeout)
 keeps the stamp, since that email may have gone out. Without `--send` it only counts, and `--send`
-runs only with `NODE_ENV=production`.
+runs only with `NODE_ENV=production`. **`--early-hour`** (D-058, Part 4), run before 19:00 IST on
+11-28, emails only the sign-ups that have the early hour, worded with both times; the normal run
+then emails everyone else. Still one email per address. Every window email counts toward the day's
+email budget (D-057).
 
 **The deliverability check:** `cd apps/api && bun run pass:send-test-email <address>` sends one
 sample code email through Brevo, reading only `BREVO_API_KEY` and `EMAIL_SENDER_ADDRESS`.
@@ -473,7 +557,13 @@ Monad's contract size limit), the contracts deployed by the tests' `deployTestCo
 throwaway database `stridemon-pass-local` (dropped at start), and the API on port 3001. It builds
 the API's environment itself (Anvil's keys, Cloudflare's test Turnstile secrets, codes printed
 instead of sent) and never reads `.env`. Flags pick the phase, add waitlist emails, mint passes
-ahead, fail Turnstile, slow the blocks and allow another site origin (`website/README.md`).
+ahead, fail Turnstile, slow the blocks and allow another site origin (`website/README.md`). In
+`--phase preview` the window opens in 2 hours, so invited friends who confirm in the next hour
+still count (D-056). Continue with Google works when the shell has `GOOGLE_CLIENT_ID`.
+
+**Temporary inboxes:** `src/lib/waitlist/disposable-email-domain-list.ts` is generated from the CC0
+[disposable-email-domains](https://github.com/disposable-email-domains/disposable-email-domains)
+list by `bun run waitlist:refresh-disposable-domains`: never edit it by hand.
 
 **The lost-wallet move** (D-041) isn't an API route. Support checks the email by hand and runs
 `scripts/recover-founding-pass` from the deployer key.

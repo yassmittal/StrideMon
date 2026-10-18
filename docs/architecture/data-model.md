@@ -250,26 +250,76 @@ No extra indexes: every lookup is by `_id`.
 ## `waitlistSignups`
 
 Emails left on the landing page's waitlist (D-037). Not tied to a wallet or a user: the app
-gets the wallet when someone plays.
+gets the wallet when someone plays. The invite loop (D-056) adds the folded email, the invite
+codes and the confirmation (built in the referral's Part 1).
 
 ```ts
 type WaitlistPhonePlatform = 'android' | 'ios'
+type WaitlistEmailConfirmationMethod = 'google' | 'code'
 
 type WaitlistSignupDocument = {
   _id: ObjectId
-  email: string                                // trimmed and lowercased, unique
+  email: string                                // trimmed and lowercased, as typed; every email goes here
+  canonicalEmail: string                       // folded (below), unique: one sign-up per inbox (D-056)
+  inviteCode: string                           // 8 Crockford base32 characters from canonicalEmail (D-056)
+  invitedByInviteCode: string | null           // the ?ref= it first joined through; never its own code
+  emailConfirmedAt?: Date                      // absent until the email is checked; set once
+  emailConfirmedBy?: WaitlistEmailConfirmationMethod  // set with emailConfirmedAt
   phonePlatform: WaitlistPhonePlatform | null  // optional on the form
   source: string | null                        // the page's ?source=, at most 32 of [a-z0-9-]
+  windowEmailSentAt?: Date                     // the one window email (D-043, below)
   createdAt: Date
 }
 ```
 
-Index: `{ email: 1 }` unique.
+**Folding** (`canonicalEmail`, D-056): trimmed and lowercased; a `+tag` dropped on every domain
+(only when something comes before the `+`); dots dropped for `gmail.com` and `googlemail.com`,
+and `googlemail.com` becomes `gmail.com`. So `J.Ohn+pass@googlemail.com` folds to
+`john@gmail.com`.
 
-A sign-up is written once and never changed, so there's no `updatedAt`. A repeat email is an
-upsert with `$setOnInsert` only: the first sign-up's platform and source stay. No IP address
-or user agent is ever stored. An email is deleted by hand when its owner asks (security.md →
-Privacy).
+Indexes:
+
+- `{ canonicalEmail: 1 }` unique, **partial** over `canonicalEmail: { $exists: true }`. A plain
+  unique index would read every old sign-up's missing field as `null` and fail to build, so the
+  API wouldn't boot. `bun run waitlist:backfill-canonical-emails` fills the old ones once.
+- `{ email: 1 }` unique (D-037). It stays: two typed forms of one inbox already fold together.
+- `{ invitedByInviteCode: 1, emailConfirmedAt: 1 }`, for counting someone's confirmed friends.
+- `{ createdAt: 1 }`, for the window email's oldest-first order.
+
+`inviteCode` isn't unique: two emails sharing a code is about a 1 in 20,000 chance at 10,000
+sign-ups, and would only merge their counts (D-056).
+
+Joining is an upsert on `canonicalEmail` with `$setOnInsert` only, so the first sign-up's email,
+platform, source and inviter stay. Confirming sets `emailConfirmedAt` and `emailConfirmedBy` only
+where `emailConfirmedAt` doesn't exist yet, so the first confirmation stays. No IP address, user
+agent, name or Google account id is ever stored. An email is deleted by hand when its owner asks
+(security.md → Privacy).
+
+**Confirmed friends** of a sign-up are the sign-ups whose `invitedByInviteCode` is its
+`inviteCode`, with `emailConfirmedAt` before the early hour starts (D-058), and a
+`canonicalEmail` that isn't its own. 3 of them give it the early hour.
+
+## `emailDailyCounts`
+
+How many emails the API has sent each UTC day, for the daily budget (D-057). Counts only, never
+an address.
+
+```ts
+type EmailDailyCountDocument = {
+  _id: string            // the UTC day, '2026-11-28'
+  sentEmailCount: number // every email: mint codes, waitlist codes and window emails
+  expiresAt: Date        // about a week after the day; TTL index deletes it
+  updatedAt: Date
+}
+```
+
+Index: `{ expiresAt: 1 }` TTL (`expireAfterSeconds: 0`). Reads and writes go by `_id`.
+
+- Every send `$inc`s the day's count with an upsert before it goes, and a send Brevo refuses
+  `$inc`s it back by one.
+- A waitlist code takes its place only while the count is under
+  `WAITLIST_CODE_DAILY_EMAIL_LIMIT` (one conditional update, so two requests can't both take the
+  last place). Mint codes and window emails always take theirs.
 
 ---
 
@@ -332,7 +382,7 @@ type FoundingPassMintStatus = 'queued' | 'confirmed' | 'failed'
 type FoundingPassMintDocument = {
   _id: ObjectId                 // the mintId
   designNumber: number          // 1 to 1,000, the pass's token id
-  email: string                 // from the email proof, lowercased
+  email: string                 // from the email proof, lowercased (Part 4 adds the folded form, D-056)
   walletAddress: string         // lowercase, from the access token
   status: FoundingPassMintStatus  // its outbox record is keyed mintFoundingPass:<_id>
   founderNumber: number | null  // from FoundingPassMinted, once confirmed
@@ -358,13 +408,18 @@ support checks a lost-wallet request (D-041).
 ### How the waitlist counts for the window
 
 During the 48-hour waitlist window, a mint's verified email must be in `waitlistSignups` with a
-`createdAt` **before** the window opened. Nothing is copied: the mint looks the email up. After
-the window, the waitlist no longer matters for minting.
+`createdAt` **before** the window opened. Nothing is copied: the mint looks the email up (by
+`canonicalEmail` from Part 4 of the referral build, D-058). After the window, the waitlist no
+longer matters for minting.
 
-`waitlistSignups` gains one field, `windowEmailSentAt: Date` (absent until then): the time its one
-email ("Your 48 hours start now") was sent. The sender sets it before sending, so it never emails
-an address twice. It's the one change to a sign-up after it's written. Index:
-`{ createdAt: 1 }`, for the sender's oldest-first order.
+In **the early hour** (D-058), the sign-up must also be from before the early hour started and
+have 3 confirmed friends, and at most `PASS_EARLY_HOUR_MINT_LIMIT` passes mint. Part 4 adds what
+holds that limit exactly (a counter or slot numbers) and writes it here.
+
+`waitlistSignups` gains `windowEmailSentAt: Date` (absent until then): the time its one email
+("Your 48 hours start now") was sent. The sender sets it before sending, so it never emails an
+address twice. Index: `{ createdAt: 1 }`, for the sender's oldest-first order. (D-056 adds the
+confirmation, the other change to a sign-up after it's written.)
 
 ### New `chainTransactions` kinds
 

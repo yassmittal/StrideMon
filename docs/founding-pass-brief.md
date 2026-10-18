@@ -259,7 +259,8 @@ words, which also stood for the day the gate goes on: that day is now **early ac
 
 - People browse, take the match quiz, **heart favorites** (kept in the browser, no account), and
   share pass pages.
-- "Remind me" posts to the existing waitlist (`POST /v1/waitlist`, D-037): one email when minting opens.
+- "Remind me" posts to the existing waitlist (`POST /v1/waitlist`, D-037): one email when minting opens
+  (and, from D-056, a code only when someone asks for one).
 - X gets **a colour family a day** (for example Ember on Monday, Ocean on Tuesday), plus a
   "Legendary of the day". That's a week of posts from the collection itself (`social/`, D-036).
 
@@ -279,6 +280,7 @@ words, which also stood for the day the gate goes on: that day is now **early ac
 |---|---|
 | Preview: the gallery, minting closed | Already live (Part 4) |
 | Early access starts: the game starts over on fresh contracts, the gate goes on (D-049) | Sat 2026-11-21 |
+| The early hour: waitlist sign-ups with 3 confirmed friends, at most 250 passes (D-058) | Sat 2026-11-28, 19:00 IST (13:30 UTC) |
 | Waitlist window, 48 hours | Sat 2026-11-28, 20:00 IST (14:30 UTC) |
 | Open mint | Mon 2026-11-30, 20:00 IST |
 | Backup opening date | Mon 2026-12-14, 20:00 IST |
@@ -620,6 +622,9 @@ email → verified → minted drop-off, races lost (a design taken first), minte
   against testnet).
 - **Drop:** the line, waves and referral queue. They delay the reward, and a number in a line isn't
   something you own.
+  *Changed in part (D-056, D-058, 2026-10-18):* still no line, waves or ranks, but one threshold:
+  someone who brings 3 friends who confirm their email mints in **the early hour**, 19:00 to 20:00
+  IST before the window, for at most 250 passes. Nobody's window moves later.
 - **The existing waitlist** (`waitlistSignups`) stays. It becomes "Remind me when minting opens", and
   its emails get one message on mint day.
 

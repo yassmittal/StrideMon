@@ -75,12 +75,13 @@ export async function requestFoundingPassMint({
     remoteIpAddress,
     expectedAction: 'mint',
   })
-  const email = await verifyEmailProof({
+  const verifiedEmail = await verifyEmailProof({
     emailProof: body.emailProof,
     emailProofSecret: apiConfig.emailProofSecret,
     now,
   })
-  if (email === null) throw new ApiError('EMAIL_PROOF_INVALID', HTTP_STATUS_UNAUTHORIZED)
+  if (verifiedEmail === null) throw new ApiError('EMAIL_PROOF_INVALID', HTTP_STATUS_UNAUTHORIZED)
+  const { email } = verifiedEmail
 
   const collectionState = await collectionReader.read(now)
   await assertPassMintingOpen({

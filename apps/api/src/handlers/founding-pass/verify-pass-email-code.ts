@@ -57,8 +57,9 @@ export async function verifyPassEmailCode({
   await deletePassEmailCode(database, email)
   const { emailProof, emailProofExpiresAt } = await signEmailProof({
     email,
+    emailCheckMethod: 'code',
     emailProofSecret,
     issuedAt: now,
   })
-  return { emailProof, emailProofExpiresAt: emailProofExpiresAt.toISOString() }
+  return { email, emailProof, emailProofExpiresAt: emailProofExpiresAt.toISOString() }
 }

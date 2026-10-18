@@ -1,4 +1,13 @@
 import { Composition, Folder, Still } from 'remotion'
+import { AppTourFilm, AppTourScene, defaultAppTourProps } from './app-tour/AppTourFilm'
+import {
+  APP_TOUR_DURATION_IN_FRAMES,
+  APP_TOUR_FRAMES_PER_SECOND,
+  APP_TOUR_HEIGHT,
+  APP_TOUR_WIDTH,
+} from './app-tour/beats'
+import { RebuildCheck, rebuildCheckNames } from './app-tour/checks/RebuildCheck'
+import { type AppTourSceneName, appTourScenes } from './app-tour/timeline'
 import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
 import { RunScreenCheck } from './checks/RunScreenCheck'
 import { LaunchFilm } from './LaunchFilm'
@@ -266,6 +275,31 @@ export function RemotionRoot() {
           />
         ))}
       </Folder>
+      <Composition
+        id="AppTour9x16"
+        component={AppTourFilm}
+        width={APP_TOUR_WIDTH}
+        height={APP_TOUR_HEIGHT}
+        fps={APP_TOUR_FRAMES_PER_SECOND}
+        durationInFrames={APP_TOUR_DURATION_IN_FRAMES}
+        defaultProps={defaultAppTourProps}
+      />
+      <Folder name="AppTourScenes-9x16">
+        {(Object.keys(appTourScenes) as AppTourSceneName[]).map((sceneName) => (
+          <Composition
+            key={sceneName}
+            id={`AppTour-${sceneName}`}
+            component={AppTourScene}
+            width={APP_TOUR_WIDTH}
+            height={APP_TOUR_HEIGHT}
+            fps={APP_TOUR_FRAMES_PER_SECOND}
+            durationInFrames={
+              appTourScenes[sceneName].endFrame - appTourScenes[sceneName].startFrame
+            }
+            defaultProps={{ sceneName }}
+          />
+        ))}
+      </Folder>
       <Folder name="Checks">
         <Composition
           id="SneakerDropSync"
@@ -276,6 +310,19 @@ export function RemotionRoot() {
           durationInFrames={SNEAKER_DROP_DURATION_IN_FRAMES}
         />
         <Still id="RunScreenCheck" component={RunScreenCheck} width={1080} height={2340} />
+        {/* Compositions, not Stills: a frozen footage frame must lie inside the composition. */}
+        {rebuildCheckNames.map((checkName) => (
+          <Composition
+            key={checkName}
+            id={`AppTourRebuild-${checkName}`}
+            component={RebuildCheck}
+            width={720}
+            height={1560}
+            fps={APP_TOUR_FRAMES_PER_SECOND}
+            durationInFrames={120}
+            defaultProps={{ checkName }}
+          />
+        ))}
       </Folder>
     </>
   )

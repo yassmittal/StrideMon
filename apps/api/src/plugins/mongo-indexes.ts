@@ -3,6 +3,7 @@ import { getActivitySessionsCollection } from '../repositories/activity-sessions
 import { getAuthNoncesCollection } from '../repositories/auth-nonces-repository'
 import { getAuthSessionsCollection } from '../repositories/auth-sessions-repository'
 import { getChainTransactionsCollection } from '../repositories/chain-transactions-repository'
+import { getEmailDailyCountsCollection } from '../repositories/email-daily-counts-repository'
 import {
   getFoundingPassMintsCollection,
   LIVE_FOUNDING_PASS_MINT_STATUSES,
@@ -59,11 +60,24 @@ export const mongoIndexesPlugin = fastifyPlugin(
       // Raw GPS is kept for validation and dispute review, not forever (data-model.md).
       { key: { receivedAt: 1 }, expireAfterSeconds: LOCATION_SAMPLE_RETENTION_SECONDS },
     ])
-    // One sign-up per email, so a repeat is a no-op upsert (D-037).
+    // One sign-up per email (D-037) and per inbox (D-056), so a repeat is a no-op upsert.
     await getWaitlistSignupsCollection(database).createIndexes([
       { key: { email: 1 }, unique: true },
+      // Partial: old sign-ups have no canonicalEmail until the backfill, and a plain unique index
+      // would read every one of them as null and fail to build.
+      {
+        key: { canonicalEmail: 1 },
+        unique: true,
+        partialFilterExpression: { canonicalEmail: { $exists: true } },
+      },
+      // Counting a sign-up's confirmed friends (D-056).
+      { key: { invitedByInviteCode: 1, emailConfirmedAt: 1 } },
       // The waitlist email goes oldest sign-ups first (D-043).
       { key: { createdAt: 1 } },
+    ])
+    // One count per UTC day, deleted after about a week (D-057).
+    await getEmailDailyCountsCollection(database).createIndexes([
+      { key: { expiresAt: 1 }, expireAfterSeconds: 0 },
     ])
     await getPassEmailCodesCollection(database).createIndexes([
       // One pending code per email: also what makes "one a minute" safe against a race.

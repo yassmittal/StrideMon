@@ -276,3 +276,92 @@ At 390 px wide (a phone in the X feed) the bubble text, the label and the end ca
   inside an offset `Sequence`. The phone's faces each carry their own full transform with
   `backface-visibility: hidden`, because Chrome's sorting dropped faces under a shared
   `preserve-3d`.
+
+# The App tour film
+
+The App tour film (`AppTour9x16`), from `docs/app-tour-video-prompt.md`. 9:16 only, 1080 × 1920, 60
+fps, 1800 frames (30 s): a close rebuild of a third-party app ad (`reference.mp4`, measured in
+`src/app-tour/reference.md`) with StrideMon's app, loop and brand. One phone stays in the middle
+with the real app in it; each step of the loop gets its own colour field, brought in by the
+reference's own wipe, and its own headline. Every frame is named once in `src/app-tour/timeline.ts`
+(on the music's grid in `beats.ts`: 100.01 BPM from 0.690 s, a beat is 36 frames), the camera is
+`camera.ts`, the phone's screen is the shot list in `footage.ts`, every word is in `content.ts`, and
+`FACTS.md` §15 sources each one. Set to the reference ad's own music (Yash's choice; unlicensed,
+`CREDITS.md`), with a tap on each ring and a hit on the drop.
+
+**One job:** show the whole game loop in 30 seconds, muted or not: get a Sneaker, walk, earn
+STRIDE, repair it, level it up.
+
+## Storyboard as built
+
+| # | Section | Frames | Beat | What happens |
+|---|---|---|---|---|
+| 0 | Cover | 0–7 | | Lime, `Meet StrideMon.`, the phone on Home with #0003's card (the thumbnail) |
+| 1a | Icon | 8–46 | −0.9 → 0 | The StrideMon tile rises in at 82% of the width, grows, punches to 122%, settles at 62% on beat 0 |
+| 1b | Icon → phone | 47–58 | 0 → 0.5 | The tile shrinks into the splash's own tile while the screen grows out from its edges; the phone's rim, glass and shadow fade in; it lands at 57.8% |
+| 1c | **Meet StrideMon.** | 59–348 | 0.5 → 9 | The headline rises (77); the phone grows to 64%; the splash slides up to "Minting your Sneaker…" (131); a cut to Home (203), where #0003's art draws itself, lime last, and the energy bar fills; Home scrolls (302); a tap on START A RUN (329) |
+| 2 | **Walk or run.** | 349–623 | 9 → 17 | The run from 335; the black wipe snaps on 378; the reel's run, ramped, with a push-in to 70% on its counters as `+10 STRIDE` lands at 1× on beat 13 (509); a tap on STOP (599) |
+| 3 | **Earn STRIDE.** | 624–947 | 17 → 26 | The spinner, "Settling on Monad…"; the off-white wipe; the summary and `+10 STRIDE` arrive on its snap (653) with a jump push-in that settles, then a glide; back to 61%, and a tab tap cuts to the Sneaker tab (824), which scrolls to Repair; a tap on REPAIR TO 100 (914) |
+| 4 | **Keep it running.** | 948–1145 | 26 → 31.5 | "Repair your Sneaker?"; the ink wipe snaps on 977; a tap on CONFIRM IN WALLET (1004, MetaMask cut); "Confirming on Monad…" (rebuilt, 1012); "Sneaker repaired" (1040); a cut to the Sneaker tab at its Upgrade panel (rebuilt, 1103); a tap on UPGRADE TO LEVEL 2 (1121) |
+| 5 | **Level up.** | 1146–1403 | 31.5 → 38 | "Confirming on Monad…" slides up (1125); the blue wipe starts as the music stops, and snaps in the silence (1175); **the drop (1211)**: a cut back to rest, the sheet turns `CONFIRMED ON MONAD`, `Level 2 reached`, `Level 1 → 2` and `Efficiency 10 → 12` roll; the sheet slides down (1283), the tab scrolls to the card, the art redraws at level 2 with its new speed line and `EFFICIENCY` rolls to 12 under a push-in to 79% |
+| 6 | End | 1404–1552 | 38 → 42 | The phone tilts counter-clockwise and slides off left, accelerating, as the lime wipe crosses over it (snap 1445): the lockup and `Walk. Earn. Upgrade.` |
+| 7 | Call to action | 1553–1799 | 42 → | `Walk. Earn. Upgrade.` rolls to `Ready to move?`; `stridemon.xyz` rises (1571); two black pills slide in from the edges (1607); everything drifts 1.00 → 1.02 |
+
+## On-screen text, in order
+
+1. **Meet StrideMon.** · (the splash) · (footage: `Minting your Sneaker…`) · (footage and rebuilt card:
+   Home, `#0003`, `LEVEL 01 / 30`, `DURABILITY 100 / 100`, `EFFICIENCY 10`, `ENERGY 10 / 10`, `0`)
+2. **Walk or run.** · (footage: the run screen, `0:01 → 2:29`, `0 → 161 m`, `+0 → +5 → +10 STRIDE`)
+3. **Earn STRIDE.** · (footage: `Settling on Monad…`, `YOU EARNED • RUN SETTLED`, `+10 STRIDE`, the
+   summary; the Sneaker tab, `Repair`, `0.7 STRIDE`, `Durability 99 → 100`)
+4. **Keep it running.** · (footage: `Repair your Sneaker?`, `Durability 99 → 100`,
+   `STRIDE balance 10 → 9.3`; rebuilt: `Confirming on Monad…`; footage: `Sneaker repaired`,
+   `Spent 0.7 STRIDE`; rebuilt: `Repair`, `0 STRIDE`, `Already at full durability.`, `Upgrade`,
+   `50 STRIDE`, `Level 1 → 2`, `Efficiency 10 → 12`, `UPGRADE TO LEVEL 2`)
+5. **Level up.** · (rebuilt: `Confirming on Monad…`, `CONFIRMED ON MONAD`, `Level 2 reached`,
+   `Spent 50 STRIDE`, `Level 1 → 2`, `Efficiency 10 → 12`; the card, `LEVEL 02 / 30`, `EFFICIENCY 12`)
+6. `StrideMon` · **Walk. Earn. Upgrade.** → **Ready to move?** · `stridemon.xyz` · `ANDROID DEMO` ·
+   `MONAD TESTNET`
+
+## Reading time
+
+Each headline stays up at least `0.4 s + words ÷ 3.5`, and each section holds its headline at
+least 3.3 s: Meet StrideMon. 5.0 s, Walk or run. 4.6 s, Earn STRIDE. 5.4 s, Keep it running. 3.3 s,
+Level up. 4.5 s. `Walk. Earn. Upgrade.` (1.3 s needed) is up 1.8 s, `Ready to move?` 4.1 s and the
+link 3.8 s. In the phone, `Level 2 reached` holds 1.2 s on the sheet before it slides down, and the
+numbers the film is about (the run's counters, `+10 STRIDE`, `LEVEL 02 / 30`, `EFFICIENCY 12`) each
+get a push-in, so they read at 390 px wide (`out/app-tour/final/at-390.png`). Every word sits above
+78% of the height (the end card's lowest at 71%) and at least 181 px clear of the right edge.
+
+## What changed from the brief, and why
+
+- **The music is the reference ad's own track** (Yash, after hearing three licensed Pixabay
+  candidates): the film is cut to it frame for frame. StrideMon holds no licence for it; it isn't
+  for Instagram, and YouTube may claim it (`CREDITS.md`).
+- **Effects:** a light tap on each ring and a hit on the drop. Whooshes on the wipes were tried and
+  dropped (Yash, STOP 2: they didn't go with the film).
+- **A realistic phone** (Yash, STOP 1: "more realistic"), not the website's flat frame: graphite
+  rim, black glass, side keys, a faint sheen and a soft shadow, logo-free, no punch hole (the
+  reel's crop leaves no status bar for one). Free downloadable phones were all old models, branded
+  or iPhones.
+- **Headlines in Satoshi Bold** (Yash's pick at STOP 1), as heavy as the reference's.
+- **No testnet line on the end card** (Yash: "unnecessary"). STRIDE amounts are on screen, so every
+  post of the film carries `Monad testnet. STRIDE has no monetary value.` in its caption.
+- **The wipe is the reference's measured curve** (31 keyframes, 1.20 s), and the headline's words
+  appear whole and slide up unmasked as the edge reaches them, as the reference's do (not the
+  masked rise the brief described).
+- **The icon rises, punches past the frame and settles** before collapsing into the phone, as the
+  reference's does (the brief described only a shrink).
+- **The repair's "Confirming on Monad…" is rebuilt**: the reel's only clean frames still show its
+  app switch's rounded corners. "Sneaker repaired" is the reel's own.
+- **Section 3 ends on the reel's own tab tap** (34.7–36.5 s): a filled-circle tap like the
+  reference's tab taps, the tab scrolling to Repair, and the press, instead of a cut to a still
+  panel, so the summary holds 2.8 s rather than 3.75 s.
+- **On the drop the phone cuts back to rest** (as the reference's does after its drop), so the
+  sheet's `Level 1 → 2` and `Efficiency 10 → 12` stay in frame while they roll; the level-2
+  numbers get their push-in on the card a beat later.
+- **The run is the reel's footage**, not the vector `RunScreen`: at the ramp's speed the rebuild's
+  digits are always mid-roll, and the footage is the app itself.
+- **Text is drawn unhinted** (`text-rendering: geometricPrecision`): hinted text shimmered on the
+  level-2 card, snapping to the frame's pixels on its own as the camera scaled, and differently in
+  each of Remotion's parallel tabs.

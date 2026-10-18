@@ -166,3 +166,50 @@ film, and none of it is inside an M-range above.
 | Both files | The audio track is silent (−91 dB): no voices or room sound | None |
 
 No seed phrase, password, contact list or other app's content is legible in any M-range.
+
+## The App tour film: the submission reel (2026-10-17)
+
+One recording: `website/media-source/submission-reel.mp4` (gitignored), the edited Metropolis
+submission reel, 720 × 1560, 30 fps constant, BT.709, 73.6 s, recorded 2026-10-07 on the D-038
+contracts (STRIDE). It's already cropped to the app: no status bar, no dev gear, no MetaMask chrome
+in the clips below. Its clips were framed slightly differently by its editor (the Sneaker tab at
+34.9–35.9 s is drawn about 0.5% larger than the sheets at 40–42 s, and 49.0 s comes from a session
+with a wider window), which `scripts/check-app-tour-rebuilds.py` measures and reports.
+
+The app in the reel runs at a density of 2.8125 (a 384 pt window): 1.875 reel px per point.
+
+`scripts/cut-app-tour-footage.sh` cuts each shot into a 60 fps intermediate in
+`public/footage/app-tour/` (frames repeated, never blended; nothing painted over).
+`src/app-tour/footage.ts` maps film frames to each clip's frames.
+
+| Clip | Reel in–out (s) | Speed in the film | What it shows |
+|---|---|---|---|
+| `minting` | 6.500–9.467 | 1× | "Minting your Sneaker…", `STARTER SNEAKER • MONAD TESTNET`, `0%` |
+| `home` | 10.100–11.200 | a still (10.50 s) | Home: `#0003`, `LEVEL 01 / 30`, `DURABILITY 100 / 100`, `EFFICIENCY 10`, `ENERGY 10 / 10`, balance `0`. The film draws the card's art and the energy bar over it |
+| `home-scroll` | 14.100–15.600 | 1×, then a hold | Home scrolls to START A RUN (14.6–14.9 s); the press at 15.4 s lands on the film's tap |
+| `run` | 16.500–25.100 | ramped (about 1× → 3.3× → 1× → 3× → 1×) | The run screen `0:01 → 2:29`, `0 → 161 m`, estimate `+0 → +5 (≈19.75 s) → +10 STRIDE (22.90 s)`, energy `10 → 9 → 8 / 10`. +10 lands at 1× on its beat. The reel itself is already sped up and has jumps (0:54 → 1:18 at 19.5–20.0 s) |
+| `stop-press` | 25.600–26.400 | 1× | `2:29`, the STOP pill steps darker at 26.15 s |
+| `stop-spinner` | 27.400–28.367 | 1× | The pill's spinner (the "Finish this run?" dialog, 26.4–27.3 s, is cut) |
+| `settling` | 28.400–30.967 | 1×, 0.5 s of it | `RUN FINISHED • SETTLING`, "Settling on Monad…" |
+| `summary` | 31.000–34.500 | 1× | `YOU EARNED • RUN SETTLED`, `+10 STRIDE`, the testnet line, rewarded minutes `2`, durability lost `−1`, YOUR RUN `2:34`, `2`, `134 m`, `4.0 km/h` |
+| `sneaker-tab` | 34.700–36.467 | 1× | The Sneaker tab opening (Android's own ripple on its tab), the repair cost loading (`0.7 STRIDE` at 34.96 s), the scroll to Repair (35.26–35.66 s): `Durability 99 → 100`, REPAIR TO 100 pressed at 36.2 s, `You have 10 STRIDE.` |
+| `repair-review` | 36.500–37.500 | 0.8× | "Repair your Sneaker?", `Durability 99 → 100`, `STRIDE balance 10 → 9.3`, CONFIRM IN WALLET touched at 37.33 s |
+| `repair-done` | 40.600–42.600 | 1× | `CONFIRMED ON MONAD`, the check, "Sneaker repaired", `Spent 0.7 STRIDE`, `Durability 99 → 100` |
+
+**Left out, and why:** the welcome and sign-in (0–6.5 s: MetaMask), Profile (11.5–13.9 s: a wallet
+address), the location prompt (15.5–16.4 s), the "Finish this run?" dialog, MetaMask (37.5–40.3 s),
+the repair's "Confirming on Monad…" (40.37–40.57 s: the app switch's rounded corners still show
+the launcher, so it's rebuilt), the explorer (43–47 s: an address and the replaced contracts), and
+everything after 47 s (another wallet's Sneaker #1; its Upgrade panel at 48.5–49.5 s was the layout
+reference for the rebuild, never shown).
+
+**Touch dots:** the reel was recorded with Android's "show taps", so a grey dot marks each touch.
+The film's tap rings are centred on them: START A RUN (515, 1223), STOP (470, 1299), REPAIR TO 100
+(562, 1083), CONFIRM IN WALLET (538, 1340), in reel pixels. The SNEAKER tab gets the reference's
+tab tap (a filled circle) at (268, 1470), over the reel's own ripple.
+
+**Privacy pass:** every clip above was checked on contact sheets (0.1 s steps around each cut,
+0.5 s through the run, the minting screen and the summary, which barely change): no status
+bar, notification, other app, wallet address, seed phrase, contact or personal photo. The only
+system UI is the gesture bar at the bottom, and the touch dots. Left-out ranges hold a wallet
+address (Profile 0xC94e…2E85, MetaMask, the explorer), which is public data the film doesn't need.

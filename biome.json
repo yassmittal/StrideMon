@@ -12,6 +12,7 @@
       "!packages/contracts",
       "!packages/chain/src/abis",
       "!packages/chain/src/founding-pass-designs.ts",
+      "!apps/api/src/lib/waitlist/disposable-email-domain-list.ts",
       "!website/src/content/founding-pass-designs.ts",
       "!website/public",
       "!launch-video/public",

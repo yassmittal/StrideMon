@@ -38,6 +38,12 @@ export const API_ERROR_CODES = [
   'FOUNDING_PASS_REQUIRED',
   // The help chatbot (D-048)
   'HELP_CHAT_UNAVAILABLE',
+  // The waitlist's invite loop (D-056, D-057)
+  'EMAIL_DOMAIN_DISPOSABLE',
+  'EMAIL_DAILY_LIMIT_REACHED',
+  'GOOGLE_SIGN_IN_UNAVAILABLE',
+  'GOOGLE_SIGN_IN_FAILED',
+  'INVITES_TOKEN_INVALID',
 ] as const
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number]

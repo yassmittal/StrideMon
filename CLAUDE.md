@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-056.
+for it. The next free decision number is D-059.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -190,6 +190,27 @@ field ready to paste, the first comment, answers and launch-day checks. Its six 
 images are rendered from `design/*.html` by `render.sh` into the gitignored
 `social/media/product-hunt/`. Claude drafts and never submits. The proposed launch is Tue 2026-12-01,
 the day after the open mint (Yash decides).
+**App tour film (2026-10-17):** `AppTour9x16` in `launch-video/` (`src/app-tour/`, brief
+`docs/app-tour-video-prompt.md`), a 30 s 9:16 tour of the loop rebuilt from a third-party ad's
+structure, with a realistic phone. **Its music is that ad's own track, unlicensed** (Yash's choice,
+`launch-video/CREDITS.md`): never for Instagram; YouTube may claim it. Its X post draft is
+`social/posts/2026-10-21-app-tour-film.md`.
+**Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
+from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,
+WhatsApp and Telegram sharing, Monad's channels, YouTube, LinkedIn, one Show HN, partners and
+daily content. Yash decided (2026-10-18): yes to the early hour, no event travel, and Brevo's free
+plan until the Metropolis results (11-03). The rest of its §8 is open. **The early hour is built
+from `docs/waitlist-referral-prompt.md`**, one part per session: invite 3 friends who confirm
+their email (Google sign-in or a code), and the window opens at 19:00 IST, for at most 250 passes.
+Its decisions are D-056 (the invite loop), D-057 (Google and a 250-a-day cap on waitlist codes) and
+D-058 (the early hour), approved 2026-10-18 (Part 0 done). Part 1 (API) is done (2026-10-18):
+the new routes are in `backend-api.md` → The waitlist. Part 2 (website) is done (2026-10-18, checked by Yash on the local stack):
+Google or email joining, the invite card and share row, `/waitlist/invites`, help and privacy
+(`website/README.md` → Waitlist). Deploy the API and the website together (`deployment.md` §14):
+the live site's old form sends no Turnstile token, which the new API refuses.
+**Never send cold email through Brevo** (its policy bans it, and that account sends the mint's
+codes). At 300 a day it can't send the window email to 10,000 people, or check every minter's email
+on the night. The kits are in `social/youtube/`, `social/linkedin/` and `social/hacker-news/`.
 **8.8 is done** (2026-10-06). **Now: the Metropolis submission**, tracked in
 `docs/hackathon-submission.md`. Done 2026-10-07: `LICENSE` (MIT), the README rewrite (Monad, "Try it",
 "Run your own stack", the session's transaction hashes), the dashboard copy and the submission post

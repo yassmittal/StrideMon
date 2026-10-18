@@ -9,7 +9,6 @@ import {
 import type { ApiErrorCode } from '@stridemon/shared/domain'
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify'
 import { generatePrivateKey, type PrivateKeyAccount, privateKeyToAccount } from 'viem/accounts'
-import { insertWaitlistSignupIfNew } from '../../repositories/waitlist-signups-repository'
 import {
   buildTestServer,
   TEST_PASS_SCHEDULE_VARIABLES,
@@ -20,6 +19,7 @@ import {
   TEST_CONTRACTS_DEPLOY_TIMEOUT_MILLISECONDS,
 } from '../../test-support/deploy-test-contracts'
 import { buildTestRemoteAddress, TEST_TURNSTILE_TOKEN } from '../../test-support/fake-pass-services'
+import { insertTestWaitlistSignup } from '../../test-support/insert-test-waitlist-signup'
 import {
   mintFoundingPassOnChain,
   signTestEmailProof,
@@ -380,12 +380,7 @@ async function readCollection() {
 }
 
 function joinWaitlist(email: string, createdAt: Date): Promise<void> {
-  return insertWaitlistSignupIfNew(server.mongo.database, {
-    email,
-    phonePlatform: null,
-    source: null,
-    createdAt,
-  })
+  return insertTestWaitlistSignup(server.mongo.database, { email, createdAt })
 }
 
 function readPassOwner(designNumber: number) {

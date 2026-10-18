@@ -7,6 +7,10 @@ import {
 } from '../services/email-sender'
 import { readFoundingPassCollectionState } from '../services/founding-pass-chain-reader'
 import {
+  createGoogleIdTokenVerifier,
+  type GoogleIdTokenVerifier,
+} from '../services/google-id-token-verifier'
+import {
   createTurnstileVerifier,
   readTurnstileHostnames,
   type TurnstileVerifier,
@@ -20,15 +24,19 @@ export type PassServicesPluginOptions = {
   emailSender?: EmailSender
   /** Tests only: answers Turnstile checks without calling Cloudflare. */
   turnstileVerifier?: TurnstileVerifier
+  /** Tests only: checks Google ID tokens against the tests' own signing key. */
+  googleIdTokenVerifier?: GoogleIdTokenVerifier
 }
 
 /**
  * The Founding Pass's outside services (D-043): the email sender (Brevo in production, the log in
- * development), the Turnstile check, and the collection's cached chain read.
+ * development), the Turnstile check, the Google ID-token check (D-057; `null` without
+ * `GOOGLE_CLIENT_ID`), and the collection's cached chain read.
  */
 export const passServicesPlugin = fastifyPlugin<PassServicesPluginOptions>(
   async (fastify, options) => {
-    const { nodeEnvironment, brevoApiKey, emailSenderAddress, turnstileSecretKey } = fastify.config
+    const { nodeEnvironment, brevoApiKey, emailSenderAddress, turnstileSecretKey, googleClientId } =
+      fastify.config
     const productionEmailSender =
       nodeEnvironment === 'production' && brevoApiKey !== null
         ? createBrevoEmailSender({ brevoApiKey, senderAddress: emailSenderAddress })
@@ -45,6 +53,12 @@ export const passServicesPlugin = fastifyPlugin<PassServicesPluginOptions>(
           turnstileSecretKey,
           allowedHostnames: readTurnstileHostnames(fastify.config.waitlistAllowedOrigins),
         }),
+    )
+    fastify.decorate(
+      'googleIdTokenVerifier',
+      googleClientId === null
+        ? null
+        : (options.googleIdTokenVerifier ?? createGoogleIdTokenVerifier({ googleClientId })),
     )
     fastify.decorate(
       'foundingPassCollectionReader',

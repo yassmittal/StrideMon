@@ -1,4 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
+import { checkPassEmailWithGoogle } from '../../handlers/founding-pass/check-pass-email-with-google'
 import { readFoundingPassCollection } from '../../handlers/founding-pass/read-founding-pass-collection'
 import { readFoundingPassMint } from '../../handlers/founding-pass/read-founding-pass-mint'
 import { requestFoundingPassMint } from '../../handlers/founding-pass/request-founding-pass-mint'
@@ -6,6 +7,7 @@ import { sendPassEmailCode } from '../../handlers/founding-pass/send-pass-email-
 import { verifyPassEmailCode } from '../../handlers/founding-pass/verify-pass-email-code'
 import { readAuthenticatedUser } from '../../plugins/authentication'
 import {
+  checkPassEmailWithGoogleRouteSchema,
   readFoundingPassCollectionRouteSchema,
   readFoundingPassMintRouteSchema,
   requestFoundingPassMintRouteSchema,
@@ -17,6 +19,7 @@ import {
 // mint about once a second, and the gallery polls the collection every few seconds.
 const SEND_EMAIL_CODE_RATE_LIMIT = { max: 5, timeWindow: '1 minute' }
 const VERIFY_EMAIL_CODE_RATE_LIMIT = { max: 10, timeWindow: '1 minute' }
+const CHECK_EMAIL_WITH_GOOGLE_RATE_LIMIT = { max: 10, timeWindow: '1 minute' }
 const REQUEST_MINT_RATE_LIMIT = { max: 10, timeWindow: '1 minute' }
 const READ_MINT_RATE_LIMIT = { max: 60, timeWindow: '1 minute' }
 const READ_COLLECTION_RATE_LIMIT = { max: 60, timeWindow: '1 minute' }
@@ -31,6 +34,7 @@ export const foundingPassRoutes: FastifyPluginAsyncZod = async (fastify) => {
       sendPassEmailCode({
         database: fastify.mongo.database,
         emailProofSecret: fastify.config.emailProofSecret,
+        waitlistCodeDailyEmailLimit: fastify.config.waitlistCodeDailyEmailLimit,
         emailSender: fastify.emailSender,
         turnstileVerifier: fastify.turnstileVerifier,
         body: request.body,
@@ -46,6 +50,21 @@ export const foundingPassRoutes: FastifyPluginAsyncZod = async (fastify) => {
     (request) =>
       verifyPassEmailCode({
         database: fastify.mongo.database,
+        emailProofSecret: fastify.config.emailProofSecret,
+        body: request.body,
+        now: new Date(),
+      }),
+  )
+
+  fastify.post(
+    '/pass/email-google',
+    {
+      schema: checkPassEmailWithGoogleRouteSchema,
+      config: { rateLimit: CHECK_EMAIL_WITH_GOOGLE_RATE_LIMIT },
+    },
+    (request) =>
+      checkPassEmailWithGoogle({
+        googleIdTokenVerifier: fastify.googleIdTokenVerifier,
         emailProofSecret: fastify.config.emailProofSecret,
         body: request.body,
         now: new Date(),

@@ -5,13 +5,18 @@ import type {
 import type { FastifyBaseLogger } from 'fastify'
 import type { Db } from 'mongodb'
 import { ApiError } from '../../common/api-error'
+import { calculateSecondsUntilNextUtcDay, formatUtcDay } from '../../lib/email/email-day'
 import { generateEmailCode, hashEmailCode } from '../../lib/founding-pass/email-code'
 import { buildEmailCodeEmail } from '../../lib/founding-pass/pass-emails'
+import {
+  giveBackDailyEmailPlace,
+  takeDailyEmailPlace,
+} from '../../repositories/email-daily-counts-repository'
 import {
   deletePassEmailCode,
   replacePassEmailCodeIfDue,
 } from '../../repositories/pass-email-codes-repository'
-import type { EmailSender } from '../../services/email-sender'
+import { EmailRefusedError, type EmailSender } from '../../services/email-sender'
 import type { TurnstileVerifier } from '../../services/turnstile-verifier'
 import { assertTurnstileTokenValid } from './assert-turnstile-token-valid'
 
@@ -25,11 +30,13 @@ const HTTP_STATUS_SERVICE_UNAVAILABLE = 503
 
 /**
  * Emails a 6-digit code. Answers `sent` for every email, on the waitlist or not, with a pass or
- * not, so the route reveals nothing about anyone.
+ * not, so the route reveals nothing about anyone. A waitlist code goes only while the day's email
+ * count is under the limit; a mint code always goes (D-057).
  */
 export async function sendPassEmailCode({
   database,
   emailProofSecret,
+  waitlistCodeDailyEmailLimit,
   emailSender,
   turnstileVerifier,
   body,
@@ -39,6 +46,7 @@ export async function sendPassEmailCode({
 }: {
   database: Db
   emailProofSecret: string
+  waitlistCodeDailyEmailLimit: number
   emailSender: EmailSender
   turnstileVerifier: TurnstileVerifier
   body: SendPassEmailCodeBody
@@ -46,14 +54,14 @@ export async function sendPassEmailCode({
   now: Date
   log: FastifyBaseLogger
 }): Promise<SendPassEmailCodeResponse> {
+  const { email, purpose } = body
   await assertTurnstileTokenValid({
     turnstileVerifier,
     turnstileToken: body.turnstileToken,
     remoteIpAddress,
-    expectedAction: 'send-code',
+    expectedAction: purpose === 'waitlist' ? 'send-waitlist-code' : 'send-code',
   })
 
-  const { email } = body
   const emailCode = generateEmailCode()
   const replaceResult = await replacePassEmailCodeIfDue(database, {
     email,
@@ -73,15 +81,31 @@ export async function sendPassEmailCode({
     })
   }
 
+  const utcDay = formatUtcDay(now)
+  const hasDailyPlace = await takeDailyEmailPlace(database, {
+    utcDay,
+    limit: purpose === 'waitlist' ? waitlistCodeDailyEmailLimit : null,
+    now,
+  })
+  if (!hasDailyPlace) {
+    // Nothing went out, so the code record goes: the person can ask again tomorrow.
+    await deletePassEmailCode(database, email)
+    throw new ApiError('EMAIL_DAILY_LIMIT_REACHED', HTTP_STATUS_TOO_MANY_REQUESTS, {
+      retryAfterSeconds: calculateSecondsUntilNextUtcDay(now),
+    })
+  }
+
   try {
     await emailSender.sendEmail({
       toEmailAddress: email,
-      ...buildEmailCodeEmail({ emailCode, validForMinutes: EMAIL_CODE_VALID_MINUTES }),
+      ...buildEmailCodeEmail({ emailCode, validForMinutes: EMAIL_CODE_VALID_MINUTES, purpose }),
     })
   } catch (error) {
-    // No address in the log. The record goes, so the person can ask again at once.
+    // No address in the log. The record goes, so the person can ask again at once. A refusal
+    // sent nothing, so it gives its place in the day's count back; an unknown outcome keeps it.
     log.warn({ err: error }, 'Sending an email code failed')
     await deletePassEmailCode(database, email)
+    if (error instanceof EmailRefusedError) await giveBackDailyEmailPlace(database, { utcDay, now })
     throw new ApiError('EMAIL_SEND_FAILED', HTTP_STATUS_SERVICE_UNAVAILABLE)
   }
   return { status: 'sent' }

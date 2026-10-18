@@ -70,6 +70,11 @@ PASS_CHAT_MUSIC_START_SECONDS=53.250
 # The film plays up to 8.2 s of the file (the drop, again, under the end card); keep extra.
 PASS_CHAT_MUSIC_DURATION_SECONDS=12
 
+# The App tour film (docs/app-tour-video-prompt.md §5): the reference ad's own music, which the film
+# is cut to frame for frame (Yash's choice, 2026-10-17; StrideMon holds no licence for it, see
+# CREDITS.md). It comes from reference.mp4 at the repo root (untracked), not from a download.
+APP_TOUR_REFERENCE_FILE=../reference.mp4
+
 # Kenney's packs, CC0 (each zip includes License.txt).
 KENNEY_INTERFACE_SOUNDS_URL=https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip
 KENNEY_UI_AUDIO_URL=https://kenney.nl/media/pages/assets/ui-audio/490d233f68-1677590494/kenney_ui-audio.zip
@@ -119,6 +124,14 @@ level_music "$WAITLIST_MUSIC_FILE_NAME" "$WAITLIST_MUSIC_START_SECONDS" \
   "$WAITLIST_MUSIC_DURATION_SECONDS" waitlist-music.wav
 level_music "$PASS_CHAT_MUSIC_FILE_NAME" "$PASS_CHAT_MUSIC_START_SECONDS" \
   "$PASS_CHAT_MUSIC_DURATION_SECONDS" pass-chat-music.wav
+if [ -s "$APP_TOUR_REFERENCE_FILE" ]; then
+  # From its first sample (the film is cut to the reference's own timing), levelled like the others.
+  ffmpeg -nostdin -v error -y -i "$APP_TOUR_REFERENCE_FILE" -vn "${TO_WAV[@]}" \
+    "$DOWNLOAD_DIRECTORY/app-tour-reference.wav"
+  level_music app-tour-reference.wav 0 31 app-tour-music.wav
+else
+  echo "No $APP_TOUR_REFERENCE_FILE: the App tour film's music (app-tour-music.wav) wasn't made." >&2
+fi
 
 # The Sneaker drop film's clip A, cut exactly as approved (first part's tail and second part's head
 # faded 15 ms, so the join on the downbeat doesn't click), then levelled like the others. The

@@ -103,7 +103,6 @@ export const revealContent = {
     'We couldn’t load the minted card from Monad just now, so this is the gallery card. Your pass is minted all the same.',
   goldFrameInWords: 'Your pass has a gold frame.',
   transactionLabel: 'See the mint on MonadVision',
-  postOnXLabel: 'Post on X',
   getAppLabel: 'Get the app',
   getAppUrl: appInstallPageUrl,
   sameWalletPrefix: 'Sign in to the app with this same wallet:',
@@ -132,7 +131,12 @@ function formatOrdinal(count: number): string {
   }
 }
 
-/** The X post after a mint (brief §8). The link carries `?source=x-share`. */
+/** The message after a mint for WhatsApp, Telegram and the share sheet (D-056). */
+export function buildMintedShareMessage(passNumberText: string, passName: string): string {
+  return `I minted ${passNumberText} ${passName}, a free one-of-one StrideMon Founding Pass. 1,000 exist, and the waitlist picks first:`
+}
+
+/** The X post after a mint (brief §8). The link carries the sharer's code (D-056). */
 export function buildMintedShareText(
   passNumberText: string,
   passName: string,

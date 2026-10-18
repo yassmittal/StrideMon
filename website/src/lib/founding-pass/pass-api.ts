@@ -4,17 +4,14 @@
 // thrown error, so every screen can say what happened and what to do next.
 
 import { passApiUrls } from '@/content/site'
+import { type ApiResult, requestApiJson } from '../api-request'
 import { isRecord } from '../browser-storage'
 
-export type PassApiProblem =
-  /** The API answered with its error shape (backend-api.md → Error shape). */
-  | { kind: 'apiError'; code: string; details: Record<string, unknown> }
-  /** Offline, timed out, blocked, or an answer that isn't ours. */
-  | { kind: 'unreachable' }
-
-export type PassApiResult<Data> =
-  | { isOk: true; data: Data }
-  | { isOk: false; problem: PassApiProblem }
+export type {
+  ApiProblem as PassApiProblem,
+  ApiResult as PassApiResult,
+} from '../api-request'
+export { readProblemCode } from '../api-request'
 
 export type EmailProof = {
   email: string
@@ -42,27 +39,27 @@ export type PassMint = {
   failureCode: string | null
 }
 
-const REQUEST_TIMEOUT_MILLISECONDS = 15_000
 const WALLET_ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/
 const TRANSACTION_HASH_PATTERN = /^0x[0-9a-fA-F]{64}$/
+
+/** What a code email is for: its words, its Turnstile action and the daily limit (D-057). */
+export type EmailCodePurpose = 'mint' | 'waitlist'
 
 export function sendPassEmailCode(
   email: string,
   turnstileToken: string,
-): Promise<PassApiResult<null>> {
-  return requestJson({
+  purpose: EmailCodePurpose = 'mint',
+): Promise<ApiResult<null>> {
+  return requestApiJson({
     url: passApiUrls.emailCode,
     method: 'POST',
-    body: { email, turnstileToken },
+    body: { email, turnstileToken, purpose },
     readData: (body) => (isRecord(body) && body.status === 'sent' ? null : undefined),
   })
 }
 
-export function verifyPassEmailCode(
-  email: string,
-  code: string,
-): Promise<PassApiResult<EmailProof>> {
-  return requestJson({
+export function verifyPassEmailCode(email: string, code: string): Promise<ApiResult<EmailProof>> {
+  return requestApiJson({
     url: passApiUrls.emailVerify,
     method: 'POST',
     body: { email, code },
@@ -75,9 +72,29 @@ export function verifyPassEmailCode(
   })
 }
 
+/** An email proof from Sign in with Google's ID token, for the email Google gave (D-057). */
+export function checkPassEmailWithGoogle(googleIdToken: string): Promise<ApiResult<EmailProof>> {
+  return requestApiJson({
+    url: passApiUrls.emailGoogle,
+    method: 'POST',
+    body: { googleIdToken },
+    readData: (body) =>
+      isRecord(body) &&
+      typeof body.email === 'string' &&
+      typeof body.emailProof === 'string' &&
+      typeof body.emailProofExpiresAt === 'string'
+        ? {
+            email: body.email,
+            emailProof: body.emailProof,
+            emailProofExpiresAt: body.emailProofExpiresAt,
+          }
+        : undefined,
+  })
+}
+
 /** The SIWE message for this wallet to sign, exactly as the API built it. */
-export function requestSignInMessage(walletAddress: string): Promise<PassApiResult<string>> {
-  return requestJson({
+export function requestSignInMessage(walletAddress: string): Promise<ApiResult<string>> {
+  return requestApiJson({
     url: passApiUrls.authNonce,
     method: 'POST',
     body: { walletAddress },
@@ -89,8 +106,8 @@ export function requestSignInMessage(walletAddress: string): Promise<PassApiResu
 export function verifySignInSignature(
   message: string,
   signature: string,
-): Promise<PassApiResult<SignInTokens>> {
-  return requestJson({
+): Promise<ApiResult<SignInTokens>> {
+  return requestApiJson({
     url: passApiUrls.authVerify,
     method: 'POST',
     body: { message, signature },
@@ -99,8 +116,8 @@ export function verifySignInSignature(
 }
 
 /** A new pair: the refresh token is single-use, so the caller stores the new one at once. */
-export function refreshSignInTokens(refreshToken: string): Promise<PassApiResult<SignInTokens>> {
-  return requestJson({
+export function refreshSignInTokens(refreshToken: string): Promise<ApiResult<SignInTokens>> {
+  return requestApiJson({
     url: passApiUrls.authRefresh,
     method: 'POST',
     body: { refreshToken },
@@ -115,8 +132,8 @@ export function requestPassMint(
     turnstileToken,
   }: { designNumber: number; emailProof: string; turnstileToken: string },
   accessToken: string,
-): Promise<PassApiResult<PassMint>> {
-  return requestJson({
+): Promise<ApiResult<PassMint>> {
+  return requestApiJson({
     url: passApiUrls.mints,
     method: 'POST',
     body: { designNumber, emailProof, turnstileToken },
@@ -125,73 +142,13 @@ export function requestPassMint(
   })
 }
 
-export function readPassMint(
-  mintId: string,
-  accessToken: string,
-): Promise<PassApiResult<PassMint>> {
-  return requestJson({
+export function readPassMint(mintId: string, accessToken: string): Promise<ApiResult<PassMint>> {
+  return requestApiJson({
     url: `${passApiUrls.mints}/${encodeURIComponent(mintId)}`,
     method: 'GET',
     accessToken,
     readData: readMintResponse,
   })
-}
-
-/** The error code, when the problem is the API's own answer. */
-export function readProblemCode(problem: PassApiProblem): string | null {
-  return problem.kind === 'apiError' ? problem.code : null
-}
-
-async function requestJson<Data>({
-  url,
-  method,
-  body,
-  accessToken,
-  readData,
-}: {
-  url: string
-  method: 'GET' | 'POST'
-  body?: Record<string, unknown>
-  accessToken?: string
-  /** The data, or `undefined` when the answer isn't the expected shape. */
-  readData: (body: unknown) => Data | undefined
-}): Promise<PassApiResult<Data>> {
-  let response: Response
-  let responseBody: unknown
-  try {
-    response = await fetch(url, {
-      method,
-      headers: {
-        accept: 'application/json',
-        ...(body === undefined ? {} : { 'content-type': 'application/json' }),
-        ...(accessToken === undefined ? {} : { authorization: `Bearer ${accessToken}` }),
-      },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-      cache: 'no-store',
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MILLISECONDS),
-    })
-    responseBody = await response.json()
-  } catch {
-    return { isOk: false, problem: { kind: 'unreachable' } }
-  }
-  if (!response.ok) {
-    const apiError = isRecord(responseBody) ? responseBody.error : undefined
-    if (isRecord(apiError) && typeof apiError.code === 'string') {
-      return {
-        isOk: false,
-        problem: {
-          kind: 'apiError',
-          code: apiError.code,
-          details: isRecord(apiError.details) ? apiError.details : {},
-        },
-      }
-    }
-    return { isOk: false, problem: { kind: 'unreachable' } }
-  }
-  const data = readData(responseBody)
-  return data === undefined
-    ? { isOk: false, problem: { kind: 'unreachable' } }
-    : { isOk: true, data }
 }
 
 function readSignInTokens(body: unknown): SignInTokens | undefined {

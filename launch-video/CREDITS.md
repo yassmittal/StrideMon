@@ -264,3 +264,36 @@ burst 6–10 dB (the music dips 4 dB for the burst), the riser 2 dB as it peaks,
 black. The pops are tonal (600–1200 Hz) and the track's cowbells and hats fill 1–5 kHz, so they
 read by pitch rather than level there. `scripts/render.sh pass-chat-16x9` masters it like the other films (limiter at
 −3 dBFS, two-pass loudnorm to −14 LUFS, −1 dBTP).
+
+# The App tour film
+
+## Font
+
+| Font | Used for | Source | Licence |
+|---|---|---|---|
+| Satoshi Bold (`public/app-tour/Satoshi-Bold.ttf`) | the headlines (Yash's pick at STOP 1, 2026-10-17, for weight like the reference's) | Fontshare's Satoshi family download (https://www.fontshare.com/fonts/satoshi), the same release as the app's Regular and Medium (its Medium is byte-identical to `apps/mobile/assets/fonts/Satoshi-Medium.ttf`) | Fontshare's Free Font License, as the app's files (`apps/mobile/assets/fonts/Satoshi-FFL.txt`) |
+
+## Music
+
+**The reference ad's own music** (`public/audio/app-tour-music.wav`, gitignored, extracted from
+`reference.mp4` by `scripts/fetch-audio.sh`): Yash's choice after hearing three licensed Pixabay
+candidates (2026-10-17). The film is cut to it frame for frame (100.01 BPM, `src/app-tour/beats.ts`).
+
+**StrideMon holds no licence for it.** It's another brand's ad music and the track is unidentified.
+Yash's call, with the risk known: it isn't for Instagram (which can mute it), YouTube may put a
+Content ID claim on it, and the rights holder could ask for it to be taken down anywhere it's
+posted. To swap it later, the runner-up was "Happy Funky Pop" by Emmraan
+(https://pixabay.com/music/upbeat-happy-funky-pop-267225/, Pixabay Content License, no Content ID,
+100.00 BPM, from 23.079 s so its drop lands on frame 1211): level it into `public/audio/` with
+`scripts/fetch-audio.sh`'s `level_music` and pass its name as `APP_TOUR_MUSIC_FILE_NAME` to
+`scripts/render.sh`.
+
+## Sound effects
+
+Two files the other films already use (above, from `scripts/fetch-audio.sh`), placed by
+`src/app-tour/sound-cues.ts`. A whoosh on each wipe was tried and dropped (Yash, STOP 2).
+
+| File | Where | Source |
+|---|---|---|
+| `sfx-tap.wav` | each tap ring (START A RUN, STOP, the SNEAKER tab, REPAIR TO 100, CONFIRM IN WALLET, UPGRADE TO LEVEL 2), at 0.7 | Kenney's UI Audio pack, CC0 (the launch film's tap) |
+| `pass-chat-sfx-boom.wav` | the drop, "Level 2 reached", at 0.5 | "Cinematic Boom" by LordSonny, Pixabay Content License (the Pass chat film's boom) |

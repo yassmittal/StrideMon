@@ -1,16 +1,28 @@
-import type { ReactNode, Ref } from 'react'
+'use client'
+
+import { type ReactNode, type Ref, useState } from 'react'
 import { passSectionIds, plannedPassScheduleTimes } from '@/content/founding-pass'
-import { passGalleryPath } from '@/content/site'
-import { waitlistJoinedContent, waitlistShareText, waitlistShareUrl } from '@/content/waitlist'
-import { buildXPostUrl } from '@/lib/build-x-post-url'
+import { passGalleryPath, waitlistInvitesPath } from '@/content/site'
+import type { WaitlistProblemKey } from '@/content/waitlist'
+import { waitlistEmailCheckContent, waitlistJoinedContent } from '@/content/waitlist'
+import { readProblemCode } from '@/lib/api-request'
+import type { EmailProof } from '@/lib/founding-pass/pass-api'
+import { saveInvitesSession } from '@/lib/waitlist-invites'
+import { startWaitlistInvitesSession, type WaitlistInvites } from '@/lib/waitlist-request'
 import { LocalDateTime } from '../founding-pass/local-date-time'
+import { InvitePanel } from '../waitlist/invite-panel'
+import { WaitlistEmailCodeCheck } from '../waitlist/waitlist-email-code-check'
+import { readWaitlistProblemKey, WaitlistProblemNote } from '../waitlist/waitlist-problem-note'
 import { CrossMarks } from './cross-marks'
 import { buildPillClassName, PillContent } from './pill-button'
-import { XLogoIcon } from './x-logo-icon'
 
 type WaitlistJoinedCardProps = {
-  /** The email as it was sent, so a typo shows. */
+  /** The email as it was sent (or as Google gave it), so a typo shows. */
   email: string
+  inviteUrl: string
+  /** Shown once the email is checked (D-056: progress only to its owner). */
+  invites: WaitlistInvites | null
+  onInvitesReady: (invites: WaitlistInvites) => void
   /** The shoes, drawn by the server (`WaitlistSection`). */
   showcase: ReactNode
   headingRef: Ref<HTMLParagraphElement>
@@ -18,11 +30,15 @@ type WaitlistJoinedCardProps = {
 }
 
 /**
- * What replaces the form after joining (D-055): a ticket in the Founding Pass card's look, then
- * the promise, Post on X and the gallery. A new and a repeat email see the same card (D-037).
+ * What replaces the form after joining (D-055, D-056): a ticket in the Founding Pass card's look,
+ * then the invite link with its share row, the early hour, and either the confirmed friends or
+ * "Confirm your email". A new and a repeat email see the same card (D-037).
  */
 export function WaitlistJoinedCard({
   email,
+  inviteUrl,
+  invites,
+  onInvitesReady,
   showcase,
   headingRef,
   onUseAnotherEmail,
@@ -69,21 +85,19 @@ export function WaitlistJoinedCard({
         </dl>
       </div>
 
+      <InvitePanel inviteUrl={inviteUrl} invites={invites} />
+
+      {invites === null ? (
+        <ConfirmEmailBlock email={email} onInvitesReady={onInvitesReady} />
+      ) : null}
+
       <div className="flex flex-col items-start gap-4">
-        <p className="text-base leading-[1.4]">
-          {waitlistJoinedContent.promise}{' '}
-          <span className="text-ink-secondary-small">{waitlistJoinedContent.sharePrompt}</span>
+        <p className="text-sm leading-[1.4] text-ink-secondary-small">
+          {waitlistJoinedContent.promise}
         </p>
         <div className="flex flex-wrap gap-2.5">
-          <a
-            href={buildXPostUrl(waitlistShareText, waitlistShareUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={waitlistJoinedContent.postOnXAccessibleLabel}
-            className={buildPillClassName('primary', 'regular')}
-          >
-            <XLogoIcon />
-            <PillContent label={waitlistJoinedContent.postOnXLabel} />
+          <a href={waitlistInvitesPath} className={buildPillClassName('primary', 'regular')}>
+            <PillContent label={waitlistJoinedContent.seeInvitesLabel} />
           </a>
           <a
             href={`${passGalleryPath}#${passSectionIds.gallery}`}
@@ -100,6 +114,51 @@ export function WaitlistJoinedCard({
           {waitlistJoinedContent.useAnotherEmailLabel}
         </button>
       </div>
+    </div>
+  )
+}
+
+/**
+ * After an email join: an optional 6-digit code. It shows the visitor's invites, and makes the
+ * invite of whoever sent them count. Skipping it never blocks anything.
+ */
+function ConfirmEmailBlock({
+  email,
+  onInvitesReady,
+}: {
+  email: string
+  onInvitesReady: (invites: WaitlistInvites) => void
+}) {
+  const [sessionProblemKey, setSessionProblemKey] = useState<WaitlistProblemKey | null>(null)
+
+  async function openInvites(emailProof: EmailProof) {
+    setSessionProblemKey(null)
+    const result = await startWaitlistInvitesSession(emailProof.emailProof)
+    if (!result.isOk) {
+      setSessionProblemKey(
+        readWaitlistProblemKey(readProblemCode(result.problem), result.problem.kind),
+      )
+      return
+    }
+    saveInvitesSession({
+      email: emailProof.email,
+      invitesToken: result.data.invitesToken,
+      invitesTokenExpiresAt: result.data.invitesTokenExpiresAt,
+    })
+    onInvitesReady(result.data.invites)
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-panel bg-page p-5">
+      <p className="text-lg leading-[1.25]">{waitlistEmailCheckContent.confirmHeading}</p>
+      <p className="text-sm leading-[1.45] text-ink-secondary-small">
+        {waitlistEmailCheckContent.confirmText}
+      </p>
+      <WaitlistEmailCodeCheck
+        fixedEmail={email}
+        onEmailProof={(proof) => void openInvites(proof)}
+      />
+      {sessionProblemKey !== null ? <WaitlistProblemNote problemKey={sessionProblemKey} /> : null}
     </div>
   )
 }

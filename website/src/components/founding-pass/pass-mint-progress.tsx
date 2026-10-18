@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react'
 import { buildExplorerTransactionUrl, shortenAddress } from '@/content/contracts'
 import { passPromiseLine } from '@/content/founding-pass'
 import {
+  buildMintedShareMessage,
   buildMintedShareText,
   buildRevealNumbersLine,
   mintPendingContent,
   revealContent,
 } from '@/content/founding-pass-mint'
-import { siteUrl } from '@/content/site'
-import { buildXPostUrl } from '@/lib/build-x-post-url'
 import type { PassMint } from '@/lib/founding-pass/pass-api'
 import {
   buildPassPagePath,
@@ -18,10 +17,11 @@ import {
   type PassDesign,
 } from '@/lib/founding-pass/pass-design'
 import { usePassMintReadiness } from '@/lib/founding-pass/pass-mint-readiness'
+import { useOwnInviteCode } from '@/lib/waitlist-invites'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
-import { XLogoIcon } from '../ui/x-logo-icon'
+import { ShareLinks } from '../ui/share-links'
 import { describePassArt, PassArt } from './pass-art'
 
 type PassMintProgressProps = {
@@ -176,8 +176,7 @@ function RevealNextSteps({
 }) {
   const { signIn } = usePassMintReadiness()
   const passNumberText = formatPassNumber(design.designNumber)
-  const shareUrl = `${siteUrl}${buildPassPagePath(design.designNumber)}?source=x-share`
-  const shareText = buildMintedShareText(passNumberText, design.name, founderNumber)
+  const ownInviteCode = useOwnInviteCode()
   return (
     <div className="flex flex-col gap-5 border-t border-hairline pt-5">
       {transactionHash !== null ? (
@@ -194,15 +193,6 @@ function RevealNextSteps({
         <a href={revealContent.getAppUrl} className={buildPillClassName('primary', 'regular')}>
           <PillContent label={revealContent.getAppLabel} />
         </a>
-        <a
-          href={buildXPostUrl(shareText, shareUrl)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-[45px] items-center gap-2 rounded-full bg-surface-muted px-5 text-sm leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
-        >
-          <XLogoIcon />
-          {revealContent.postOnXLabel}
-        </a>
         <button
           type="button"
           onClick={onDone}
@@ -211,6 +201,12 @@ function RevealNextSteps({
           {revealContent.doneLabel}
         </button>
       </div>
+      <ShareLinks
+        path={buildPassPagePath(design.designNumber)}
+        inviteCode={ownInviteCode}
+        messageText={buildMintedShareMessage(passNumberText, design.name)}
+        xPostText={buildMintedShareText(passNumberText, design.name, founderNumber)}
+      />
       <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
         {passPromiseLine}
       </p>

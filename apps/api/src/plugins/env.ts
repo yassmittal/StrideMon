@@ -15,6 +15,9 @@ const MINIMUM_JWT_SECRET_LENGTH = 64
 const TURNSTILE_TEST_SECRET_PATTERN = /^[123]x0{20,}/
 
 const MILLISECONDS_PER_HOUR = 3_600_000
+const MILLISECONDS_PER_MINUTE = 60_000
+// A Sign in with Google client id (public, not a secret), D-057.
+const GOOGLE_CLIENT_ID_PATTERN = /^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/
 
 const booleanStringSchema = z.enum(['true', 'false']).transform((text) => text === 'true')
 
@@ -108,6 +111,19 @@ const environmentVariablesSchema = z.object({
       `must be at least ${MINIMUM_JWT_SECRET_LENGTH} characters (use 64 random bytes as hex)`,
     ),
   EMAIL_SENDER_ADDRESS: z.email(),
+  WAITLIST_INVITE_CODE_SECRET: z
+    .string()
+    .min(
+      MINIMUM_JWT_SECRET_LENGTH,
+      `must be at least ${MINIMUM_JWT_SECRET_LENGTH} characters (use openssl rand -hex 32)`,
+    ),
+  WAITLIST_CODE_DAILY_EMAIL_LIMIT: positiveIntegerStringSchema,
+  // Optional: without it Continue with Google answers GOOGLE_SIGN_IN_UNAVAILABLE (D-057).
+  GOOGLE_CLIENT_ID: z
+    .string()
+    .regex(GOOGLE_CLIENT_ID_PATTERN, 'must be a client id ending in .apps.googleusercontent.com')
+    .optional(),
+  PASS_EARLY_HOUR_MINUTES: positiveIntegerStringSchema,
   // Optional outside production: development logs codes instead of sending them (D-043).
   BREVO_API_KEY: z.string().min(1).optional(),
   // Optional: without it the help chatbot answers HELP_CHAT_UNAVAILABLE (D-048).
@@ -135,11 +151,19 @@ export type ApiConfig = {
   /** The early-access gate's switch (D-041). The schedule turns it off by itself. */
   isEarlyAccessRequired: boolean
   passScheduleTimes: PassScheduleTimes
+  /** When the early hour starts; invited friends count until then (D-056, D-058). */
+  earlyHourStartsAt: Date
   /** Never logged. Checks Turnstile tokens with Cloudflare. */
   turnstileSecretKey: string
   /** Never logged. Signs email proofs and keys the email-code hashes (D-043). */
   emailProofSecret: string
   emailSenderAddress: string
+  /** Never logged. Keys the waitlist's invite codes; changing it changes every link (D-056). */
+  waitlistInviteCodeSecret: string
+  /** Waitlist codes go only while the UTC day's email count is under this (D-057). */
+  waitlistCodeDailyEmailLimit: number
+  /** The Sign in with Google client; `null` turns Continue with Google off (D-057). */
+  googleClientId: string | null
   /** Never logged. `null` outside production, where codes are logged instead of sent. */
   brevoApiKey: string | null
   /** Never logged. The help chatbot's model on Amazon Bedrock; `null` turns the chatbot off. */
@@ -193,9 +217,16 @@ export function parseApiConfig(
     waitlistAllowedOrigins: variables.WAITLIST_ALLOWED_ORIGINS,
     isEarlyAccessRequired: variables.EARLY_ACCESS_REQUIRED,
     passScheduleTimes,
+    earlyHourStartsAt: new Date(
+      passScheduleTimes.waitlistWindowStartsAt.getTime() -
+        variables.PASS_EARLY_HOUR_MINUTES * MILLISECONDS_PER_MINUTE,
+    ),
     turnstileSecretKey: variables.TURNSTILE_SECRET_KEY,
     emailProofSecret: variables.EMAIL_PROOF_SECRET,
     emailSenderAddress: variables.EMAIL_SENDER_ADDRESS,
+    waitlistInviteCodeSecret: variables.WAITLIST_INVITE_CODE_SECRET,
+    waitlistCodeDailyEmailLimit: variables.WAITLIST_CODE_DAILY_EMAIL_LIMIT,
+    googleClientId: variables.GOOGLE_CLIENT_ID ?? null,
     brevoApiKey: variables.BREVO_API_KEY ?? null,
     bedrockApiKey: variables.BEDROCK_API_KEY ?? null,
     helpChatMonthlyCapUsd: variables.HELP_CHAT_MONTHLY_CAP_USD,
@@ -231,6 +262,10 @@ function assertProductionSecrets(variables: EnvironmentVariables): void {
       : null,
     variables.EMAIL_PROOF_SECRET === variables.JWT_ACCESS_TOKEN_SECRET
       ? '  EMAIL_PROOF_SECRET: must differ from JWT_ACCESS_TOKEN_SECRET'
+      : null,
+    variables.WAITLIST_INVITE_CODE_SECRET === variables.EMAIL_PROOF_SECRET ||
+    variables.WAITLIST_INVITE_CODE_SECRET === variables.JWT_ACCESS_TOKEN_SECRET
+      ? '  WAITLIST_INVITE_CODE_SECRET: must be its own secret'
       : null,
   ].filter((problem) => problem !== null)
   if (problems.length > 0) {

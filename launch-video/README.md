@@ -28,6 +28,17 @@ it ends on "This isn’t a JPEG." It copies the motion of a reference clip close
 music and effects in `CREDITS.md`. It's set to "Brazilian Phonk", up front: the drop lands on the
 spin's whip and the music stops dead on the flip to black.
 
+The **App tour film** (`AppTour9x16`, 1080 × 1920, 60 fps, 30 s), from
+`docs/app-tour-video-prompt.md`: a close rebuild of a third-party app ad (`reference.mp4` at the
+repo root, measured in `src/app-tour/reference.md`). A realistic Android phone stays in the middle
+with the real app in it (the submission reel, plus vector rebuilds where the reel can't do it), one
+colour and headline per step of the loop (meet, walk, earn, repair, level up), each brought in by
+the reference's own wipe, and the logo with `stridemon.xyz` at the end. Its code is in
+`src/app-tour/` (every frame named once in `timeline.ts`), its storyboard in `SCRIPT.md`, its facts
+in `FACTS.md` §15, its shots in `FOOTAGE.md`, and its font, music and effects in `CREDITS.md`. **Its
+music is the reference ad's own track, which StrideMon holds no licence for** (Yash's choice): it
+isn't for Instagram, and YouTube may claim it.
+
 The **Metropolis pitch video** (`Pitch16x9`, 1920 × 1080, 30 fps, about 1:24) lives here too:
 Yash's voiceover over the submission reel, one scene per part of the script, captions burned in.
 Its code is in `src/pitch/`, its words in `src/pitch/script.ts`, and it is cut to the voice's
@@ -56,7 +67,12 @@ bash scripts/copy-pass-art.sh # public/pass-art/: the Founding Pass art the wait
 bash scripts/copy-sneaker-drop-art.sh # public/pass-art/: the Sneaker drop film's 1,000 laced Sneakers,
                                       # #0020's Founder Sneaker picture and the flood's atlas (needs rsvg-convert, ffmpeg)
 bash scripts/copy-pass-chat-art.sh    # public/pass-chat/: every gallery card's shoe, cropped, and the sky (needs bun, ffmpeg)
+bash scripts/cut-app-tour-footage.sh  # public/footage/app-tour/: the App tour film's clips from the submission reel (needs ffmpeg)
+bash scripts/fetch-app-tour-sneaker-art.sh # public/sneaker/: Sneaker #3's pictures from the live renderer, read-only (needs cast)
 ```
+
+`fetch-audio.sh` makes the App tour film's music from `../reference.mp4` (untracked); without that
+file it says so and skips it.
 
 `public/footage/`, `public/audio/`, `public/pass-art/`, `public/pass-chat/` and `out/` are
 gitignored, so a fresh clone needs all five scripts. The Pass chat film's sky photo is the one
@@ -77,6 +93,7 @@ own. `Waitlist4x5` is the waitlist film, and `WaitlistScenes-4x5` has its five s
 `SneakerDrop4x5` and `SneakerDrop9x16` are the Sneaker drop film, `SneakerDropScenes-4x5` has its
 six scenes, and `Checks/SneakerDropSync` is its sync check (a flash per hit over the music).
 `PassChat16x9` is the Pass chat film, and `PassChatScenes-16x9` has its eight scenes.
+`AppTour9x16` is the App tour film, and `AppTourScenes-9x16` has its seven sections.
 Motion blur (the walk's fast stretch) needs Chrome 149+ with
 `chrome://flags/#canvas-draw-element` to show in the Studio; renders don't need it.
 
@@ -93,6 +110,7 @@ bash scripts/render.sh waitlist-4x5   # out/stridemon-waitlist-4x5.mp4, -poster.
 bash scripts/render.sh sneaker-drop-4x5   # out/stridemon-sneaker-drop-4x5.mp4, -poster.png, -silent.mp4
 bash scripts/render.sh sneaker-drop-9x16  # out/stridemon-sneaker-drop-9x16.mp4, -poster.png
 bash scripts/render.sh pass-chat-16x9     # out/stridemon-pass-chat-16x9.mp4, -poster.png, -silent.mp4
+bash scripts/render.sh app-tour-9x16      # out/stridemon-app-tour-9x16.mp4, -poster.png, -silent.mp4
 ```
 
 The Pass chat film's poster is its last frame, 701 (the end card), and its limiter sits a dB lower
@@ -197,6 +215,28 @@ Everything it cuts on comes from the music, so a change starts there:
 - **The handwritten "isn’t":** `scripts/build-pass-chat-handwriting.py` (its first lines have the
   `uv run` command) writes `src/pass-chat/handwriting-glyphs.ts` from the Knewave font (never edit
   it). `src/pass-chat/handwriting.ts` draws the pen's strokes over it.
+
+## The App tour film's rebuilds, music and text
+
+- **The rebuilt screens** (Home's card drawing in, the repair's "Confirming on Monad…", the Sneaker
+  tab after the repair and the whole upgrade) are drawn at the reel's own size, 720 × 1560, with the
+  app's tokens at 1.875 reel px per point (the reel's phone ran at a density of 2.8125). Check them
+  against the reel after any change:
+
+  ```bash
+  for check in homeDrawIn repairConfirming repairSucceeded sneakerTabTop sneakerTabScrolled upgradePanel; do
+    bunx remotion still AppTourRebuild-$check out/checks/app-tour/$check.png --frame=0
+  done
+  python3 scripts/check-app-tour-rebuilds.py   # every band within ±3 px (needs Pillow, NumPy)
+  ```
+- **The music and timing:** `src/app-tour/beats.ts` holds the grid (100.01 BPM from 0.690 s, the
+  reference's), and every frame in `timeline.ts` is a beat on it. To swap the track, level the new
+  one into `public/audio/` with `fetch-audio.sh`'s `level_music`, move the beats in `timeline.ts` to
+  its hits, and render with `APP_TOUR_MUSIC_FILE_NAME=<file> bash scripts/render.sh app-tour-9x16`.
+  `CREDITS.md` names the licensed runner-up.
+- **Text is unhinted** (`text-rendering: geometricPrecision` on the film's root). Hinted text
+  shimmered: Remotion's parallel tabs hinted the small text differently, and it snapped to the
+  frame's pixels on its own while the camera scaled. Keep it.
 
 ## Re-time `beats.ts`
 

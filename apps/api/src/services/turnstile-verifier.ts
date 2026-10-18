@@ -1,8 +1,8 @@
 const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 const TURNSTILE_TIMEOUT_MILLISECONDS = 10_000
 
-/** What the website's widget says each token is for (`turnstile-check.tsx`). */
-export type TurnstileAction = 'send-code' | 'mint'
+/** What the website's widget says each token is for (`turnstile-check.tsx`, D-045, D-056, D-057). */
+export type TurnstileAction = 'send-code' | 'send-waitlist-code' | 'mint' | 'join-waitlist'
 
 export type TurnstileVerifier = {
   /**

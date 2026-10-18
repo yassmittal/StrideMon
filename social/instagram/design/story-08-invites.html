@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="canvas" content="1080x1920" />
+    <title>Story: invites</title>
+    <link rel="stylesheet" href="instagram.css" />
+    <style>
+      /* The invite loop (D-056, D-058). The card is a vector rebuild of the website's invite panel
+         (website/src/components/waitlist/invite-panel.tsx). The gap under it is for Instagram's
+         link sticker (stories.md). */
+      .stats {
+        margin-top: 72px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 24px;
+      }
+      .stats .value {
+        font-size: 64px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin-bottom: 14px;
+      }
+      .stats .meta {
+        color: var(--muted-on-dark);
+        font-size: 18px;
+      }
+      .panel {
+        margin-top: auto;
+        padding: 40px 40px 44px;
+      }
+      .field {
+        margin-top: 14px;
+        border: 2px solid #4a4e57;
+        border-radius: 999px;
+        padding: 24px 30px;
+        font-size: 28px;
+        color: var(--body-on-dark);
+      }
+      .progress-line {
+        margin-top: 34px;
+        font-size: 24px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .marks {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+      }
+      .marks span {
+        width: 96px;
+        height: 6px;
+        border-radius: 999px;
+        background: #4a4e57;
+      }
+      .marks span.filled {
+        background: var(--lime);
+      }
+      .promise {
+        margin-top: 30px;
+        font-size: 26px;
+        line-height: 1.35;
+        color: var(--body-on-dark);
+      }
+      .sticker-gap {
+        height: 190px;
+      }
+    </style>
+  </head>
+  <body class="story dark">
+    <span class="cross top-left"></span>
+    <span class="cross top-right"></span>
+    <span class="cross bottom-left"></span>
+    <span class="cross bottom-right"></span>
+
+    <div class="meta-row">
+      <span class="meta">Waitlist • Invites</span>
+      <span class="mono meta">Planned</span>
+    </div>
+
+    <h1>Bring 3 friends.<br />Mint an hour early.</h1>
+    <p class="lede">Everyone on the waitlist has an invite link. When 3 friends join through yours and confirm their email, your window opens at 19:00 IST instead of 20:00.</p>
+
+    <div class="stats">
+      <div>
+        <p class="mono value lime">19:00</p>
+        <span class="meta">IST, Sat 28 Nov</span>
+      </div>
+      <div>
+        <p class="mono value">3</p>
+        <span class="meta">Friends who confirm</span>
+      </div>
+      <div>
+        <p class="mono value">250</p>
+        <span class="meta">Passes, at most</span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <span class="meta">Your invite link</span>
+      <p class="field mono">stridemon.xyz/waitlist?ref=…</p>
+      <p class="mono progress-line">1 of 3 friends confirmed</p>
+      <div class="marks"><span class="filled"></span><span></span><span></span></div>
+      <p class="promise">Nobody’s 48 hours change. The waitlist doesn’t promise a pass: 1,000, first come, first served.</p>
+    </section>
+
+    <div class="sticker-gap"></div>
+
+    <div class="meta-row">
+      <span class="meta">Link in bio</span>
+      <span class="mono meta">stridemon.xyz/waitlist</span>
+    </div>
+  </body>
+</html>

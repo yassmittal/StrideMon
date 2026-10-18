@@ -24,6 +24,9 @@ The two accounts never post the same text: the second one quotes or reposts, and
 | `instagram/` | Instagram: profile, launch posts, Stories, Highlights and the HTML that renders their images (D-053). Its README says what differs from X |
 | `product-hunt/` | The Product Hunt launch: form copy, first comment, answers, checks, and the HTML that renders the gallery (D-054) |
 | `deltav/` | The DeltaV profile: rewards, unlock timeline, weekly update drafts (`updates/`), and how to earn believers and feedback |
+| `youtube/` | Yash's old channel renamed to StrideMon: the verdict, the setup steps, the avatar and banner commands, and what to post until 11-28 |
+| `linkedin/` | StrideMon on Yash's LinkedIn: the profile changes, the banner, the rhythm and the first six posts |
+| `hacker-news/` | The one Show HN, end to end: the account and the weeks before, the post and first comment, the hours after, and answers to have ready |
 
 No tooling, no `package.json`, not a Bun workspace. Images and clips come from `ffmpeg` and
 `rsvg-convert`. Later, cards will come from `remotion still` in `launch-video/`.

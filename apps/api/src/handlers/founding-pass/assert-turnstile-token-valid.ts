@@ -3,7 +3,7 @@ import type { TurnstileAction, TurnstileVerifier } from '../../services/turnstil
 
 const HTTP_STATUS_FORBIDDEN = 403
 
-/** Send code and Mint check Turnstile before anything else (D-041, D-043). */
+/** Send code, Mint and joining the waitlist check Turnstile before anything else (D-043, D-056). */
 export async function assertTurnstileTokenValid({
   turnstileVerifier,
   turnstileToken,
@@ -11,15 +11,18 @@ export async function assertTurnstileTokenValid({
   expectedAction,
 }: {
   turnstileVerifier: TurnstileVerifier
-  turnstileToken: string
+  /** Missing only on joining, from a page loaded before joining had Turnstile: it fails. */
+  turnstileToken: string | undefined
   remoteIpAddress: string
   /** The widget's action for this route: a Send code token can't be spent on a mint. */
   expectedAction: TurnstileAction
 }): Promise<void> {
-  const isValid = await turnstileVerifier.isTurnstileTokenValid({
-    turnstileToken,
-    remoteIpAddress,
-    expectedAction,
-  })
+  const isValid =
+    turnstileToken !== undefined &&
+    (await turnstileVerifier.isTurnstileTokenValid({
+      turnstileToken,
+      remoteIpAddress,
+      expectedAction,
+    }))
   if (!isValid) throw new ApiError('TURNSTILE_FAILED', HTTP_STATUS_FORBIDDEN)
 }

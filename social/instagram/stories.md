@@ -1,7 +1,8 @@
 # Stories and Highlights
 
-Seven Stories for launch day. Each one goes into a Highlight, so they stay on the profile after
-24 hours. All are 1080 × 1920 in `social/media/instagram/`, rendered from `design/story-*.html`.
+Seven Stories for launch day, and an eighth for the day invite links go live (D-056). Each one goes
+into a Highlight, so they stay on the profile after 24 hours. All are 1080 × 1920 in
+`social/media/instagram/`, rendered from `design/story-*.html`.
 
 | # | File | Highlight | Sticker |
 |---|---|---|---|
@@ -12,6 +13,7 @@ Seven Stories for launch day. Each one goes into a Highlight, so they stay on th
 | 5 | `story-05-rules.png` | Rules | none |
 | 6 | `story-06-fair-play.png` | Fair play | none |
 | 7 | `story-07-questions.png` | Questions | none |
+| 8 | `story-08-invites.png` | Pass | **Link**, in the empty band under the card. Post it the day the invite loop is live (referral Part 3), after the live check |
 
 ## The stickers
 
@@ -21,6 +23,9 @@ Seven Stories for launch day. Each one goes into a Highlight, so they stay on th
   new sticker and take the old one out of the Highlight.
 - **Link** (story 4): `https://stridemon.xyz/pass?source=ig-stridemon#waitlist`, with the text
   `Join the waitlist`. Place it in the empty band between the form and `LINK IN BIO`.
+- **Link** (story 8): `https://stridemon.xyz/waitlist?source=ig-stridemon`, with the text
+  `Get your invite link`. Place it in the empty band between the card and `LINK IN BIO`. Facts:
+  D-056 and D-058 (3 confirmed friends, 19:00 IST on Sat 28 Nov, at most 250 passes).
 
 ## Highlights
 

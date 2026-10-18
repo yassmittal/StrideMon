@@ -7,6 +7,7 @@ import { SectionHeading } from '../ui/section-heading'
 import { WaitlistForm } from '../ui/waitlist-form'
 import { WaitlistPhaseGate } from '../ui/waitlist-phase-gate'
 import { XLogoIcon } from '../ui/x-logo-icon'
+import { WaitlistCount } from '../waitlist/waitlist-count'
 
 const headingId = `${sectionIds.waitlist}-heading`
 
@@ -32,6 +33,7 @@ export function WaitlistSection({ isPageHeading = false }: WaitlistSectionProps)
         <p data-reveal className="max-w-[29em] text-lg leading-[1.4] text-ink-secondary-small">
           {waitlistContent.intro}
         </p>
+        <WaitlistCount />
         <p data-reveal className="flex flex-wrap items-center gap-x-3 text-lg leading-[1.4]">
           <span className="text-ink-secondary-small">{waitlistContent.followPrompt}</span>
           <a

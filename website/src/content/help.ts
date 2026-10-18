@@ -1,4 +1,4 @@
-import { plannedEarlyAccessStartDateText } from './founding-pass'
+import { earlyHourRules, plannedEarlyAccessStartDateText } from './founding-pass'
 import { walletStepContent } from './founding-pass-mint'
 import type { screenshots } from './screenshots'
 import {
@@ -6,6 +6,8 @@ import {
   legalPagePaths,
   passGalleryPath,
   supportEmail,
+  waitlistInvitesPath,
+  waitlistPagePath,
   xAccountHandle,
   xAccountUrl,
 } from './site'
@@ -45,7 +47,14 @@ export type HelpTopicId =
   | 'stride-value'
   | 'laced'
   | 'after-all-minted'
-  // When something goes wrong: email
+  | 'invites'
+  // When something goes wrong: the waitlist (D-056)
+  | 'friend-not-counting'
+  | 'lost-invite-link'
+  | 'google-in-app-browser'
+  | 'codes-stopped-today'
+  | 'temporary-inbox'
+  // ...email
   | 'code-not-arriving'
   | 'wrong-code'
   | 'robot-check'
@@ -125,6 +134,8 @@ const helpLinks = {
   lostWallet: { label: 'Lost your wallet?', href: '#lost-wallet' },
   contact: { label: 'Write to us', href: '#contact' },
   gallery: { label: 'See the Founding Passes', href: passGalleryPath },
+  invites: { label: 'See your invites', href: waitlistInvitesPath },
+  waitlist: { label: 'Join the waitlist', href: waitlistPagePath },
   getApp: { label: 'Get the app', href: appInstallPageUrl },
 } as const satisfies Record<string, HelpLink>
 
@@ -370,9 +381,19 @@ export const helpPlainAnswers: readonly HelpAnswer[] = [
     question: 'Why do you need my email?',
     paragraphs: [
       'To keep it to one pass per person, and so you can prove the pass is yours if you lose your wallet.',
-      'We send a code when you check your email, and one email when the waitlist window opens. Nothing else.',
+      'We email you a code only when you ask for one, and once when the waitlist window opens. Nothing else.',
     ],
     links: [{ label: 'Privacy policy', href: legalPagePaths.privacyPolicy }],
+  },
+  {
+    id: 'invites',
+    question: 'How do invites work?',
+    paragraphs: [
+      `Everyone on the waitlist has their own invite link. Bring ${earlyHourRules.requiredFriendCount} friends who join through it and confirm their email, and your waitlist window opens at 19:00 IST on Sat 28 Nov, an hour before everyone else’s.`,
+      `At most ${earlyHourRules.mintLimit} passes go in that early hour. Nobody else’s 48 hours change, and the waitlist doesn’t promise a pass: there are 1,000, first come, first served.`,
+      'Find your link and your count on your invites page. There’s no ranking and no prize: only the early hour.',
+    ],
+    links: [helpLinks.invites],
   },
   {
     id: 'which-wallet',
@@ -406,6 +427,55 @@ export const helpPlainAnswers: readonly HelpAnswer[] = [
 ]
 
 export const helpTroubleshootingGroups: readonly HelpAnswerGroup[] = [
+  {
+    heading: 'The waitlist',
+    answers: [
+      {
+        id: 'friend-not-counting',
+        question: 'Why doesn’t my friend count yet?',
+        paragraphs: [
+          'A friend counts once they join through your link and confirm their email, with Google or a 6-digit code. Joining alone isn’t enough.',
+          'Ask them to open their invites page and confirm. If they joined before through someone else’s link, or without one, the first way they joined stays.',
+          'Friends count until 19:00 IST on Sat 28 Nov. Your own other addresses never count.',
+        ],
+        links: [helpLinks.invites],
+      },
+      {
+        id: 'lost-invite-link',
+        question: 'I lost my invite link.',
+        paragraphs: [
+          'Open your invites page and check your email with Google or a code. Your link never changes, so it’s the same one you shared before.',
+          'Joining the waitlist again with the same email shows it too.',
+        ],
+        links: [helpLinks.invites],
+      },
+      {
+        id: 'google-in-app-browser',
+        question: 'Why doesn’t Google work in this app’s browser?',
+        paragraphs: [
+          'Google doesn’t allow its sign-in inside apps’ own browsers, such as Instagram’s, Facebook’s or LinkedIn’s.',
+          'Use your email and a code instead, or open the page in Chrome or Safari (the app’s menu usually says Open in browser). If Google says no in a normal browser, try again or use your email.',
+        ],
+      },
+      {
+        id: 'codes-stopped-today',
+        question: 'Why did codes stop for today?',
+        paragraphs: [
+          'We send a limited number of emails each day, and today’s waitlist codes are used up. They start again at 05:30 IST (00:00 UTC).',
+          'Continue with Google checks your email without sending one. Either way, you’re already on the waitlist: confirming only makes an invite count.',
+        ],
+      },
+      {
+        id: 'temporary-inbox',
+        question: 'Why was my email refused?',
+        paragraphs: [
+          'Temporary inboxes, the kind that disappear after a few minutes, can’t join: the window’s email has to reach you on 28 November, and it’s one sign-up per person.',
+          'Use an email you keep. Dots and +tags in Gmail addresses count as the same inbox.',
+        ],
+        links: [helpLinks.waitlist],
+      },
+    ],
+  },
   {
     heading: 'Your email',
     answers: [

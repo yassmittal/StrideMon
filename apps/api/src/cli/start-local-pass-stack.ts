@@ -7,7 +7,9 @@
  *   cd apps/api && bun run pass:local-stack [flags]
  *
  * Flags:
- *   --phase preview|waitlistWindow|openMint|openToAll  the schedule's phase now (default openMint)
+ *   --phase preview|waitlistWindow|openMint|openToAll  the schedule's phase now (default openMint).
+ *                                 In preview the window opens in 2 hours, so the early hour (and
+ *                                 the cutoff for invited friends, D-056) is an hour away
  *   --waitlist-email <email>      on the waitlist from before the window opened (repeatable)
  *   --premint <count>             mint this many passes first, from #1000 down (999 leaves #0001)
  *   --turnstile pass|fail         Cloudflare's test secret that always passes or always fails
@@ -21,6 +23,7 @@
  * holds the game-server key). The Anvil shares chain id 10143 with the testnet, so the contracts
  * go through the API tests' helper, never `forge script`, and `deployments/10143.json` is never
  * touched (D-019). It also prints the app's `.env` lines for a phone on the same Wi-Fi (D-046).
+ * Continue with Google works when `GOOGLE_CLIENT_ID` is set in the shell (it's public, D-057).
  * Ctrl+C stops everything.
  */
 import { networkInterfaces } from 'node:os'
@@ -30,6 +33,7 @@ import { MongoClient } from 'mongodb'
 import { type Address, createTestClient, createWalletClient, http, publicActions } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { buildServer } from '../build-server'
+import { buildWaitlistInviteIdentity } from '../lib/waitlist/invite-code'
 import {
   ANVIL_GAME_SERVER_PRIVATE_KEY,
   deployTestContracts,
@@ -50,6 +54,8 @@ const MILLISECONDS_PER_MINUTE = 60_000
 const MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE
 const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR
 const WAITLIST_WINDOW_HOURS = 48
+const EARLY_HOUR_MINUTES = 60
+const INVITE_CODE_SECRET = 'local-pass-stack-invite-code-secret-'.repeat(3)
 
 // Cloudflare's published Turnstile test secrets: one always passes, one always fails.
 const TURNSTILE_TEST_SECRETS = {
@@ -119,6 +125,8 @@ if (waitlistEmails.length > 0) {
     .insertMany(
       waitlistEmails.map((email) => ({
         email,
+        ...buildWaitlistInviteIdentity({ email, inviteCodeSecret: INVITE_CODE_SECRET }),
+        invitedByInviteCode: null,
         phonePlatform: null,
         source: 'local-stack',
         // A day before the window, so the waitlist window lets this email mint.
@@ -161,6 +169,13 @@ const server = await buildServer({
     TURNSTILE_SECRET_KEY: TURNSTILE_TEST_SECRETS[options.turnstile],
     EMAIL_PROOF_SECRET: 'local-pass-stack-email-proof-secret-'.repeat(3),
     EMAIL_SENDER_ADDRESS: 'hello@stridemon.test',
+    WAITLIST_INVITE_CODE_SECRET: INVITE_CODE_SECRET,
+    WAITLIST_CODE_DAILY_EMAIL_LIMIT: '250',
+    PASS_EARLY_HOUR_MINUTES: String(EARLY_HOUR_MINUTES),
+    // Continue with Google, when the shell sets the (public) client id (D-057).
+    ...(process.env.GOOGLE_CLIENT_ID === undefined
+      ? {}
+      : { GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID }),
     // The help chatbot answers for real when apps/api/.env has the key (D-048); it costs cents.
     ...(process.env.BEDROCK_API_KEY === undefined
       ? {}
@@ -184,6 +199,8 @@ process.stdout.write(`
 Local Founding Pass stack (D-045). Nothing here touches testnet.
 
   Phase        ${phase} (window ${scheduleTimes.waitlistWindowStartsAt.toISOString()})
+  Early hour   ${new Date(scheduleTimes.waitlistWindowStartsAt.getTime() - EARLY_HOUR_MINUTES * MILLISECONDS_PER_MINUTE).toISOString()}: friends who confirm before it count
+  Google       ${process.env.GOOGLE_CLIENT_ID === undefined ? 'off (set GOOGLE_CLIENT_ID to turn it on)' : 'on'}
   Premints     ${premintCount}${waitlistEmails.length > 0 ? `\n  Waitlist     ${waitlistEmails.join(', ')}` : ''}
   Turnstile    always ${options.turnstile === 'pass' ? 'passes' : 'fails'}${options['slow-blocks'] ? `\n  Blocks       one every ${SLOW_BLOCK_SECONDS} s` : ''}
   Gate         ${options['early-access'] ? 'on: only pass holders get a Sneaker' : 'off'}
@@ -234,7 +251,8 @@ function buildScheduleTimes(
   const windowLengthMilliseconds = WAITLIST_WINDOW_HOURS * MILLISECONDS_PER_HOUR
   const openMintLengthMilliseconds = 14 * MILLISECONDS_PER_DAY
   const waitlistWindowStartsAtMilliseconds = {
-    preview: startedAt.getTime() + MILLISECONDS_PER_HOUR,
+    // Two hours, so the early hour, and the invited friends' cutoff, is still an hour away.
+    preview: startedAt.getTime() + 2 * MILLISECONDS_PER_HOUR,
     waitlistWindow: startedAt.getTime() - MILLISECONDS_PER_MINUTE,
     openMint: startedAt.getTime() - windowLengthMilliseconds - MILLISECONDS_PER_HOUR,
     openToAll:

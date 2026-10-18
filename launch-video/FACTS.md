@@ -282,3 +282,38 @@ reference's own objects.
 | "This isn't a JPEG." | The pass art is SVG drawn on-chain by `FoundingPassArtRenderer` (D-041, D-042); the pass can't be sold or sent (brief §7) and is early access to the app (brief §1) | ⚠ The joke holds because it's literally true (it's an on-chain SVG) and the point is true (it's a way in, not a picture to trade). Say nothing about other NFTs |
 | `It’s your way into StrideMon.` | §12 (`Your way into StrideMon.`, sourced there); brief §1 | ✓ |
 | `stridemon.xyz/pass` (the end card's pill; no wordmark or network line under it, Yash, STOP 1) | D-040; §1, §12 | ✓ |
+
+## 15. The App tour film (2026-10-17)
+
+The App tour film (`docs/app-tour-video-prompt.md`): a 30 s, 9:16 tour of the app, one phone in the
+middle, one colour and headline per step of the game loop. `src/app-tour/content.ts` mirrors this
+section. The footage is `website/media-source/submission-reel.mp4` ("reel", recorded 2026-10-07 on
+the D-038 contracts, with the STRIDE name), logged in `FOOTAGE.md` ("The App tour film"). The
+rebuilt screens copy `apps/mobile`'s own strings and are checked against the reel by
+`scripts/check-app-tour-rebuilds.py`.
+
+**Never on screen in this film:** a price, worth, value, "earn money", airdrop, "mint" as a sale,
+"download now", mainnet, a user count, STEPN, a store badge, an iPhone silhouette or Dynamic Island,
+MetaMask's screens, the location-permission screen, a wallet address or transaction hash, the
+reel's explorer pages, emoji, or anything of the reference's.
+
+| On screen | Source | Status |
+|---|---|---|
+| `Meet StrideMon.` | The name (§1); an introduction, so it claims nothing | ✓ |
+| `Walk or run.` | The welcome screen ("Walk or run with it to earn STRIDE", `01-welcome.png`); §1 | ✓ |
+| `Earn STRIDE.` | §1, §2 | ✓ STRIDE amounts are on screen, so the posts' captions carry the disclaimer (below) |
+| `Keep it running.` | The Repair panel: "Every run wears your Sneaker down. At zero durability it can't run until it's repaired." (reel 36.0 s, `RepairPanel.tsx`) | ✓ |
+| `Level up.` | Upgrade: +1 level, +2 efficiency (§2, §5); §9's "Level it up." | ✓ |
+| The icon, the splash | `apps/mobile/assets/icon.png`, `splash-icon.png` (the tile at 52% of a 200 dp image, `build-app-icons.sh`), `app.config.ts`; drawn from `website/src/app/icon.svg`'s strokes | ✓ |
+| `Minting your Sneaker…`, Home with `#0003`, `LEVEL 01 / 30`, `DURABILITY 100 / 100`, `EFFICIENCY 10`, `ENERGY 10 / 10`, balance `0` | Reel 6.5–15.0 s (a new player's starter Sneaker, 2026-10-07) | ✓ |
+| #0003's art at level 1 (durability 100) and level 2 (durability 100) | `SneakerArtRenderer.renderImageSvg(3, …)`, read-only `eth_call` (`scripts/fetch-app-tour-sneaker-art.sh`); level 1 matches the reel's card at 10.5 s within 2 px; the files equal #2's (§8) but for the id | ✓ Real renderer output, never redrawn |
+| The run: `0:01 → 2:29`, `0 → 161 m`, `+0 → +5 → +10 STRIDE` estimated, energy `10 → 9 → 8 / 10` | Reel 16.5–25.1 s (the reel itself is already sped up; the film ramps it again) | ✓ The app's own screen. Never restated as a claim ("a 2-minute walk paid 10 STRIDE" is banned, `voice.md` §3) |
+| `Settling on Monad…`, `+10 STRIDE`, `YOU EARNED • RUN SETTLED`, rewarded minutes `2`, durability lost `−1`, the summary's `2:34`, `2`, `134 m`, `4.0 km/h`, "Distance and speed count active minutes only." | Reel 28.4–34.5 s | ✓ The app shows the testnet line under the amount. `134 m` differs from the run screen's `161 m`; the summary's own caption says why |
+| Repair: `0.7 STRIDE`, `Durability 99 → 100`, `REPAIR TO 100`, `You have 10 STRIDE.`, `Repair your Sneaker?`, `STRIDE balance 10 → 9.3`, `CONFIRM IN WALLET`, `Sneaker repaired`, `Spent 0.7 STRIDE` | Reel 35.6–42.6 s | ✓ |
+| The repair's `STEP 2 OF 2 • CONFIRMING`, `Confirming on Monad…`, `Usually a couple of seconds.`, `VIEW TRANSACTION ↗` | Reel 40.37–40.57 s; rebuilt (`SneakerTransactionSheet.tsx`), because those frames still show the app switch | ✓ A rebuild of a real moment, matched within 3 px |
+| After the repair: `Repair` `0 STRIDE`, `REPAIR` (disabled), `Already at full durability.` | `RepairPanel.tsx` and `describeSneakerActionBlockedReason` at full durability; the reel's backdrop at 40.4 s shows the `0 STRIDE` chip | ✓ |
+| `ENERGY 8 / 10`, `Next energy point in 26:30 → …` (counting down) | Reel 35.9 s (`8 / 10`, `27:00`) and 40.5 s (`26:37`): the run used two energy points (§3); the clock is the app's live countdown | ✓ |
+| `Send Sneaker #3` | `TransferPanel.tsx` (`Send Sneaker #${tokenId}`) for #3 | ✓ |
+| Upgrade: `50 STRIDE`, `Level 1 → 2`, `Efficiency 10 → 12`, `UPGRADE TO LEVEL 2`, `STEP 2 OF 2 • CONFIRMING`, `Confirming on Monad…`, `CONFIRMED ON MONAD`, `Level 2 reached`, `Spent 50 STRIDE`, the card's `LEVEL 02 / 30` and `EFFICIENCY 12` | `UpgradePanel.tsx`, `SneakerTransactionSheet.tsx`; cost 50 × level and +2 efficiency (§2); a real 1 → 2 upgrade (§5, v2 M11) | ⚠ **A rebuild, not footage.** That real upgrade was Sneaker #2 when the token was SOLE, and the reel never upgrades #3. It shows how upgrading works, with the app's real words and rules. **No STRIDE balance anywhere in this beat**: the repair left 9.3, which can't pay 50, so the panel's "You have N STRIDE." and the sheet's balance row are left out |
+| `Walk. Earn. Upgrade.` · `StrideMon` · `Ready to move?` · `stridemon.xyz` · `ANDROID DEMO` · `MONAD TESTNET` | §1, §9 (row 7: `MONAD TESTNET • ANDROID DEMO`); D-040; "Ready to move?" is a question and claims nothing | ✓ |
+| `Monad testnet. STRIDE has no monetary value.` | `voice.md` §4 | ⚠ **Not on the end card** (Yash, 2026-10-17: "it's unnecessary"). STRIDE amounts are on screen, so every post of this film carries it in its caption, as `voice.md` §4 allows ("in the post or in its thread"). The app's own summary screen still shows it under `+10 STRIDE` |

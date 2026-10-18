@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 import { preload } from 'react-dom'
+import { ArrivalInviteKeeper } from '@/components/waitlist/arrival-invite-keeper'
 import { siteDescription, siteName, siteTitle, siteUrl, xCardMetadata } from '@/content/site'
 import { fontshareCssUrl, loadFontshareCss } from '@/lib/load-fontshare-css'
 import './globals.css'
@@ -69,6 +70,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body>
         {children}
+        <ArrivalInviteKeeper />
         <Analytics />
       </body>
     </html>

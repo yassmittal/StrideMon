@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import type { FastifyInstance } from 'fastify'
-import {
-  getWaitlistSignupsCollection,
-  insertWaitlistSignupIfNew,
-} from '../repositories/waitlist-signups-repository'
+import { formatUtcDay } from '../lib/email/email-day'
+import { readDailyEmailCount } from '../repositories/email-daily-counts-repository'
+import { getWaitlistSignupsCollection } from '../repositories/waitlist-signups-repository'
 import { EmailRefusedError, type EmailSender, type OutgoingEmail } from '../services/email-sender'
 import { buildTestServer } from '../test-support/build-test-server'
 import { createCapturingEmailSender } from '../test-support/fake-pass-services'
+import { insertTestWaitlistSignup } from '../test-support/insert-test-waitlist-signup'
 import { sendWaitlistWindowEmails } from './send-waitlist-window-emails'
 
 const WINDOW_STARTS_AT = new Date('2026-11-28T14:30:00Z')
@@ -84,6 +84,14 @@ describe('sendWaitlistWindowEmails', () => {
     expect(report.sentEmailAddresses).toEqual(['first@example.com'])
     expect(report.failure).toMatchObject({ emailAddress: 'second@example.com', willRetry: true })
     expect(report.remainingCount).toBe(2)
+    // The refused email gave its place in the day's email count back (D-057).
+    expect(await readDailyEmailCount(server.mongo.database, formatUtcDay(new Date()))).toBe(1)
+  })
+
+  it('counts every email it sends toward the day’s email budget (D-057)', async () => {
+    await runSender({ limit: 10 })
+
+    expect(await readDailyEmailCount(server.mongo.database, formatUtcDay(new Date()))).toBe(3)
   })
 })
 
@@ -99,10 +107,8 @@ function runSender({ limit, shouldSend = true }: { limit: number; shouldSend?: b
 }
 
 async function joinWaitlist(email: string, minutesFromWindowStart: number): Promise<void> {
-  await insertWaitlistSignupIfNew(server.mongo.database, {
+  await insertTestWaitlistSignup(server.mongo.database, {
     email,
-    phonePlatform: null,
-    source: null,
     createdAt: new Date(WINDOW_STARTS_AT.getTime() + minutesFromWindowStart * MINUTE_MILLISECONDS),
   })
   expect(await getWaitlistSignupsCollection(server.mongo.database).countDocuments({ email })).toBe(
