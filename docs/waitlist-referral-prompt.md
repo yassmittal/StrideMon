@@ -567,5 +567,5 @@ refusals, and the window opening.
 | 0 | Decide and write the docs. Yash: the table, the Google client, the invite secret | S | **Done** 2026-10-18 (D-056 to D-058, approved by Yash) |
 | 1 | API: folded emails, invite codes, Turnstile, Google email check, waitlist codes with a daily limit, invites, the count | L | **Done** 2026-10-18 |
 | 2 | Website: join with Google or email, the invite card and sharing, `/waitlist/invites`, the count, help, privacy | L | **Done** 2026-10-18 (checked by Yash on the local stack) |
-| 3 | Launch the loop: the deploy order, the backfill, the live check, the announcement (Yash runs it) | S | Not started |
+| 3 | Launch the loop: the deploy order, the backfill, the live check, the announcement (Yash runs it) | S | Drafts written 2026-10-18; waiting for Yash's deploy, live check and approvals |
 | 4 | Mint night: the early-hour phase and limit, Google on "Get ready", the window email, the app, help (before 11-21) | M | Not started |

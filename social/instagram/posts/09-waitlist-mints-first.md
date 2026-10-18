@@ -6,7 +6,7 @@ format: image
 pillar: proof
 media:
   - path: social/media/instagram/post-09-waitlist.png
-    alt: "The waitlist mints first. For 48 hours, only the waitlist can mint a Founding Pass, and joining takes an email, never a wallet. 28 November, 48 hours, 1,000 designs. A form with an email field and a Join the waitlist button: one email, when the waitlist window opens, and nothing else."
+    alt: "The waitlist mints first. For 48 hours, only the waitlist can mint a Founding Pass, and joining takes an email, never a wallet. 28 November, 48 hours, 1,000 designs. A form with an email field and a Join the waitlist button: a code only when you ask for one, and one email when the window opens."
 sources:
   - website/src/content/founding-pass.ts and GET /v1/pass/collection on 2026-10-16 (waitlist window 2026-11-28 14:30 UTC, planned)
   - docs/founding-pass-brief.md §5.1 (the waitlist mints first, for 48 hours)
@@ -27,7 +27,7 @@ The waitlist mints first.
 
 For 48 hours from 28 November, 14:30 UTC (20:00 in India), only people on the waitlist can mint a Founding Pass. Then anyone can mint what's left.
 
-Joining takes an email, never a wallet. You get one email, when the waitlist window opens, and nothing else.
+Joining takes an email, never a wallet. We email you a code only when you ask for one, and once when the waitlist window opens.
 
 The date is planned. If it moves, stridemon.xyz/pass shows the new one. Link in bio.
 

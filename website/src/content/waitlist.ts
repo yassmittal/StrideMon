@@ -74,10 +74,28 @@ export const inviteContent = {
   countsUntilPrefix: 'Friends who confirm before',
   countsUntilSuffix: 'count.',
   buildProgressLine: (confirmedFriendCount: number, requiredFriendCount: number) =>
-    `${Math.min(confirmedFriendCount, requiredFriendCount)} of ${requiredFriendCount} friends confirmed`,
+    confirmedFriendCount > requiredFriendCount
+      ? `${confirmedFriendCount} friends confirmed`
+      : `${confirmedFriendCount} of ${requiredFriendCount} friends confirmed`,
   hasEarlyHourHeading: 'You have the early hour.',
   hasEarlyHourPrefix: 'Your window opens',
   hasEarlyHourSuffix: `, an hour before the rest of the waitlist, for as long as the ${earlyHourRules.mintLimit} early passes last.`,
+  nightHeading: 'On the night',
+  nightSteps: [
+    'Heart the passes you like now, so they’re easy to find.',
+    'A little before your window, open stridemon.xyz/pass and check this same email (Google is one tap).',
+    'Pick a pass and mint. It’s free, with no gas to pay. If you miss the hour, your 48-hour waitlist window still opens an hour later.',
+  ],
+  reminderPrompt: 'Add a reminder:',
+  googleCalendarLabel: 'Google Calendar',
+  icsLabel: 'Apple or Outlook (.ics)',
+  icsFileName: 'stridemon-early-hour.ics',
+  reminderTitle: 'StrideMon: your Founding Pass early hour',
+  reminderDetails:
+    'Your early hour: mint a free Founding Pass before the rest of the waitlist, while the 250 early passes last. Check the email you joined with at https://stridemon.xyz/pass',
+  favouritesLabel: 'Heart your favourites',
+  keepSharingText:
+    'Keep sharing if you like: friends who join through your link get the waitlist’s 48 hours, and their own link to bring friends.',
   noFriendsYet:
     'No confirmed friends yet. A friend counts once they join through your link and confirm their email.',
 } as const

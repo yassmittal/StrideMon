@@ -137,11 +137,27 @@ Each post gets `?source=linkedin` on any site link. Facts come from `CLAUDE.md`,
 >
 > If you're building something on your own too, I'd like to see it.
 
-### #4 Invites are live (when referral Part 3 ships). Drafted then, with the live numbers
+### #4 Invites are live (the Tuesday or Friday after referral Part 3's live check). No attachment, or a screenshot of the invite card
 
-Skeleton: the waitlist now has invite links, and 3 friends who confirm mean minting an hour early.
-It's still free, there's still nothing to buy, and most of the 1,000 passes stay for the window.
-Add the link, and one real number (sign-ups so far).
+Fill in `<N>` from the count on the day (`social/reviews.md`), or drop that sentence.
+
+> The StrideMon waitlist has invite links now.
+>
+> On 28 November, 1,000 free Founding Passes open, and people on the waitlist get the first 48
+> hours. Now anyone who brings 3 friends who join through their link and confirm their email gets
+> one more hour: their window opens at 19:00 IST instead of 20:00.
+>
+> A few choices behind it:
+> → no ranking and no prize, only the early hour, and nobody else's 48 hours change
+> → at most 250 passes go in that hour, so most of the collection still waits for the window
+> → a friend counts once they confirm their email, and one inbox counts once
+> → Continue with Google checks an email without sending one, so a free email plan goes further
+>
+> <N> people are on the waitlist so far. It's free, and there's nothing to buy.
+>
+> https://stridemon.xyz/waitlist?source=linkedin
+
+Facts: D-056 (invite links, confirmed friends, one inbox), D-057 (Google), D-058 (19:00 IST, 250).
 
 ### #5 Metropolis results (11-03). Both versions are written before the day
 

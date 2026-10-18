@@ -401,8 +401,12 @@ link)
 
 > Hi <name>, I've been building a walking game on my own for the past few weeks: StrideMon. On 28
 > November, 1,000 free Founding Passes open, each a different Sneaker design, and people on the
-> waitlist pick first. Joining takes one tap with Google: <invite link>. If you know someone who
-> walks or runs a lot, send it on.
+> waitlist pick first. Could you join through my link? It takes one tap with Google: <invite link>.
+> If you type your email instead, confirm it with the code we send, or it doesn't count as my
+> invite. And if you know someone who walks or runs a lot, send it on.
+
+Your invite link is on stridemon.xyz/waitlist/invites. Send it one person at a time, never to a
+group without the admins' ok (§11).
 
 **Partner message**
 

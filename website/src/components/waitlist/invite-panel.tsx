@@ -1,17 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { plannedEarlyHourStartsAt } from '@/content/founding-pass'
-import { waitlistPagePath } from '@/content/site'
+import { passSectionIds, plannedEarlyHourStartsAt } from '@/content/founding-pass'
+import { passGalleryPath, siteUrl, waitlistPagePath } from '@/content/site'
 import {
   inviteContent,
   inviteShareText,
   waitlistNoPromiseLine,
   waitlistShareText,
 } from '@/content/waitlist'
+import { buildGoogleCalendarUrl, buildIcsDataUrl } from '@/lib/calendar-reminder'
 import { readInviteCodeFromUrl } from '@/lib/waitlist-invites'
 import type { WaitlistInvites } from '@/lib/waitlist-request'
 import { LocalDateTime } from '../founding-pass/local-date-time'
+import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { ShareLinks } from '../ui/share-links'
 
 type InvitePanelProps = {
@@ -58,21 +60,9 @@ function EarlyHourRule() {
   )
 }
 
-/** "1 of 3 friends confirmed", or the early hour once there are 3. */
+/** "1 of 3 friends confirmed", and once there are 3, the early hour and what to do on the night. */
 function InviteProgress({ invites }: { invites: WaitlistInvites }) {
-  if (invites.hasEarlyHour) {
-    return (
-      <div className="flex flex-col gap-1.5 rounded-panel bg-surface-muted p-4">
-        <p className="text-lg leading-[1.25]">{inviteContent.hasEarlyHourHeading}</p>
-        <p className="text-sm leading-[1.45] text-ink-secondary-small">
-          {inviteContent.hasEarlyHourPrefix}{' '}
-          <LocalDateTime isoTimestamp={plannedEarlyHourStartsAt} />
-          {inviteContent.hasEarlyHourSuffix}
-        </p>
-      </div>
-    )
-  }
-  return (
+  const progress = (
     <div className="flex flex-col gap-2">
       <p className="font-mono text-sm leading-[1.4] tracking-[0.04em] uppercase">
         {inviteContent.buildProgressLine(invites.confirmedFriendCount, invites.requiredFriendCount)}
@@ -81,6 +71,30 @@ function InviteProgress({ invites }: { invites: WaitlistInvites }) {
         filledCount={invites.confirmedFriendCount}
         totalCount={invites.requiredFriendCount}
       />
+    </div>
+  )
+  if (invites.hasEarlyHour) {
+    return (
+      <div className="flex flex-col gap-4">
+        {progress}
+        <div className="flex flex-col gap-1.5 rounded-panel bg-surface-muted p-4">
+          <p className="text-lg leading-[1.25]">{inviteContent.hasEarlyHourHeading}</p>
+          <p className="text-sm leading-[1.45] text-ink-secondary-small">
+            {inviteContent.hasEarlyHourPrefix}{' '}
+            <LocalDateTime isoTimestamp={plannedEarlyHourStartsAt} />
+            {inviteContent.hasEarlyHourSuffix}
+          </p>
+        </div>
+        <EarlyHourNight />
+        <p className="text-sm leading-[1.45] text-ink-secondary-small">
+          {inviteContent.keepSharingText}
+        </p>
+      </div>
+    )
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      {progress}
       {invites.confirmedFriendCount === 0 ? (
         <p className="text-sm leading-[1.45] text-ink-secondary-small">
           {inviteContent.noFriendsYet}
@@ -91,6 +105,53 @@ function InviteProgress({ invites }: { invites: WaitlistInvites }) {
         {inviteContent.countsUntilPrefix} <LocalDateTime isoTimestamp={invites.countsUntil} />{' '}
         {inviteContent.countsUntilSuffix}
       </p>
+    </div>
+  )
+}
+
+/** The next step once you have the early hour: what to do, and a reminder with no account. */
+function EarlyHourNight() {
+  const reminder = {
+    title: inviteContent.reminderTitle,
+    details: inviteContent.reminderDetails,
+    url: `${siteUrl}${passGalleryPath}`,
+    startsAt: new Date(plannedEarlyHourStartsAt),
+    durationMinutes: 60,
+  }
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
+        {inviteContent.nightHeading}
+      </p>
+      <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-sm leading-[1.45]">
+        {inviteContent.nightSteps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-[1.45]">
+        <span className="text-ink-secondary-small">{inviteContent.reminderPrompt}</span>
+        <a
+          href={buildGoogleCalendarUrl(reminder)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-11 items-center underline decoration-hairline underline-offset-4"
+        >
+          {inviteContent.googleCalendarLabel}
+        </a>
+        <a
+          href={buildIcsDataUrl(reminder)}
+          download={inviteContent.icsFileName}
+          className="inline-flex min-h-11 items-center underline decoration-hairline underline-offset-4"
+        >
+          {inviteContent.icsLabel}
+        </a>
+      </p>
+      <a
+        href={`${passGalleryPath}#${passSectionIds.gallery}`}
+        className={buildPillClassName('secondary', 'regular', 'self-start')}
+      >
+        <PillContent label={inviteContent.favouritesLabel} />
+      </a>
     </div>
   )
 }
