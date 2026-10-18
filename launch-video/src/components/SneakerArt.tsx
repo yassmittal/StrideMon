@@ -22,8 +22,17 @@ const LIME_DELAY_AFTER_WHITE_FRAMES = 20
 const LIME_COLOR = '#C1FF00'
 const SPEED_LINE_STROKE_WIDTH = '1.5'
 
-export function toSneakerArtFileName({ level, durability }: { level: number; durability: number }) {
-  return `sneaker-0002-level-${String(level).padStart(2, '0')}-durability-${String(durability).padStart(3, '0')}.svg`
+export function toSneakerArtFileName({
+  level,
+  durability,
+  tokenId = 2,
+}: {
+  level: number
+  durability: number
+  /** #2 is the launch film's Sneaker; the App tour film shows the reel's #3. */
+  tokenId?: number
+}) {
+  return `sneaker-${String(tokenId).padStart(4, '0')}-level-${String(level).padStart(2, '0')}-durability-${String(durability).padStart(3, '0')}.svg`
 }
 
 /** Loads the given art files once, holding the render until they're in. */
@@ -62,6 +71,8 @@ type SneakerArtProps = {
   newSpeedLineStartFrame?: number
   /** The panel's rounding, as the app's HeroPanel has. */
   borderRadius?: number
+  /** Frames between one white line and the next (3 by default). The App tour film uses 1. */
+  lineStaggerFrames?: number
 }
 
 export function SneakerArt({
@@ -70,6 +81,7 @@ export function SneakerArt({
   drawInStartFrame,
   newSpeedLineStartFrame,
   borderRadius = 0,
+  lineStaggerFrames = LINE_STAGGER_FRAMES,
 }: SneakerArtProps) {
   const frame = useCurrentFrame()
   const svgElement = new DOMParser().parseFromString(markup, 'image/svg+xml').documentElement
@@ -78,6 +90,7 @@ export function SneakerArt({
     frame,
     drawInStartFrame,
     newSpeedLineStartFrame,
+    lineStaggerFrames,
   })
 
   return (
@@ -93,6 +106,7 @@ export function SneakerArt({
 
 type DrawContext = {
   frame: number
+  lineStaggerFrames: number
   drawInStartFrame: number | undefined
   newSpeedLineStartFrame: number | undefined
   whiteSubpathCount: number
@@ -104,11 +118,13 @@ function buildDrawContext({
   frame,
   drawInStartFrame,
   newSpeedLineStartFrame,
+  lineStaggerFrames,
 }: {
   svgElement: Element
   frame: number
   drawInStartFrame: number | undefined
   newSpeedLineStartFrame: number | undefined
+  lineStaggerFrames: number
 }): DrawContext {
   const whiteSubpathCount = [...svgElement.querySelectorAll('path')]
     .filter((pathElement) => !isLimePath(pathElement))
@@ -118,6 +134,7 @@ function buildDrawContext({
     )
   return {
     frame,
+    lineStaggerFrames,
     drawInStartFrame,
     newSpeedLineStartFrame,
     whiteSubpathCount,
@@ -196,7 +213,8 @@ function renderPath(pathElement: Element, drawContext: DrawContext, key: string)
 
 function readWhiteSubpathProgress(drawContext: DrawContext, whiteSubpathIndex: number): number {
   if (drawContext.drawInStartFrame === undefined) return 1
-  const startFrame = drawContext.drawInStartFrame + whiteSubpathIndex * LINE_STAGGER_FRAMES
+  const startFrame =
+    drawContext.drawInStartFrame + whiteSubpathIndex * drawContext.lineStaggerFrames
   return interpolate(
     drawContext.frame,
     [startFrame, startFrame + LINE_DRAW_DURATION_FRAMES],
@@ -237,7 +255,7 @@ function readLimeSubpathProgress({
   if (limeStartFrame === undefined) return 1
   // The accent stripe first, then the speed lines, one after another.
   const order = isSpeedLine ? 1 + subpathIndex : 0
-  const startFrame = limeStartFrame + order * LINE_STAGGER_FRAMES * 2
+  const startFrame = limeStartFrame + order * drawContext.lineStaggerFrames * 2
   return interpolate(frame, [startFrame, startFrame + LINE_DRAW_DURATION_FRAMES], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -249,7 +267,7 @@ function readLimeStartFrame(drawContext: DrawContext): number | undefined {
   if (drawContext.drawInStartFrame === undefined) return undefined
   return (
     drawContext.drawInStartFrame +
-    drawContext.whiteSubpathCount * LINE_STAGGER_FRAMES +
+    drawContext.whiteSubpathCount * drawContext.lineStaggerFrames +
     LIME_DELAY_AFTER_WHITE_FRAMES
   )
 }

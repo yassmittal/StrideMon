@@ -27,6 +27,9 @@ export const colors = {
   overlayOnLight: 'rgba(0, 0, 0, 0.1)',
   overlayOnDark: 'rgba(255, 255, 255, 0.1)',
   crossMark: '#999999',
+  /** The App tour film's rebuilt screens: a disabled label, and the dim behind a bottom sheet. */
+  textPlaceholder: 'rgba(0, 0, 0, 0.3)',
+  backdrop: 'rgba(0, 0, 0, 0.5)',
 } as const
 
 /**
@@ -48,6 +51,21 @@ export const passChatColors = {
   chatField: colors.surface,
   /** The bubbles: the site's grey-blue pill colour, almost exactly the reference's slate. */
   chatBubble: colors.primary,
+} as const
+
+/**
+ * The App tour film's realistic phone (a STOP 1 prototype, Yash asked for a more real phone): a
+ * graphite metal rim, black glass and a soft shadow. Only on the device, never on the page.
+ */
+export const appTourPhoneColors = {
+  rimLight: '#6B7078',
+  rimMid: '#2E3136',
+  rimDark: '#17181B',
+  glass: '#050506',
+  edgeHighlight: 'rgba(255, 255, 255, 0.22)',
+  sheen: 'rgba(255, 255, 255, 0.05)',
+  shadowNear: 'rgba(0, 0, 0, 0.28)',
+  shadowFar: 'rgba(0, 0, 0, 0.22)',
 } as const
 
 /** apps/mobile/src/theme/fonts.ts. The families are loaded in fonts.ts. */

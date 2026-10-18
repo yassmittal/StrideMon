@@ -190,6 +190,11 @@ field ready to paste, the first comment, answers and launch-day checks. Its six 
 images are rendered from `design/*.html` by `render.sh` into the gitignored
 `social/media/product-hunt/`. Claude drafts and never submits. The proposed launch is Tue 2026-12-01,
 the day after the open mint (Yash decides).
+**App tour film (2026-10-17):** `AppTour9x16` in `launch-video/` (`src/app-tour/`, brief
+`docs/app-tour-video-prompt.md`), a 30 s 9:16 tour of the loop rebuilt from a third-party ad's
+structure, with a realistic phone. **Its music is that ad's own track, unlicensed** (Yash's choice,
+`launch-video/CREDITS.md`): never for Instagram; YouTube may claim it. Its X post draft is
+`social/posts/2026-10-21-app-tour-film.md`.
 **8.8 is done** (2026-10-06). **Now: the Metropolis submission**, tracked in
 `docs/hackathon-submission.md`. Done 2026-10-07: `LICENSE` (MIT), the README rewrite (Monad, "Try it",
 "Run your own stack", the session's transaction hashes), the dashboard copy and the submission post
