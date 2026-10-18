@@ -787,6 +787,10 @@ Made 2026-10-06, after Phase 8.8's first build.
   of abuse is a few junk rows.
 - **Revisit when:** StrideMon opens to the public and the one promised email goes out, or junk
   sign-ups appear (Cloudflare Turnstile is a free next step).
+- **Changed in part (2026-10-18):** by D-056. Joining needs a Turnstile token, the per-IP limit
+  is 30 a minute, sign-ups are unique by their folded `canonicalEmail` (not the typed email), the
+  answer carries the invite link, and the promise becomes "a code only when you ask, and one email
+  when the waitlist window opens". CORS covers every `/v1/waitlist/*` route.
 
 ## D-038 — The reward token is renamed SOLE → STRIDE
 
@@ -1137,6 +1141,11 @@ It fills in D-041's API. The routes, shapes and error codes are in
   Mints confirmed in the last 3 seconds are counted as pending, not minted, in the collection.
 - **Revisit when:** Part 5 builds the website's mint (it may want more from the API), the
   waitlist outgrows Brevo's 300 a day (move to SES), or mainnet.
+- **Changed in part (2026-10-18):** by D-057, an email proof can come from Google
+  (`POST /v1/pass/email-google`), Send code takes a `purpose`, and every email counts toward a
+  daily budget. By D-058, the schedule gains the `earlyHour` phase before the window, and the
+  window email can go first to the people with the early hour (`--early-hour`), still once per
+  address.
 
 ## D-044 — How the Founding Pass gallery works on the website
 
@@ -1272,6 +1281,9 @@ It fills in D-041's website mint and the brief's §5.3, §6 and §10.3. The API 
   only someone minting downloads them. Four read functions are copied by hand.
 - **Revisit when:** Part 7 builds `/help` (deep links per error), Part 6 ships the founder app
   build (the APK link), or mainnet (embedded wallets, D-041).
+- **Changed in part (2026-10-18):** by D-056 and D-057, Turnstile has two more actions,
+  `join-waitlist` and `send-waitlist-code`. By D-058, the email step gets Continue with Google
+  beside Send code.
 
 ## D-046 — How the app shows the Founding Pass
 
@@ -1527,6 +1539,8 @@ and trims D-044's `/pass`, D-045's "Get ready" and the landing page (`landing-pa
   page, though the steps are the same.
 - **Revisit when:** minting opens (check the hero and Get ready in the live phases), or a
   visitor says they couldn't find the schedule or the contracts.
+- **Changed in part (2026-10-18):** by D-058, "Get ready" shows from 24 hours before the early
+  hour (19:00 IST on 11-28), not the waitlist window.
 
 ## D-051 — Search engine fixes from a Screaming Frog crawl
 
@@ -1679,3 +1693,180 @@ it on X.
   waitlist", and the page shows the closed state (`WaitlistPhaseGate`).
 - **Revisit when:** the waitlist window opens (retire or repoint the page), or `x-waitlist`
   sign-ups show the share isn't used.
+- **Changed in part (2026-10-18):** by D-056, the card grows: the visitor's own invite link with
+  Copy, WhatsApp, Telegram, X and the phone's share sheet (each link with its own `source`), the
+  early hour's line, and the confirmed-friends count once the email is checked. The one-email
+  promise becomes D-056's. Still the same card for a new and a repeat email.
+
+## D-056 — The waitlist's invite loop: a link per sign-up, confirmed friends, one sign-up per inbox
+
+Made 2026-10-18 in Part 0 of the referral build ([`waitlist-referral-prompt.md`](waitlist-referral-prompt.md)),
+after Yash said yes to the waitlist growth plan's referral (`waitlist-growth-plan.md` §4.1, §8.1).
+The reward itself, the early hour, is D-058. Checking an email with Google, and the email budget,
+are D-057.
+
+- **Decision:**
+  1. **Every sign-up has an invite link that never changes:**
+     `https://stridemon.xyz/waitlist?ref=<inviteCode>`.
+     - The invite code is 8 characters of Crockford base32, cut from
+       HMAC-SHA256(`canonicalEmail`, `WAITLIST_INVITE_CODE_SECRET`). The same email always gets
+       the same code, so joining still answers a new and a repeat email alike (D-037), now with
+       `{ status: 'joined', inviteUrl }`.
+     - A `?ref=` value is read case-insensitively, with Crockford's look-alikes (I and L → 1,
+       O → 0). Anything else is ignored, never refused.
+     - The secret must not change during the campaign: a new one changes every link.
+     - Codes aren't forced unique. At 10,000 sign-ups the chance that any two share one is about
+       1 in 20,000, and a shared code would only merge two people's counts.
+  2. **Who counts.** A friend counts for you when their sign-up:
+     - came through your link (the first link they joined through wins, joining again never
+       changes it, and your own code is ignored);
+     - checked its email, with Google or a code, before the early hour starts (D-058);
+     - is a different inbox from yours.
+
+     One inbox counts once. **3 confirmed friends** give you the early hour (Yash, 2026-10-18).
+  3. **One sign-up per inbox.** Emails are compared folded:
+     - trimmed and lowercased, as now;
+     - a `+tag` dropped, on every domain (only when something comes before the `+`);
+     - dots dropped for `gmail.com` and `googlemail.com`, and `googlemail.com` becomes `gmail.com`.
+
+     `waitlistSignups` stores this `canonicalEmail` under a unique index, so `j.ohn@gmail.com`
+     after `john@gmail.com` is a repeat. The stored `email` stays as typed (lowercased), and every
+     email goes to it. The index is partial (`canonicalEmail` exists), because old sign-ups have
+     no such field until a one-off backfill fills them; the backfill stops on two old sign-ups
+     that fold to one inbox, so Yash decides. The mint's one-pass-per-email rule and the
+     window's waitlist check compare folded emails too (Part 4, D-058), or one Gmail inbox could
+     mint once per dot.
+  4. **Temporary inboxes are refused** at joining, with a plain message. The list is
+     [`disposable-email-domains`](https://github.com/disposable-email-domains/disposable-email-domains)
+     (CC0), vendored into the API with a script that refreshes it.
+  5. **Confirming is optional and never blocks anything.** It's what makes a friend count. A
+     sign-up is confirmed when it joins with an email proof for the same inbox, or when its owner
+     opens their invites with one. `emailConfirmedAt` and `emailConfirmedBy` (`google` or `code`)
+     are set once: the first confirmation stays.
+  6. **Progress only to its owner.** `stridemon.xyz/waitlist/invites` shows the link, the count of
+     confirmed friends and whether you have the early hour, only after the email is checked. The
+     check gives a 30-day **invites token** (HS256, signed with `EMAIL_PROOF_SECRET` under its own
+     audience), so a return visit costs no email. An invite code alone shows nothing. No
+     leaderboard, no place in a line, no per-person numbers in public. The one public number is
+     the sign-up count (`GET /v1/waitlist/count`), which the site shows only from 1,000.
+  7. **Turnstile on joining** (action `join-waitlist`), D-037's "free next step": a count and a
+     reward draw scripts. Turnstile now does the bot work, and many Indian mobile users share one
+     IP (carrier NAT), so the per-IP limit on joining rises from 5 to 30 a minute. The honeypot
+     stays.
+  8. **The promise** "One email, when the waitlist window opens, and nothing else" becomes "We
+     email you a code only when you ask for one, and once when the waitlist window opens. Nothing
+     else." There's no welcome email: the card and the invites page carry the link. People already
+     on the list get nothing new unless they ask on the site.
+  9. **Words.** Invite, confirmed friends and **the early hour** (Yash kept the plain words,
+     2026-10-18). Never whitelist, WL, allowlist, points, rank, or anything about value
+     (`social/voice.md`). The copy says plainly that the waitlist doesn't promise a pass: 1,000
+     passes, first come, first served, and at most 250 in the early hour.
+  10. **Not in this build:** partner early-hour spots (plan §8.6, open), prizes, ads, another
+      email provider (everything stays behind `EmailSender`, so it's a swap), a leaderboard, new
+      analytics.
+- **Why:** the waitlist needs about 244 sign-ups a day to reach 10,000 by the window
+  (`waitlist-growth-plan.md` §1), and posting alone won't do it. The reward is the scarce thing
+  itself (first pick of the 1,000), it costs nothing, it's true, and nobody is pushed back. A
+  link computed from the email keeps D-037's promise that the form never reveals who's on the
+  list, and counting only confirmed, folded, non-temporary inboxes keeps one person from
+  inviting themselves.
+- **Trade-off:** some people use Gmail dots or `+tags` on purpose and can't join twice with them.
+  A friend who never confirms never counts, so some real invites are lost. Joining now needs
+  Turnstile, so a page opened before the deploy fails its first join until it's reloaded. The
+  invite secret is one more thing that must never change mid-campaign.
+- **Revisit when:** partner spots are decided (plan §8.6), junk sign-ups get past Turnstile, the
+  email provider changes after 11-03, or the waitlist window opens (the links stop mattering).
+
+## D-057 — Checking an email with Google, and a daily budget for code emails
+
+Made 2026-10-18 in Part 0 of the referral build, with D-056.
+
+- **Decision:**
+  1. **Google is a second way to check an email.** `POST /v1/pass/email-google` takes the ID
+     token from the website's Sign in with Google button and checks it on the server, with
+     `jose` against Google's published keys (cached): the signature, the issuer
+     (`accounts.google.com` or `https://accounts.google.com`), our `GOOGLE_CLIENT_ID` as the
+     audience, not expired, and `email_verified: true`. It answers the same **email proof** as
+     `/v1/pass/email-verify` (6 hours, D-043), so everything that takes a proof takes one from
+     Google too: joining, the invites page and the mint (D-058).
+  2. **Only the email is kept,** with `emailConfirmedBy: 'google'`. Never the name, photo or
+     Google account id (`sub`).
+  3. **The Google client** is a free Web application client in a Google Cloud project of Yash's,
+     "StrideMon": External, published, default scopes only (openid, email, profile), and no logo,
+     so Google doesn't review it. Its origins are `https://stridemon.xyz`, `http://localhost` and
+     `http://localhost:3000`. The client ID is public. `GOOGLE_CLIENT_ID` is optional: without it
+     the route answers `GOOGLE_SIGN_IN_UNAVAILABLE` and the website hides the button.
+  4. **Codes always work too.** Google refuses its sign-in inside apps' built-in browsers
+     (Instagram, Facebook, LinkedIn, Android WebViews), all channels in the plan. There the site
+     shows one line instead of the button, and the email-and-code path. A local stack reached
+     through a tunnel has codes only too: a tunnel's random hostname can't be a Google origin.
+  5. **Sending a code takes a purpose,** `mint` (the default, so today's site keeps working) or
+     `waitlist`. The purpose picks the email's words, the Turnstile action (`send-code` or
+     `send-waitlist-code`) and whether the daily limit applies. The proof is the same either way.
+     The waitlist code's words: "Your code is 123456. Type it on stridemon.xyz to confirm your
+     email for the StrideMon waitlist. It works for 10 minutes. Didn't ask for it? Ignore this
+     email."
+  6. **The email budget.** Yash stays on Brevo's free plan (300 emails a day) at least until the
+     Metropolis results on 11-03.
+     - The API counts every email it sends, per UTC day, in `emailDailyCounts`: mint codes,
+       waitlist codes and window emails. Each send takes its place in the count atomically before
+       it goes, and a send Brevo refuses gives it back.
+     - A waitlist code goes only while the day's count is under
+       `WAITLIST_CODE_DAILY_EMAIL_LIMIT` (**250**, Yash, 2026-10-18). Past it the route answers
+       `EMAIL_DAILY_LIMIT_REACHED` 429 with `retryAfterSeconds` until 00:00 UTC (05:30 IST), and
+       the page offers Google, or tomorrow.
+     - Mint codes and window emails are never refused by our count. Brevo's own refusal is
+       already handled (`EMAIL_SEND_FAILED`).
+- **Why:** email is the tight resource. A code for every sign-up or every minter would hit 300 a
+  day at a few hundred people, and most of the audience is on Android with a Google account,
+  where Google checks an email without sending one. Google can't be the only way, so the code
+  path stays. Counting our own sends lets the API stop waitlist codes before Brevo stops
+  everything, mint codes included.
+- **Trade-off:** the site loads Google's script (only when an email form is on screen), and the
+  privacy page has to say that Google sees a sign-in to StrideMon. Two ways to check an email to
+  keep working. With 250 of 300 for waitlist codes, a busy day leaves only 50 for mint codes and
+  tests until 00:00 UTC.
+- **Revisit when:** the email provider changes after 11-03 (raise or drop the limit), or Google
+  refuses or changes its sign-in for the site.
+
+## D-058 — The early hour on mint night
+
+Made 2026-10-18 in Part 0 of the referral build. It's built in Part 4, before early access starts
+(Sat 11-21), so Founding Pass Part 9's rehearsal includes it.
+
+- **Decision:**
+  1. **The early hour is a schedule phase,** `earlyHour`, between `preview` and
+     `waitlistWindow`. It starts `PASS_EARLY_HOUR_MINUTES` (60) before the window: **Sat
+     2026-11-28, 13:30 to 14:30 UTC (19:00 to 20:00 IST)**.
+  2. **Who mints in it:** an email proof whose inbox joined the waitlist before the early hour
+     started and has 3 confirmed friends (D-056), counted as of the early hour's start. The
+     refusals each carry `waitlistWindowStartsAt`: `PASS_EARLY_HOUR_ONLY` 403 (not enough
+     friends, or joined too late) and `PASS_EARLY_HOUR_FULL` 409 (the limit is reached).
+  3. **At most `PASS_EARLY_HOUR_MINT_LIMIT` (250) passes** mint in it (Yash, 2026-10-18), so the
+     other 750 or more wait for the window. The limit is exact, decided by the database (never a
+     read-then-check), and a mint that fails gives its place back. Part 4 picks how (an atomic
+     counter, or a slot number under a unique partial index the way designs are held) and writes
+     it here.
+  4. **Nobody's 48 hours change.** At 20:00 IST the waitlist window opens for everyone on the
+     list exactly as D-043 has it, including people with the early hour who didn't mint in it.
+  5. **The app and the website go by the same phase,** and the early-access gate stays on in it.
+     An app build without `earlyHour` might fail to read the schedule for that hour: Part 4 checks
+     how the app parses it and writes here which fix it takes (a new build before 11-21, or the
+     app reading an unknown phase as `preview`).
+  6. **The window email stays one email** (D-043). `pass:send-waitlist-emails --early-hour`, run
+     before 19:00 IST on 11-28, emails only the sign-ups with the early hour, worded with both
+     times: "Your early hour starts Sat 28 Nov, 19:00 IST. If you don't mint then, your waitlist
+     window is 20:00 IST to Mon 30 Nov, 20:00 IST." Everyone else gets today's email from the
+     normal run. Still at most one per address (`windowEmailSentAt`).
+  7. **Google wherever an email is checked** (D-057): "Get ready" and the mint dialog's email
+     step get Continue with Google beside Send code (codes only in apps' own browsers). "Get
+     ready" shows from 24 hours before the early hour.
+- **Why:** without a limit, the people with the early hour could mint all 1,000 before the window
+  opens, and "nobody's window changes" would be true but empty. A stated limit keeps most of the
+  collection for the window, and the copy says the number. Google on the mint's email step means
+  most people need no code email on the busiest night.
+- **Trade-off:** one more phase that the API, the website and the app must agree on, and a code
+  path that runs for one hour a year, so the rehearsal must cover it. It reverses part of brief
+  §15 (one group goes first, though nobody goes later than before).
+- **Revisit when:** Part 4 builds it, partner spots are decided (plan §8.6), or Part 10 moves the
+  window.

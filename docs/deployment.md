@@ -512,6 +512,57 @@ to the server's `.env` before `pm2 restart stridemon-api`:
 To see this month's spend: `db.helpChatUsage.find()` on the Atlas `stridemon` database (token
 counts; multiply by the prices in `apps/api/src/lib/help-chat/help-chat-cost.ts`).
 
+## 14. The waitlist's invite loop (referral Part 3, D-056, D-057)
+
+The rollout for [`waitlist-referral-prompt.md`](waitlist-referral-prompt.md) Part 3, once Parts 1
+and 2 are approved. Yash runs it. The early hour's own settings (D-058) go in with Part 4.
+
+### 14.1 The Google client (once, free)
+
+In [Google Cloud Console](https://console.cloud.google.com):
+
+1. Create a new project, **StrideMon**.
+2. **Google Auth Platform** (formerly "OAuth consent screen") → **Branding**:
+   - app name **StrideMon** and a support email;
+   - home page `https://stridemon.xyz` and privacy policy `https://stridemon.xyz/privacy`;
+   - authorised domain `stridemon.xyz`.
+   - No logo: a logo needs Google's brand verification.
+3. **Audience:** External, then **Publish app** ("In production"). With only the default scopes
+   (openid, email, profile), Google doesn't review the app.
+4. **Clients → Create client**, type **Web application**, with authorised JavaScript origins
+   `https://stridemon.xyz`, `http://localhost` and `http://localhost:3000` (Google wants both
+   localhost forms for local testing). No redirect URIs: the site uses the button, not a redirect.
+5. Copy the **client ID** (`…apps.googleusercontent.com`). It's public, not a secret: it goes in the
+   server's `.env` and in the website.
+
+### 14.2 The order
+
+1. **Export `waitlistSignups` from Atlas first:** Collections → `waitlistSignups` → Export
+   Collection (JSON), or `mongoexport --uri '<the Atlas URI>' --collection waitlistSignups
+   --out waitlist-signups-2026-10-xx.json`. Keep it off the repo.
+2. **The server's `.env`** (`vim ~/projects/stridemon/apps/api/.env`), before the restart:
+
+   | Variable | Value on the server |
+   |---|---|
+   | `WAITLIST_INVITE_CODE_SECRET` | generate it **on the server**: `openssl rand -hex 32`. Only here, never in the repo or a chat. Never change it while the campaign runs: a new one changes every invite link |
+   | `WAITLIST_CODE_DAILY_EMAIL_LIMIT` | `250` (Yash, 2026-10-18) |
+   | `GOOGLE_CLIENT_ID` | the client ID from §14.1 |
+
+3. **Redeploy the API** (Updating the API later, below), and check `pm2 logs stridemon-api` shows
+   no `Invalid environment variables`. Then, once, on the server:
+   `cd ~/projects/stridemon/apps/api && ~/.bun-1.4.2/bin/bun run waitlist:backfill-canonical-emails`.
+   If it stops on two sign-ups that fold to one inbox, it prints both: decide which to keep, delete
+   the other by hand, and run it again (it's idempotent).
+4. **Deploy the website** to Vercel, within minutes of the API: a page opened before the deploy
+   sends no Turnstile token, and its join fails until it's reloaded (its error says "try again").
+5. **The real check, on the live site** (this sends real Brevo email, one of the 300):
+   - [ ] join with Google from Chrome on the phone;
+   - [ ] join with an email from Instagram's own browser (paste the link in a DM to yourself);
+   - [ ] confirm that email with a code;
+   - [ ] share the invite to WhatsApp, and join through it with another email and confirm;
+   - [ ] see "1 of 3 friends confirmed" on the first one's `/waitlist/invites`.
+6. `curl -s https://api.stridemon.xyz/v1/waitlist/count` prints `{"signupCount":…}`.
+
 ---
 
 ## Updating the API later

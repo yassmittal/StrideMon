@@ -99,4 +99,5 @@ the app.
 | Week of | Status | Posted | xLink |
 |---|---|---|---|
 | 2026-10-05 | posted | 2026-10-07 | |
-| 2026-10-12 | draft (Metropolis submitted, 2026-10-14) | | |
+| 2026-10-12 | posted (Metropolis submitted) | 2026-10-14 to 10-18 (date not recorded) | |
+| 2026-10-19 | draft (the joined card, the app tour; invite links if live) | | |

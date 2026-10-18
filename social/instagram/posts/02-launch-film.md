@@ -9,7 +9,7 @@ media:
     cover: social/media/instagram/reel-02-launch-film-cover.png
 sources:
   - launch-video/FACTS.md §9 (every line of the film)
-  - launch-video/CREDITS.md (the music: "Futuristic" by NastelBom, Pixabay licence, Content ID registered)
+  - launch-video/CREDITS.md (the music: "Futuristic" 
 approved: ""
 ig_url: ""
 results: {}

@@ -37,6 +37,9 @@ these documents, and when a decision changes, the doc changes first.
 | 24 | [`founding-pass-brief.md`](founding-pass-brief.md) | The Founding Pass: 1,000 one-of-a-kind designs, minted gas-free as early access, each with a Founder Sneaker. The idea, flow, research and architecture; the decision is D-041. |
 | 25 | [`founding-pass/`](founding-pass/README.md) | Building the Founding Pass: one file per part and one part per session, with the prompt to start each one. Read its `README.md` first, then the part you're on. |
 | 26 | [`sweatcoin-todo.md`](sweatcoin-todo.md) | Planning what's next: what we can learn from Sweatcoin, as a TODO before early access, after it, and later. Nothing in it is decided yet. |
+| 27 | [`waitlist-growth-plan.md`](waitlist-growth-plan.md) | Growing the waitlist to 10,000 before the window opens (2026-11-28): the research, the referral early hour, YouTube, LinkedIn, Hacker News, partners, what breaks at 10,000, the decisions (§8) and the TODO. |
+| 28 | [`waitlist-referral-prompt.md`](waitlist-referral-prompt.md) | Building the referral early hour (invite 3 friends who confirm, mint from 19:00 IST): the decisions, the parts and the prompt to start each session. Part 0 first. |
+| 28 | [`waitlist-referral-prompt.md`](waitlist-referral-prompt.md) | Building the waitlist's invite loop and the early hour (D-056 to D-058): one part per session, with the prompt to start each one. |
 | — | [`phases/`](phases/) | One detailed spec per phase. Build from these. |
 
 ## Three rules that override everything else
