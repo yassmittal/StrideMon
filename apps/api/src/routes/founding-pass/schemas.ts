@@ -1,4 +1,5 @@
 import {
+  checkPassEmailWithGoogleBodySchema,
   foundingPassCollectionResponseSchema,
   foundingPassMintParamsSchema,
   foundingPassMintResponseSchema,
@@ -20,6 +21,13 @@ export const verifyPassEmailCodeRouteSchema = {
   tags: ['founding-pass'],
   summary: 'Check a code and get a signed email proof',
   body: verifyPassEmailCodeBodySchema,
+  response: { 200: verifyPassEmailCodeResponseSchema },
+}
+
+export const checkPassEmailWithGoogleRouteSchema = {
+  tags: ['founding-pass'],
+  summary: 'Check an email with a Google ID token and get the same signed email proof',
+  body: checkPassEmailWithGoogleBodySchema,
   response: { 200: verifyPassEmailCodeResponseSchema },
 }
 

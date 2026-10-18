@@ -22,6 +22,9 @@ const VALID_ENVIRONMENT_VARIABLES = {
   TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
   EMAIL_PROOF_SECRET: 'b'.repeat(128),
   EMAIL_SENDER_ADDRESS: 'hello@stridemon.xyz',
+  WAITLIST_INVITE_CODE_SECRET: 'c'.repeat(64),
+  WAITLIST_CODE_DAILY_EMAIL_LIMIT: '250',
+  PASS_EARLY_HOUR_MINUTES: '60',
   HELP_CHAT_MONTHLY_CAP_USD: '5',
 }
 
@@ -64,9 +67,13 @@ describe('parseApiConfig', () => {
         openMintStartsAt: new Date('2026-11-30T14:30:00Z'),
         backupOpeningAt: new Date('2026-12-14T14:30:00Z'),
       },
+      earlyHourStartsAt: new Date('2026-11-28T13:30:00Z'),
       turnstileSecretKey: '1x0000000000000000000000000000000AA',
       emailProofSecret: 'b'.repeat(128),
       emailSenderAddress: 'hello@stridemon.xyz',
+      waitlistInviteCodeSecret: 'c'.repeat(64),
+      waitlistCodeDailyEmailLimit: 250,
+      googleClientId: null,
       brevoApiKey: null,
       bedrockApiKey: null,
       helpChatMonthlyCapUsd: 5,
@@ -91,6 +98,26 @@ describe('parseApiConfig', () => {
         TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
       }),
     ).toThrow(/TURNSTILE_SECRET_KEY/)
+  })
+
+  it('reads an optional Google client id, and refuses one that is not a client id', () => {
+    const googleClientId = '123456789012-abc123.apps.googleusercontent.com'
+    expect(
+      parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, GOOGLE_CLIENT_ID: googleClientId })
+        .googleClientId,
+    ).toBe(googleClientId)
+    expect(() =>
+      parseApiConfig({ ...VALID_ENVIRONMENT_VARIABLES, GOOGLE_CLIENT_ID: 'my-client' }),
+    ).toThrow('GOOGLE_CLIENT_ID')
+  })
+
+  it('refuses an invite code secret that reuses another secret in production', () => {
+    expect(() =>
+      parseApiConfig({
+        ...PRODUCTION_ENVIRONMENT_VARIABLES,
+        WAITLIST_INVITE_CODE_SECRET: PRODUCTION_ENVIRONMENT_VARIABLES.EMAIL_PROOF_SECRET,
+      }),
+    ).toThrow('WAITLIST_INVITE_CODE_SECRET')
   })
 
   it('rejects a help chat cap that is not a dollar amount above 0', () => {

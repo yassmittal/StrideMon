@@ -210,21 +210,50 @@ signs in for its domain), and start the website with the three tunnel addresses 
 
 ## Waitlist
 
-The `#waitlist` section (D-037) posts `{ email, phonePlatform?, source?, website? }` to the
-StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a hidden honeypot. The
-page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link such as
-`https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it.
+The `#waitlist` section (D-037) posts `{ email, turnstileToken, phonePlatform?, source?, inviteCode?,
+emailProof?, website? }` to the StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a
+hidden honeypot. The page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link
+such as `https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it.
 
-After joining, the form gives way to a card (D-055) with **Post on X**, which opens X's composer
-with `waitlistShareText` and links `https://stridemon.xyz/waitlist?source=x-waitlist`. That page
-leads with the same form and has its own share image (`app/waitlist/opengraph-image.tsx`), so X
-shows a card made for the post. Sign-ups from shared posts count under `x-waitlist`. If you change
-the post, keep it under 280 characters with the link (X counts a link as 23).
+**The invite loop (D-056, D-057):**
+
+- **Continue with Google** comes first (`components/waitlist/google-sign-in-button.tsx`). Google's
+  script loads only when the form nears the screen. In apps' own browsers (Instagram, Facebook,
+  LinkedIn, Android WebViews, `lib/in-app-browser.ts`) it's one line pointing at the email path.
+  The client id is `googleClientId` in `src/content/site.ts` (`NEXT_PUBLIC_GOOGLE_CLIENT_ID`
+  overrides it; an empty value hides the button, say for a tunnel, whose hostname can't be a
+  Google origin). Its authorised origins are `https://stridemon.xyz`, `http://localhost` and
+  `http://localhost:3000` (`docs/deployment.md` §14.1).
+- **Turnstile** (`join-waitlist`) stays out of sight unless it needs a tap.
+- **`?ref=`** is read on every page (`ArrivalInviteKeeper` in the layout) and kept in
+  `sessionStorage` for the visit, so a friend who browses `/pass` first still joins with it. The
+  first code of the visit stays.
+- **The joined card** shows the visitor's invite link with Copy and the share row (WhatsApp,
+  Telegram, X and the phone's share sheet, `components/ui/share-links.tsx`), each link with
+  `ref` and its own `source` (`invite-whatsapp`, `invite-telegram`, `invite-x`, `invite-share`,
+  `invite-copy`). After a Google join it shows "0 of 3 friends confirmed" at once; after an email
+  join, an optional 6-digit code confirms the email (a `waitlist` code, counted in the API's daily
+  budget).
+- **`/waitlist/invites`** (static, `noindex`): check your email (Google or a code), then see the
+  link, the count and the early hour. The invites token stays in `localStorage` for 30 days
+  (`stridemon:waitlist-invites`); "Use a different email" clears it.
+- The visitor's own code (`stridemon:waitlist-own-invite-code`) rides on the share row of a pass's
+  details and after a mint.
+- **The count** (`GET /v1/waitlist/count`) shows under the intro only from 1,000 sign-ups.
+- The early hour's start is `plannedEarlyHourStartsAt` in `src/content/founding-pass.ts`: keep it
+  equal to the API's (`PASS_WAITLIST_WINDOW_STARTS_AT` minus `PASS_EARLY_HOUR_MINUTES`).
+
+To try it on the local stack, start it with `--phase preview` (friends who confirm in the next hour
+count) and point the site at it as in "Try the mint locally". Codes print in the stack's terminal.
+
+After joining, the X post (`waitlistShareText`) links `/waitlist`, which leads with the same form
+and has its own share image (`app/waitlist/opengraph-image.tsx`), so X shows a card made for the
+post. If you change the post, keep it under 280 characters with the link (X counts a link as 23).
 
 The API only answers browsers from the origins in its `WAITLIST_ALLOWED_ORIGINS`. To try the form
 locally, run the API with `WAITLIST_ALLOWED_ORIGINS=http://localhost:3000` on another port, and
 point the site at it for that run (`NEXT_PUBLIC_API_BASE_URL` moves every API route; the older
-`NEXT_PUBLIC_WAITLIST_API_URL` still moves the waitlist alone):
+`NEXT_PUBLIC_WAITLIST_API_URL` is ignored since the invites, D-056):
 
 ```bash
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 bun run dev

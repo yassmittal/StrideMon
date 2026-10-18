@@ -1,28 +1,90 @@
 import type { JoinWaitlistBody, JoinWaitlistResponse } from '@stridemon/shared/api-contracts'
 import type { Db } from 'mongodb'
-import { insertWaitlistSignupIfNew } from '../../repositories/waitlist-signups-repository'
+import { ApiError } from '../../common/api-error'
+import { verifyEmailProof } from '../../lib/founding-pass/email-proof'
+import { foldEmailAddress } from '../../lib/waitlist/canonical-email'
+import { isDisposableEmailDomain } from '../../lib/waitlist/disposable-email-domain'
+import { buildInviteUrl, buildWaitlistInviteIdentity } from '../../lib/waitlist/invite-code'
+import {
+  confirmWaitlistSignupEmail,
+  insertWaitlistSignupIfNew,
+} from '../../repositories/waitlist-signups-repository'
+import type { TurnstileVerifier } from '../../services/turnstile-verifier'
+import { assertTurnstileTokenValid } from '../founding-pass/assert-turnstile-token-valid'
+
+const HTTP_STATUS_BAD_REQUEST = 400
 
 /**
- * Stores a waitlist sign-up (D-037). Always answers `joined`, for a repeat email and a filled-in
- * honeypot too, so the response tells neither a visitor nor a bot anything.
+ * Stores a waitlist sign-up (D-037, D-056), cheapest checks first: the honeypot, Turnstile, the
+ * temporary-inbox list, then one upsert per inbox. Always answers `joined` with the inbox's
+ * invite link, for a new email, a repeat and a filled-in honeypot alike, so the answer tells
+ * neither a visitor nor a bot anything.
  */
 export async function joinWaitlist({
   database,
+  inviteCodeSecret,
+  emailProofSecret,
+  turnstileVerifier,
   body,
+  remoteIpAddress,
   now,
 }: {
   database: Db
+  inviteCodeSecret: string
+  emailProofSecret: string
+  turnstileVerifier: TurnstileVerifier
   body: JoinWaitlistBody
+  remoteIpAddress: string
   now: Date
 }): Promise<JoinWaitlistResponse> {
-  const isHoneypotFilled = body.website !== undefined && body.website !== ''
-  if (!isHoneypotFilled) {
-    await insertWaitlistSignupIfNew(database, {
-      email: body.email,
-      phonePlatform: body.phonePlatform ?? null,
-      source: body.source ?? null,
-      createdAt: now,
-    })
+  const { canonicalEmail, inviteCode } = buildWaitlistInviteIdentity({
+    email: body.email,
+    inviteCodeSecret,
+  })
+  const joinedResponse: JoinWaitlistResponse = {
+    status: 'joined',
+    inviteUrl: buildInviteUrl(inviteCode),
   }
-  return { status: 'joined' }
+  const isHoneypotFilled = body.website !== undefined && body.website !== ''
+  if (isHoneypotFilled) return joinedResponse
+
+  await assertTurnstileTokenValid({
+    turnstileVerifier,
+    turnstileToken: body.turnstileToken,
+    remoteIpAddress,
+    expectedAction: 'join-waitlist',
+  })
+  if (isDisposableEmailDomain(body.email)) {
+    throw new ApiError('EMAIL_DOMAIN_DISPOSABLE', HTTP_STATUS_BAD_REQUEST)
+  }
+
+  // Your own code never counts as your inviter.
+  const invitedByInviteCode =
+    body.inviteCode === undefined || body.inviteCode === inviteCode ? null : body.inviteCode
+  await insertWaitlistSignupIfNew(database, {
+    email: body.email,
+    canonicalEmail,
+    inviteCode,
+    invitedByInviteCode,
+    phonePlatform: body.phonePlatform ?? null,
+    source: body.source ?? null,
+    createdAt: now,
+  })
+
+  // A proof for this same inbox (Google, or a code) confirms it now. Any other proof is ignored.
+  if (body.emailProof !== undefined) {
+    const verifiedEmail = await verifyEmailProof({
+      emailProof: body.emailProof,
+      emailProofSecret,
+      now,
+    })
+    if (verifiedEmail !== null && foldEmailAddress(verifiedEmail.email) === canonicalEmail) {
+      await confirmWaitlistSignupEmail(database, {
+        canonicalEmail,
+        emailConfirmedBy: verifiedEmail.emailCheckMethod,
+        now,
+      })
+    }
+  }
+  return joinedResponse
 }

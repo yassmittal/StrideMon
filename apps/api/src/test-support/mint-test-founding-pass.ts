@@ -56,6 +56,7 @@ export async function setFoundingPassMintedCountOnChain(
 export async function signTestEmailProof(email: string): Promise<string> {
   const { emailProof } = await signEmailProof({
     email,
+    emailCheckMethod: 'code',
     emailProofSecret: TEST_EMAIL_PROOF_SECRET,
     issuedAt: new Date(),
   })

@@ -16,6 +16,15 @@ export const plannedPassScheduleTimes: PassScheduleTimes = {
 }
 
 /**
+ * When the early hour starts (D-058): `PASS_EARLY_HOUR_MINUTES` (60) before the waitlist window,
+ * 19:00 IST. Invited friends count until then (D-056). Keep it equal to the API's settings.
+ */
+export const plannedEarlyHourStartsAt = '2026-11-28T13:30:00.000Z'
+
+/** Friends who must confirm their email, and the passes the early hour mints at most (D-056, D-058). */
+export const earlyHourRules = { requiredFriendCount: 3, mintLimit: 250 } as const
+
+/**
  * The day early access is planned to start (D-049): the game starts over on fresh contracts and
  * only Founding Pass holders get a Sneaker. Yash switches it on by hand (Part 10), so it's a date
  * in words, not a time. Keep it in step with Part 10's date.
@@ -295,7 +304,6 @@ export const passDetailContent = {
   openPageLabel: 'Open its page',
   copyLinkLabel: 'Copy link',
   copiedLabel: 'Copied',
-  postOnXLabel: 'Post on X',
   explorerLabel: 'See it on MonadVision',
   backToGalleryLabel: 'All 1,000 passes',
   previousPassLabel: 'Previous pass',
@@ -321,6 +329,11 @@ export function buildPassShareText(passNumberText: string, passName: string): st
   return `${passNumberText} ${passName}: my pick from the 1,000 one-of-one ${xAccountHandle} Founding Passes.`
 }
 
+/** The same pick for WhatsApp, Telegram and the share sheet: no @ tag outside X (D-056). */
+export function buildPassShareMessage(passNumberText: string, passName: string): string {
+  return `${passNumberText} ${passName}: my pick from the 1,000 one-of-one StrideMon Founding Passes. They’re free, and the waitlist picks first:`
+}
+
 export const passHowItWorksContent = {
   metaLabels: ['How it works', 'Four steps'],
   heading: 'From waitlist to your first walk',
@@ -330,7 +343,7 @@ export const passHowItWorksContent = {
     {
       title: 'Join the waitlist',
       description:
-        'Leave your email before the waitlist window opens. We write once, when it opens, and nothing else.',
+        'Leave your email before the waitlist window opens. We email you a code only when you ask for one, and once when it opens. Nothing else.',
     },
     {
       title: 'Mint in the waitlist window',

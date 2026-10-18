@@ -9,14 +9,20 @@ export const siteUrl = 'https://stridemon.xyz'
 export const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://api.stridemon.xyz'
 
 /**
- * Where the waitlist form posts (D-037). `NEXT_PUBLIC_WAITLIST_API_URL` still overrides it alone,
- * as it did before the Founding Pass.
+ * Where the waitlist form posts (D-037). It moves with `NEXT_PUBLIC_API_BASE_URL` only: the
+ * invites routes live beside it (D-056), so the old `NEXT_PUBLIC_WAITLIST_API_URL` is ignored.
  */
-export const waitlistApiUrl =
-  process.env.NEXT_PUBLIC_WAITLIST_API_URL ?? `${apiBaseUrl}/v1/waitlist`
+export const waitlistApiUrl = `${apiBaseUrl}/v1/waitlist`
 
 /** The gallery's live state: minted designs, recent mints, the schedule (D-043, D-044). */
 export const passCollectionApiUrl = `${apiBaseUrl}/v1/pass/collection`
+
+/** The waitlist's invites and its public count (D-056). */
+export const waitlistApiUrls = {
+  invitesSession: `${apiBaseUrl}/v1/waitlist/invites-session`,
+  invites: `${apiBaseUrl}/v1/waitlist/invites`,
+  count: `${apiBaseUrl}/v1/waitlist/count`,
+} as const
 
 /** The help chatbot on /pass and /help (D-048). */
 export const helpChatApiUrl = `${apiBaseUrl}/v1/help/chat`
@@ -28,6 +34,7 @@ export const passApiUrls = {
   authRefresh: `${apiBaseUrl}/v1/auth/refresh`,
   emailCode: `${apiBaseUrl}/v1/pass/email-code`,
   emailVerify: `${apiBaseUrl}/v1/pass/email-verify`,
+  emailGoogle: `${apiBaseUrl}/v1/pass/email-google`,
   mints: `${apiBaseUrl}/v1/pass/mints`,
 } as const
 
@@ -53,6 +60,15 @@ export const monadRpcUrl = process.env.NEXT_PUBLIC_MONAD_RPC_URL ?? monadPublicR
 export const turnstileSiteKey =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '0x4AAAAAAFRleBaVJ9eZuqBJ'
 
+/**
+ * The Sign in with Google client (D-057), the same one the API checks tokens against. Public, not a
+ * secret. An empty `NEXT_PUBLIC_GOOGLE_CLIENT_ID` hides Continue with Google (say, for a local run
+ * reached through a tunnel, whose hostname can't be a Google origin).
+ */
+export const googleClientId =
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ??
+  '678017486118-vpp6dtbgdmf6s3p26l5c6h2abaome7jk.apps.googleusercontent.com'
+
 /** The Founding Pass gallery (D-041), and the help page every error links to (D-047). */
 export const passGalleryPath = '/pass'
 /** Every pass by number, so each pass page has a link search engines can follow (D-051). */
@@ -60,6 +76,8 @@ export const passIndexPath = '/pass/all'
 export const helpPath = '/help'
 /** The waitlist on a page of its own, the link a joined visitor posts on X (D-055). */
 export const waitlistPagePath = '/waitlist'
+/** A waitlist sign-up's invites: their link, their confirmed friends, the early hour (D-056). */
+export const waitlistInvitesPath = '/waitlist/invites'
 
 export const siteName = 'StrideMon'
 

@@ -5,6 +5,7 @@ import {
   FOUNDING_PASS_MINT_STATUSES,
   PASS_SCHEDULE_PHASES,
 } from '../domain/founding-pass'
+import { EMAIL_CODE_PURPOSES } from '../domain/waitlist'
 import { emailAddressSchema } from './email-address'
 import { transactionHashSchema } from './onboarding'
 import { walletAddressSchema } from './wallet-address'
@@ -14,16 +15,23 @@ const MAX_TURNSTILE_TOKEN_LENGTH = 4096
 const EMAIL_CODE_PATTERN = /^\d{6}$/
 // A signed JWT; the API checks the signature, this only bounds the size.
 const MAX_EMAIL_PROOF_LENGTH = 2048
+// Google's ID tokens are about 1 KB.
+const MAX_GOOGLE_ID_TOKEN_LENGTH = 4096
 
 /** A pass's design number, which is also its token id (1 to 1,000). */
 export const designNumberSchema = z.int().min(1).max(FOUNDING_PASS_DESIGN_COUNT)
 
 /** The token Cloudflare Turnstile's widget gives the page. */
-const turnstileTokenSchema = z.string().min(1).max(MAX_TURNSTILE_TOKEN_LENGTH)
+export const turnstileTokenSchema = z.string().min(1).max(MAX_TURNSTILE_TOKEN_LENGTH)
+
+/** A signed email proof from `email-verify` or `email-google` (D-043, D-057). */
+export const emailProofSchema = z.string().min(1).max(MAX_EMAIL_PROOF_LENGTH)
 
 export const sendPassEmailCodeBodySchema = z.object({
   email: emailAddressSchema,
   turnstileToken: turnstileTokenSchema,
+  /** Picks the email's words, the Turnstile action and the daily limit (D-057). */
+  purpose: z.enum(EMAIL_CODE_PURPOSES).default('mint'),
 })
 export type SendPassEmailCodeBody = z.infer<typeof sendPassEmailCodeBodySchema>
 
@@ -40,15 +48,23 @@ export const verifyPassEmailCodeBodySchema = z.object({
 export type VerifyPassEmailCodeBody = z.infer<typeof verifyPassEmailCodeBodySchema>
 
 export const verifyPassEmailCodeResponseSchema = z.object({
+  /** The checked email, lowercased: for Google, the one Google gave (D-057). */
+  email: z.string(),
   /** Sent back with the mint, so "Get ready" can happen hours before it (D-043). */
   emailProof: z.string(),
   emailProofExpiresAt: z.iso.datetime(),
 })
 export type VerifyPassEmailCodeResponse = z.infer<typeof verifyPassEmailCodeResponseSchema>
 
+/** The ID token from the website's Sign in with Google button (D-057). */
+export const checkPassEmailWithGoogleBodySchema = z.object({
+  googleIdToken: z.string().min(1).max(MAX_GOOGLE_ID_TOKEN_LENGTH),
+})
+export type CheckPassEmailWithGoogleBody = z.infer<typeof checkPassEmailWithGoogleBodySchema>
+
 export const requestFoundingPassMintBodySchema = z.object({
   designNumber: designNumberSchema,
-  emailProof: z.string().min(1).max(MAX_EMAIL_PROOF_LENGTH),
+  emailProof: emailProofSchema,
   turnstileToken: turnstileTokenSchema,
 })
 export type RequestFoundingPassMintBody = z.infer<typeof requestFoundingPassMintBodySchema>

@@ -5,6 +5,7 @@ import { buildServer } from '../build-server'
 import type { PassServicesPluginOptions } from '../plugins/pass-services'
 import type { HelpChatModel } from '../services/help-chat-model'
 import { ANVIL_GAME_SERVER_PRIVATE_KEY } from './deploy-test-contracts'
+import { createTestGoogleIdTokenVerifier } from './fake-google-sign-in'
 import { createCapturingEmailSender, createTestTurnstileVerifier } from './fake-pass-services'
 
 // Requires the project-local mongod: `bun run db:start`.
@@ -20,6 +21,10 @@ export const TEST_GAS_DRIP_AMOUNT_WEI = 100_000_000_000_000_000n
 export const TEST_WAITLIST_ALLOWED_ORIGIN = 'https://stridemon.test'
 
 export const TEST_EMAIL_PROOF_SECRET = 'test-email-proof-secret-long-enough-for-hs256-'.repeat(2)
+
+export const TEST_WAITLIST_INVITE_CODE_SECRET = 'test-waitlist-invite-code-secret-'.repeat(3)
+
+export const TEST_GOOGLE_CLIENT_ID = '123456789012-testclientid.apps.googleusercontent.com'
 
 /**
  * The tests' schedule: the waitlist window ran in January, so minting is in its open mint until
@@ -48,6 +53,10 @@ export const TEST_ENVIRONMENT_VARIABLES = {
   TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
   EMAIL_PROOF_SECRET: TEST_EMAIL_PROOF_SECRET,
   EMAIL_SENDER_ADDRESS: 'hello@stridemon.test',
+  WAITLIST_INVITE_CODE_SECRET: TEST_WAITLIST_INVITE_CODE_SECRET,
+  WAITLIST_CODE_DAILY_EMAIL_LIMIT: '250',
+  GOOGLE_CLIENT_ID: TEST_GOOGLE_CLIENT_ID,
+  PASS_EARLY_HOUR_MINUTES: '60',
   HELP_CHAT_MONTHLY_CAP_USD: '5',
 }
 
@@ -55,7 +64,8 @@ export const TEST_ENVIRONMENT_VARIABLES = {
  * A server on its own throwaway database, so tests never see each other's data.
  * Pass the RPC URL of a `startTestChain()` Anvil when the test touches the chain,
  * and the addresses from `deployTestContracts()` when it uses the contracts.
- * Emails are captured, never sent, and Turnstile passes only `TEST_TURNSTILE_TOKEN`.
+ * Emails are captured, never sent, Turnstile passes only `TEST_TURNSTILE_TOKEN`, and Google ID
+ * tokens are checked against the tests' own key (`signTestGoogleIdToken`).
  */
 export async function buildTestServer({
   monadRpcUrl = UNUSED_RPC_URL,
@@ -66,8 +76,11 @@ export async function buildTestServer({
 }: {
   monadRpcUrl?: string
   contractAddresses?: StrideMonContractAddresses
-  /** For example a schedule moved into the past or the future, or the gate switched on. */
-  environmentOverrides?: Record<string, string>
+  /**
+   * For example a schedule moved into the past or the future, or the gate switched on. `undefined`
+   * removes a variable.
+   */
+  environmentOverrides?: Record<string, string | undefined>
   passServices?: PassServicesPluginOptions
   /** A fake model for the help chatbot; without one, every question is unavailable. */
   helpChatModel?: HelpChatModel
@@ -83,6 +96,8 @@ export async function buildTestServer({
     passServices: {
       emailSender: passServices.emailSender ?? createCapturingEmailSender().emailSender,
       turnstileVerifier: passServices.turnstileVerifier ?? createTestTurnstileVerifier(),
+      googleIdTokenVerifier:
+        passServices.googleIdTokenVerifier ?? createTestGoogleIdTokenVerifier(),
     },
     ...(helpChatModel === undefined ? {} : { helpChatModel }),
   })

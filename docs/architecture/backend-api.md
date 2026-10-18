@@ -189,7 +189,7 @@ upgrade: the app reads and writes those on-chain directly.
 | `WAITLIST_INVITE_CODE_SECRET` | 32 random bytes | keys the invite codes (D-056). **Never change it during the campaign**: a new one changes every invite link |
 | `WAITLIST_CODE_DAILY_EMAIL_LIMIT` | `250` | waitlist codes go only while the UTC day's email count is under it; mint codes and window emails always go (D-057) |
 | `GOOGLE_CLIENT_ID` | `…apps.googleusercontent.com` | the Sign in with Google client (D-057). Public, not a secret. Optional: without it `email-google` answers `GOOGLE_SIGN_IN_UNAVAILABLE` |
-| `PASS_EARLY_HOUR_MINUTES` | `60` | the early hour starts this long before the waitlist window (D-058, Part 4) |
+| `PASS_EARLY_HOUR_MINUTES` | `60` | the early hour starts this long before the waitlist window (D-058). From the referral's Part 1, invited friends count until then (`countsUntil`) |
 | `PASS_EARLY_HOUR_MINT_LIMIT` | `250` | the most passes the early hour mints (D-058, Part 4) |
 | `BEDROCK_API_KEY` | Bedrock's | the help chatbot's model (D-048). Optional: without it the chatbot answers `HELP_CHAT_UNAVAILABLE` |
 | `HELP_CHAT_MONTHLY_CAP_USD` | `5` | the chatbot's monthly budget at the model's list price (D-048) |
@@ -345,7 +345,9 @@ A malformed email is `VALIDATION_FAILED` 400.
 **The invites** (D-056: progress only to its owner). `invites-session` takes an email proof and
 answers a 30-day **invites token** (HS256 with `EMAIL_PROOF_SECRET`, audience
 `stridemon:waitlist-invites`, the email as its subject), so the page can come back without
-another email. An invalid proof is `EMAIL_PROOF_INVALID` 401; an invalid or expired invites
+another email. An email proof carries how the email was checked (`emailCheckMethod`: `code` or
+`google`; a proof without it counts as `code`), which becomes `emailConfirmedBy`. An invalid proof
+is `EMAIL_PROOF_INVALID` 401; an invalid or expired invites
 token is `INVITES_TOKEN_INVALID` 401. Both routes answer the same `invites`:
 
 ```json
@@ -392,8 +394,8 @@ The website's `/pass` page is the second client of these routes. The brief's §1
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/v1/pass/email-code` | `{ email, turnstileToken, purpose? }` → `{ status: 'sent' }`. Emails a 6-digit code. The same answer for new and known emails. `purpose` is `mint` (the default) or `waitlist` (D-057) |
-| POST | `/v1/pass/email-verify` | `{ email, code }` → `{ emailProof, emailProofExpiresAt }`, a signed proof good for 6 hours ("Get ready" before mint day) |
-| POST | `/v1/pass/email-google` | `{ googleIdToken }` → the same as `email-verify`: an email proof for the Google account's verified email (D-057) |
+| POST | `/v1/pass/email-verify` | `{ email, code }` → `{ email, emailProof, emailProofExpiresAt }`, a signed proof good for 6 hours ("Get ready" before mint day) |
+| POST | `/v1/pass/email-google` | `{ googleIdToken }` → the same as `email-verify`: an email proof for the Google account's verified email, which `email` names, so the site can show it (D-057) |
 | POST | `/v1/pass/mints` | 🔒 `{ designNumber, emailProof, turnstileToken }` → `201 { mint }` (or `200` with the same mint, for a repeat from the same wallet for the same design). Queues `mintFoundingPass` in the outbox |
 | GET | `/v1/pass/mints/:mintId` | 🔒 `{ mint }`; 404 for another wallet's mint. The website polls it for the reveal |
 | GET | `/v1/pass/collection` | the minted designs, the pending ones, the counts, the last 10 mints, the schedule and the gate |
@@ -555,7 +557,13 @@ Monad's contract size limit), the contracts deployed by the tests' `deployTestCo
 throwaway database `stridemon-pass-local` (dropped at start), and the API on port 3001. It builds
 the API's environment itself (Anvil's keys, Cloudflare's test Turnstile secrets, codes printed
 instead of sent) and never reads `.env`. Flags pick the phase, add waitlist emails, mint passes
-ahead, fail Turnstile, slow the blocks and allow another site origin (`website/README.md`).
+ahead, fail Turnstile, slow the blocks and allow another site origin (`website/README.md`). In
+`--phase preview` the window opens in 2 hours, so invited friends who confirm in the next hour
+still count (D-056). Continue with Google works when the shell has `GOOGLE_CLIENT_ID`.
+
+**Temporary inboxes:** `src/lib/waitlist/disposable-email-domain-list.ts` is generated from the CC0
+[disposable-email-domains](https://github.com/disposable-email-domains/disposable-email-domains)
+list by `bun run waitlist:refresh-disposable-domains`: never edit it by hand.
 
 **The lost-wallet move** (D-041) isn't an API route. Support checks the email by hand and runs
 `scripts/recover-founding-pass` from the deployer key.

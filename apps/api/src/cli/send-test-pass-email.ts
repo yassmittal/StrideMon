@@ -26,6 +26,7 @@ await createBrevoEmailSender({ brevoApiKey, senderAddress }).sendEmail({
   ...buildEmailCodeEmail({
     emailCode: generateEmailCode(),
     validForMinutes: EMAIL_CODE_VALID_MINUTES,
+    purpose: 'mint',
   }),
 })
 process.stdout.write(

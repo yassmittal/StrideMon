@@ -1,3 +1,4 @@
+import type { EmailCodePurpose } from '@stridemon/shared/domain'
 import type { PassScheduleTimes } from './pass-schedule'
 
 /** An email's words, before it has an address. */
@@ -5,21 +6,34 @@ export type PassEmailContent = { subject: string; textBody: string; htmlBody: st
 
 const PASS_PAGE_URL = 'https://stridemon.xyz/pass'
 const PASS_PAGE_LABEL = 'stridemon.xyz/pass'
+const SITE_LABEL = 'stridemon.xyz'
 const FREE_PASS_LINE = 'Free. It can’t be sent or sold. It isn’t a token and never turns into one.'
 
-/** The 6-digit code email. The code leads the subject, so it shows in the notification. */
+/**
+ * The 6-digit code email, worded for what it's for (D-057). The code leads the subject, so it
+ * shows in the notification.
+ */
 export function buildEmailCodeEmail({
   emailCode,
   validForMinutes,
+  purpose,
 }: {
   emailCode: string
   validForMinutes: number
+  purpose: EmailCodePurpose
 }): PassEmailContent {
-  const paragraphs = [
-    `Your code is ${emailCode}.`,
-    `Type it on ${PASS_PAGE_LABEL} to check your email. It works for ${validForMinutes} minutes.`,
-    'Didn’t ask for it? Ignore this email. Nothing happens without the code.',
-  ]
+  const paragraphs =
+    purpose === 'waitlist'
+      ? [
+          `Your code is ${emailCode}.`,
+          `Type it on ${SITE_LABEL} to confirm your email for the StrideMon waitlist. It works for ${validForMinutes} minutes.`,
+          'Didn’t ask for it? Ignore this email.',
+        ]
+      : [
+          `Your code is ${emailCode}.`,
+          `Type it on ${PASS_PAGE_LABEL} to check your email. It works for ${validForMinutes} minutes.`,
+          'Didn’t ask for it? Ignore this email. Nothing happens without the code.',
+        ]
   return {
     subject: `${emailCode} is your StrideMon code`,
     textBody: buildTextBody(paragraphs),

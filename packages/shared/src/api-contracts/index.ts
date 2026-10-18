@@ -44,7 +44,10 @@ export {
 } from './auth'
 export { emailAddressSchema } from './email-address'
 export {
+  type CheckPassEmailWithGoogleBody,
+  checkPassEmailWithGoogleBodySchema,
   designNumberSchema,
+  emailProofSchema,
   type FoundingPassCollectionResponse,
   type FoundingPassMint,
   type FoundingPassMintParams,
@@ -63,6 +66,7 @@ export {
   type SendPassEmailCodeResponse,
   sendPassEmailCodeBodySchema,
   sendPassEmailCodeResponseSchema,
+  turnstileTokenSchema,
   type VerifyPassEmailCodeBody,
   type VerifyPassEmailCodeResponse,
   verifyPassEmailCodeBodySchema,
@@ -105,5 +109,15 @@ export {
   type JoinWaitlistResponse,
   joinWaitlistBodySchema,
   joinWaitlistResponseSchema,
+  type StartWaitlistInvitesSessionBody,
+  startWaitlistInvitesSessionBodySchema,
+  type WaitlistCountResponse,
+  type WaitlistInvites,
+  type WaitlistInvitesResponse,
+  type WaitlistInvitesSessionResponse,
+  waitlistCountResponseSchema,
+  waitlistInvitesResponseSchema,
+  waitlistInvitesSchema,
+  waitlistInvitesSessionResponseSchema,
 } from './waitlist'
 export { walletAddressSchema } from './wallet-address'

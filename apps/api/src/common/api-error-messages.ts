@@ -43,4 +43,11 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
     'StrideMon is in early access. Mint a free Founding Pass on stridemon.xyz/pass to get in early.',
   HELP_CHAT_UNAVAILABLE:
     'The help assistant can’t answer right now. Every answer is on stridemon.xyz/help.',
+  EMAIL_DOMAIN_DISPOSABLE:
+    'That looks like a temporary inbox. Use an email you’ll still have on 28 November.',
+  EMAIL_DAILY_LIMIT_REACHED:
+    'We’ve sent all the codes we can for today. Continue with Google, or try again tomorrow.',
+  GOOGLE_SIGN_IN_UNAVAILABLE: 'Google sign-in isn’t working right now. Use your email instead.',
+  GOOGLE_SIGN_IN_FAILED: 'Google didn’t confirm your email. Try again, or use your email instead.',
+  INVITES_TOKEN_INVALID: 'Check your email again to see your invites.',
 }

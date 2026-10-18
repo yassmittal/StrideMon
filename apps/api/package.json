@@ -11,7 +11,9 @@
     "pass:send-test-email": "bun src/cli/send-test-pass-email.ts",
     "pass:send-waitlist-emails": "bun src/cli/send-waitlist-window-emails.ts",
     "pass:local-stack": "bun src/cli/start-local-pass-stack.ts",
-    "help:check-answers": "bun src/cli/check-help-chat-answers.ts"
+    "help:check-answers": "bun src/cli/check-help-chat-answers.ts",
+    "waitlist:refresh-disposable-domains": "bun src/cli/refresh-disposable-email-domains.ts",
+    "waitlist:backfill-canonical-emails": "bun src/cli/backfill-waitlist-canonical-emails.ts"
   },
   "dependencies": {
     "@fastify/cors": "11.3.0",

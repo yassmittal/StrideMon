@@ -547,6 +547,7 @@ In [Google Cloud Console](https://console.cloud.google.com):
    | `WAITLIST_INVITE_CODE_SECRET` | generate it **on the server**: `openssl rand -hex 32`. Only here, never in the repo or a chat. Never change it while the campaign runs: a new one changes every invite link |
    | `WAITLIST_CODE_DAILY_EMAIL_LIMIT` | `250` (Yash, 2026-10-18) |
    | `GOOGLE_CLIENT_ID` | the client ID from §14.1 |
+   | `PASS_EARLY_HOUR_MINUTES` | `60`: invited friends count until 19:00 IST on 11-28 (D-058) |
 
 3. **Redeploy the API** (Updating the API later, below), and check `pm2 logs stridemon-api` shows
    no `Invalid environment variables`. Then, once, on the server:

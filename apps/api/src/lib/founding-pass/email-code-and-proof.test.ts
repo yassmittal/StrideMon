@@ -47,6 +47,7 @@ describe('email proofs', () => {
   it('give back the email they were signed for while they last', async () => {
     const { emailProof, emailProofExpiresAt } = await signEmailProof({
       email: 'runner@example.com',
+      emailCheckMethod: 'google',
       emailProofSecret: EMAIL_PROOF_SECRET,
       issuedAt: ISSUED_AT,
     })
@@ -58,12 +59,13 @@ describe('email proofs', () => {
         emailProofSecret: EMAIL_PROOF_SECRET,
         now: new Date(ISSUED_AT.getTime() + 60_000),
       }),
-    ).toBe('runner@example.com')
+    ).toEqual({ email: 'runner@example.com', emailCheckMethod: 'google' })
   })
 
   it('refuse an expired proof, or one signed with another secret', async () => {
     const { emailProof, emailProofExpiresAt } = await signEmailProof({
       email: 'runner@example.com',
+      emailCheckMethod: 'google',
       emailProofSecret: EMAIL_PROOF_SECRET,
       issuedAt: ISSUED_AT,
     })

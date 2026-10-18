@@ -4,7 +4,7 @@ import {
   mintProblemContent,
   mintProblemHelpTopicIds,
 } from '@/content/founding-pass-mint'
-import { HelpTopicLink } from '../ui/help-topic-link'
+import { ProblemNote } from '../ui/problem-note'
 
 type MintProblemNoteProps = {
   problemKey: MintProblemKey
@@ -16,29 +16,18 @@ type MintProblemNoteProps = {
 }
 
 /**
- * What went wrong, what to do about it, and where to get help, in plain words (Part 5). The help
- * link opens the problem's own answer (D-047).
+ * What went wrong in the mint, what to do about it, and where to get help, in plain words (Part 5).
+ * The help link opens the problem's own answer (D-047).
  */
-export function MintProblemNote({
-  problemKey,
-  extra,
-  actions,
-  tone = 'light',
-}: MintProblemNoteProps) {
-  const { title, text } = mintProblemContent[problemKey]
-  const secondaryClass = tone === 'dark' ? 'text-on-dark-secondary' : 'text-ink-secondary-small'
+export function MintProblemNote({ problemKey, extra, actions, tone }: MintProblemNoteProps) {
   return (
-    <div
-      className={`flex flex-col gap-3 rounded-panel p-4 md:p-5 ${tone === 'dark' ? 'bg-dark-track text-on-dark' : 'bg-surface-muted text-ink'}`}
-    >
-      <p className="text-lg leading-[1.25]">{title}</p>
-      <p className={`text-sm leading-[1.45] ${secondaryClass}`}>{text}</p>
-      {extra}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        {actions}
-        <HelpTopicLink helpTopicId={mintProblemHelpTopicIds[problemKey]} />
-      </div>
-    </div>
+    <ProblemNote
+      {...mintProblemContent[problemKey]}
+      helpTopicId={mintProblemHelpTopicIds[problemKey]}
+      extra={extra}
+      actions={actions}
+      tone={tone}
+    />
   )
 }
 

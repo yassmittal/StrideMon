@@ -1,7 +1,12 @@
 import { getErrorMessage } from '@stridemon/shared/errors'
 import type { Db } from 'mongodb'
+import { formatUtcDay } from '../lib/email/email-day'
 import { buildWaitlistWindowEmail } from '../lib/founding-pass/pass-emails'
 import type { PassScheduleTimes } from '../lib/founding-pass/pass-schedule'
+import {
+  giveBackDailyEmailPlace,
+  takeDailyEmailPlace,
+} from '../repositories/email-daily-counts-repository'
 import {
   claimWaitlistWindowEmail,
   countWaitlistSignupsAwaitingWindowEmail,
@@ -26,7 +31,8 @@ export type WaitlistWindowEmailReport = {
  * window opened, oldest first, at most `limit` a run (Brevo's free plan sends 300 a day). Each
  * address is stamped before its email goes, so it's never emailed twice. A run stops at the first
  * failure: a refusal (the daily limit, say) gives the stamp back for the next run, and an unknown
- * outcome (a timeout) keeps it, since that email may have gone out.
+ * outcome (a timeout) keeps it, since that email may have gone out. Every email counts toward
+ * the day's email budget (D-057), which never refuses it.
  */
 export async function sendWaitlistWindowEmails({
   database,
@@ -63,12 +69,18 @@ export async function sendWaitlistWindowEmails({
       now: new Date(),
     })
     if (!isClaimed) continue
+    const sendStartedAt = new Date()
+    const utcDay = formatUtcDay(sendStartedAt)
+    await takeDailyEmailPlace(database, { utcDay, limit: null, now: sendStartedAt })
     try {
       await emailSender.sendEmail({ toEmailAddress: waitlistSignup.email, ...windowEmail })
       sentEmailAddresses.push(waitlistSignup.email)
     } catch (error) {
       const willRetry = error instanceof EmailRefusedError
-      if (willRetry) await releaseWaitlistWindowEmail(database, waitlistSignup._id)
+      if (willRetry) {
+        await releaseWaitlistWindowEmail(database, waitlistSignup._id)
+        await giveBackDailyEmailPlace(database, { utcDay, now: new Date() })
+      }
       failure = { emailAddress: waitlistSignup.email, willRetry, reason: getErrorMessage(error) }
       break
     }

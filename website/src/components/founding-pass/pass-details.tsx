@@ -3,6 +3,7 @@
 import { type MouseEvent, type ReactNode, useEffect, useState } from 'react'
 import { buildExplorerTokenUrl, foundingPassContract } from '@/content/contracts'
 import {
+  buildPassShareMessage,
   buildPassShareText,
   passDetailContent,
   passNextStepContent,
@@ -10,7 +11,6 @@ import {
   passScheduleContent,
 } from '@/content/founding-pass'
 import { sectionIds, siteUrl } from '@/content/site'
-import { buildXPostUrl } from '@/lib/build-x-post-url'
 import {
   findRecentPassMint,
   listTakenDesignNumbers,
@@ -28,9 +28,10 @@ import {
 import { isMintingPhase } from '@/lib/founding-pass/pass-schedule'
 import { retryPassCollection, usePassCollection } from '@/lib/founding-pass/use-pass-collection'
 import { usePassSchedule } from '@/lib/founding-pass/use-pass-schedule'
+import { useOwnInviteCode } from '@/lib/waitlist-invites'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { MetaLabel } from '../ui/meta-label'
-import { XLogoIcon } from '../ui/x-logo-icon'
+import { ShareLinks } from '../ui/share-links'
 import { FavouriteButton } from './favourite-button'
 import { MintPassButton } from './mint-pass-button'
 import { PassArt } from './pass-art'
@@ -64,6 +65,8 @@ export function PassDetails({
   isArtEager = false,
 }: PassDetailsProps) {
   const { collection, position } = usePassSchedule(SCHEDULE_REFRESH_MILLISECONDS)
+  // A friend who joins through a shared pass counts for this visitor, once they've joined (D-056).
+  const ownInviteCode = useOwnInviteCode()
   const design = readPassDesign(designNumber)
   if (design === undefined) return null
   const availability = readPassAvailability(collection, design.designNumber)
@@ -129,15 +132,6 @@ export function PassDetails({
           <div className="flex flex-wrap gap-2">
             <FavouriteButton designNumber={design.designNumber} appearance="pill" />
             <CopyPassLinkButton designNumber={design.designNumber} />
-            <a
-              href={buildPostOnXUrl(design, passNumberText)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
-            >
-              <XLogoIcon />
-              {passDetailContent.postOnXLabel}
-            </a>
             {onSelectDesign ? (
               <a
                 href={buildPassPagePath(design.designNumber)}
@@ -148,6 +142,12 @@ export function PassDetails({
               </a>
             ) : null}
           </div>
+          <ShareLinks
+            path={buildPassPagePath(design.designNumber)}
+            inviteCode={ownInviteCode}
+            messageText={buildPassShareMessage(passNumberText, design.name)}
+            xPostText={buildPassShareText(passNumberText, design.name)}
+          />
           {availability === 'minted' ? (
             <a
               href={buildExplorerTokenUrl(foundingPassContract.address, design.designNumber)}
@@ -375,11 +375,6 @@ function CopyPassLinkButton({ designNumber }: { designNumber: number }) {
       </span>
     </button>
   )
-}
-
-function buildPostOnXUrl(design: PassDesign, passNumberText: string): string {
-  const pageUrl = `${siteUrl}${buildPassPagePath(design.designNumber)}?source=x-share`
-  return buildXPostUrl(buildPassShareText(passNumberText, design.name), pageUrl)
 }
 
 /** "a, b and c". */

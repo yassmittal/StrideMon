@@ -32,6 +32,23 @@ export function removeStoredValue(storageKey: string): void {
   }
 }
 
+/** A string kept in `sessionStorage`: for this visit only, gone when the tab closes. */
+export function readSessionString(storageKey: string): string | null {
+  try {
+    return window.sessionStorage.getItem(storageKey)
+  } catch {
+    return null
+  }
+}
+
+export function writeSessionString(storageKey: string, value: string): void {
+  try {
+    window.sessionStorage.setItem(storageKey, value)
+  } catch {
+    // Blocked: the value is simply not kept for the visit.
+  }
+}
+
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }

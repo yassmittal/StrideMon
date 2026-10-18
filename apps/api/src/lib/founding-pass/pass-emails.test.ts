@@ -15,11 +15,28 @@ describe('pass emails', () => {
   })
 
   it('puts the code in the subject and the body', () => {
-    const codeEmail = buildEmailCodeEmail({ emailCode: '004817', validForMinutes: 10 })
+    const codeEmail = buildEmailCodeEmail({
+      emailCode: '004817',
+      validForMinutes: 10,
+      purpose: 'mint',
+    })
 
     expect(codeEmail.subject).toBe('004817 is your StrideMon code')
     expect(codeEmail.textBody).toContain('Your code is 004817.')
     expect(codeEmail.htmlBody).toContain('It works for 10 minutes.')
+  })
+
+  it('words a waitlist code for the waitlist (D-057)', () => {
+    const codeEmail = buildEmailCodeEmail({
+      emailCode: '004817',
+      validForMinutes: 10,
+      purpose: 'waitlist',
+    })
+
+    expect(codeEmail.subject).toBe('004817 is your StrideMon code')
+    expect(codeEmail.textBody).toContain(
+      'Your code is 004817.\n\nType it on stridemon.xyz to confirm your email for the StrideMon waitlist. It works for 10 minutes.\n\nDidn’t ask for it? Ignore this email.',
+    )
   })
 
   it('says "now" once the window is open, and names both ends of the 48 hours', () => {

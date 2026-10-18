@@ -203,7 +203,11 @@ plan until the Metropolis results (11-03). The rest of its §8 is open. **The ea
 from `docs/waitlist-referral-prompt.md`**, one part per session: invite 3 friends who confirm
 their email (Google sign-in or a code), and the window opens at 19:00 IST, for at most 250 passes.
 Its decisions are D-056 (the invite loop), D-057 (Google and a 250-a-day cap on waitlist codes) and
-D-058 (the early hour), approved 2026-10-18 (Part 0 done).
+D-058 (the early hour), approved 2026-10-18 (Part 0 done). Part 1 (API) is done (2026-10-18):
+the new routes are in `backend-api.md` → The waitlist. Part 2 (website) is done (2026-10-18, checked by Yash on the local stack):
+Google or email joining, the invite card and share row, `/waitlist/invites`, help and privacy
+(`website/README.md` → Waitlist). Deploy the API and the website together (`deployment.md` §14):
+the live site's old form sends no Turnstile token, which the new API refuses.
 **Never send cold email through Brevo** (its policy bans it, and that account sends the mint's
 codes). At 300 a day it can't send the window email to 10,000 people, or check every minter's email
 on the night. The kits are in `social/youtube/`, `social/linkedin/` and `social/hacker-news/`.

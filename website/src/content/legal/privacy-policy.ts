@@ -7,7 +7,7 @@ export const privacyPolicyContent: LegalPageContent = {
   title: 'Privacy policy',
   description:
     'What the StrideMon app and website collect, what goes on the Monad blockchain, and how to delete your data.',
-  lastUpdated: '2026-10-09',
+  lastUpdated: '2026-10-18',
   intro: `${siteName} is a move-to-earn game on Monad testnet, built by Yash Mittal. This page says what the app and this website collect, why, and how to delete it. In short: your GPS points stay on our server for at most 30 days, your route never goes on-chain, and we don’t sell data or show ads.`,
   sections: [
     {
@@ -21,6 +21,10 @@ export const privacyPolicyContent: LegalPageContent = {
             'Your runs: when each started and finished, distance, active minutes, whether it passed the fair-play checks, and the STRIDE it earned.',
             'Sign-in sessions: a hashed token that keeps you signed in, and when it expires.',
             'On the website, if you join the waitlist: your email, the phone you said you use (optional), and which link brought you.',
+            'If you joined through a friend’s invite link, which invite brought you, so your friend’s invite can count. Your own invite code is made from your email, so it’s the same every time.',
+            'Whether and when you confirmed your email, and how: with a 6-digit code, or with Google.',
+            'If you continue with Google, Google tells us your email address and that Google has checked it. We keep only the email: never your name, photo or Google account. Google sees that you signed in to StrideMon.',
+            'Your invites page keeps a sign-in token in your own browser for 30 days, so coming back costs no email. “Use a different email” removes it.',
             'On the website: anonymous page-view counts from Vercel Analytics, with no cookies.',
             'On the website’s Founding Pass page, the passes you heart are saved in your own browser only. They never reach us.',
             'If you mint a Founding Pass on the website: your email, which you check with a 6-digit code, and your wallet address, from a free sign-in signature. The mint record keeps them together.',
@@ -36,7 +40,7 @@ export const privacyPolicyContent: LegalPageContent = {
       blocks: [
         {
           kind: 'paragraph',
-          text: 'To measure your walks and runs, to check that a run was done on foot (not in a car or with a faked location), to pay out STRIDE and keep your history, and to write to you once, when the Founding Pass waitlist window opens, if you joined the waitlist. For the Founding Pass, the email and wallet together make sure it’s one pass per person and per wallet, and let us check it’s you if you lose that wallet and ask us to move your pass.',
+          text: 'To measure your walks and runs, to check that a run was done on foot (not in a car or with a faked location), to pay out STRIDE and keep your history, to write to you once, when the Founding Pass waitlist window opens, if you joined the waitlist, and to send you a code when you ask for one. Who invited whom is used only to count each person’s confirmed friends for the early hour. For the Founding Pass, the email and wallet together make sure it’s one pass per person and per wallet, and let us check it’s you if you lose that wallet and ask us to move your pass.',
         },
       ],
     },
@@ -75,8 +79,9 @@ export const privacyPolicyContent: LegalPageContent = {
             'MongoDB Atlas stores the data listed above.',
             'Our server host runs the StrideMon API, and Vercel hosts this website.',
             'Reown (WalletConnect) relays the connection between the app or the website and your wallet. It sees your wallet address, never your keys.',
-            'Brevo sends our emails: the Founding Pass codes and the one waitlist email. It sees your email address.',
-            'Cloudflare Turnstile checks that a person, not a robot, is asking when you send a code or mint. Cloudflare sees your browser’s details for that check.',
+            'Brevo sends our emails: the codes you ask for and the one waitlist email. It sees your email address.',
+            'Google, if you continue with Google: it checks your email for us and sees that you signed in to StrideMon.',
+            'Cloudflare Turnstile checks that a person, not a robot, is asking when you join the waitlist, send a code or mint. Cloudflare sees your browser’s details for that check.',
             'Amazon Bedrock (Amazon Web Services) runs the AI model behind the help assistant. It sees the questions you type there, and Amazon doesn’t use them to train models.',
             'The Monad testnet, which anyone can read.',
           ],
@@ -92,7 +97,7 @@ export const privacyPolicyContent: LegalPageContent = {
             'GPS points: deleted automatically 30 days after we receive them.',
             'Sign-in sessions: deleted automatically when they expire, after 30 days.',
             'Your account and runs: until you delete your account.',
-            'Waitlist emails: until you ask us to delete yours.',
+            'Waitlist emails, with who invited you and when you confirmed: until you ask us to delete yours. Deleting yours also takes you out of your friend’s count.',
             'Email codes: deleted after 10 minutes, or as soon as they’re used. We only ever keep a scrambled version.',
             'Founding Pass mint records (your email and wallet): until you ask us to delete them. The pass itself stays on-chain.',
           ],
