@@ -11,9 +11,10 @@ import {
   writeStoredValue,
 } from './browser-storage'
 
-// The invite loop in this browser (D-056): the friend's code a visitor arrived with (for this
-// visit), the visitor's own code once they've joined (for their share links), and their invites
-// token (for coming back to /waitlist/invites without an email, 30 days).
+// The invite loop in this browser (D-056, D-059): the friend's code a visitor arrived with (for
+// this visit), the visitor's own code once they've joined (for their share links), their sign-up
+// (so the form shows the joined card again), and their invites token (the count without another
+// email, 30 days).
 
 /** Where a shared link was shared to: each is its own `source` (Part 2). */
 export type InviteShareTarget = 'whatsapp' | 'telegram' | 'x' | 'share' | 'copy'
@@ -24,9 +25,18 @@ export type StoredInvitesSession = {
   invitesTokenExpiresAt: string
 }
 
+/** A sign-up made in this browser (D-059). */
+export type StoredWaitlistSignup = {
+  email: string
+  inviteUrl: string
+  /** Joined through a friend's link: confirming the email makes them count for that friend. */
+  isJoinedThroughFriend: boolean
+}
+
 const ARRIVAL_INVITE_CODE_STORAGE_KEY = 'stridemon:waitlist-arrival-invite-code'
 const OWN_INVITE_CODE_STORAGE_KEY = 'stridemon:waitlist-own-invite-code'
 const INVITES_SESSION_STORAGE_KEY = 'stridemon:waitlist-invites'
+const WAITLIST_SIGNUP_STORAGE_KEY = 'stridemon:waitlist-joined'
 const INVITE_CODE_LENGTH = 8
 const CROCKFORD_BASE32_PATTERN = new RegExp(`^[0-9A-HJKMNP-TV-Z]{${INVITE_CODE_LENGTH}}$`)
 
@@ -124,9 +134,33 @@ export function saveInvitesSession(storedSession: StoredInvitesSession): void {
   writeStoredValue(INVITES_SESSION_STORAGE_KEY, storedSession)
 }
 
-/** "Use a different email", or a token the API no longer takes. */
+/** A token the API no longer takes. */
 export function forgetInvitesSession(): void {
   removeStoredValue(INVITES_SESSION_STORAGE_KEY)
+}
+
+/** The sign-up made in this browser, so coming back shows the joined card, not the form. */
+export function readStoredWaitlistSignup(): StoredWaitlistSignup | null {
+  return readStoredValue(WAITLIST_SIGNUP_STORAGE_KEY, isStoredWaitlistSignup)
+}
+
+export function saveWaitlistSignup(storedSignup: StoredWaitlistSignup): void {
+  writeStoredValue(WAITLIST_SIGNUP_STORAGE_KEY, storedSignup)
+}
+
+/** Change, or Use a different email: this browser forgets the sign-up and its invites token. */
+export function forgetWaitlistSignup(): void {
+  removeStoredValue(WAITLIST_SIGNUP_STORAGE_KEY)
+  removeStoredValue(INVITES_SESSION_STORAGE_KEY)
+}
+
+function isStoredWaitlistSignup(value: unknown): value is StoredWaitlistSignup {
+  return (
+    isRecord(value) &&
+    typeof value.email === 'string' &&
+    typeof value.inviteUrl === 'string' &&
+    typeof value.isJoinedThroughFriend === 'boolean'
+  )
 }
 
 function isStoredInvitesSession(value: unknown): value is StoredInvitesSession {

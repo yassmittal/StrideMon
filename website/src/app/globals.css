@@ -21,6 +21,9 @@
   --color-cross-mark: #999999;
   /* Lime: only on dark backgrounds, never as text on light. */
   --color-lime: #c1ff00;
+  /* WhatsApp's and Telegram's own colours, only behind their logos on the share links (D-059). */
+  --color-whatsapp: #25d366;
+  --color-telegram: #26a5e4;
 
   --font-sans: "Satoshi", "Satoshi Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;

@@ -7,7 +7,7 @@ export const privacyPolicyContent: LegalPageContent = {
   title: 'Privacy policy',
   description:
     'What the StrideMon app and website collect, what goes on the Monad blockchain, and how to delete your data.',
-  lastUpdated: '2026-10-18',
+  lastUpdated: '2026-10-19',
   intro: `${siteName} is a move-to-earn game on Monad testnet, built by Yash Mittal. This page says what the app and this website collect, why, and how to delete it. In short: your GPS points stay on our server for at most 30 days, your route never goes on-chain, and we don’t sell data or show ads.`,
   sections: [
     {
@@ -20,11 +20,11 @@ export const privacyPolicyContent: LegalPageContent = {
             'Your precise location, only during a run: from the moment you tap START until you tap STOP, with the app open or the screen locked. Each GPS point has a time, accuracy and speed. The app never reads your location outside a run.',
             'Your runs: when each started and finished, distance, active minutes, whether it passed the fair-play checks, and the STRIDE it earned.',
             'Sign-in sessions: a hashed token that keeps you signed in, and when it expires.',
-            'On the website, if you join the waitlist: your email, the phone you said you use (optional), and which link brought you.',
+            'On the website, if you join the waitlist: your email and which link brought you. Earlier sign-ups could also say which phone they use.',
             'If you joined through a friend’s invite link, which invite brought you, so your friend’s invite can count. Your own invite code is made from your email, so it’s the same every time.',
             'Whether and when you confirmed your email, and how: with a 6-digit code, or with Google.',
             'If you continue with Google, Google tells us your email address and that Google has checked it. We keep only the email: never your name, photo or Google account. Google sees that you signed in to StrideMon.',
-            'Your invites page keeps a sign-in token in your own browser for 30 days, so coming back costs no email. “Use a different email” removes it.',
+            'Your own browser remembers that you joined (your email and invite link) and, once your email is checked, keeps a sign-in token for 30 days, so coming back shows your invites without another email or Google. “Change” and “Use a different email” remove them.',
             'On the website: anonymous page-view counts from Vercel Analytics, with no cookies.',
             'On the website’s Founding Pass page, the passes you heart are saved in your own browser only. They never reach us.',
             'If you mint a Founding Pass on the website: your email, which you check with a 6-digit code, and your wallet address, from a free sign-in signature. The mint record keeps them together.',

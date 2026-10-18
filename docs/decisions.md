@@ -791,6 +791,8 @@ Made 2026-10-06, after Phase 8.8's first build.
   is 30 a minute, sign-ups are unique by their folded `canonicalEmail` (not the typed email), the
   answer carries the invite link, and the promise becomes "a code only when you ask, and one email
   when the waitlist window opens". CORS covers every `/v1/waitlist/*` route.
+- **Changed in part (2026-10-19):** by D-059, the form stops asking for the phone platform. The
+  API still accepts it, and older sign-ups keep theirs.
 
 ## D-038 — The reward token is renamed SOLE → STRIDE
 
@@ -1697,6 +1699,10 @@ it on X.
   Copy, WhatsApp, Telegram, X and the phone's share sheet (each link with its own `source`), the
   early hour's line, and the confirmed-friends count once the email is checked. The one-email
   promise becomes D-056's. Still the same card for a new and a repeat email.
+- **Changed in part (2026-10-19):** by D-059, the card loses the shoes, Head start, the promise and
+  the Heart your favourites and See your invites buttons, and Use a different email becomes
+  **Change** beside the email. The share image keeps its shoes. The browser now remembers a
+  sign-up, so coming back shows the card instead of the form.
 
 ## D-056 — The waitlist's invite loop: a link per sign-up, confirmed friends, one sign-up per inbox
 
@@ -1776,6 +1782,8 @@ are D-057.
   invite secret is one more thing that must never change mid-campaign.
 - **Revisit when:** partner spots are decided (plan §8.6), junk sign-ups get past Turnstile, the
   email provider changes after 11-03, or the waitlist window opens (the links stop mattering).
+- **Changed in part (2026-10-19):** by D-059, the waitlist form reads the stored invites token
+  too, so someone coming back to it sees their card and count without checking their email again.
 
 ## D-057 — Checking an email with Google, and a daily budget for code emails
 
@@ -1870,3 +1878,67 @@ Made 2026-10-18 in Part 0 of the referral build. It's built in Part 4, before ea
   §15 (one group goes first, though nobody goes later than before).
 - **Revisit when:** Part 4 builds it, partner spots are decided (plan §8.6), or Part 10 moves the
   window.
+
+## D-059 — The waitlist, simplified and remembered
+
+Made 2026-10-19. Yash asked for a waitlist simple enough that a visitor doesn't have to think,
+approved the before-and-after review the same day, and asked that a Google join be remembered in
+the same browser, that the share buttons show each app's own icon, and that the YouTube channel be
+linked.
+
+- **Decision:**
+  1. **One job per screen.** The form gets an email on the list: Continue with Google first, the
+     email box second. The joined card asks you to share your link. `/waitlist/invites` shows
+     where you stand: the count first, then the rule and the link. In the early hour the news,
+     the reminder and the night's steps come first, and sharing moves to the bottom.
+  2. **The form.**
+     - No phone question (D-037's optional platform). The API still accepts it.
+     - A plain "or" between Google and the email box, which keeps a label for screen readers.
+     - The promise keeps D-056's sentence and "nothing is for sale", with a Privacy link in place
+       of "Ask and we'll delete your email". The STRIDE line goes: the form shows no amount, and
+       the footer says it.
+     - The section's intro says what and when. The early hour waits until after joining, where
+       someone can act on it, and "Follow along on X" goes (the header has X).
+  3. **The joined card.**
+     - The ticket keeps the Founding Pass card's look, without the shoes or Head start: Joined,
+       "You're on the list.", the email with **Change** (it replaces Use a different email), and
+       when the window opens.
+     - Under it, one invite block: "Open your window an hour early", one paragraph (the rule, the
+       250 cap and "the waitlist doesn't promise a pass", D-056 point 9), the link in a field with
+       Copy, then the share icons. The count shows once the email is checked.
+     - The card scrolls into view after joining, so the link is on screen.
+  4. **Confirm only when it counts.** After an email join, "Confirm your email" shows only to
+     someone who joined through a friend's link: the code is what makes them count for that
+     friend (D-056 point 5). Everyone else gets a quiet link to their invites page. The rules'
+     details sit behind "How invites count" (`/help#invites`).
+  5. **Gone from the card:** the promise (the form said it a moment before), Heart your favourites
+     (wherever the form is, the passes are on the same page), the See your invites pill, "No
+     confirmed friends yet", "Friends who confirm before … count" (that's the early hour's start,
+     said in help) and the separate no-promise line (now in the rule).
+  6. **Share icons in each app's own colours.** WhatsApp (green), Telegram (blue), X (black) and
+     More (the phone's share sheet, muted): a 44 px circle each, with the name under it, wherever
+     the site shares (the waitlist, a pass's details and after a mint). Each link keeps its own
+     `source` (D-056). The two app greens and blues are the only colours outside the site's
+     palette, because people find these apps by colour. The glyphs are Simple Icons' (CC0).
+  7. **The browser remembers a sign-up.** Joining saves the email, the invite link and whether it
+     came through a friend's link in `localStorage` (`stridemon:waitlist-joined`), beside the
+     30-day invites token that a Google join or a code already saved (D-056 point 6). Coming back
+     to any page with the form shows the joined card, with the live count while the token lasts
+     and without it otherwise: no Google tap and no code. A token for another email wins, since
+     it was checked. **Change** and Use a different email forget both. Nothing new reaches the
+     API.
+  8. **YouTube.** The channel, `youtube.com/@stridemon`, joins X in the header (from tablet width:
+     a phone's header has room for one icon), in the footer and in the structured data's
+     `sameAs`.
+- **Why:** on a phone the joined card was 1,400 px tall, with nine actions and three dark
+  buttons, and the invite link sat a screen and a half below "You're on the list." Pre-launch
+  pages that grew fast asked for one thing, then showed the invite (Harry's, Robinhood). What
+  shows first reads as important, and people read about a fifth of a page's words (NN/g). A
+  Google join was already kept for 30 days, but only `/waitlist/invites` read it, so someone
+  coming back saw the form again and had to tap Google.
+- **Trade-off:** new sign-ups no longer say which phone they use. Two app colours on a quiet
+  site. On a shared computer, the next person on that browser sees the last sign-up's email and
+  link, as the invites page already showed; Change forgets it. The early hour's fine print now
+  takes a tap.
+- **Revisit when:** the share links' sources show a channel nobody uses, iOS planning needs the
+  phone count, or the waitlist window opens (the form gives way, D-043).

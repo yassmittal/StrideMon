@@ -106,6 +106,9 @@ export const xAccountHandle = '@stridemon'
 export const xAccountUrl = 'https://x.com/stridemon'
 export const xCreatorHandle = '@yash_mittal_dev'
 
+/** The product's YouTube channel (D-059). */
+export const youtubeChannelUrl = 'https://www.youtube.com/@stridemon'
+
 /** X's card fields. A page that sets its own `twitter` metadata spreads these in, or loses them. */
 export const xCardMetadata = {
   card: 'summary_large_image',
@@ -148,6 +151,7 @@ export const navigationLinks: readonly NavigationLink[] = [
 export const headerContent = {
   followLabel: 'Follow',
   followAccessibleLabel: `Follow StrideMon on X (${xAccountHandle})`,
+  youtubeAccessibleLabel: 'StrideMon on YouTube',
   waitlistLabel: 'Join waitlist',
 } as const
 
@@ -155,6 +159,7 @@ export const footerContent = {
   builtOnLine: 'Built on Monad testnet for a hackathon.',
   noValueLine: 'STRIDE has no monetary value.',
   githubLabel: 'GitHub',
+  youtubeLabel: 'YouTube',
   foundingPassLabel: 'Founding Pass',
   helpLabel: 'Help',
   privacyPolicyLabel: 'Privacy',

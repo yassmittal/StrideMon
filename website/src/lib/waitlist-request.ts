@@ -5,11 +5,8 @@ import { waitlistApiUrl, waitlistApiUrls } from '@/content/site'
 import { type ApiResult, requestApiJson } from './api-request'
 import { isRecord } from './browser-storage'
 
-export type WaitlistPhonePlatform = 'android' | 'ios'
-
 export type WaitlistSignupRequest = {
   email: string
-  phonePlatform: WaitlistPhonePlatform | null
   source: string | null
   /** The friend's code this visitor arrived with, if any (`?ref=`). */
   inviteCode: string | null
@@ -62,7 +59,6 @@ export function joinWaitlist(request: WaitlistSignupRequest): Promise<ApiResult<
     body: {
       email: request.email.trim(),
       turnstileToken: request.turnstileToken,
-      ...(request.phonePlatform === null ? {} : { phonePlatform: request.phonePlatform }),
       ...(request.source === null ? {} : { source: request.source }),
       ...(request.inviteCode === null ? {} : { inviteCode: request.inviteCode }),
       ...(request.emailProof === null ? {} : { emailProof: request.emailProof }),

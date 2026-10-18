@@ -1,20 +1,20 @@
 'use client'
 
-import { type ReactNode, type Ref, useState } from 'react'
-import { passSectionIds, plannedPassScheduleTimes } from '@/content/founding-pass'
-import { passGalleryPath, waitlistInvitesPath } from '@/content/site'
+import { type Ref, useState } from 'react'
+import { plannedPassScheduleTimes } from '@/content/founding-pass'
+import { waitlistInvitesPath } from '@/content/site'
 import type { WaitlistProblemKey } from '@/content/waitlist'
-import { waitlistEmailCheckContent, waitlistJoinedContent } from '@/content/waitlist'
+import { inviteContent, waitlistEmailCheckContent, waitlistJoinedContent } from '@/content/waitlist'
 import { readProblemCode } from '@/lib/api-request'
 import type { EmailProof } from '@/lib/founding-pass/pass-api'
 import { saveInvitesSession } from '@/lib/waitlist-invites'
 import { startWaitlistInvitesSession, type WaitlistInvites } from '@/lib/waitlist-request'
 import { LocalDateTime } from '../founding-pass/local-date-time'
-import { InvitePanel } from '../waitlist/invite-panel'
+import { InvitePanel, InvitesHelpLink } from '../waitlist/invite-panel'
 import { WaitlistEmailCodeCheck } from '../waitlist/waitlist-email-code-check'
 import { readWaitlistProblemKey, WaitlistProblemNote } from '../waitlist/waitlist-problem-note'
+import { ArrowIcon } from './arrow-icon'
 import { CrossMarks } from './cross-marks'
-import { buildPillClassName, PillContent } from './pill-button'
 
 type WaitlistJoinedCardProps = {
   /** The email as it was sent (or as Google gave it), so a typo shows. */
@@ -22,30 +22,31 @@ type WaitlistJoinedCardProps = {
   inviteUrl: string
   /** Shown once the email is checked (D-056: progress only to its owner). */
   invites: WaitlistInvites | null
+  /** Joined through a friend's link: until the email is confirmed, the card offers the code. */
+  isJoinedThroughFriend: boolean
   onInvitesReady: (invites: WaitlistInvites) => void
-  /** The shoes, drawn by the server (`WaitlistSection`). */
-  showcase: ReactNode
   headingRef: Ref<HTMLParagraphElement>
-  onUseAnotherEmail: () => void
+  onChangeEmail: () => void
 }
 
 /**
- * What replaces the form after joining (D-055, D-056): a ticket in the Founding Pass card's look,
- * then the invite link with its share row, the early hour, and either the confirmed friends or
- * "Confirm your email". A new and a repeat email see the same card (D-037).
+ * What replaces the form after joining, and when coming back (D-055, D-059): a ticket in the
+ * Founding Pass card's look, then the invites. Its one job is sharing the link. A new and a repeat
+ * email see the same card (D-037).
  */
 export function WaitlistJoinedCard({
   email,
   inviteUrl,
   invites,
+  isJoinedThroughFriend,
   onInvitesReady,
-  showcase,
   headingRef,
-  onUseAnotherEmail,
+  onChangeEmail,
 }: WaitlistJoinedCardProps) {
+  const isConfirmForFriendShown = invites === null && isJoinedThroughFriend
   return (
     <div className="waitlist-joined flex flex-col gap-6">
-      <div className="relative flex flex-col gap-4 rounded-panel border border-hairline bg-page px-6 pt-6 pb-7 md:px-7">
+      <div className="relative flex flex-col gap-3.5 rounded-panel border border-hairline bg-page px-6 pt-6 pb-[26px] md:px-7">
         <CrossMarks insetClassName="inset-2" />
         <div className="flex items-center justify-between border-b border-hairline pb-3 font-mono text-xs leading-[1.2] tracking-[0.08em] uppercase">
           <span>{waitlistJoinedContent.ticketLabel}</span>
@@ -54,75 +55,62 @@ export function WaitlistJoinedCard({
             {waitlistJoinedContent.ticketStatus}
           </span>
         </div>
-        {showcase}
-        <div className="flex flex-col gap-2 border-t border-hairline pt-4">
-          <p
-            ref={headingRef}
-            tabIndex={-1}
-            className="text-[clamp(1.625rem,3vw,2.25rem)] leading-[1.05] tracking-[-0.01em] outline-none"
+        <p
+          ref={headingRef}
+          tabIndex={-1}
+          className="text-[clamp(1.625rem,3vw,2.25rem)] leading-[1.05] tracking-[-0.01em] outline-none"
+        >
+          {waitlistJoinedContent.heading}
+        </p>
+        <p className="flex flex-wrap items-center gap-x-3 text-sm leading-[1.4]">
+          <span className="font-mono break-all text-ink-secondary-small">{email}</span>
+          <button
+            type="button"
+            onClick={onChangeEmail}
+            aria-label={waitlistJoinedContent.changeEmailAccessibleLabel}
+            className="inline-flex min-h-11 items-center underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:decoration-current"
           >
-            {waitlistJoinedContent.heading}
+            {waitlistJoinedContent.changeEmailLabel}
+          </button>
+        </p>
+        <div className="flex flex-col gap-1.5 border-t border-hairline pt-3.5 font-mono">
+          <p className="text-label tracking-[0.08em] text-ink-secondary-small uppercase">
+            {waitlistJoinedContent.windowLabel}
           </p>
-          <p className="font-mono text-sm leading-[1.4] break-all text-ink-secondary-small">
-            {email}
+          <p className="text-sm leading-[1.3]">
+            <LocalDateTime isoTimestamp={plannedPassScheduleTimes.waitlistWindowStartsAt} />
           </p>
         </div>
-        <dl className="grid grid-cols-2 gap-4 border-t border-hairline pt-4 font-mono">
-          <div className="flex flex-col gap-1.5">
-            <dt className="text-label tracking-[0.08em] text-ink-secondary-small uppercase">
-              {waitlistJoinedContent.windowLabel}
-            </dt>
-            <dd className="text-sm leading-[1.3]">
-              <LocalDateTime isoTimestamp={plannedPassScheduleTimes.waitlistWindowStartsAt} />
-            </dd>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <dt className="text-label tracking-[0.08em] text-ink-secondary-small uppercase">
-              {waitlistJoinedContent.headStartLabel}
-            </dt>
-            <dd className="text-sm leading-[1.3]">{waitlistJoinedContent.headStartValue}</dd>
-          </div>
-        </dl>
       </div>
+
+      {isConfirmForFriendShown ? (
+        <ConfirmForFriendBlock email={email} onInvitesReady={onInvitesReady} />
+      ) : null}
 
       <InvitePanel inviteUrl={inviteUrl} invites={invites} />
 
-      {invites === null ? (
-        <ConfirmEmailBlock email={email} onInvitesReady={onInvitesReady} />
-      ) : null}
-
-      <div className="flex flex-col items-start gap-4">
-        <p className="text-sm leading-[1.4] text-ink-secondary-small">
-          {waitlistJoinedContent.promise}
-        </p>
-        <div className="flex flex-wrap gap-2.5">
-          <a href={waitlistInvitesPath} className={buildPillClassName('primary', 'regular')}>
-            <PillContent label={waitlistJoinedContent.seeInvitesLabel} />
-          </a>
+      <div className="flex flex-wrap items-center gap-x-5">
+        {invites === null && !isJoinedThroughFriend ? (
           <a
-            href={`${passGalleryPath}#${passSectionIds.gallery}`}
-            className={buildPillClassName('secondary', 'regular')}
+            href={waitlistInvitesPath}
+            className="group inline-flex min-h-11 items-center gap-2 text-label font-medium tracking-[0.08em] uppercase underline decoration-hairline underline-offset-4"
           >
-            <PillContent label={waitlistJoinedContent.favouritesLabel} />
+            {inviteContent.invitesPageLabel}
+            <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
           </a>
-        </div>
-        <button
-          type="button"
-          onClick={onUseAnotherEmail}
-          className="min-h-11 text-sm leading-[1.4] text-ink-secondary-small underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:text-ink hover:decoration-current"
-        >
-          {waitlistJoinedContent.useAnotherEmailLabel}
-        </button>
+        ) : null}
+        <InvitesHelpLink />
       </div>
     </div>
   )
 }
 
 /**
- * After an email join: an optional 6-digit code. It shows the visitor's invites, and makes the
- * invite of whoever sent them count. Skipping it never blocks anything.
+ * After an email join through a friend's link: the optional 6-digit code that makes this sign-up
+ * count for that friend (D-056 point 5), and shows its own invites. Skipping it never blocks
+ * anything.
  */
-function ConfirmEmailBlock({
+function ConfirmForFriendBlock({
   email,
   onInvitesReady,
 }: {
@@ -150,9 +138,9 @@ function ConfirmEmailBlock({
 
   return (
     <div className="flex flex-col gap-3 rounded-panel bg-page p-5">
-      <p className="text-lg leading-[1.25]">{waitlistEmailCheckContent.confirmHeading}</p>
+      <p className="text-lg leading-[1.25]">{waitlistEmailCheckContent.confirmForFriendHeading}</p>
       <p className="text-sm leading-[1.45] text-ink-secondary-small">
-        {waitlistEmailCheckContent.confirmText}
+        {waitlistEmailCheckContent.confirmForFriendText}
       </p>
       <WaitlistEmailCodeCheck
         fixedEmail={email}

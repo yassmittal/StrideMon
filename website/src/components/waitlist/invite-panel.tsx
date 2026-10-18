@@ -3,17 +3,12 @@
 import { useState } from 'react'
 import { passSectionIds, plannedEarlyHourStartsAt } from '@/content/founding-pass'
 import { passGalleryPath, siteUrl, waitlistPagePath } from '@/content/site'
-import {
-  inviteContent,
-  inviteShareText,
-  waitlistNoPromiseLine,
-  waitlistShareText,
-} from '@/content/waitlist'
+import { inviteContent, inviteShareText, waitlistShareText } from '@/content/waitlist'
 import { buildGoogleCalendarUrl, buildIcsDataUrl } from '@/lib/calendar-reminder'
 import { readInviteCodeFromUrl } from '@/lib/waitlist-invites'
 import type { WaitlistInvites } from '@/lib/waitlist-request'
 import { LocalDateTime } from '../founding-pass/local-date-time'
-import { buildPillClassName, PillContent } from '../ui/pill-button'
+import { HelpTopicLink } from '../ui/help-topic-link'
 import { ShareLinks } from '../ui/share-links'
 
 type InvitePanelProps = {
@@ -22,61 +17,20 @@ type InvitePanelProps = {
   invites: WaitlistInvites | null
 }
 
+const reminderLinkClassName =
+  'inline-flex h-10 items-center rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard active:bg-surface'
+
 /**
- * A sign-up's invite link with Copy, the share row, the early hour's rule, and, once the email
- * is checked, how many friends have confirmed (D-056). Quiet: no badges, no countdown pressure.
+ * A sign-up's invites (D-056, D-059), the same on the joined card and on /waitlist/invites: the
+ * count once the email is checked, then the early hour's rule, the link and the share links. With
+ * the early hour, its news, a reminder and the night's steps come first, and sharing moves last.
+ * Quiet: no badges, no countdown pressure.
  */
 export function InvitePanel({ inviteUrl, invites }: InvitePanelProps) {
-  const inviteCode = readInviteCodeFromUrl(inviteUrl)
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-          {inviteContent.linkLabel}
-        </p>
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="font-mono text-sm leading-[1.4] break-all">{inviteUrl}</span>
-          <CopyInviteLinkButton inviteUrl={inviteUrl} />
-        </div>
-      </div>
-      <ShareLinks
-        path={waitlistPagePath}
-        inviteCode={inviteCode}
-        messageText={inviteShareText}
-        xPostText={waitlistShareText}
-      />
-      {invites === null ? <EarlyHourRule /> : <InviteProgress invites={invites} />}
-      <p className="text-sm leading-[1.45] text-ink-secondary-small">{waitlistNoPromiseLine}</p>
-    </div>
-  )
-}
-
-function EarlyHourRule() {
-  return (
-    <p className="text-base leading-[1.45]">
-      {inviteContent.earlyHourPrefix} <LocalDateTime isoTimestamp={plannedEarlyHourStartsAt} />
-      {inviteContent.earlyHourSuffix}
-    </p>
-  )
-}
-
-/** "1 of 3 friends confirmed", and once there are 3, the early hour and what to do on the night. */
-function InviteProgress({ invites }: { invites: WaitlistInvites }) {
-  const progress = (
-    <div className="flex flex-col gap-2">
-      <p className="font-mono text-sm leading-[1.4] tracking-[0.04em] uppercase">
-        {inviteContent.buildProgressLine(invites.confirmedFriendCount, invites.requiredFriendCount)}
-      </p>
-      <ProgressMarks
-        filledCount={invites.confirmedFriendCount}
-        totalCount={invites.requiredFriendCount}
-      />
-    </div>
-  )
-  if (invites.hasEarlyHour) {
+  if (invites?.hasEarlyHour) {
     return (
-      <div className="flex flex-col gap-4">
-        {progress}
+      <div className="flex flex-col gap-5">
+        <InviteProgress invites={invites} />
         <div className="flex flex-col gap-1.5 rounded-panel bg-surface-muted p-4">
           <p className="text-lg leading-[1.25]">{inviteContent.hasEarlyHourHeading}</p>
           <p className="text-sm leading-[1.45] text-ink-secondary-small">
@@ -85,32 +39,92 @@ function InviteProgress({ invites }: { invites: WaitlistInvites }) {
             {inviteContent.hasEarlyHourSuffix}
           </p>
         </div>
+        <EarlyHourReminder />
         <EarlyHourNight />
-        <p className="text-sm leading-[1.45] text-ink-secondary-small">
-          {inviteContent.keepSharingText}
-        </p>
+        <div className="flex flex-col gap-4 border-t border-hairline pt-4">
+          <p className="text-sm leading-[1.45] text-ink-secondary-small">
+            {inviteContent.keepSharingText}
+          </p>
+          <InviteShare inviteUrl={inviteUrl} />
+        </div>
       </div>
     )
   }
   return (
-    <div className="flex flex-col gap-2">
-      {progress}
-      {invites.confirmedFriendCount === 0 ? (
+    <div className="flex flex-col gap-4">
+      {invites === null ? null : <InviteProgress invites={invites} />}
+      <div className="flex flex-col gap-1.5">
+        <p className="text-lg leading-[1.25]">{inviteContent.earlyHourHeading}</p>
         <p className="text-sm leading-[1.45] text-ink-secondary-small">
-          {inviteContent.noFriendsYet}
+          {inviteContent.earlyHourRulePrefix}{' '}
+          <LocalDateTime isoTimestamp={plannedEarlyHourStartsAt} />
+          {inviteContent.earlyHourRuleSuffix}
         </p>
-      ) : null}
-      <EarlyHourRule />
-      <p className="text-sm leading-[1.45] text-ink-secondary-small">
-        {inviteContent.countsUntilPrefix} <LocalDateTime isoTimestamp={invites.countsUntil} />{' '}
-        {inviteContent.countsUntilSuffix}
-      </p>
+      </div>
+      <InviteShare inviteUrl={inviteUrl} />
     </div>
   )
 }
 
-/** The next step once you have the early hour: what to do, and a reminder with no account. */
-function EarlyHourNight() {
+/** "How invites count": the rules' details, on /help (D-059). */
+export function InvitesHelpLink() {
+  return <HelpTopicLink helpTopicId="invites" label={inviteContent.howInvitesCountLabel} />
+}
+
+/** The link in a field with Copy, then the share links, each carrying the sign-up's code. */
+function InviteShare({ inviteUrl }: { inviteUrl: string }) {
+  const shownUrl = inviteUrl.replace(/^https?:\/\//, '')
+  const queryIndex = shownUrl.indexOf('?')
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex min-h-[52px] items-center justify-between gap-3 rounded-[26px] border border-hairline bg-page py-1.5 pr-1.5 pl-5">
+        <p className="min-w-0 font-mono text-sm leading-[1.4] break-words">
+          <span className="sr-only">{inviteContent.linkLabel}: </span>
+          {queryIndex === -1 ? (
+            shownUrl
+          ) : (
+            // Breaks before `?ref=` on a phone, so the code stays in one piece.
+            <>
+              {shownUrl.slice(0, queryIndex)}
+              <wbr />
+              <span className="inline-block">{shownUrl.slice(queryIndex)}</span>
+            </>
+          )}
+        </p>
+        <CopyInviteLinkButton inviteUrl={inviteUrl} />
+      </div>
+      <ShareLinks
+        path={waitlistPagePath}
+        inviteCode={readInviteCodeFromUrl(inviteUrl)}
+        messageText={inviteShareText}
+        xPostText={waitlistShareText}
+      />
+    </div>
+  )
+}
+
+/** "1 of 3 friends confirmed", with a mark per friend. */
+function InviteProgress({ invites }: { invites: WaitlistInvites }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="font-mono text-sm leading-[1.4] tracking-[0.04em] uppercase">
+        {inviteContent.buildProgressLine(invites.confirmedFriendCount, invites.requiredFriendCount)}
+      </p>
+      <div aria-hidden="true" className="flex gap-1.5">
+        {Array.from({ length: invites.requiredFriendCount }, (_, markIndex) => (
+          <span
+            // biome-ignore lint/suspicious/noArrayIndexKey: a fixed row of marks, never reordered.
+            key={markIndex}
+            className={`h-1 w-10 rounded-full ${markIndex < invites.confirmedFriendCount ? 'bg-ink' : 'bg-hairline'}`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** A reminder for the early hour with no account: Google Calendar, or a file for the rest. */
+function EarlyHourReminder() {
   const reminder = {
     title: inviteContent.reminderTitle,
     details: inviteContent.reminderDetails,
@@ -119,53 +133,53 @@ function EarlyHourNight() {
     durationMinutes: 60,
   }
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-        {inviteContent.nightHeading}
+        {inviteContent.reminderLabel}
       </p>
-      <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-sm leading-[1.45]">
-        {inviteContent.nightSteps.map((step) => (
-          <li key={step}>{step}</li>
-        ))}
-      </ol>
-      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-[1.45]">
-        <span className="text-ink-secondary-small">{inviteContent.reminderPrompt}</span>
+      <div className="flex flex-wrap gap-2">
         <a
           href={buildGoogleCalendarUrl(reminder)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center underline decoration-hairline underline-offset-4"
+          aria-label={`${inviteContent.googleCalendarLabel} ${inviteContent.opensInNewTab}`}
+          className={reminderLinkClassName}
         >
           {inviteContent.googleCalendarLabel}
         </a>
         <a
           href={buildIcsDataUrl(reminder)}
           download={inviteContent.icsFileName}
-          className="inline-flex min-h-11 items-center underline decoration-hairline underline-offset-4"
+          className={reminderLinkClassName}
         >
           {inviteContent.icsLabel}
         </a>
-      </p>
-      <a
-        href={`${passGalleryPath}#${passSectionIds.gallery}`}
-        className={buildPillClassName('secondary', 'regular', 'self-start')}
-      >
-        <PillContent label={inviteContent.favouritesLabel} />
-      </a>
+      </div>
     </div>
   )
 }
 
-function ProgressMarks({ filledCount, totalCount }: { filledCount: number; totalCount: number }) {
+/** What to do on the night, once you have the early hour. */
+function EarlyHourNight() {
   return (
-    <div aria-hidden="true" className="flex gap-1.5">
-      {Array.from({ length: totalCount }, (_, markIndex) => (
-        <span
-          // biome-ignore lint/suspicious/noArrayIndexKey: a fixed row of marks, never reordered.
-          key={markIndex}
-          className={`h-1 w-10 rounded-full ${markIndex < filledCount ? 'bg-ink' : 'bg-hairline'}`}
-        />
-      ))}
+    <div className="flex flex-col gap-2.5">
+      <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
+        {inviteContent.nightHeading}
+      </p>
+      <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-sm leading-[1.45]">
+        <li>
+          <a
+            href={`${passGalleryPath}#${passSectionIds.gallery}`}
+            className="underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:decoration-current"
+          >
+            {inviteContent.nightFavouritesLinkLabel}
+          </a>
+          {inviteContent.nightFavouritesSuffix}
+        </li>
+        {inviteContent.nightSteps.map((step) => (
+          <li key={step}>{step}</li>
+        ))}
+      </ol>
     </div>
   )
 }
@@ -176,7 +190,7 @@ function CopyInviteLinkButton({ inviteUrl }: { inviteUrl: string }) {
 
   async function copyInviteLink() {
     try {
-      // The copied link says where it came from, like the share buttons' links.
+      // The copied link says where it came from, like the share links.
       const copiedUrl = new URL(inviteUrl)
       if (inviteCode !== null) copiedUrl.searchParams.set('source', 'invite-copy')
       await navigator.clipboard.writeText(copiedUrl.toString())
@@ -190,7 +204,7 @@ function CopyInviteLinkButton({ inviteUrl }: { inviteUrl: string }) {
     <button
       type="button"
       onClick={() => void copyInviteLink()}
-      className="inline-flex h-10 items-center rounded-full bg-surface-muted px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface active:bg-surface"
+      className="inline-flex h-10 shrink-0 items-center rounded-full bg-surface px-4 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard hover:bg-surface-muted active:bg-surface-muted"
     >
       <span aria-live="polite">
         {isCopied ? inviteContent.copiedLabel : inviteContent.copyLabel}

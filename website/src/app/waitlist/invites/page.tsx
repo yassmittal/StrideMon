@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
+import { RevealObserver } from '@/components/ui/reveal-observer'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { WaitlistInvitesView } from '@/components/waitlist/waitlist-invites-view'
 import { waitlistInvitesPath, waitlistPagePath } from '@/content/site'
@@ -37,12 +38,13 @@ export default function WaitlistInvitesPage() {
               headingLevel="h1"
             />
           </div>
-          <div className="relative self-start rounded-panel bg-surface p-6 md:col-span-6 md:col-start-7 md:p-[30px]">
+          <div className="relative min-w-0 self-start rounded-panel bg-surface p-6 md:col-span-6 md:col-start-7 md:p-[30px]">
             <WaitlistInvitesView />
           </div>
         </section>
       </main>
       <SiteFooter />
+      <RevealObserver />
     </>
   )
 }

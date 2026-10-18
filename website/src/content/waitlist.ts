@@ -1,35 +1,31 @@
 import type { HelpTopicId } from '@/content/help'
-import type { WaitlistPhonePlatform } from '@/lib/waitlist-request'
 import { earlyHourRules } from './founding-pass'
 import { siteUrl, waitlistPagePath, xAccountHandle } from './site'
 
-// The waitlist (D-037) and its invite loop (D-056). Email only, never a wallet. Its promise
-// (D-056): a code only when you ask for one, and one email when the waitlist window opens.
-// Words (social/voice.md): invite, confirmed friends, the early hour. Never whitelist, WL,
-// allowlist, points, rank, or anything about value.
-
-const waitlistPromise =
-  'We email you a code only when you ask for one, and once when the waitlist window opens. Nothing else.'
-
-/** Said plainly wherever the early hour is (D-056 point 9). */
-export const waitlistNoPromiseLine = `The waitlist doesn’t promise a pass: 1,000 passes, first come, first served, and at most ${earlyHourRules.mintLimit} in the early hour.`
+// The waitlist (D-037) and its invite loop (D-056), simplified in D-059: one job per screen. Email
+// only, never a wallet. Its promise (D-056): a code only when you ask for one, and one email when
+// the waitlist window opens. Words (social/voice.md): invite, confirmed friends, the early hour.
+// Never whitelist, WL, allowlist, points, rank, unlock, or anything about value.
 
 export const waitlistContent = {
   metaLabels: ['Waitlist', 'Founding Pass'],
   heading: 'Join the waitlist to mint 48 hours before everyone else.',
+  /** What and when. The early hour waits until after joining (D-059). */
   intro:
-    'The Founding Pass mint opens with a 48-hour waitlist window, only for people on the waitlist. Bring 3 friends and yours opens an hour earlier.',
-  followPrompt: 'Or follow along on X:',
+    '1,000 free Founding Passes, each a different Sneaker design. The waitlist mints first, from 28 November.',
   googleInAppBrowserNote:
     'Google sign-in doesn’t work inside this app. Use your email, or open this page in Chrome or Safari.',
-  orUseEmailLabel: 'Or use your email',
+  orLabel: 'or',
   emailLabel: 'Email',
   emailPlaceholder: 'you@example.com',
-  phonePlatformLabel: 'Your phone (optional)',
   submitLabel: 'Join the waitlist',
   submittingLabel: 'Joining',
   googleJoiningLabel: 'Joining with Google',
-  promise: `${waitlistPromise} Nothing is for sale. STRIDE has no monetary value. Ask and we’ll delete your email.`,
+  /** While a sign-up saved in this browser loads its invites (D-059). */
+  restoringLabel: 'Loading your invites',
+  promise:
+    'We email you a code only when you ask for one, and once when the waitlist window opens. Nothing else, and nothing is for sale.',
+  privacyLabel: 'Privacy',
   /** From 1,000 sign-ups only (D-056): the waitlist is then bigger than the collection. */
   buildCountLine: (signupCount: number) =>
     `${signupCount.toLocaleString('en-US')} people on the waitlist for 1,000 passes`,
@@ -44,67 +40,66 @@ export const waitlistContent = {
   closedGalleryLabel: 'See the passes',
 } as const
 
-/** The card that replaces the form after joining (D-055, D-056). New and repeat emails both see it. */
+/** The ticket that replaces the form after joining, and when coming back (D-055, D-059). */
 export const waitlistJoinedContent = {
   ticketLabel: 'Waitlist',
   ticketStatus: 'Joined',
   heading: 'You’re on the list.',
   windowLabel: 'Window opens',
-  headStartLabel: 'Head start',
-  headStartValue: '48 hours',
-  promise: waitlistPromise,
-  favouritesLabel: 'Heart your favourites',
-  useAnotherEmailLabel: 'Use a different email',
-  seeInvitesLabel: 'See your invites',
+  changeEmailLabel: 'Change',
+  changeEmailAccessibleLabel: 'Change your email',
 } as const
 
-/** The invite link, the share buttons and the early hour, on the card and on /waitlist/invites. */
+/** The invite link, the share links and the early hour, on the card and on /waitlist/invites. */
 export const inviteContent = {
+  earlyHourHeading: 'Open your window an hour early',
+  /** D-056 point 9: the rule, the cap and that the waitlist promises no pass, in one paragraph. */
+  earlyHourRulePrefix: `Bring ${earlyHourRules.requiredFriendCount} friends who join with your link and confirm their email. Your window then opens`,
+  earlyHourRuleSuffix: `, while the ${earlyHourRules.mintLimit} early passes last. The waitlist doesn’t promise a pass.`,
   linkLabel: 'Your invite link',
   copyLabel: 'Copy',
   copiedLabel: 'Copied',
-  shareLabel: 'Share it',
   whatsAppLabel: 'WhatsApp',
   telegramLabel: 'Telegram',
-  postOnXLabel: 'Post on X',
+  xLabel: 'X',
   shareSheetLabel: 'More',
+  shareOnPrefix: 'Share on',
+  postOnXLabel: 'Post on X',
+  shareSheetAccessibleLabel: 'Share with another app',
   opensInNewTab: '(opens in a new tab)',
-  earlyHourPrefix: `Bring ${earlyHourRules.requiredFriendCount} friends who confirm their email, and your window opens`,
-  earlyHourSuffix: `, an hour early. At most ${earlyHourRules.mintLimit} passes go in that hour.`,
-  countsUntilPrefix: 'Friends who confirm before',
-  countsUntilSuffix: 'count.',
   buildProgressLine: (confirmedFriendCount: number, requiredFriendCount: number) =>
     confirmedFriendCount > requiredFriendCount
       ? `${confirmedFriendCount} friends confirmed`
       : `${confirmedFriendCount} of ${requiredFriendCount} friends confirmed`,
   hasEarlyHourHeading: 'You have the early hour.',
   hasEarlyHourPrefix: 'Your window opens',
-  hasEarlyHourSuffix: `, an hour before the rest of the waitlist, for as long as the ${earlyHourRules.mintLimit} early passes last.`,
-  nightHeading: 'On the night',
-  nightSteps: [
-    'Heart the passes you like now, so they’re easy to find.',
-    'A little before your window, open stridemon.xyz/pass and check this same email (Google is one tap).',
-    'Pick a pass and mint. It’s free, with no gas to pay. If you miss the hour, your 48-hour waitlist window still opens an hour later.',
-  ],
-  reminderPrompt: 'Add a reminder:',
+  hasEarlyHourSuffix: `, an hour before the rest of the waitlist, while the ${earlyHourRules.mintLimit} early passes last. It doesn’t promise a pass.`,
+  reminderLabel: 'Add a reminder',
   googleCalendarLabel: 'Google Calendar',
-  icsLabel: 'Apple or Outlook (.ics)',
+  icsLabel: 'Apple or Outlook',
   icsFileName: 'stridemon-early-hour.ics',
   reminderTitle: 'StrideMon: your Founding Pass early hour',
   reminderDetails:
     'Your early hour: mint a free Founding Pass before the rest of the waitlist, while the 250 early passes last. Check the email you joined with at https://stridemon.xyz/pass',
-  favouritesLabel: 'Heart your favourites',
+  nightHeading: 'On the night',
+  nightFavouritesLinkLabel: 'Heart the passes you like',
+  nightFavouritesSuffix: ' now, so they’re easy to find.',
+  nightSteps: [
+    'A little before your window, open stridemon.xyz/pass and check this same email (Google is one tap).',
+    'Pick a pass and mint. It’s free, with no gas to pay. If you miss the hour, your 48-hour waitlist window still opens an hour later.',
+  ],
   keepSharingText:
-    'Keep sharing if you like: friends who join through your link get the waitlist’s 48 hours, and their own link to bring friends.',
-  noFriendsYet:
-    'No confirmed friends yet. A friend counts once they join through your link and confirm their email.',
+    'Keep sharing if you like: friends who join through your link get the 48 hours too.',
+  howInvitesCountLabel: 'How invites count',
+  invitesPageLabel: 'Your invites page',
 } as const
 
 /** "Confirm your email" on the card after an email join, and the check on /waitlist/invites. */
 export const waitlistEmailCheckContent = {
-  confirmHeading: 'Confirm your email to see your invites',
-  confirmText:
-    'We send a 6-digit code. The same code makes your invite count for whoever sent you here. It’s optional.',
+  /** Only after joining through a friend's link: the code makes them count (D-059). */
+  confirmForFriendHeading: 'Confirm your email to count for your friend',
+  confirmForFriendText:
+    'You joined through a friend’s link. We send a 6-digit code, and it takes a minute.',
   sendCodeLabel: 'Send code',
   sendingLabel: 'Sending',
   codeLabel: '6-digit code',
@@ -125,11 +120,8 @@ export const waitlistInvitesPageContent = {
     'Your StrideMon waitlist invite link, how many friends have confirmed, and whether you have the early hour.',
   metaLabels: ['Waitlist', 'Invites'],
   heading: 'Your invites',
-  checkIntro:
-    'Check your email to see your invite link and how many friends have confirmed. Use the email you joined with.',
+  checkIntro: 'Check the email you joined with to see your link and your friends.',
   checkingLabel: 'Loading your invites',
-  emailLabel: 'Email',
-  usingEmailPrefix: 'Showing invites for',
   useAnotherEmailLabel: 'Use a different email',
   notOnListHeading: 'This email isn’t on the waitlist yet.',
   notOnListText: 'Join with it now: your invite link is ready the moment you do.',
@@ -284,14 +276,6 @@ export const waitlistPageContent = {
     { label: 'Head start', value: '48 hours' },
     { label: 'Founding Pass', value: 'Free' },
   ],
-  /** Shoes on the joined card and the share image: four of the six on the landing page. */
+  /** The share image's shoes: four of the six on the landing page. */
   showcaseDesignNumbers: [155, 185, 137, 200],
 } as const
-
-export const waitlistPhonePlatformOptions: readonly {
-  value: WaitlistPhonePlatform
-  label: string
-}[] = [
-  { value: 'android', label: 'Android' },
-  { value: 'ios', label: 'iPhone' },
-]

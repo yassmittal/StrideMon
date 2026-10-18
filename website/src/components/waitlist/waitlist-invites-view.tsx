@@ -2,20 +2,19 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { waitlistPagePath } from '@/content/site'
-import {
-  type WaitlistProblemKey,
-  waitlistContent,
-  waitlistInvitesPageContent,
-} from '@/content/waitlist'
+import { type WaitlistProblemKey, waitlistInvitesPageContent } from '@/content/waitlist'
 import { readProblemCode } from '@/lib/api-request'
 import { checkPassEmailWithGoogle, type EmailProof } from '@/lib/founding-pass/pass-api'
 import {
   forgetInvitesSession,
+  forgetWaitlistSignup,
   readArrivalInviteCode,
   readInviteCodeFromUrl,
   readStoredInvitesSession,
+  readStoredWaitlistSignup,
   saveInvitesSession,
   saveOwnInviteCode,
+  saveWaitlistSignup,
 } from '@/lib/waitlist-invites'
 import {
   joinWaitlist,
@@ -28,7 +27,8 @@ import { MintTextButton } from '../founding-pass/mint-problem-note'
 import { useTurnstileToken } from '../founding-pass/turnstile-check'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { GoogleSignInButton } from './google-sign-in-button'
-import { InvitePanel } from './invite-panel'
+import { InvitePanel, InvitesHelpLink } from './invite-panel'
+import { OrDivider } from './or-divider'
 import { WaitlistEmailCodeCheck } from './waitlist-email-code-check'
 import { readWaitlistProblemKey, WaitlistProblemNote } from './waitlist-problem-note'
 
@@ -45,10 +45,11 @@ type ViewState =
     }
 
 /**
- * `/waitlist/invites` (D-056): a returning visitor's token opens their invites with no email;
- * otherwise they check their email (Google or a code) first. Every state has a next step: the
- * form when not on the list, share when no friends yet, the early hour at 3, Google or tomorrow
- * when codes are used up, and try again (with help) when the API can't be reached.
+ * `/waitlist/invites` (D-056, D-059): a returning visitor's token opens their invites with no
+ * email; otherwise they check their email (Google or a code) first. Every state has a next step:
+ * the form when not on the list, share when no friends yet, the early hour at 3, Google or
+ * tomorrow when codes are used up, and try again (with help) when the API can't be reached. A
+ * sign-up shown here is remembered, so the waitlist form shows its card too.
  */
 export function WaitlistInvitesView() {
   const [viewState, setViewState] = useState<ViewState>({ kind: 'loading' })
@@ -63,6 +64,13 @@ export function WaitlistInvitesView() {
       if (invites.isOnWaitlist) {
         const ownInviteCode = readInviteCodeFromUrl(invites.inviteUrl)
         if (ownInviteCode !== null) saveOwnInviteCode(ownInviteCode)
+        const storedSignup = readStoredWaitlistSignup()
+        saveWaitlistSignup({
+          email,
+          inviteUrl: invites.inviteUrl,
+          isJoinedThroughFriend:
+            storedSignup?.email === email && storedSignup.isJoinedThroughFriend,
+        })
       }
       setViewState({ kind: 'shown', email, invites, emailProof })
     },
@@ -136,7 +144,6 @@ export function WaitlistInvitesView() {
     }
     const result = await joinWaitlist({
       email: emailProof.email,
-      phonePlatform: null,
       source: readWaitlistSource(window.location.search),
       inviteCode: readArrivalInviteCode(),
       emailProof: emailProof.emailProof,
@@ -152,7 +159,7 @@ export function WaitlistInvitesView() {
   }
 
   function switchToDifferentEmail() {
-    forgetInvitesSession()
+    forgetWaitlistSignup()
     setProblemKey(null)
     setViewState({ kind: 'checkEmail' })
   }
@@ -182,14 +189,12 @@ export function WaitlistInvitesView() {
 
   if (viewState.kind === 'checkEmail') {
     return (
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
         <p className="text-base leading-[1.45]">{waitlistInvitesPageContent.checkIntro}</p>
         <GoogleSignInButton
           onGoogleIdToken={(googleIdToken) => void checkWithGoogle(googleIdToken)}
         />
-        <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-          {waitlistContent.orUseEmailLabel}
-        </p>
+        <OrDivider />
         <WaitlistEmailCodeCheck onEmailProof={(emailProof) => void openInvites(emailProof)} />
         {problemNote}
       </div>
@@ -198,16 +203,23 @@ export function WaitlistInvitesView() {
 
   const { email, invites, emailProof } = viewState
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1.5 border-b border-hairline pb-4">
-        <p className="text-sm leading-[1.4] text-ink-secondary-small">
-          {waitlistInvitesPageContent.usingEmailPrefix}
-        </p>
-        <p className="font-mono text-sm leading-[1.4] break-all">{email}</p>
-      </div>
+    <div className="flex flex-col gap-5">
+      <p className="flex flex-wrap items-center gap-x-3 border-b border-hairline pb-2 text-sm leading-[1.4]">
+        <span className="font-mono break-all">{email}</span>
+        <button
+          type="button"
+          onClick={switchToDifferentEmail}
+          className="inline-flex min-h-11 items-center text-ink-secondary-small underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:text-ink hover:decoration-current"
+        >
+          {waitlistInvitesPageContent.useAnotherEmailLabel}
+        </button>
+      </p>
 
       {invites.isOnWaitlist ? (
-        <InvitePanel inviteUrl={invites.inviteUrl} invites={invites} />
+        <>
+          <InvitePanel inviteUrl={invites.inviteUrl} invites={invites} />
+          <InvitesHelpLink />
+        </>
       ) : (
         <div className="flex flex-col gap-3">
           <p className="text-lg leading-[1.25]">{waitlistInvitesPageContent.notOnListHeading}</p>
@@ -248,14 +260,6 @@ export function WaitlistInvitesView() {
       )}
 
       {problemNote}
-
-      <button
-        type="button"
-        onClick={switchToDifferentEmail}
-        className="min-h-11 self-start text-sm leading-[1.4] text-ink-secondary-small underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:text-ink hover:decoration-current"
-      >
-        {waitlistInvitesPageContent.useAnotherEmailLabel}
-      </button>
     </div>
   )
 }

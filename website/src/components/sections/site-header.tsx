@@ -1,7 +1,15 @@
-import { headerContent, navigationLinks, sectionIds, siteName, xAccountUrl } from '@/content/site'
+import {
+  headerContent,
+  navigationLinks,
+  sectionIds,
+  siteName,
+  xAccountUrl,
+  youtubeChannelUrl,
+} from '@/content/site'
 import { BrandMark } from '../ui/brand-mark'
 import { buildPillClassName, PillButton } from '../ui/pill-button'
 import { XLogoIcon } from '../ui/x-logo-icon'
+import { YouTubeLogoIcon } from '../ui/youtube-logo-icon'
 
 type SiteHeaderProps = {
   /** The waitlist pill's target: the landing page's form, or the one on the current page. */
@@ -49,6 +57,20 @@ export function SiteHeader({ waitlistHref = `/#${sectionIds.waitlist}` }: SiteHe
           <span aria-hidden="true" className="max-sm:hidden">
             {headerContent.followLabel}
           </span>
+        </a>
+        {/* From tablet width only: a phone's header has room for one icon (D-059). */}
+        <a
+          href={youtubeChannelUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={headerContent.youtubeAccessibleLabel}
+          className={buildPillClassName(
+            'secondary',
+            'compact',
+            'max-sm:hidden sm:w-10 sm:justify-center sm:px-0',
+          )}
+        >
+          <YouTubeLogoIcon />
         </a>
         <PillButton href={waitlistHref} label={headerContent.waitlistLabel} size="compact" />
       </div>

@@ -206,10 +206,7 @@ export function WaitlistEmailCodeCheck({ fixedEmail, onEmailProof }: WaitlistEma
         >
           {fixedEmail === undefined ? (
             <>
-              <label
-                htmlFor={emailInputId}
-                className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase"
-              >
+              <label htmlFor={emailInputId} className="sr-only">
                 {waitlistContent.emailLabel}
               </label>
               <input

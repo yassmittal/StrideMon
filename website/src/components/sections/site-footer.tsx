@@ -8,9 +8,11 @@ import {
   siteName,
   xAccountHandle,
   xAccountUrl,
+  youtubeChannelUrl,
 } from '@/content/site'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { XLogoIcon } from '../ui/x-logo-icon'
+import { YouTubeLogoIcon } from '../ui/youtube-logo-icon'
 
 const footerLinkClass =
   'group inline-flex min-h-11 items-center gap-2 text-label font-medium tracking-[0.08em] uppercase'
@@ -63,6 +65,18 @@ export function SiteFooter() {
                 >
                   <XLogoIcon />
                   {xAccountHandle}
+                  <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href={youtubeChannelUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={footerLinkClass}
+                >
+                  <YouTubeLogoIcon />
+                  {footerContent.youtubeLabel}
                   <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
                 </a>
               </li>

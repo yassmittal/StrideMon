@@ -6,6 +6,7 @@ import {
   siteName,
   siteUrl,
   xAccountUrl,
+  youtubeChannelUrl,
 } from '@/content/site'
 
 type StructuredDataOptions = {
@@ -49,7 +50,7 @@ export function buildStructuredData({ hasDemoVideo }: StructuredDataOptions) {
       name: siteName,
       url: `${siteUrl}/`,
       logo: `${siteUrl}/apple-icon`,
-      sameAs: [xAccountUrl, githubRepositoryUrl],
+      sameAs: [xAccountUrl, youtubeChannelUrl, githubRepositoryUrl],
     },
     {
       '@context': 'https://schema.org',
@@ -63,7 +64,7 @@ export function buildStructuredData({ hasDemoVideo }: StructuredDataOptions) {
       operatingSystem: 'Android',
       genre: 'Move to earn',
       offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' },
-      sameAs: [xAccountUrl, githubRepositoryUrl],
+      sameAs: [xAccountUrl, youtubeChannelUrl, githubRepositoryUrl],
     },
     {
       '@context': 'https://schema.org',

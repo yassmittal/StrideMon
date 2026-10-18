@@ -1,35 +1,41 @@
 'use client'
 
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
+import { legalPagePaths } from '@/content/site'
 import type { WaitlistProblemKey } from '@/content/waitlist'
-import { waitlistContent, waitlistPhonePlatformOptions } from '@/content/waitlist'
+import { waitlistContent } from '@/content/waitlist'
 import { readProblemCode } from '@/lib/api-request'
 import { checkPassEmailWithGoogle } from '@/lib/founding-pass/pass-api'
 import {
+  forgetInvitesSession,
+  forgetWaitlistSignup,
   readArrivalInviteCode,
   readInviteCodeFromUrl,
+  readStoredInvitesSession,
+  readStoredWaitlistSignup,
+  type StoredWaitlistSignup,
   saveInvitesSession,
   saveOwnInviteCode,
+  saveWaitlistSignup,
 } from '@/lib/waitlist-invites'
 import {
   isLikelyEmail,
   joinWaitlist,
+  readWaitlistInvites,
   readWaitlistSource,
   startWaitlistInvitesSession,
   type WaitlistInvites,
-  type WaitlistPhonePlatform,
 } from '@/lib/waitlist-request'
 import { useTurnstileToken } from '../founding-pass/turnstile-check'
 import { GoogleSignInButton } from '../waitlist/google-sign-in-button'
+import { OrDivider } from '../waitlist/or-divider'
 import { readWaitlistProblemKey, WaitlistProblemNote } from '../waitlist/waitlist-problem-note'
 import { buildPillClassName, PillContent } from './pill-button'
 import { WaitlistJoinedCard } from './waitlist-joined-card'
 
 type FormStatus = 'idle' | 'submitting' | 'googleJoining'
 
-type JoinedSignup = {
-  email: string
-  inviteUrl: string
+type JoinedSignup = StoredWaitlistSignup & {
   /** Known at once after a Google join; after an email join, once the email is confirmed. */
   invites: WaitlistInvites | null
 }
@@ -37,30 +43,28 @@ type JoinedSignup = {
 // The honeypot's field name in the request body. People never see the field; bots fill it in.
 const HONEYPOT_FIELD_NAME = 'website'
 
-type WaitlistFormProps = {
-  /** The joined card's shoes, drawn by the server so this island never ships the design table. */
-  joinedShowcase: ReactNode
-}
-
 /**
- * Joining the waitlist (D-037, D-056): Continue with Google first (it checks the email without
- * sending one), then an email and an optional phone, posted to the StrideMon API with a Turnstile
- * token that stays out of sight unless it needs a tap. On success the form gives way to the joined
- * card (D-055), the same for a new and a repeat email.
+ * Joining the waitlist (D-037, D-056, D-059): Continue with Google first (it checks the email
+ * without sending one), then an email, posted to the StrideMon API with a Turnstile token that
+ * stays out of sight unless it needs a tap. On success the form gives way to the joined card
+ * (D-055), the same for a new and a repeat email. This browser remembers the sign-up, so coming
+ * back shows the card again, with the count while the invites token lasts.
  */
-export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
+export function WaitlistForm() {
   const [email, setEmail] = useState('')
-  const [phonePlatform, setPhonePlatform] = useState<WaitlistPhonePlatform | null>(null)
   const [status, setStatus] = useState<FormStatus>('idle')
   const [problemKey, setProblemKey] = useState<WaitlistProblemKey | null>(null)
   const [joinedSignup, setJoinedSignup] = useState<JoinedSignup | null>(null)
+  const [isRestoring, setIsRestoring] = useState(false)
   // Turnstile starts only once someone begins to join (D-050: browsing never loads it).
   const { turnstileCheck, takeTurnstileToken, armTurnstile } = useTurnstileToken('join-waitlist', {
     isLazy: true,
   })
+  const joinedCardRef = useRef<HTMLDivElement>(null)
   const joinedHeadingRef = useRef<HTMLParagraphElement>(null)
   const emailInputRef = useRef<HTMLInputElement>(null)
   const honeypotInputRef = useRef<HTMLInputElement>(null)
+  const shouldShowJoinedCardRef = useRef(false)
   const shouldFocusEmailRef = useRef(false)
   const fieldId = useId()
   const emailInputId = `${fieldId}-email`
@@ -68,9 +72,56 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
   const promiseId = `${fieldId}-promise`
 
   useEffect(() => {
-    // The form is gone, so keep keyboard focus on what replaced it, and back again.
+    let isCancelled = false
+    // A sign-up from an earlier visit: the card again, with the count if the token still works.
+    async function restoreWaitlistSignup() {
+      const storedSignup = readStoredWaitlistSignup()
+      const storedSession = readStoredInvitesSession(new Date())
+      if (storedSession === null) {
+        if (storedSignup !== null) setJoinedSignup({ ...storedSignup, invites: null })
+        return
+      }
+      setIsRestoring(true)
+      const result = await readWaitlistInvites(storedSession.invitesToken)
+      if (isCancelled) return
+      setIsRestoring(false)
+      if (result.isOk && result.data.isOnWaitlist) {
+        // The token's email was checked, so it wins over a sign-up saved for another email.
+        const restoredSignup = {
+          email: storedSession.email,
+          inviteUrl: result.data.inviteUrl,
+          isJoinedThroughFriend:
+            storedSignup?.email === storedSession.email && storedSignup.isJoinedThroughFriend,
+        }
+        saveWaitlistSignup(restoredSignup)
+        const ownInviteCode = readInviteCodeFromUrl(result.data.inviteUrl)
+        if (ownInviteCode !== null) saveOwnInviteCode(ownInviteCode)
+        setJoinedSignup({ ...restoredSignup, invites: result.data })
+        return
+      }
+      if (!result.isOk && readProblemCode(result.problem) === 'INVITES_TOKEN_INVALID') {
+        forgetInvitesSession()
+      }
+      if (storedSignup !== null) setJoinedSignup({ ...storedSignup, invites: null })
+    }
+    void restoreWaitlistSignup()
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    // The form is gone, so keep keyboard focus on what replaced it, and back again. Right after
+    // joining, the card comes into view with its link; a card restored on arrival stays put.
     if (joinedSignup !== null) {
-      joinedHeadingRef.current?.focus()
+      if (!shouldShowJoinedCardRef.current) return
+      shouldShowJoinedCardRef.current = false
+      joinedHeadingRef.current?.focus({ preventScroll: true })
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      joinedCardRef.current?.scrollIntoView({
+        block: 'start',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      })
     } else if (shouldFocusEmailRef.current) {
       shouldFocusEmailRef.current = false
       emailInputRef.current?.focus()
@@ -78,8 +129,17 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
     }
   }, [joinedSignup])
 
-  function showEmailForm() {
+  function showJoinedSignup(signup: StoredWaitlistSignup, invites: WaitlistInvites | null) {
+    saveWaitlistSignup(signup)
+    shouldShowJoinedCardRef.current = true
+    setJoinedSignup({ ...signup, invites })
+  }
+
+  /** Change: this browser forgets the sign-up, and the form comes back with the email in it. */
+  function changeEmail(joinedEmail: string) {
+    forgetWaitlistSignup()
     shouldFocusEmailRef.current = true
+    setEmail(joinedEmail)
     setStatus('idle')
     setJoinedSignup(null)
   }
@@ -88,17 +148,17 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
   async function sendJoin(
     joinEmail: string,
     emailProof: string | null,
-  ): Promise<{ inviteUrl: string } | null> {
+  ): Promise<StoredWaitlistSignup | null> {
     const turnstileToken = await takeTurnstileToken()
     if (turnstileToken === null) {
       setProblemKey('turnstileUnavailable')
       return null
     }
+    const arrivalInviteCode = readArrivalInviteCode()
     const result = await joinWaitlist({
       email: joinEmail,
-      phonePlatform,
       source: readWaitlistSource(window.location.search),
-      inviteCode: readArrivalInviteCode(),
+      inviteCode: arrivalInviteCode,
       emailProof,
       turnstileToken,
       honeypotValue: honeypotInputRef.current?.value ?? '',
@@ -109,7 +169,12 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
     }
     const ownInviteCode = readInviteCodeFromUrl(result.data)
     if (ownInviteCode !== null) saveOwnInviteCode(ownInviteCode)
-    return { inviteUrl: result.data }
+    return {
+      email: joinEmail,
+      inviteUrl: result.data,
+      // Your own code never counts as your inviter (D-056).
+      isJoinedThroughFriend: arrivalInviteCode !== null && arrivalInviteCode !== ownInviteCode,
+    }
   }
 
   async function joinWithEmail(event: FormEvent<HTMLFormElement>) {
@@ -121,11 +186,9 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
     }
     setProblemKey(null)
     setStatus('submitting')
-    const joinResult = await sendJoin(email.trim(), null)
+    const joinedSignupResult = await sendJoin(email.trim(), null)
     setStatus('idle')
-    if (joinResult !== null) {
-      setJoinedSignup({ email: email.trim(), inviteUrl: joinResult.inviteUrl, invites: null })
-    }
+    if (joinedSignupResult !== null) showJoinedSignup(joinedSignupResult, null)
   }
 
   async function joinWithGoogle(googleIdToken: string) {
@@ -141,8 +204,8 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
       return
     }
     const emailProof = googleResult.data
-    const joinResult = await sendJoin(emailProof.email, emailProof.emailProof)
-    if (joinResult === null) {
+    const joinedSignupResult = await sendJoin(emailProof.email, emailProof.emailProof)
+    if (joinedSignupResult === null) {
       setStatus('idle')
       return
     }
@@ -157,93 +220,68 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
     }
     setStatus('idle')
     setEmail(emailProof.email)
-    setJoinedSignup({
-      email: emailProof.email,
-      inviteUrl: joinResult.inviteUrl,
-      invites: sessionResult.isOk ? sessionResult.data.invites : null,
-    })
+    showJoinedSignup(joinedSignupResult, sessionResult.isOk ? sessionResult.data.invites : null)
   }
 
   if (joinedSignup !== null) {
     return (
-      <WaitlistJoinedCard
-        email={joinedSignup.email}
-        inviteUrl={joinedSignup.inviteUrl}
-        invites={joinedSignup.invites}
-        onInvitesReady={(invites) => setJoinedSignup({ ...joinedSignup, invites })}
-        showcase={joinedShowcase}
-        headingRef={joinedHeadingRef}
-        onUseAnotherEmail={showEmailForm}
-      />
+      <div ref={joinedCardRef} className="scroll-mt-4">
+        <WaitlistJoinedCard
+          email={joinedSignup.email}
+          inviteUrl={joinedSignup.inviteUrl}
+          invites={joinedSignup.invites}
+          isJoinedThroughFriend={joinedSignup.isJoinedThroughFriend}
+          onInvitesReady={(invites) => setJoinedSignup({ ...joinedSignup, invites })}
+          headingRef={joinedHeadingRef}
+          onChangeEmail={() => changeEmail(joinedSignup.email)}
+        />
+      </div>
+    )
+  }
+
+  if (isRestoring) {
+    return (
+      <p aria-live="polite" className="text-base leading-[1.45] text-ink-secondary-small">
+        {waitlistContent.restoringLabel}
+      </p>
     )
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <GoogleSignInButton
-          onGoogleIdToken={(googleIdToken) => void joinWithGoogle(googleIdToken)}
+    <div className="flex flex-col gap-4">
+      <GoogleSignInButton onGoogleIdToken={(googleIdToken) => void joinWithGoogle(googleIdToken)} />
+      {status === 'googleJoining' ? (
+        <p aria-live="polite" className="text-sm leading-[1.4] text-ink-secondary-small">
+          {waitlistContent.googleJoiningLabel}
+        </p>
+      ) : null}
+
+      <OrDivider />
+
+      <form noValidate onSubmit={joinWithEmail} className="flex flex-col gap-3">
+        <label htmlFor={emailInputId} className="sr-only">
+          {waitlistContent.emailLabel}
+        </label>
+        <input
+          ref={emailInputRef}
+          id={emailInputId}
+          name="email"
+          type="email"
+          autoComplete="email"
+          inputMode="email"
+          spellCheck={false}
+          required
+          placeholder={waitlistContent.emailPlaceholder}
+          value={email}
+          onFocus={armTurnstile}
+          onChange={(event) => {
+            setEmail(event.target.value)
+            if (problemKey !== null) setProblemKey(null)
+          }}
+          aria-invalid={problemKey === 'emailInvalid' || problemKey === 'emailDisposable'}
+          aria-describedby={`${problemId} ${promiseId}`}
+          className="h-[52px] w-full rounded-full border border-hairline bg-page px-5 text-base placeholder:text-ink-secondary transition-colors duration-300 ease-standard focus-visible:border-ink aria-invalid:border-ink"
         />
-        {status === 'googleJoining' ? (
-          <p aria-live="polite" className="text-sm leading-[1.4] text-ink-secondary-small">
-            {waitlistContent.googleJoiningLabel}
-          </p>
-        ) : null}
-      </div>
-
-      <form noValidate onSubmit={joinWithEmail} className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2.5">
-          <label
-            htmlFor={emailInputId}
-            className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase"
-          >
-            {waitlistContent.orUseEmailLabel}
-          </label>
-          <input
-            ref={emailInputRef}
-            id={emailInputId}
-            name="email"
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            spellCheck={false}
-            required
-            placeholder={waitlistContent.emailPlaceholder}
-            value={email}
-            onFocus={armTurnstile}
-            onChange={(event) => {
-              setEmail(event.target.value)
-              if (problemKey !== null) setProblemKey(null)
-            }}
-            aria-invalid={problemKey === 'emailInvalid' || problemKey === 'emailDisposable'}
-            aria-describedby={`${problemId} ${promiseId}`}
-            className="h-[52px] w-full rounded-full border border-hairline bg-page px-5 text-base placeholder:text-ink-secondary transition-colors duration-300 ease-standard focus-visible:border-ink aria-invalid:border-ink"
-          />
-        </div>
-
-        <fieldset className="flex flex-col gap-2.5">
-          <legend className="mb-2.5 text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-            {waitlistContent.phonePlatformLabel}
-          </legend>
-          <div className="flex flex-wrap gap-2">
-            {waitlistPhonePlatformOptions.map((option) => (
-              <label
-                key={option.value}
-                className="inline-flex h-10 cursor-pointer items-center rounded-full bg-surface-muted px-5 text-xs leading-[1.15] font-medium uppercase transition-colors duration-300 ease-standard has-checked:bg-ink has-checked:text-on-dark has-focus-visible:outline-2 has-focus-visible:outline-offset-3 has-focus-visible:outline-accent"
-              >
-                <input
-                  type="radio"
-                  name="phonePlatform"
-                  value={option.value}
-                  checked={phonePlatform === option.value}
-                  onChange={() => setPhonePlatform(option.value)}
-                  className="sr-only"
-                />
-                {option.label}
-              </label>
-            ))}
-          </div>
-        </fieldset>
 
         {/* Honeypot: off-screen and out of the tab order, so only a bot fills it in. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
@@ -261,15 +299,14 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
 
         {turnstileCheck}
 
-        <div id={problemId} aria-live="polite">
-          {problemKey !== null ? <WaitlistProblemNote problemKey={problemKey} /> : null}
-        </div>
-
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col">
+          <div id={problemId} aria-live="polite" className="not-empty:mb-3">
+            {problemKey !== null ? <WaitlistProblemNote problemKey={problemKey} /> : null}
+          </div>
           <button
             type="submit"
             disabled={status !== 'idle'}
-            className={buildPillClassName('primary', 'regular', 'disabled:opacity-60')}
+            className={buildPillClassName('primary', 'regular', 'self-start disabled:opacity-60')}
           >
             <PillContent
               label={
@@ -279,10 +316,16 @@ export function WaitlistForm({ joinedShowcase }: WaitlistFormProps) {
               }
             />
           </button>
-          <p id={promiseId} className="max-w-[34em] text-sm leading-[1.4] text-ink-secondary-small">
-            {waitlistContent.promise}
-          </p>
         </div>
+        <p id={promiseId} className="max-w-[34em] text-sm leading-[1.4] text-ink-secondary-small">
+          {waitlistContent.promise}{' '}
+          <a
+            href={legalPagePaths.privacyPolicy}
+            className="text-ink underline decoration-hairline underline-offset-4 transition-colors duration-300 ease-standard hover:decoration-current"
+          >
+            {waitlistContent.privacyLabel}
+          </a>
+        </p>
       </form>
     </div>
   )

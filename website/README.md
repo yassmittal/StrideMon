@@ -23,9 +23,9 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | Path | What |
 |---|---|
 | `src/content/` | Every piece of copy, number, link and address, as typed data |
-| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `apiBaseUrl` and the API routes, `githubRepositoryUrl`, `supportEmail`, the legal and pass page paths |
+| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `apiBaseUrl` and the API routes, `githubRepositoryUrl`, `supportEmail`, the X and YouTube links (D-059), the legal and pass page paths |
 | `src/content/legal/` | The privacy policy (`/privacy`) and account deletion (`/delete-account`) pages Google Play asks for (D-039). Keep them true to the app and API |
-| `src/content/waitlist.ts` | The waitlist section's copy and error lines, the joined card, the X post's text and the `/waitlist` page's words (D-055) |
+| `src/content/waitlist.ts` | The waitlist section's copy and error lines, the joined card, the X post's text and the `/waitlist` page's words (D-055, D-059) |
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
 | `src/content/founding-pass.ts` | The Founding Pass page's copy, the planned schedule, the match quiz and the questions (D-044) |
 | `src/content/founding-pass-designs.ts` | **Generated**: the 1,000 designs and their layer labels. Never edit it by hand |
@@ -42,7 +42,7 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/content/under-the-hood.ts` | The landing page's Under the hood section and its four tabs (D-050). Each tab keeps its old section's id, so `/#on-chain` still works |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
-| `src/components/ui/` | Pills, labels, cross marks, phone frame, and the client components (reveal, count-up, copy, video, waitlist form) |
+| `src/components/ui/` | Pills, labels, cross marks, phone frame, the apps' logos (X, YouTube, WhatsApp, Telegram: Simple Icons' glyphs, CC0), and the client components (reveal, count-up, copy, video, waitlist form, share links) |
 | `src/app/` | Layout, home page, `pass/`, `pass/all/` (every pass by number, D-051) and `pass/[number]/` (with their Open Graph images), `waitlist/` (the page a shared post links to, with its own Open Graph image, D-055), `privacy/` and `delete-account/`, `not-found.tsx`, icons, sitemap, robots |
 | `src/lib/build-page-metadata.ts` | Every page's title, description, canonical and share cards (D-051). Use it for a new page: Next merges metadata shallowly, so a page that sets `openGraph` by hand loses the layout's image and site name |
 
@@ -228,15 +228,22 @@ such as `https://stridemon.xyz/?source=x-stridemon` credits the X account that s
 - **`?ref=`** is read on every page (`ArrivalInviteKeeper` in the layout) and kept in
   `sessionStorage` for the visit, so a friend who browses `/pass` first still joins with it. The
   first code of the visit stays.
-- **The joined card** shows the visitor's invite link with Copy and the share row (WhatsApp,
-  Telegram, X and the phone's share sheet, `components/ui/share-links.tsx`), each link with
-  `ref` and its own `source` (`invite-whatsapp`, `invite-telegram`, `invite-x`, `invite-share`,
-  `invite-copy`). After a Google join it shows "0 of 3 friends confirmed" at once; after an email
-  join, an optional 6-digit code confirms the email (a `waitlist` code, counted in the API's daily
-  budget).
+- **The joined card** (D-059) is a ticket (the email with **Change**, and when the window opens)
+  and one invite block (`components/waitlist/invite-panel.tsx`): the early hour's rule, the link
+  with Copy, and the share icons (`components/ui/share-links.tsx`: WhatsApp, Telegram, X and the
+  phone's share sheet, each in its own colour). Every share link carries `ref` and its own
+  `source` (`invite-whatsapp`, `invite-telegram`, `invite-x`, `invite-share`, `invite-copy`).
+  After a Google join, or once the email is confirmed, the count shows above the rule. After an
+  email join through a friend's link, the card offers the optional 6-digit code that makes them
+  count (a `waitlist` code, counted in the API's daily budget). Everyone else gets a link to their
+  invites page.
+- **Coming back (D-059).** Joining saves `stridemon:waitlist-joined` in `localStorage`: the email,
+  the invite link and whether a friend's link brought them. With it, or with the invites token,
+  the form shows the joined card instead, and the token adds the live count. Change (on the card)
+  and Use a different email (on `/waitlist/invites`) clear both.
 - **`/waitlist/invites`** (static, `noindex`): check your email (Google or a code), then see the
-  link, the count and the early hour. The invites token stays in `localStorage` for 30 days
-  (`stridemon:waitlist-invites`); "Use a different email" clears it.
+  count, the link and the early hour. The invites token stays in `localStorage` for 30 days
+  (`stridemon:waitlist-invites`).
 - The visitor's own code (`stridemon:waitlist-own-invite-code`) rides on the share row of a pass's
   details and after a mint.
 - **The count** (`GET /v1/waitlist/count`) shows under the intro only from 1,000 sign-ups.
