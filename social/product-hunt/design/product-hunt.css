@@ -8,23 +8,6 @@ body.gallery {
   padding: 52px 72px 44px;
 }
 
-.gallery .cross.top-left,
-.gallery .cross.top-right {
-  top: 22px;
-}
-.gallery .cross.bottom-left,
-.gallery .cross.bottom-right {
-  bottom: 18px;
-}
-.gallery .cross.top-left,
-.gallery .cross.bottom-left {
-  left: 30px;
-}
-.gallery .cross.top-right,
-.gallery .cross.bottom-right {
-  right: 30px;
-}
-
 .gallery .meta {
   font-size: 16px;
 }

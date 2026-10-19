@@ -1,4 +1,4 @@
-/* Shared look for X posters (voice.md §6). Rendered at 1080 × 1350 by render-poster.sh. */
+/* Shared look for X posters (voice.md §6). Rendered at 1080 × 1350 by render-poster.sh. No "+" corner marks. */
 @font-face {
   font-family: "Satoshi";
   font-weight: 400;
@@ -49,49 +49,6 @@ body {
   padding: 72px 72px 64px;
   display: flex;
   flex-direction: column;
-}
-
-.cross {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-}
-.cross::before,
-.cross::after {
-  content: "";
-  position: absolute;
-  background: currentColor;
-}
-.cross::before {
-  left: 0;
-  right: 0;
-  top: 13px;
-  height: 2px;
-}
-.cross::after {
-  top: 0;
-  bottom: 0;
-  left: 13px;
-  width: 2px;
-}
-.page-cross {
-  color: #999999;
-}
-.top-left {
-  top: 28px;
-  left: 28px;
-}
-.top-right {
-  top: 28px;
-  right: 28px;
-}
-.bottom-left {
-  bottom: 24px;
-  left: 28px;
-}
-.bottom-right {
-  bottom: 24px;
-  right: 28px;
 }
 
 .meta {

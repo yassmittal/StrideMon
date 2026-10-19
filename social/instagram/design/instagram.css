@@ -36,7 +36,6 @@
   --page-muted: var(--muted-on-light);
   --page-body: var(--grey-blue);
   --page-line: var(--line-on-light);
-  --page-cross: #999999;
 }
 
 * {
@@ -66,7 +65,6 @@ body.dark {
   --page-muted: var(--muted-on-dark);
   --page-body: var(--body-on-dark);
   --page-line: var(--line-on-dark);
-  --page-cross: #4a4e57;
 }
 
 /* Canvases. Feed posts are 4:5, but the profile grid shows a 3:4 crop (about 34 px off each
@@ -88,75 +86,6 @@ body.reel-cover {
   width: 1080px;
   height: 1920px;
   padding: 345px 84px 345px;
-}
-
-.cross {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  color: var(--page-cross);
-}
-.cross::before,
-.cross::after {
-  content: "";
-  position: absolute;
-  background: currentColor;
-}
-.cross::before {
-  left: 0;
-  right: 0;
-  top: 13px;
-  height: 2px;
-}
-.cross::after {
-  top: 0;
-  bottom: 0;
-  left: 13px;
-  width: 2px;
-}
-.post .cross.top-left,
-.post .cross.top-right {
-  top: 36px;
-}
-.post .cross.bottom-left,
-.post .cross.bottom-right {
-  bottom: 30px;
-}
-.post .cross.top-left,
-.post .cross.bottom-left {
-  left: 44px;
-}
-.post .cross.top-right,
-.post .cross.bottom-right {
-  right: 44px;
-}
-.story .cross.top-left,
-.story .cross.top-right {
-  top: 250px;
-}
-.story .cross.bottom-left,
-.story .cross.bottom-right {
-  bottom: 320px;
-}
-.reel-cover .cross.top-left,
-.reel-cover .cross.top-right {
-  top: 300px;
-}
-.reel-cover .cross.bottom-left,
-.reel-cover .cross.bottom-right {
-  bottom: 300px;
-}
-.story .cross.top-left,
-.story .cross.bottom-left,
-.reel-cover .cross.top-left,
-.reel-cover .cross.bottom-left {
-  left: 44px;
-}
-.story .cross.top-right,
-.story .cross.bottom-right,
-.reel-cover .cross.top-right,
-.reel-cover .cross.bottom-right {
-  right: 44px;
 }
 
 .meta {

@@ -45,6 +45,7 @@
         gap: 10px;
         margin: 0 4px;
       }
+      /* The red X that marks the crash. Drawn here: posters have no "+" corner marks (voice.md §6). */
       .crash .cross {
         position: relative;
         color: var(--red);
@@ -52,11 +53,21 @@
         width: 36px;
         height: 36px;
       }
+      .crash .cross::before,
+      .crash .cross::after {
+        content: "";
+        position: absolute;
+        background: currentColor;
+      }
       .crash .cross::before {
+        left: 0;
+        right: 0;
         top: 16px;
         height: 4px;
       }
       .crash .cross::after {
+        top: 0;
+        bottom: 0;
         left: 16px;
         width: 4px;
       }
@@ -80,11 +91,6 @@
     </style>
   </head>
   <body>
-    <span class="cross page-cross top-left"></span>
-    <span class="cross page-cross top-right"></span>
-    <span class="cross page-cross bottom-left"></span>
-    <span class="cross page-cross bottom-right"></span>
-
     <div class="meta-row">
       <span class="meta">StrideMon • Build notes</span>
       <span class="mono meta">02 / 03</span>

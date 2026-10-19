@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Invite 3 friends, mint an hour early</title>
+    <link rel="stylesheet" href="poster.css" />
+    <style>
+      /* The invite loop (D-056, D-058, D-060), as simple as a poster gets: the rule, three Founding
+         Pass shoes (one per friend), three numbers, the link. Words from
+         website/src/content/waitlist.ts. The shoes are cropped from the website's pass cards, the
+         way the Instagram pass post does it; nothing inside the art is changed. */
+      h1 {
+        font-size: 112px;
+        margin-top: 64px;
+      }
+      /* Three shoes stepping down the page, a little apart. The card's own background is cleared
+         so a shoe never hides behind another's rectangle. */
+      .shoes {
+        position: relative;
+        flex: 1;
+        margin: 56px 0 48px;
+      }
+      .shoe {
+        position: absolute;
+        width: 440px;
+      }
+      .shoe:nth-child(1) {
+        left: 0;
+        top: 0;
+      }
+      .shoe:nth-child(2) {
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .shoe:nth-child(3) {
+        left: 110px;
+        bottom: 0;
+      }
+      .shoe svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .shoe svg > rect:first-child {
+        fill: none;
+      }
+      .numbers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 32px;
+      }
+      .value {
+        font-size: 76px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .value.lime {
+        color: var(--lime);
+      }
+      .numbers .meta {
+        display: block;
+        margin-top: 18px;
+        line-height: 1.4;
+      }
+      .panel {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="meta-row">
+      <span class="meta">StrideMon • Waitlist</span>
+      <span class="meta">Founding Pass</span>
+    </div>
+
+    <h1>Invite 3 friends.<br />Mint an hour early.</h1>
+
+    <div class="shoes">
+      <div class="shoe" data-svg="../../website/public/pass-art/cards/0627.svg" data-view-box="60 240 880 450"></div>
+      <div class="shoe" data-svg="../../website/public/pass-art/cards/0749.svg" data-view-box="60 240 880 450"></div>
+      <div class="shoe" data-svg="../../website/public/pass-art/cards/0888.svg" data-view-box="60 240 880 450"></div>
+    </div>
+
+    <section class="panel">
+      <div class="numbers">
+        <div>
+          <p class="mono value">3</p>
+          <span class="meta">Friends join<br />with your link</span>
+        </div>
+        <div>
+          <p class="mono value lime">13:30</p>
+          <span class="meta">UTC, Sat 28 Nov<br />not 14:30</span>
+        </div>
+        <div>
+          <p class="mono value">250</p>
+          <span class="meta">Passes go<br />in that hour</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="meta">Free • Nothing for sale</span>
+      <span class="mono meta">stridemon.xyz/waitlist</span>
+    </div>
+
+    <script src="../instagram/design/inline-svg.js"></script>
+  </body>
+</html>

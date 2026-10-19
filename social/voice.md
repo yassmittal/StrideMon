@@ -97,9 +97,11 @@ Taken from `docs/architecture/design-system.md`:
 - Satoshi 400 for reading text and 500 only for uppercase meta. IBM Plex Mono for numbers and
   addresses. No bold.
 - Phones go in the site's plain flat frame. Never a photoreal iPhone: it's an Android app.
-- "+" cross marks at least 2 px wide at 1080 px.
-- **Banned:** gradients, glow, drop shadows, emoji in images, coins or cash, purple, and Monad's
-  logo (text only).
+- **As simple as possible:** one headline, at most one supporting row of numbers, the link. If
+  an element doesn't carry the claim, leave it out.
+- **Banned:** "+" corner marks (Yash, 2026-10-19: the four "+" in the corners are gone from every
+  social image, and the shared CSS no longer has them), gradients, glow, drop shadows, emoji in
+  images, coins or cash, purple, and Monad's logo (text only).
 - **Sizes:** images 1080 × 1350 (4:5). Video 4:5, ≤ 60 fps, ≤ 140 s, H.264 + AAC with
   `+faststart`, and it must make sense muted.
 - **Every image has alt text:** what the screen shows, plus its key numbers.

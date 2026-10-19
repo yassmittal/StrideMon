@@ -430,7 +430,8 @@ From `docs/architecture/design-system.md` and `launch-video-prompt.md` §4, unch
   address. No bold.
 - Phone screens in the site's plain flat frame (`website/src/components/ui/phone-frame.tsx`):
   radius 28, 5 px bezel, ink colour. Never a photoreal iPhone.
-- "+" cross marks at least 2 px wide at 1080 px, so they survive X's re-encode.
+- No "+" corner marks (changed 2026-10-19, Yash: images are kept as simple as possible, and
+  `social/`'s shared CSS no longer draws them).
 - **Banned:** gradients, glow, drop shadows, emoji in images, coins or cash imagery, purple, and
   Monad's logo (text only, unless Monad's brand kit says otherwise).
 - **Sizes:** single images 1080 × 1350 (4:5). Link previews come from the site's existing
