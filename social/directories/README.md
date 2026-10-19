@@ -96,3 +96,26 @@ Fill in the date and the link once a listing is up.
 | Uneed | Free queue | | |
 | Fazier | Free queue | | |
 | Indie Hackers | A product page and one build-story post | | |
+| R1M Community App (Monad) | Monad-only ecosystem list with a website link: `app.r1m.team/monad/ecosystem` → Submit Project (fields below) | | |
+| Monad Intelligence (Susano Labs) | Listed us by itself from the r/Monad post, but without a link: ask them (email or Telegram on the page) to add `https://stridemon.xyz` | auto, 2026-10 | https://news.susanolabs.com/monad/en/news/stridemon-prepares-move-to-earn-game-launch-on-monad-feed:21:t3_1x1ulww |
+
+## R1M Community App
+
+The form (checked 2026-10-20): `Project Logo` (PNG, JPG, WebP or SVG, max 2 MB), `Project Name *`,
+`Category *`, `Description`, and `Links` (Website, X / Twitter, GitHub, Medium). Then "Submit for
+Review". No fee and no wallet. It doesn't say whether testnet projects are accepted: they review.
+
+| Field | Paste |
+|---|---|
+| Project Logo | `logo-500.png` |
+| Project Name | `StrideMon` |
+| Category | `Gaming` (11 listed, so less crowded than NFT) |
+| Description (156) | `A walking game on Monad testnet. Walk or run outside to earn STRIDE, then repair and level up your Sneaker NFT. 1,000 free Founding Passes mint from 28 Nov.` |
+| Website | `https://stridemon.xyz/pass?source=dir-r1m` |
+| X / Twitter | `https://x.com/stridemon` |
+| GitHub | `https://github.com/yassmittal/StrideMon` |
+| Medium | leave empty |
+
+Other listings there run 35 to 180 characters. If the box wants it shorter, use the tagline:
+`Walk or run to level up a Sneaker NFT on Monad`. After 30 Nov, change "mint from 28 Nov" to
+"open mint now", or drop that sentence.

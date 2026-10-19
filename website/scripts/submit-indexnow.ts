@@ -54,9 +54,15 @@ if (isDryRun) {
       urlList,
     }),
   })
-  // 200 and 202 both mean received; 403 means the key file isn't live yet.
+  // 200 and 202 both mean received. A first submission answers 403 SiteVerificationNotCompleted
+  // while the engine fetches the key file in the background: run it again later.
   if (!response.ok) {
-    throw new Error(`IndexNow answered ${response.status}: ${await response.text()}`)
+    const responseText = await response.text()
+    if (responseText.includes('SiteVerificationNotCompleted')) {
+      console.error('IndexNow is still checking the key file. Run this again in an hour or so.')
+      process.exit(1)
+    }
+    throw new Error(`IndexNow answered ${response.status}: ${responseText}`)
   }
   console.log(`IndexNow received ${urlList.length} URLs for ${host} (${response.status}).`)
 }

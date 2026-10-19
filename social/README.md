@@ -26,6 +26,7 @@ The two accounts never post the same text: the second one quotes or reposts, and
 | `deltav/` | The DeltaV profile: rewards, unlock timeline, weekly update drafts (`updates/`), and how to earn believers and feedback |
 | `youtube/` | Yash's old channel renamed to StrideMon: the verdict, the setup steps, the avatar and banner commands, and what to post until 11-28 |
 | `linkedin/` | StrideMon on Yash's LinkedIn: the profile changes, the banner, the rhythm and the first six posts |
+| `reddit/` | r/Monad, posted by Yash: the Reddit voice, the milestone calendar to 30 Nov, and comments to expect |
 | `hacker-news/` | The one Show HN, end to end: the account and the weeks before, the post and first comment, the hours after, and answers to have ready |
 
 No tooling, no `package.json`, not a Bun workspace. Images and clips come from `ffmpeg` and
