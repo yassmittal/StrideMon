@@ -304,10 +304,9 @@ video's description, both with `?source=yt-…`.
       help chatbot's $5 cap fails politely.
 - [ ] **Gas.** About 0.17 MON per founder (D-043: the pass, the Founder Sneaker, lacing and the
       0.1 MON drip), so about 170 MON for 1,000. On top of that, about 0.02 MON for every settled
-      walk. **The game-server key `0xa7a0…C7F1F` holds 22.82 MON** (read 2026-10-18). Ask Monad for
-      about 250 (§10).
-      - The address in the request, `0x06a4…6eFc` (69.35 MON), isn't the game server. Send it on
-        from MetaMask once it arrives, or put the game server's address in the request instead.
+      walk. **The game-server key `0xa7a0…C7F1F` holds 22.80 MON** (read 2026-10-19).
+      - Monad sent the 250 MON asked for (§10) to `0x06a4…6eFc`, which isn't the game server: it
+        holds 319.35 MON (read 2026-10-19). Send about 250 on to `0xa7a0…C7F1F` from MetaMask.
 
 ## 7. If we're behind (the Sunday check, §1)
 
@@ -357,11 +356,13 @@ More than 30% under the line on a Sunday: turn on the next lever, in this order.
 ### Yash, today and tomorrow
 
 - [ ] Run the count by source on Atlas (read-only, the query in `social/reviews.md`), and write
-      today's number here: ____
+      today's number here: ____ (the API's `GET /v1/waitlist/count` said **33** on 2026-10-19)
 - [ ] Fill in the table at the top of `waitlist-referral-prompt.md` (and the name, §8). Then paste
       its prompt into a new session for Part 0, and create the Google client while it writes.
-- [ ] YouTube: claim `@stridemon`, then the rest of `social/youtube/README.md` §2.
-- [ ] Post the testnet MON request on Monad's Discord (§10).
+- [x] YouTube: claim `@stridemon`, then the rest of `social/youtube/README.md` §2. **Done** (Yash,
+      2026-10-19).
+- [x] Post the testnet MON request on Monad's Discord (§10). **250 MON arrived** (Yash, 2026-10-19)
+      at `0x06a4…6eFc` (319.35 MON on 10-19). Send it on to the game server (§6).
 - [ ] Create the Hacker News account and start reading (`social/hacker-news/README.md` §2).
 - [ ] LinkedIn: the profile changes, then post #1 (`social/linkedin/README.md`).
 
@@ -371,7 +372,7 @@ More than 30% under the line on a Sunday: turn on the next lever, in this order.
 - [ ] Message 100 people one by one the day the loop goes live.
 - [ ] Build a partner list of 60, and send 10 messages a day from Gmail.
 - [ ] One X post and one Reel or Short a day, plus 30 minutes of replies.
-- [ ] DeltaV #3 by Sun 10-25.
+- [x] DeltaV #3 by Sun 10-25. **Posted** by 2026-10-19 (`social/deltav/updates/2026-10-19.md`).
 
 ### Before 11-03
 

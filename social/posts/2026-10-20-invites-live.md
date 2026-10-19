@@ -1,5 +1,5 @@
 ---
-status: draft
+status: posted
 account: stridemon
 slot: 2026-10-20 15:00 UTC   # 20:30 IST, inside the plan's 14:30–16:30 UTC band. Pin it until 11-28
 format: thread           # two posts: @stridemon has no Premium, so 280 characters each (Post 1: 202, Post 2: 218)
@@ -13,7 +13,7 @@ sources:
   - docs/decisions.md D-058 (the early hour: Sat 2026-11-28, 13:30 to 14:30 UTC (19:00 to 20:00 IST), at most 250 passes; nobody's 48 hours change)
   - docs/decisions.md D-060 (joining checks the email, so a friend counts the moment they join)
   - website/src/content/waitlist.ts and help.ts#invites (the site's own words)
-approved: ""
+approved: "Yash, 2026-10-19 (posted by then; x_url not recorded)"
 x_url: ""
 results: {}
 ---

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: posted
 account: stridemon
 slot: 2026-10-21 12:30 UTC   # proposed: 18:00 IST, clear of the daily 15:00 UTC countdown post
 format: thread           # two posts: the film, then the link in the reply
@@ -13,7 +13,7 @@ sources:
   - launch-video/FOOTAGE.md, "The App tour film" (the submission reel's clips)
   - launch-video/CREDITS.md (the font, the effects, and the music, which is unlicensed)
   - social/voice.md §4 (STRIDE amounts on screen: the testnet line goes in the post)
-approved: ""
+approved: "Yash, 2026-10-19 (posted by then; x_url not recorded)"
 x_url: ""
 results: {}
 ---

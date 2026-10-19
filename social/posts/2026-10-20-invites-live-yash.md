@@ -1,5 +1,5 @@
 ---
-status: draft
+status: posted
 account: yash_mittal_dev
 slot: 2026-10-20 16:00 UTC   # an hour after @stridemon's thread; move it with that one
 format: quote            # a quote-post of @stridemon's invites thread (2026-10-20-invites-live.md)
@@ -10,7 +10,7 @@ sources:
   - docs/decisions.md D-060 (joining checks the email; the confirm step after joining is gone; the rule in one line)
   - docs/decisions.md D-059 (the joined card was 1,400 px tall with nine actions; one job per screen)
   - docs/decisions.md D-056 (one inbox counts once)
-approved: ""
+approved: "Yash, 2026-10-19 (posted by then; x_url not recorded)"
 x_url: ""
 results: {}
 ---
