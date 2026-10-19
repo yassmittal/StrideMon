@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { FaqSection } from '@/components/sections/faq-section'
 import { FoundingPassSection } from '@/components/sections/founding-pass-section'
 import { HeroSection } from '@/components/sections/hero-section'
@@ -7,21 +8,22 @@ import { SiteHeader } from '@/components/sections/site-header'
 import { UnderTheHoodSection } from '@/components/sections/under-the-hood-section'
 import { WaitlistSection } from '@/components/sections/waitlist-section'
 import { RevealObserver } from '@/components/ui/reveal-observer'
+import { StructuredDataScript } from '@/components/ui/structured-data-script'
 import { demoVideo } from '@/content/demo-video'
-import { buildStructuredData, serializeStructuredData } from '@/lib/build-structured-data'
+import { markdownPagePaths } from '@/content/site'
+import { buildStructuredData } from '@/lib/build-structured-data'
 import { hasPublicFile } from '@/lib/read-public-file'
+
+// The layout's title, description and share cards stand; this adds the Markdown copy (D-061).
+export const metadata: Metadata = {
+  alternates: { canonical: '/', types: { 'text/markdown': markdownPagePaths.home } },
+}
 
 export default function HomePage() {
   const hasDemoVideo = hasPublicFile(demoVideo.filePath)
   return (
     <>
-      <script
-        type="application/ld+json"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD from our own content, with `<` escaped.
-        dangerouslySetInnerHTML={{
-          __html: serializeStructuredData(buildStructuredData({ hasDemoVideo })),
-        }}
-      />
+      <StructuredDataScript structuredData={buildStructuredData({ hasDemoVideo })} />
       <div id="top">
         <SiteHeader />
       </div>

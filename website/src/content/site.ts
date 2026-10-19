@@ -79,7 +79,42 @@ export const waitlistPagePath = '/waitlist'
 /** A waitlist sign-up's invites: their link, their confirmed friends, the early hour (D-056). */
 export const waitlistInvitesPath = '/waitlist/invites'
 
+/**
+ * The Markdown copies of the pages that answer questions, for answer engines and agents (D-061).
+ * Each page links its own with `rel="alternate"`, and `/llms.txt` lists them.
+ */
+export const markdownPagePaths = {
+  home: '/index.md',
+  pass: '/pass.md',
+  passIndex: '/pass/all.md',
+  help: '/help.md',
+} as const
+
+/** The llmstxt.org index of the site, and everything in one file (D-061). */
+export const llmsTextPath = '/llms.txt'
+export const llmsFullTextPath = '/llms-full.txt'
+
+/**
+ * The day the main pages last changed in substance (D-061): the sitemap's `lastmod`, the
+ * structured data's `dateModified` and `/llms.txt`. Change it with real copy changes, not on every
+ * deploy.
+ */
+export const contentUpdatedOn = '2026-10-19'
+
+/**
+ * IndexNow's key (D-061). Public by design: `public/<key>.txt` must hold exactly this, so the
+ * search engines know the submission is ours. `bun run indexnow` sends the sitemap with it.
+ */
+export const indexNowKey = 'a2f1f0e28378b2ab2ebd7f7b291742e2'
+
 export const siteName = 'StrideMon'
+
+/** Who builds StrideMon, for the structured data and `/llms.txt` (D-061). */
+export const creator = {
+  name: 'Yash Mittal',
+  xUrl: 'https://x.com/yash_mittal_dev',
+  githubUrl: 'https://github.com/yassmittal',
+} as const
 
 /** The public contact for privacy and account deletion (D-039), also on the Play listing. */
 export const supportEmail = 'yashmittalmm@gmail.com'

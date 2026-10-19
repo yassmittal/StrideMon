@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-061.
+for it. The next free decision number is D-062.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -295,6 +295,12 @@ make every pass page linked (571 had no link), `buildPageMetadata` sets each pag
 card, a custom 404, and security headers in `website/vercel.json`. Deployed and re-crawled
 (2026-10-11): all 1,006 pages 200 and indexable, nothing deeper than 3 clicks. The CSP (2026-10-12)
 needs one more website redeploy.
+**Answer engines (D-061, 2026-10-19):** `/llms.txt`, `/llms-full.txt` and Markdown copies of the
+home, `/pass`, `/pass/all` and `/help`, all built from `website/src/content/` by routes in
+`website/src/app/` (never edit them by hand); robots.txt names and allows the AI crawlers; FAQ and
+breadcrumb JSON-LD; `contentUpdatedOn` in `site.ts` dates them (change it only with real copy
+changes). After a website deploy, Yash runs `bun run indexnow` from `website/` (it sends the
+sitemap to Bing): never run it without `--dry-run` yourself.
 **Demo music and the app link (D-052, 2026-10-13):** the hero's demo video plays with music
 ("Fresh" by Bransboynd, Pixabay license, added by `cut-demo-video.sh`) and a sound button. Every
 "Get the app" opens the `demo` build's expo.dev page (`appInstallPageUrl`), never the bare APK,

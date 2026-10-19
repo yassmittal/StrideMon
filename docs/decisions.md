@@ -1998,3 +1998,61 @@ codes run out, he chose strictly no. He also asked for simpler words on the card
   still join without a proof until the API refuses one.
 - **Revisit when:** `EMAIL_DAILY_LIMIT_REACHED` shows up on joining (a bigger email plan, D-057),
   or the API is next deployed (make it refuse a join without a proof).
+
+## D-061 — Answer engines: llms.txt, Markdown pages, AI crawlers and IndexNow
+
+Made 2026-10-19, when Yash asked for the SEO the site was missing beyond D-051: answer engine
+optimisation (AEO, getting quoted by ChatGPT, Perplexity, Claude, Gemini and Google's AI
+Overviews) and `llms.txt`.
+
+What the sources say, in short. Google: AI Overviews and AI Mode need nothing special, no
+`llms.txt` and no special schema, only pages that are crawlable, indexed, in text and well linked
+(developers.google.com/search/docs/appearance/ai-features). OpenAI, Anthropic and Perplexity each
+run a **search** crawler (`OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`), a **user**
+fetcher (`ChatGPT-User`, `Claude-User`, `Perplexity-User`) and, except Perplexity, a **training**
+crawler (`GPTBot`, `ClaudeBot`); robots.txt controls each one separately. AI crawlers don't run
+JavaScript, and the static export already puts every word in the HTML (checked in `out/`).
+`llms.txt` (llmstxt.org) is a proposal: cheap, harmless, read by some agents and tools, and not
+shown to change citations.
+
+- **Decision:**
+  1. **`/llms.txt`** in the llmstxt.org shape: an H1, a one-line summary, the key facts (testnet,
+     STRIDE has no value, Android only, the Founding Pass dates, who builds it, last updated), then
+     link lists to the Markdown pages, with the rest under `## Optional`. **`/llms-full.txt`** is
+     the home page, the Founding Pass page and the whole help in one file.
+  2. **Markdown twins of the pages that answer questions:** `/index.md` (home), `/pass.md`,
+     `/pass/all.md` (all 1,000 passes with their layers, as a table) and `/help.md`. Each page links
+     its twin with `<link rel="alternate" type="text/markdown">`, and each twin sends
+     `Link: <page>; rel="canonical"` (`vercel.json`), so search engines index the HTML page, not
+     the copy. No twin for each of the 1,000 pass pages: `/pass/all.md` has them all.
+  3. **One source.** Every word in those files comes from `src/content/` (the same data the pages
+     render), built at `next build` by route handlers. Only the few lines that exist nowhere else
+     (the summary, the page notes) live in `src/content/llms.ts`.
+  4. **robots.txt names the AI crawlers and allows them all**, training ones included: the site is
+     public marketing and help, and a model that already knows StrideMon is the point. A named
+     group replaces `*` for that bot, so each group says `Allow: /`. `/waitlist/invites` stays
+     `noindex` (not `Disallow`, which would hide the `noindex`).
+  5. **Structured data says more, and only what the page shows:** one `@id` graph (the
+     Organization with its founder, the WebSite, the VideoGame, with `dateModified`), `FAQPage` on
+     `/pass` and `/help` built from their own questions, and `BreadcrumbList` on `/pass/all` and the
+     1,000 pass pages.
+  6. **Freshness:** `contentUpdatedOn` in `src/content/site.ts` is the date the main pages last
+     changed in substance. It feeds the sitemap's `lastmod` (main pages only), `dateModified` and
+     `llms.txt`. Change it by hand with real copy changes, never on every deploy.
+  7. **IndexNow** (Bing, Yandex, Seznam, Naver; Bing's index also feeds Copilot and parts of
+     ChatGPT search): a key file in `public/` and `bun run indexnow` (from `website/`), which sends
+     the built sitemap's URLs. **Yash runs it after a deploy** (`--dry-run` only lists them).
+- **Why:** answer engines quote pages they can fetch, parse and trust. Most of that the site already
+  did (static HTML, D-051's links and share cards). What was missing: an explicit welcome for the AI
+  crawlers, a clean text version of each answer page, facts stated once in plain words, and a fast
+  way to tell Bing about a change.
+- **Trade-off:** a few more generated files that must stay in step, which `next build` handles.
+  Allowing training crawlers means the copy may be used to train models (reverse it with one
+  `Disallow` per bot). FAQ rich results only show for a few authority sites since 2023: the
+  `FAQPage` markup is for parsers, not for a Google snippet. Nothing here is proven to move
+  citations: the measure is asking ChatGPT, Perplexity, Claude and Google the questions people ask
+  ("what is StrideMon", "is the StrideMon Founding Pass free") and seeing who is quoted.
+- **Off the site (Yash):** Google Search Console and Bing Webmaster Tools with the sitemap; check
+  that Vercel's Firewall doesn't block AI bots (its "AI Bots" rule is off unless turned on).
+- **Revisit when:** `llms.txt` becomes a standard someone enforces or drops, minting opens (the
+  schedule lines become history), or the Google Play listing replaces the Expo link.

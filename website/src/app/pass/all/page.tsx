@@ -3,9 +3,11 @@ import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
 import { MetaLabel } from '@/components/ui/meta-label'
 import { PillButton } from '@/components/ui/pill-button'
+import { StructuredDataScript } from '@/components/ui/structured-data-script'
 import { passIndexContent } from '@/content/founding-pass'
-import { passGalleryPath, passIndexPath } from '@/content/site'
+import { markdownPagePaths, passGalleryPath, passIndexPath } from '@/content/site'
 import { buildPageMetadata } from '@/lib/build-page-metadata'
+import { buildBreadcrumbList, passBreadcrumbItems } from '@/lib/build-structured-data'
 import { buildPassPagePath, formatPassNumber, passDesigns } from '@/lib/founding-pass/pass-design'
 
 const PASSES_PER_GROUP = 100
@@ -14,6 +16,7 @@ export const metadata: Metadata = buildPageMetadata({
   title: passIndexContent.metaTitle,
   description: passIndexContent.description,
   path: passIndexPath,
+  markdownPath: markdownPagePaths.passIndex,
 })
 
 const passGroups = Array.from(
@@ -37,6 +40,12 @@ const passGroups = Array.from(
 export default function PassIndexPage() {
   return (
     <>
+      <StructuredDataScript
+        structuredData={buildBreadcrumbList([
+          ...passBreadcrumbItems,
+          { name: passIndexContent.title, path: passIndexPath },
+        ])}
+      />
       <SiteHeader />
       <main className="page-gutter page-container flex flex-col gap-12 pt-10 pb-16 md:pt-16 md:pb-24">
         <header className="flex max-w-[44rem] flex-col gap-5">

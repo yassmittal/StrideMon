@@ -7,6 +7,8 @@ type PageMetadataOptions = {
   path: string
   /** True when the route has its own `opengraph-image`, which Next adds by itself. */
   hasOwnShareImage?: boolean
+  /** The page's Markdown copy (D-061), linked as `rel="alternate" type="text/markdown"`. */
+  markdownPath?: string
 }
 
 // The root layout's share image (`app/opengraph-image.tsx`). Served as PNG by `vercel.json`.
@@ -27,13 +29,17 @@ export function buildPageMetadata({
   description,
   path,
   hasOwnShareImage = false,
+  markdownPath,
 }: PageMetadataOptions): Metadata {
   // Even `images: undefined` would hide a route's own `opengraph-image`, so the key is left out.
   const shareImages = hasOwnShareImage ? {} : { images: [siteShareImage] }
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      ...(markdownPath === undefined ? {} : { types: { 'text/markdown': markdownPath } }),
+    },
     openGraph: {
       type: 'website',
       url: path,

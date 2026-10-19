@@ -7,7 +7,8 @@
     "build": "bun scripts/convert-screenshots.ts && next build",
     "start": "bunx serve out",
     "typecheck": "tsc --noEmit",
-    "images": "bun scripts/convert-screenshots.ts"
+    "images": "bun scripts/convert-screenshots.ts",
+    "indexnow": "bun scripts/submit-indexnow.ts"
   },
   "dependencies": {
     "@reown/appkit": "1.8.24",

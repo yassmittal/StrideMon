@@ -45,6 +45,8 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/components/ui/` | Pills, labels, cross marks, phone frame, the apps' logos (X, YouTube, WhatsApp, Telegram: Simple Icons' glyphs, CC0), and the client components (reveal, count-up, copy, video, waitlist form, share links) |
 | `src/app/` | Layout, home page, `pass/`, `pass/all/` (every pass by number, D-051) and `pass/[number]/` (with their Open Graph images), `waitlist/` (the page a shared post links to, with its own Open Graph image, D-055), `privacy/` and `delete-account/`, `not-found.tsx`, icons, sitemap, robots |
 | `src/lib/build-page-metadata.ts` | Every page's title, description, canonical and share cards (D-051). Use it for a new page: Next merges metadata shallowly, so a page that sets `openGraph` by hand loses the layout's image and site name |
+| `src/lib/llms/` | `/llms.txt`, `/llms-full.txt` and the pages' Markdown copies (`/index.md`, `/pass.md`, `/pass/all.md`, `/help.md`), built from `src/content/` (D-061). Their own few words are in `src/content/llms.ts` |
+| `src/lib/build-structured-data.ts` | Every page's JSON-LD: the home page's graph, `FAQPage` on `/pass` and `/help`, breadcrumbs (D-061) |
 
 A contract redeploy or a rule change must update `src/content/` too (D-035).
 
@@ -282,6 +284,26 @@ inlines it, so the files still come from Fontshare's CDN but no stylesheet block
 that fetch fails, the page links the stylesheet instead. The Open Graph image fetches Satoshi's
 TTF the same way at build time. IBM Plex Mono comes from `next/font/google`.
 
+## Answer engines (D-061)
+
+For ChatGPT, Perplexity, Claude, Gemini and Google's AI answers, on top of the usual SEO (D-051):
+
+- **`/llms.txt`** (llmstxt.org) lists the key facts and links to the Markdown copies;
+  **`/llms-full.txt`** is the home page, the Founding Pass page and the help in one file. Each
+  copy is a route in `src/app/` (`index.md/`, `pass.md/`, `help.md/`, `pass/all.md/`), written at
+  build time from the same content the page renders, so they never need editing by hand. Each
+  page links its copy with `rel="alternate" type="text/markdown"` (`buildPageMetadata`'s
+  `markdownPath`), and `vercel.json` gives each copy a `Link: rel="canonical"` header to its page.
+- **`robots.txt`** names the AI crawlers (search, user and training) and allows them all.
+- **`contentUpdatedOn`** (`src/content/site.ts`) is the date in the sitemap's `lastmod`, the
+  structured data and `llms.txt`. Change it when the main pages' words really change.
+- **IndexNow:** after a deploy, run `bun run indexnow` from `website/` (after `bun run build`). It
+  sends the sitemap's URLs to Bing and the other IndexNow engines; `--dry-run` only lists them. The
+  key file is `public/<indexNowKey>.txt`.
+- **Check it:** `curl https://stridemon.xyz/llms.txt`, Google's Rich Results Test on `/`, `/pass`
+  and `/help`, and now and then ask ChatGPT, Perplexity and Claude "what is StrideMon?" and "is the
+  StrideMon Founding Pass free?" to see what they quote.
+
 ## Deploy (Vercel, free plan)
 
 1. New project from the repo. Root directory `website`, framework Next.js, install command
@@ -293,4 +315,7 @@ TTF the same way at build time. IBM Plex Mono comes from `next/font/google`.
    DNS for `stridemon.xyz` is on Namecheap (`docs/deployment.md` §11).
 
 `vercel.json` serves the generated `opengraph-image`, `twitter-image` and `apple-icon` (which
-have no file extension in a static export) as `image/png`, the pass pages' ones included.
+have no file extension in a static export) as `image/png`, the pass pages' ones included, and the
+llms and Markdown files as UTF-8 text (D-061).
+
+After a deploy that changes words, run `bun run indexnow` (above).

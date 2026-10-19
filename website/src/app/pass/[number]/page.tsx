@@ -7,9 +7,11 @@ import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
 import { WaitlistSection } from '@/components/sections/waitlist-section'
 import { RevealObserver } from '@/components/ui/reveal-observer'
+import { StructuredDataScript } from '@/components/ui/structured-data-script'
 import { passDetailContent } from '@/content/founding-pass'
 import { passGalleryPath, passIndexPath, sectionIds } from '@/content/site'
 import { buildPageMetadata } from '@/lib/build-page-metadata'
+import { buildBreadcrumbList, passBreadcrumbItems } from '@/lib/build-structured-data'
 import {
   buildPassPagePath,
   formatPassNumber,
@@ -37,9 +39,13 @@ async function readPageDesign(params: PassPageProps['params']): Promise<PassDesi
   return design
 }
 
+function buildPassPageTitle(design: PassDesign): string {
+  return `Founding Pass ${formatPassNumber(design.designNumber)}: ${design.name}`
+}
+
 export async function generateMetadata({ params }: PassPageProps): Promise<Metadata> {
   const design = await readPageDesign(params)
-  const title = `Founding Pass ${formatPassNumber(design.designNumber)}: ${design.name}`
+  const title = buildPassPageTitle(design)
   const description = `${passRarityLabels[design.rarity]} Founding Pass: a ${design.template.label} in ${design.colorFamily.label}, ${design.colorway.label} colourway. One of one, free to mint, and it can’t be sent or sold.`
   return buildPageMetadata({
     title,
@@ -54,6 +60,12 @@ export default async function PassPage({ params }: PassPageProps) {
   const design = await readPageDesign(params)
   return (
     <>
+      <StructuredDataScript
+        structuredData={buildBreadcrumbList([
+          ...passBreadcrumbItems,
+          { name: buildPassPageTitle(design), path: buildPassPagePath(design.designNumber) },
+        ])}
+      />
       <SiteHeader waitlistHref={`#${sectionIds.waitlist}`} />
       <main>
         <div className="page-gutter page-container flex flex-col gap-6 pt-8 pb-16 md:pt-12 md:pb-24">
