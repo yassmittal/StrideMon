@@ -2092,3 +2092,9 @@ gets an email that says they're on the list and how to get the early hour. He ch
   retried. A new type of email may land in Promotions more often than the code emails.
 - **Revisit when:** sign-ups pass about 150 a day (the codes and the invite emails would share 250),
   or someone asks to stop the emails (then: an unsubscribe link and a stored opt-out).
+- **Changed (2026-10-22, the same day):** the first version landed in Gmail's Promotions tab. The
+  domain checks out (Brevo DKIM, DMARC, verified), so the cause was the email itself. It's now a
+  note from Yash: the sender is "Yash from StrideMon", the subject is "Your StrideMon invite link",
+  there are no sales words ("Be quick", "nothing is for sale"), no styling, the invite link is the
+  only link (no footer link), and it ends "Any questions? Just reply" (hello@ forwards to Yash;
+  replies are the strongest signal for Primary). Code and window emails keep "StrideMon".

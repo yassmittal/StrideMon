@@ -88,26 +88,18 @@ export function formatScheduleTime(time: Date): string {
   return `${readPart('weekday')} ${readPart('day')} ${readPart('month')}, ${readPart('hour')}:${readPart('minute')} IST (${utcTime} UTC)`
 }
 
-export function buildTextBody(paragraphs: readonly string[]): string {
+function buildTextBody(paragraphs: readonly string[]): string {
   return [...paragraphs, `StrideMon · ${PASS_PAGE_URL}`].join('\n\n')
 }
 
-// Plain and quiet, like the site: one column, no images, no tracking pixels. A full `https://`
-// address becomes a link (the invite email's, D-062); labels like stridemon.xyz/pass stay text.
-export function buildHtmlBody(paragraphs: readonly string[]): string {
+// Plain and quiet, like the site: one column, no images, no tracking pixels.
+function buildHtmlBody(paragraphs: readonly string[]): string {
   const paragraphHtml = paragraphs
-    .map((paragraph) => `<p style="margin:0 0 16px">${linkUrls(escapeHtml(paragraph))}</p>`)
+    .map((paragraph) => `<p style="margin:0 0 16px">${escapeHtml(paragraph)}</p>`)
     .join('')
   return `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#111;max-width:480px">${paragraphHtml}<p style="margin:24px 0 0;color:#666;font-size:13px">StrideMon · <a href="${PASS_PAGE_URL}" style="color:#666">${PASS_PAGE_LABEL}</a></p></div>`
 }
 
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-}
-
-function linkUrls(escapedText: string): string {
-  return escapedText.replaceAll(
-    /https:\/\/[^\s<"]+/g,
-    (url) => `<a href="${url}" style="color:#1a2ffb">${url}</a>`,
-  )
 }

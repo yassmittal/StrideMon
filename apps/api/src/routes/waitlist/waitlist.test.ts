@@ -219,12 +219,11 @@ describe('the invite email (D-062)', () => {
     expect(sentEmails).toHaveLength(1)
     const inviteEmail = sentEmails[0]
     expect(inviteEmail?.toEmailAddress).toBe('john@gmail.com')
-    expect(inviteEmail?.subject).toBe('You’re on the StrideMon list. Want the early hour?')
-    expect(inviteEmail?.textBody).toContain(
-      `Your link: ${buildInviteUrl(buildTestInviteCode('john@gmail.com'))}`,
-    )
-    expect(inviteEmail?.textBody).toContain('only 250 passes go in that early hour')
-    expect(inviteEmail?.textBody).toContain('Next email: when your window opens.')
+    expect(inviteEmail?.senderName).toBe('Yash from StrideMon')
+    expect(inviteEmail?.subject).toBe('Your StrideMon invite link')
+    expect(inviteEmail?.textBody).toContain(buildInviteUrl(buildTestInviteCode('john@gmail.com')))
+    expect(inviteEmail?.textBody).toContain('Only 250 passes go in that hour.')
+    expect(inviteEmail?.textBody).toContain('The next email from us is when your window opens.')
     expect((await readSignup('john@gmail.com'))?.inviteEmailSentAt).toBeInstanceOf(Date)
     expect(await readDailyEmailCount(server.mongo.database, formatUtcDay(new Date()))).toBe(1)
   })

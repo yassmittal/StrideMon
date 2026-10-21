@@ -7,6 +7,8 @@ const EMAIL_SEND_TIMEOUT_MILLISECONDS = 10_000
 /** One email, in both plain text and HTML. */
 export type OutgoingEmail = {
   toEmailAddress: string
+  /** The name the inbox shows. Defaults to "StrideMon". */
+  senderName?: string
   subject: string
   textBody: string
   htmlBody: string
@@ -37,7 +39,13 @@ export function createBrevoEmailSender({
   senderAddress: string
 }): EmailSender {
   return {
-    sendEmail: async ({ toEmailAddress, subject, textBody, htmlBody }) => {
+    sendEmail: async ({
+      toEmailAddress,
+      senderName = SENDER_NAME,
+      subject,
+      textBody,
+      htmlBody,
+    }) => {
       const response = await fetch(BREVO_SEND_EMAIL_URL, {
         method: 'POST',
         headers: {
@@ -46,7 +54,7 @@ export function createBrevoEmailSender({
           accept: 'application/json',
         },
         body: JSON.stringify({
-          sender: { email: senderAddress, name: SENDER_NAME },
+          sender: { email: senderAddress, name: senderName },
           to: [{ email: toEmailAddress }],
           subject,
           textContent: textBody,

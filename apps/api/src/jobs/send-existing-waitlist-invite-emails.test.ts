@@ -44,7 +44,7 @@ describe('sendExistingWaitlistInviteEmails (D-062)', () => {
       failure: null,
       remainingCount: 1,
     })
-    expect(sentEmails[0]?.textBody).toContain('so this is one extra email')
+    expect(sentEmails[0]?.textBody).toContain('so this is one extra email.')
   })
 
   it('never emails an address twice, however many runs', async () => {
@@ -71,9 +71,7 @@ describe('sendExistingWaitlistInviteEmails (D-062)', () => {
 
     await runSender({ limit: 1 })
 
-    expect(sentEmails[0]?.textBody).toContain(
-      'Friends who’ve joined with your link so far: 2 of 3.',
-    )
+    expect(sentEmails[0]?.textBody).toContain('So far, 2 of your 3 friends have joined.')
   })
 
   it('only counts without --send', async () => {
