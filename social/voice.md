@@ -105,3 +105,22 @@ Taken from `docs/architecture/design-system.md`:
 - **Sizes:** images 1080 × 1350 (4:5). Video 4:5, ≤ 60 fps, ≤ 140 s, H.264 + AAC with
   `+faststart`, and it must make sense muted.
 - **Every image has alt text:** what the screen shows, plus its key numbers.
+
+## 7. Crypto voice (Yash, 2026-10-19 and 2026-10-21)
+
+For @stridemon's waitlist and Founding Pass posts, Yash wants posts that sound like a person on
+crypto Twitter: "more humanized, more crypto words, more simple and easy to understand". Posts in
+this voice say `(crypto voice, voice.md §7)` in their heading. It overrides §1 and parts of §3:
+
+- **Lowercase and casual** is fine ("gm nads", "ok nads", "ngl", "fun fact:"), and so are "→" lists.
+  Proper names keep their capitals: StrideMon, Sneaker, Founding Pass, Monad, STRIDE.
+- **Crypto words that are true here:** gm, nads (Monad's community), frens, anon, 1/1, fully
+  on-chain, free mint, gas is on us, soulbound ("not for flipping"), mint, the waitlist mints first.
+- **Short and plain:** one idea, short lines, and everyday words over exact ones on images ("glow
+  like pearls", not "−78 °C"). Keep the exact fact in `sources:`.
+- **Talk to the reader:** "which one are you walking in?", "this one's yours to chase", "thank
+  you, all 37".
+- **Still never:** whitelist, WL, allowlist, alpha, LFG, WAGMI, moon, airdrop hints, "spots"
+  (D-060), floor, price, worth, "don't miss out", or any money word from §3. A number is still
+  real or it isn't posted, and STRIDE amounts still carry the §4 line. Crypto slang draws farmers,
+  so the standing answers in §4 stay as they are.

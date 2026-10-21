@@ -1,0 +1,47 @@
+/* The "10 Legendaries, 10 skies" series (posts 2026-10-24 onward): the name, the sky it's named
+   after, the shoe large, and three facts. Each poster only changes its words and its card. The
+   shoe is cropped from the website's pass card, as the invite poster does; nothing inside the
+   art is changed. */
+h1 {
+  font-size: 140px;
+  margin-top: 64px;
+}
+.lede {
+  max-width: 900px;
+}
+.shoe {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin: 24px -24px;
+}
+.shoe svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.shoe svg > rect:first-child {
+  fill: none;
+}
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 32px;
+}
+.value {
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.value.lime {
+  color: var(--lime);
+}
+.numbers .meta {
+  display: block;
+  margin-top: 18px;
+  line-height: 1.4;
+}
+.panel {
+  margin-top: 0;
+}

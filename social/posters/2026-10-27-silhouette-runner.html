@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shoe of the week: Runner</title>
+    <link rel="stylesheet" href="poster.css" />
+    <style>
+      /* "Shoe of the week" (posts on Tuesdays from 2026-10-27): one of the 10 shoes, four real
+         passes of it in a 2 × 2 grid, and its counts from the design table. The words are the
+         template's own description (website/src/content/founding-pass-designs.ts). The shoes are
+         cropped from the website's pass cards; nothing inside the art is changed. */
+      h1 {
+        font-size: 140px;
+        margin-top: 64px;
+      }
+      .shoes {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-content: center;
+        gap: 8px 24px;
+        margin: 24px -12px;
+      }
+      .shoe svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .shoe svg > rect:first-child {
+        fill: none;
+      }
+      .shoe .mono {
+        color: var(--muted-on-light);
+        margin: -4px 0 0 12px;
+      }
+      .numbers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 32px;
+      }
+      .value {
+        font-size: 76px;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .value.lime {
+        color: var(--lime);
+      }
+      .numbers .meta {
+        display: block;
+        margin-top: 18px;
+        line-height: 1.4;
+      }
+      .panel {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="meta-row">
+      <span class="meta">StrideMon • Founding Pass</span>
+      <span class="meta">Shoe 01 / 10</span>
+    </div>
+
+    <h1>The Runner</h1>
+    <p class="lede">Your everyday trainer. 100 of them, no two alike.</p>
+
+    <div class="shoes">
+      <div>
+        <div class="shoe" data-svg="../../website/public/pass-art/cards/0017.svg" data-view-box="60 240 880 450"></div>
+        <p class="mono meta">#0017</p>
+      </div>
+      <div>
+        <div class="shoe" data-svg="../../website/public/pass-art/cards/0069.svg" data-view-box="60 240 880 450"></div>
+        <p class="mono meta">#0069</p>
+      </div>
+      <div>
+        <div class="shoe" data-svg="../../website/public/pass-art/cards/0052.svg" data-view-box="60 240 880 450"></div>
+        <p class="mono meta">#0052</p>
+      </div>
+      <div>
+        <div class="shoe" data-svg="../../website/public/pass-art/cards/0495.svg" data-view-box="60 240 880 450"></div>
+        <p class="mono meta">#0495</p>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="numbers">
+        <div>
+          <p class="mono value">100</p>
+          <span class="meta">Runners</span>
+        </div>
+        <div>
+          <p class="mono value">9</p>
+          <span class="meta">Rare</span>
+        </div>
+        <div>
+          <p class="mono value lime">1</p>
+          <span class="meta">Legendary</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="meta-row footer">
+      <span class="meta">Free mint • Every one a 1/1</span>
+      <span class="mono meta">stridemon.xyz/pass</span>
+    </div>
+
+    <script src="../instagram/design/inline-svg.js"></script>
+  </body>
+</html>

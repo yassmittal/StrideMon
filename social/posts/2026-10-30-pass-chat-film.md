@@ -1,7 +1,7 @@
 ---
 status: draft
 account: stridemon
-slot: 2026-10-19 12:30 UTC   # proposed: 18:00 IST, clear of the daily 15:00 UTC countdown post
+slot: 2026-10-30 12:30 UTC   # Fridays: a film. Moved from 10-19 (never posted) on 2026-10-21
 format: thread           # two posts: the film, then the link in the reply
 pillar: proof
 media:
@@ -42,15 +42,17 @@ results: {}
 - [ ] Re-check #0627 on stridemon.xyz/pass/627 (not minted)
 - [ ] Open the link on a phone and check it lands on the gallery -->
 
-## Post 1 (with the film)
+## Post 1 (with the film) (crypto voice, voice.md §7)
 
-The group chat picked #0627.
+the group chat picked #0627.
 
-Every Founding Pass is an SVG that the contract draws on Monad testnet. 1,000 designs, each one of one, and free. It can't be sold or sent: it's your way into StrideMon.
+not a JPEG. every Founding Pass is an SVG the contract draws on Monad testnet. 1,000 designs, each a 1/1, free mint.
+
+soulbound, so it's not for flipping. it's your way into StrideMon.
 
 ## Post 2 (reply to Post 1)
 
-All 1,000 designs are in the gallery. Find the one you'd pick.
+all 1,000 are in the gallery. which one would your group chat pick?
 
 https://stridemon.xyz/pass?source=x-stridemon
 
