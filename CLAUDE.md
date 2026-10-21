@@ -200,6 +200,11 @@ structure, with a realistic phone. **Its music is that ad's own track, unlicense
 (`hyperSpeedCameraman.mp4` at the repo root), then a StrideMon Sneaker store in 3D
 (`@remotion/three`). **Its hook footage and music are the reference's own, unlicensed** (Yash's
 choice): never for Instagram; YouTube may claim it.
+**3D showroom (planned 2026-10-22):** a 3D gallery of the 1,000 Founding Pass Sneakers at
+`https://showroom.stridemon.xyz`, in `showroom/` at the repo root (its own Next.js app like
+`website/`, empty until Part 1). Built from `docs/showroom/`, **one part per session**: paste the
+prompt in its `README.md`. It only shows: it links to `stridemon.xyz` to mint or join, and never
+connects a wallet or takes an email. Nothing is decided or built yet: Part 0 (decide) is next.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,
 WhatsApp and Telegram sharing, Monad's channels, YouTube, LinkedIn, one Show HN, partners and
