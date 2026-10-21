@@ -566,6 +566,25 @@ In [Google Cloud Console](https://console.cloud.google.com):
 
 ---
 
+## 15. The invite email (D-062)
+
+No new variables: it uses Brevo, `WAITLIST_CODE_DAILY_EMAIL_LIMIT` and the schedule already in `.env`.
+
+1. Redeploy the API ("Updating the API later" below), then the website (the form's promise now
+   mentions the invite email). Write down the time the API restarted, in UTC.
+2. Join once yourself with a new address (Google or a code) and check the email arrives: the link,
+   the early hour at 19:00 IST, "only 250 passes".
+3. On the server, count the list from before, then send it its one extra email:
+
+   ```bash
+   cd ~/projects/stridemon/apps/api
+   ~/.bun-1.4.2/bin/bun run waitlist:send-invite-emails --joined-before <restart time, e.g. 2026-10-22T12:00:00Z>
+   ~/.bun-1.4.2/bin/bun run waitlist:send-invite-emails --joined-before <same time> --send
+   ```
+
+   It prints every address it emailed. If it stops on a refusal (the day's limit, say), run the
+   same command again the next day: nobody gets it twice.
+
 ## Updating the API later
 
 ```bash

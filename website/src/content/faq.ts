@@ -22,7 +22,7 @@ export const frequentlyAskedQuestions: readonly FrequentlyAskedQuestion[] = [
   {
     question: 'Can I play now?',
     answer:
-      'It’s an Android demo build on Monad testnet. Join the waitlist and we’ll email you once, when the Founding Pass waitlist window opens (and a code, only if you ask for one).',
+      'It’s an Android demo build on Monad testnet. Join the waitlist and we’ll email you your invite link, then once more when the Founding Pass waitlist window opens (and a code, only if you ask for one).',
   },
   {
     question: 'What is the Founding Pass?',

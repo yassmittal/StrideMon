@@ -381,7 +381,7 @@ export const helpPlainAnswers: readonly HelpAnswer[] = [
     question: 'Why do you need my email?',
     paragraphs: [
       'To keep it to one pass per person, and so you can prove the pass is yours if you lose your wallet.',
-      'We email you a code only when you ask for one, and once when the waitlist window opens. Nothing else.',
+      'We email you a code only when you ask for one, your invite link when you join, and once when the waitlist window opens. Nothing else.',
     ],
     links: [{ label: 'Privacy policy', href: legalPagePaths.privacyPolicy }],
   },

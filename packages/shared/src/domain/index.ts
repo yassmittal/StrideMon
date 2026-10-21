@@ -25,6 +25,7 @@ export {
   type StarterSneakerKind,
 } from './founding-pass'
 export {
+  EARLY_HOUR_PASS_LIMIT,
   EMAIL_CHECK_METHODS,
   EMAIL_CODE_PURPOSES,
   type EmailCheckMethod,

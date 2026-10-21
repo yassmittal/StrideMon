@@ -548,6 +548,18 @@ runs only with `NODE_ENV=production`. **`--early-hour`** (D-058, Part 4), run be
 then emails everyone else. Still one email per address. Every window email counts toward the day's
 email budget (D-057).
 
+**The invite email** (D-062, `lib/waitlist/waitlist-invite-email.ts`): you're on the list, your
+window's time, the early hour's rule, your invite link, the 250-pass limit and
+`/waitlist/invites`. `POST /v1/waitlist` sends it (`handlers/waitlist/send-waitlist-welcome-email.ts`)
+only when that join created the sign-up and its proof checked the same inbox. It stamps
+`inviteEmailSentAt` first and takes a place in the day's email budget under
+`WAITLIST_CODE_DAILY_EMAIL_LIMIT`; a full day or a failed send is logged (no address) and never
+fails the join, and a refused send gives the stamp and the place back. The sign-ups from before it
+existed get it once from `bun run waitlist:send-invite-emails --joined-before <ISO time>`
+(`jobs/send-existing-waitlist-invite-emails.ts`), worded as one extra email with their friends so
+far: counting only without `--send`, `--send` only with `NODE_ENV=production`, `--limit` per run,
+stopping at the first failed send the way the window email does.
+
 **The deliverability check:** `cd apps/api && bun run pass:send-test-email <address>` sends one
 sample code email through Brevo, reading only `BREVO_API_KEY` and `EMAIL_SENDER_ADDRESS`.
 

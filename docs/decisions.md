@@ -2056,3 +2056,39 @@ shown to change citations.
   that Vercel's Firewall doesn't block AI bots (its "AI Bots" rule is off unless turned on).
 - **Revisit when:** `llms.txt` becomes a standard someone enforces or drops, minting opens (the
   schedule lines become history), or the Google Play listing replaces the Expo link.
+
+## D-062 — The invite email: your link, by email
+
+Made 2026-10-22. The first "Legendary" post on X had 19 views and brought no sign-ups, and Yash
+wanted the waitlist itself to push the invite loop: everyone on the list, and everyone who joins,
+gets an email that says they're on the list and how to get the early hour. He chose to email the
+37 already on the list, saying plainly why, and to send it to new sign-ups right after they join.
+
+- **Decision:**
+  1. **One invite email per sign-up** (`inviteEmailSentAt`, stamped before it's sent, like
+     `windowEmailSentAt`): you're on the list, your window's time, the early hour's rule (3 friends
+     join with your link before it starts, and your window opens an hour earlier), the link itself,
+     the 250-pass limit, and where to see your friends (`/waitlist/invites`). The words follow
+     D-060: the 250 is passes, never "spots", and the early hour doesn't promise a pass.
+  2. **New sign-ups get it as part of the join**, only when that join both created the sign-up and
+     checked the inbox (a Google or code proof for the same inbox). A join without a proof, a
+     repeat inbox or a filled honeypot sends nothing, so nobody can make us email an address they
+     don't own. It counts toward the day's email budget under the waitlist codes' limit
+     (`WAITLIST_CODE_DAILY_EMAIL_LIMIT`, D-057), so it never takes a mint code's place. A full day
+     or a failed send never fails the join: the card already shows the link, and the email isn't
+     retried.
+  3. **The list from before** gets it once, by hand: `bun run waitlist:send-invite-emails
+     --joined-before <time>` (from `apps/api`, on the server), counting only without `--send`. Its
+     wording says invite links are new since they joined, so this is one extra email, and the
+     next is when their window opens. It shows how many friends have joined with their link when
+     that's more than 0.
+  4. **The promise changes** from "a code, and once when the window opens. Nothing else" to "a code
+     to check it's you, your invite link when you join, and once when the waitlist window opens.
+     Nothing else". The window email no longer calls itself "the one email".
+- **Why:** an invite link only works if people remember they have one. The joined card shows it
+  once; an email keeps it in their inbox, which is where they'll look on mint night anyway. The 37
+  joined under a stricter promise, so their email says so instead of quietly breaking it.
+- **Trade-off:** one more email per sign-up out of Brevo's 300 a day; a send that fails isn't
+  retried. A new type of email may land in Promotions more often than the code emails.
+- **Revisit when:** sign-ups pass about 150 a day (the codes and the invite emails would share 250),
+  or someone asks to stop the emails (then: an unsubscribe link and a stored opt-out).

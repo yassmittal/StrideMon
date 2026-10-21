@@ -343,7 +343,7 @@ export const passHowItWorksContent = {
     {
       title: 'Join the waitlist',
       description:
-        'Leave your email before the waitlist window opens. We email you a code only when you ask for one, and once when it opens. Nothing else.',
+        'Leave your email before the waitlist window opens. We email you a code only when you ask for one, your invite link when you join, and once when it opens. Nothing else.',
     },
     {
       title: 'Mint in the waitlist window',

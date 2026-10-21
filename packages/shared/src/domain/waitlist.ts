@@ -16,6 +16,9 @@ export type EmailCodePurpose = (typeof EMAIL_CODE_PURPOSES)[number]
 /** Confirmed friends that give a sign-up the early hour (D-056, D-058). */
 export const REQUIRED_CONFIRMED_FRIEND_COUNT = 3
 
+/** At most this many passes mint in the early hour (D-058), `PASS_EARLY_HOUR_MINT_LIMIT`. */
+export const EARLY_HOUR_PASS_LIMIT = 250
+
 /** An invite code's length, in Crockford base32 characters (D-056). */
 export const INVITE_CODE_LENGTH = 8
 

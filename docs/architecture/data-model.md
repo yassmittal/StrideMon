@@ -268,6 +268,7 @@ type WaitlistSignupDocument = {
   phonePlatform: WaitlistPhonePlatform | null  // optional on the form
   source: string | null                        // the page's ?source=, at most 32 of [a-z0-9-]
   windowEmailSentAt?: Date                     // the one window email (D-043, below)
+  inviteEmailSentAt?: Date                     // the invite email: your link and the early hour (D-062)
   createdAt: Date
 }
 ```
@@ -420,6 +421,11 @@ holds that limit exactly (a counter or slot numbers) and writes it here.
 ("Your 48 hours start now") was sent. The sender sets it before sending, so it never emails an
 address twice. Index: `{ createdAt: 1 }`, for the sender's oldest-first order. (D-056 adds the
 confirmation, the other change to a sign-up after it's written.)
+
+`waitlistSignups` gains `inviteEmailSentAt: Date` (absent until then, D-062): the time its invite
+email (the link and the early hour) was sent. Set before sending, like `windowEmailSentAt`, so it
+goes at most once. A join sends it only when it created the sign-up and checked the inbox;
+`waitlist:send-invite-emails` sends it to the sign-ups from before that.
 
 ### New `chainTransactions` kinds
 

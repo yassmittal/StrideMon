@@ -8,15 +8,22 @@ import {
 } from '@stridemon/shared/api-contracts'
 import type { ApiErrorCode } from '@stridemon/shared/domain'
 import type { FastifyInstance, LightMyRequestResponse } from 'fastify'
+import { formatUtcDay } from '../../lib/email/email-day'
 import { signEmailProof } from '../../lib/founding-pass/email-proof'
 import { buildInviteUrl } from '../../lib/waitlist/invite-code'
+import { readDailyEmailCount } from '../../repositories/email-daily-counts-repository'
 import { getWaitlistSignupsCollection } from '../../repositories/waitlist-signups-repository'
+import { EmailRefusedError, type OutgoingEmail } from '../../services/email-sender'
 import {
   buildTestServer,
   TEST_EMAIL_PROOF_SECRET,
   TEST_WAITLIST_ALLOWED_ORIGIN,
 } from '../../test-support/build-test-server'
-import { buildTestRemoteAddress, TEST_TURNSTILE_TOKEN } from '../../test-support/fake-pass-services'
+import {
+  buildTestRemoteAddress,
+  createCapturingEmailSender,
+  TEST_TURNSTILE_TOKEN,
+} from '../../test-support/fake-pass-services'
 import {
   buildTestInviteCode,
   insertTestWaitlistSignup,
@@ -27,15 +34,26 @@ const WINDOW_STARTS_AT = '2099-01-01T14:30:00Z'
 const EARLY_HOUR_STARTS_AT = new Date('2099-01-01T13:30:00Z')
 
 let server: FastifyInstance
+let sentEmails: OutgoingEmail[]
 
 beforeEach(async () => {
-  server = await buildTestServer({
+  server = await buildServerWithEmailSender(createCapturingEmailSender())
+})
+
+async function buildServerWithEmailSender(
+  capturingEmailSender: ReturnType<typeof createCapturingEmailSender>,
+  environmentOverrides: Record<string, string> = {},
+) {
+  sentEmails = capturingEmailSender.sentEmails
+  return buildTestServer({
     environmentOverrides: {
       PASS_WAITLIST_WINDOW_STARTS_AT: WINDOW_STARTS_AT,
       PASS_BACKUP_OPENING_AT: '2099-02-01T14:30:00Z',
+      ...environmentOverrides,
     },
+    passServices: { emailSender: capturingEmailSender.emailSender },
   })
-})
+}
 
 afterEach(async () => {
   await server.close()
@@ -187,6 +205,87 @@ describe('POST /v1/waitlist', () => {
       headers: { origin: TEST_WAITLIST_ALLOWED_ORIGIN },
     })
     expect(otherRouteResponse.headers['access-control-allow-origin']).toBeUndefined()
+  })
+})
+
+describe('the invite email (D-062)', () => {
+  it('emails a new sign-up whose inbox the join checked: the link, the early hour, the limit', async () => {
+    const response = await joinWaitlist({
+      email: 'john@gmail.com',
+      emailProof: await signTestEmailProof('john@gmail.com', 'google'),
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(sentEmails).toHaveLength(1)
+    const inviteEmail = sentEmails[0]
+    expect(inviteEmail?.toEmailAddress).toBe('john@gmail.com')
+    expect(inviteEmail?.subject).toBe('You’re on the StrideMon list. Want the early hour?')
+    expect(inviteEmail?.textBody).toContain(
+      `Your link: ${buildInviteUrl(buildTestInviteCode('john@gmail.com'))}`,
+    )
+    expect(inviteEmail?.textBody).toContain('only 250 passes go in that early hour')
+    expect(inviteEmail?.textBody).toContain('Next email: when your window opens.')
+    expect((await readSignup('john@gmail.com'))?.inviteEmailSentAt).toBeInstanceOf(Date)
+    expect(await readDailyEmailCount(server.mongo.database, formatUtcDay(new Date()))).toBe(1)
+  })
+
+  it('emails nobody for a join without a proof, a proof for another inbox, or a repeat', async () => {
+    await joinWaitlist({ email: 'no-proof@example.com' })
+    await joinWaitlist({
+      email: 'other-proof@example.com',
+      emailProof: await signTestEmailProof('someone-else@example.com', 'code'),
+    })
+    await joinWaitlist({
+      email: 'john@gmail.com',
+      emailProof: await signTestEmailProof('john@gmail.com', 'code'),
+    })
+    await joinWaitlist({
+      email: 'j.o.h.n@gmail.com',
+      emailProof: await signTestEmailProof('j.o.h.n@gmail.com', 'code'),
+    })
+
+    expect(sentEmails.map((sentEmail) => sentEmail.toEmailAddress)).toEqual(['john@gmail.com'])
+  })
+
+  it('still joins, and sends nothing, when the day’s waitlist emails are used up', async () => {
+    await server.close()
+    server = await buildServerWithEmailSender(createCapturingEmailSender(), {
+      WAITLIST_CODE_DAILY_EMAIL_LIMIT: '1',
+    })
+    await joinWaitlist({
+      email: 'first@example.com',
+      emailProof: await signTestEmailProof('first@example.com', 'code'),
+    })
+
+    const response = await joinWaitlist({
+      email: 'second@example.com',
+      emailProof: await signTestEmailProof('second@example.com', 'code'),
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(sentEmails.map((sentEmail) => sentEmail.toEmailAddress)).toEqual(['first@example.com'])
+    expect((await readSignup('second@example.com'))?.inviteEmailSentAt).toBeUndefined()
+  })
+
+  it('still joins when Brevo refuses, and gives the stamp back', async () => {
+    await server.close()
+    server = await buildServerWithEmailSender({
+      emailSender: {
+        sendEmail: async () => {
+          throw new EmailRefusedError('Brevo refused the email: 400')
+        },
+      },
+      sentEmails: [],
+    })
+
+    const response = await joinWaitlist({
+      email: 'john@gmail.com',
+      emailProof: await signTestEmailProof('john@gmail.com', 'code'),
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect((await readSignup('john@gmail.com'))?.inviteEmailSentAt).toBeUndefined()
+    expect(await readDailyEmailCount(server.mongo.database, formatUtcDay(new Date()))).toBe(0)
   })
 })
 

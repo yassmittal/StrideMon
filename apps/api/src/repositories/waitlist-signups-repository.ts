@@ -4,8 +4,8 @@ import { type Collection, type Db, MongoServerError, type ObjectId } from 'mongo
 const MONGO_DUPLICATE_KEY_ERROR_CODE = 11000
 
 /**
- * Written once, then changed only to confirm its email and to stamp its one window email, so
- * there's no `updatedAt` (data-model.md → waitlistSignups).
+ * Written once, then changed only to confirm its email and to stamp its invite email and its
+ * window email, so there's no `updatedAt` (data-model.md → waitlistSignups).
  */
 export type WaitlistSignupDocument = {
   _id: ObjectId
@@ -26,12 +26,14 @@ export type WaitlistSignupDocument = {
   emailConfirmedBy?: EmailCheckMethod
   /** When its one email ("Your 48 hours start now") went out. Absent until then (D-043). */
   windowEmailSentAt?: Date
+  /** When its invite email (the link and the early hour) went out. Absent until then (D-062). */
+  inviteEmailSentAt?: Date
 }
 
 /** A sign-up as joining writes it: never confirmed or emailed yet. */
 export type NewWaitlistSignup = Omit<
   WaitlistSignupDocument,
-  '_id' | 'emailConfirmedAt' | 'emailConfirmedBy' | 'windowEmailSentAt'
+  '_id' | 'emailConfirmedAt' | 'emailConfirmedBy' | 'windowEmailSentAt' | 'inviteEmailSentAt'
 >
 
 export function getWaitlistSignupsCollection(database: Db): Collection<WaitlistSignupDocument> {
@@ -39,23 +41,27 @@ export function getWaitlistSignupsCollection(database: Db): Collection<WaitlistS
 }
 
 /**
- * Adds the inbox to the waitlist. A repeat inbox changes nothing: the first sign-up's email,
- * platform, source and inviter stay.
+ * Adds the inbox to the waitlist, and answers the new sign-up's id, or `null` when the inbox was
+ * already on the list. A repeat inbox changes nothing: the first sign-up's email, platform, source
+ * and inviter stay.
  */
 export async function insertWaitlistSignupIfNew(
   database: Db,
   signup: NewWaitlistSignup,
-): Promise<void> {
+): Promise<ObjectId | null> {
   try {
-    await getWaitlistSignupsCollection(database).updateOne(
+    const updateResult = await getWaitlistSignupsCollection(database).updateOne(
       { canonicalEmail: signup.canonicalEmail },
       { $setOnInsert: signup },
       { upsert: true },
     )
+    return updateResult.upsertedId
   } catch (error) {
     // The same inbox at once (the other request inserted it), or an old sign-up with this email
     // the backfill hasn't reached: either way it's on the list, which is all we want.
-    if (error instanceof MongoServerError && error.code === MONGO_DUPLICATE_KEY_ERROR_CODE) return
+    if (error instanceof MongoServerError && error.code === MONGO_DUPLICATE_KEY_ERROR_CODE) {
+      return null
+    }
     throw error
   }
 }
@@ -187,5 +193,53 @@ export async function releaseWaitlistWindowEmail(
   await getWaitlistSignupsCollection(database).updateOne(
     { _id: waitlistSignupId },
     { $unset: { windowEmailSentAt: '' } },
+  )
+}
+
+/** Sign-ups from before `joinedBefore` that haven't had their invite email, oldest first (D-062). */
+export function listWaitlistSignupsAwaitingInviteEmail(
+  database: Db,
+  { joinedBefore, limit }: { joinedBefore: Date; limit: number },
+): Promise<WaitlistSignupDocument[]> {
+  return getWaitlistSignupsCollection(database)
+    .find({ createdAt: { $lt: joinedBefore }, inviteEmailSentAt: { $exists: false } })
+    .sort({ createdAt: 1, _id: 1 })
+    .limit(limit)
+    .toArray()
+}
+
+export function countWaitlistSignupsAwaitingInviteEmail(
+  database: Db,
+  { joinedBefore }: { joinedBefore: Date },
+): Promise<number> {
+  return getWaitlistSignupsCollection(database).countDocuments({
+    createdAt: { $lt: joinedBefore },
+    inviteEmailSentAt: { $exists: false },
+  })
+}
+
+/**
+ * Stamps the sign-up's invite email before it's sent. `false` if it was stamped already, so an
+ * address never gets it twice (D-062).
+ */
+export async function claimWaitlistInviteEmail(
+  database: Db,
+  { waitlistSignupId, now }: { waitlistSignupId: ObjectId; now: Date },
+): Promise<boolean> {
+  const updateResult = await getWaitlistSignupsCollection(database).updateOne(
+    { _id: waitlistSignupId, inviteEmailSentAt: { $exists: false } },
+    { $set: { inviteEmailSentAt: now } },
+  )
+  return updateResult.modifiedCount === 1
+}
+
+/** Gives the stamp back after a send that certainly failed, so a later run can try again. */
+export async function releaseWaitlistInviteEmail(
+  database: Db,
+  waitlistSignupId: ObjectId,
+): Promise<void> {
+  await getWaitlistSignupsCollection(database).updateOne(
+    { _id: waitlistSignupId },
+    { $unset: { inviteEmailSentAt: '' } },
   )
 }

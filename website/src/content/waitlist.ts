@@ -4,7 +4,7 @@ import { siteUrl, waitlistPagePath, xAccountHandle } from './site'
 
 // The waitlist (D-037) and its invite loop (D-056), simplified in D-059: one job per screen. Email
 // only, never a wallet, and always checked (D-060): Google, or a 6-digit code. Its promise: a code
-// to check it's you, and one email when the waitlist window opens. Words (social/voice.md): invite,
+// to check it's you, your invite link when you join, and one email when the waitlist window opens (D-062). Words (social/voice.md): invite,
 // confirmed friends, the early hour. Never whitelist, WL, allowlist, points, rank, unlock, or
 // anything about value.
 
@@ -27,7 +27,7 @@ export const waitlistContent = {
   /** While a sign-up saved in this browser loads its invites (D-059). */
   restoringLabel: 'Loading your invites',
   promise:
-    'We email you a code to check it’s you, and once when the waitlist window opens. Nothing else, and nothing is for sale.',
+    'We email you a code to check it’s you, your invite link when you join, and once when the waitlist window opens. Nothing else, and nothing is for sale.',
   privacyLabel: 'Privacy',
   /** From 1,000 sign-ups only (D-056): the waitlist is then bigger than the collection. */
   buildCountLine: (signupCount: number) =>
@@ -162,7 +162,7 @@ export const waitlistProblemContent: Record<WaitlistProblemKey, { title: string;
   },
   emailDisposable: {
     title: 'That looks like a temporary inbox.',
-    text: 'Use an email you’ll still have on 28 November: the window’s one email goes there.',
+    text: 'Use an email you’ll still have on 28 November: the window’s email goes there.',
   },
   turnstileFailed: {
     title: 'The robot check didn’t pass.',
@@ -270,7 +270,7 @@ export const inviteShareText =
 export const waitlistPageContent = {
   title: 'Join the waitlist',
   description:
-    'Leave your email to mint a free StrideMon Founding Pass 48 hours before everyone else. We email you a code to check it’s you, and once when the waitlist window opens.',
+    'Leave your email to mint a free StrideMon Founding Pass 48 hours before everyone else. We email you a code to check it’s you, your invite link, and once when the waitlist window opens.',
   shareImageAlt:
     'Join the StrideMon waitlist: mint a free Founding Pass 48 hours before everyone else.',
   shareImageMetaLabels: ['StrideMon', 'Waitlist', 'Founding Pass'],
