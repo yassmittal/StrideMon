@@ -7,18 +7,22 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@react-three/fiber": "9.8.2",
     "@remotion/cli": "4.0.533",
     "@remotion/fonts": "4.0.533",
     "@remotion/google-fonts": "4.0.533",
     "@remotion/media": "4.0.533",
     "@remotion/motion-blur": "4.0.533",
     "@remotion/paths": "4.0.533",
+    "@remotion/three": "4.0.533",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "remotion": "4.0.533"
+    "remotion": "4.0.533",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@types/react": "19.2.7",
+    "@types/three": "0.186.0",
     "@types/web": "0.0.166",
     "typescript": "5.9.3"
   }

@@ -28,6 +28,13 @@ import {
   PITCH_WIDTH,
 } from './pitch/timeline'
 import { EarnScene } from './scenes/EarnScene'
+import { defaultShowroomProps, ShowroomFilm } from './showroom/ShowroomFilm'
+import {
+  SHOWROOM_DURATION_IN_FRAMES,
+  SHOWROOM_FRAMES_PER_SECOND,
+  SHOWROOM_HEIGHT,
+  SHOWROOM_WIDTH,
+} from './showroom/timeline'
 import { EndCardScene } from './scenes/EndCardScene'
 import { GetSneakerScene } from './scenes/GetSneakerScene'
 import { IntroScene } from './scenes/IntroScene'
@@ -300,6 +307,15 @@ export function RemotionRoot() {
           />
         ))}
       </Folder>
+      <Composition
+        id="Showroom9x16"
+        component={ShowroomFilm}
+        width={SHOWROOM_WIDTH}
+        height={SHOWROOM_HEIGHT}
+        fps={SHOWROOM_FRAMES_PER_SECOND}
+        durationInFrames={SHOWROOM_DURATION_IN_FRAMES}
+        defaultProps={defaultShowroomProps}
+      />
       <Folder name="Checks">
         <Composition
           id="SneakerDropSync"

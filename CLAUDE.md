@@ -195,6 +195,11 @@ the day after the open mint (Yash decides).
 structure, with a realistic phone. **Its music is that ad's own track, unlicensed** (Yash's choice,
 `launch-video/CREDITS.md`): never for Instagram; YouTube may claim it. Its X post draft is
 `social/posts/2026-10-21-app-tour-film.md`.
+**Showroom film (2026-10-21):** `Showroom9x16` in `launch-video/` (`src/showroom/`, brief
+`docs/showroom-video-prompt.md`), the "hyperspeed cameraman" trend: the reference's own hook
+(`hyperSpeedCameraman.mp4` at the repo root), then a StrideMon Sneaker store in 3D
+(`@remotion/three`). **Its hook footage and music are the reference's own, unlicensed** (Yash's
+choice): never for Instagram; YouTube may claim it.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,
 WhatsApp and Telegram sharing, Monad's channels, YouTube, LinkedIn, one Show HN, partners and

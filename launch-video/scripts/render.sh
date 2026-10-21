@@ -4,7 +4,8 @@
 # `bash scripts/render.sh waitlist-4x5` for the Founding Pass waitlist film, or
 # `bash scripts/render.sh sneaker-drop-4x5` (or sneaker-drop-9x16) for the Sneaker drop film, or
 # `bash scripts/render.sh pass-chat-16x9` for the Pass chat film, or
-# `bash scripts/render.sh app-tour-9x16` for the App tour film.
+# `bash scripts/render.sh app-tour-9x16` for the App tour film, or
+# `bash scripts/render.sh showroom-9x16` for the Showroom film.
 # Needs ffmpeg and jq.
 # `bash scripts/render.sh 4x5 --audio-only` keeps the last picture render and redoes only the sound
 # (after a music or mix change).
@@ -18,7 +19,7 @@
 #      embeds.
 set -euo pipefail
 
-FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5|sneaker-drop-4x5|sneaker-drop-9x16|pass-chat-16x9|app-tour-9x16 [--audio-only]}
+FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5|sneaker-drop-4x5|sneaker-drop-9x16|pass-chat-16x9|app-tour-9x16|showroom-9x16 [--audio-only]}
 IS_AUDIO_ONLY=$([ "${2:-}" = --audio-only ] && echo yes || echo no)
 # The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts); the
 # Sneaker drop film 1802 (src/sneaker-drop/beats.ts).
@@ -31,6 +32,9 @@ PASS_CHAT_LAST_FRAME=701
 # a second after the drop (src/app-tour/timeline.ts, levelUpTimeline.dropFrame + 60).
 APP_TOUR_POSTER_FRAME=1271
 APP_TOUR_MUSIC_DEFAULT_FILE_NAME=app-tour-music.wav
+# The Showroom film is 644 frames (src/showroom/timeline.ts). Its poster is the Sneaker wall,
+# pushed in on the stand, just before the whip out.
+SHOWROOM_POSTER_FRAME=525
 RENDER_PROPS=()
 case "$FORMAT" in
   4x5) COMPOSITION_ID=Launch4x5 FILM_NAME=stridemon-launch-4x5 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
@@ -63,6 +67,13 @@ case "$FORMAT" in
       echo "Note: the App tour film uses the reference ad's music, which StrideMon holds no licence for." >&2
     fi
     RENDER_PROPS=(--props "{\"musicFileName\":\"$APP_TOUR_MUSIC_FILE_NAME\",\"hasSoundEffects\":true}")
+    ;;
+  showroom-9x16)
+    COMPOSITION_ID=Showroom9x16 FILM_NAME=stridemon-showroom-9x16 LAST_FRAME=$SHOWROOM_POSTER_FRAME
+    # The reference's own hook and music, by Yash's choice (2026-10-21): unlicensed (CREDITS.md).
+    # Its store is WebGL (@remotion/three), which headless Chrome draws with ANGLE.
+    echo "Note: the Showroom film uses the reference's footage and music, which StrideMon holds no licence for." >&2
+    RENDER_PROPS=(--gl=angle)
     ;;
   *) echo "Unknown format: $FORMAT" >&2 && exit 1 ;;
 esac
@@ -122,7 +133,7 @@ ffmpeg -nostdin -v error -y -i "$PICTURE_FILE" -i "$NORMALISED_MIX_FILE" \
   -c:a aac -b:a 320k -ar 48000 -ac 2 -movflags +faststart "$FILM_FILE"
 
 if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ] || [ "$FORMAT" = sneaker-drop-4x5 ] ||
-  [ "$FORMAT" = pass-chat-16x9 ] || [ "$FORMAT" = app-tour-9x16 ]; then
+  [ "$FORMAT" = pass-chat-16x9 ] || [ "$FORMAT" = app-tour-9x16 ] || [ "$FORMAT" = showroom-9x16 ]; then
   ffmpeg -nostdin -v error -y -i "$FILM_FILE" -map 0:v:0 -c:v copy -an -movflags +faststart \
     "$OUTPUT_DIRECTORY/$FILM_NAME-silent.mp4"
 fi

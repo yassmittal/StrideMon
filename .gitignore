@@ -61,6 +61,8 @@ launch-video/public/pitch/
 # The Pass chat film's shoes (cropped from the gallery cards) and sky photo, by
 # launch-video/scripts/copy-pass-chat-art.sh
 launch-video/public/pass-chat/
+# The Showroom film's reference copy and Sneakers, by launch-video/scripts/copy-showroom-media.sh
+launch-video/public/showroom/
 # Social (social/, D-036): X-only images and clips, each rebuilt from the command in its post file
 social/media/
 # The Metropolis submission video: Recordly takes and the render cut from them (about 330 MB)

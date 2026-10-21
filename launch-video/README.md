@@ -39,6 +39,17 @@ in `FACTS.md` §15, its shots in `FOOTAGE.md`, and its font, music and effects i
 music is the reference ad's own track, which StrideMon holds no licence for** (Yash's choice): it
 isn't for Instagram, and YouTube may claim it.
 
+The **Showroom film** (`Showroom9x16`, 1080 × 1920, 30 fps, 21.5 s), from
+`docs/showroom-video-prompt.md`: the "hyperspeed cameraman" trend. The reference's own hook (a
+cameraman whipping after an F1 car, `../hyperSpeedCameraman.mp4`, measured in
+`src/showroom/reference.md`) cuts on the car's whip into a StrideMon Sneaker store at night, built
+in 3D with `@remotion/three`: the lit front, the #0137 lightbox, the Legendary corner, the Founding
+Pass wall, a wall of 45 Sneakers, a Rare wall and a street sign to `stridemon.xyz/pass`, each shot on
+the reference's own cut. Its code is in `src/showroom/` (the cut in `timeline.ts`, the camera in
+`camera.ts`, the store in `components/ShowroomWorld.tsx`), its words in `FACTS.md` §16, and its
+footage and music in `CREDITS.md`. **Its hook footage and music are the reference's own, which
+StrideMon holds no licence for** (Yash's choice): it isn't for Instagram, and YouTube may claim it.
+
 The **Metropolis pitch video** (`Pitch16x9`, 1920 × 1080, 30 fps, about 1:24) lives here too:
 Yash's voiceover over the submission reel, one scene per part of the script, captions burned in.
 Its code is in `src/pitch/`, its words in `src/pitch/script.ts`, and it is cut to the voice's
@@ -69,6 +80,7 @@ bash scripts/copy-sneaker-drop-art.sh # public/pass-art/: the Sneaker drop film'
 bash scripts/copy-pass-chat-art.sh    # public/pass-chat/: every gallery card's shoe, cropped, and the sky (needs bun, ffmpeg)
 bash scripts/cut-app-tour-footage.sh  # public/footage/app-tour/: the App tour film's clips from the submission reel (needs ffmpeg)
 bash scripts/fetch-app-tour-sneaker-art.sh # public/sneaker/: Sneaker #3's pictures from the live renderer, read-only (needs cast)
+bash scripts/copy-showroom-media.sh   # public/showroom/ and its music: from ../hyperSpeedCameraman.mp4 (needs ffmpeg, rsvg-convert, bun)
 ```
 
 `fetch-audio.sh` makes the App tour film's music from `../reference.mp4` (untracked); without that
@@ -94,6 +106,7 @@ own. `Waitlist4x5` is the waitlist film, and `WaitlistScenes-4x5` has its five s
 six scenes, and `Checks/SneakerDropSync` is its sync check (a flash per hit over the music).
 `PassChat16x9` is the Pass chat film, and `PassChatScenes-16x9` has its eight scenes.
 `AppTour9x16` is the App tour film, and `AppTourScenes-9x16` has its seven sections.
+`Showroom9x16` is the Showroom film.
 Motion blur (the walk's fast stretch) needs Chrome 149+ with
 `chrome://flags/#canvas-draw-element` to show in the Studio; renders don't need it.
 
@@ -111,6 +124,7 @@ bash scripts/render.sh sneaker-drop-4x5   # out/stridemon-sneaker-drop-4x5.mp4, 
 bash scripts/render.sh sneaker-drop-9x16  # out/stridemon-sneaker-drop-9x16.mp4, -poster.png
 bash scripts/render.sh pass-chat-16x9     # out/stridemon-pass-chat-16x9.mp4, -poster.png, -silent.mp4
 bash scripts/render.sh app-tour-9x16      # out/stridemon-app-tour-9x16.mp4, -poster.png, -silent.mp4
+bash scripts/render.sh showroom-9x16      # out/stridemon-showroom-9x16.mp4, -poster.png, -silent.mp4
 ```
 
 The Pass chat film's poster is its last frame, 701 (the end card), and its limiter sits a dB lower
