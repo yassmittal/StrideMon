@@ -1,17 +1,19 @@
 # The StrideMon Showroom: build plan
 
-A 3D gallery at **`https://showroom.stridemon.xyz`** where anyone can walk through all 1,000
-Founding Pass Sneakers, turn any one of them in their hands, and go mint it on `stridemon.xyz`.
-The app lives in [`showroom/`](../../showroom/README.md) at the repo root.
+A premium 3D store at **`https://showroom.stridemon.xyz`**: the StrideMon store from the Showroom
+film, live in the browser. A Founding Pass holder, or anyone from X, walks in after hours, looks
+at the Sneakers on its walls, puts any of the 1,000 on the counter's stand, and goes to
+`stridemon.xyz` to mint it. The app will live in `showroom/` at the repo root (Part 1 creates it).
 
 It's built **one part per Claude Code session**. This folder holds one file per part: what to
 read, what to build, how to check it, and where to stop.
 
 | File | What |
 |---|---|
-| [`brief.md`](brief.md) | The *what*: the idea, the building, the visit, how a 2D drawing becomes a 3D Sneaker, the art direction, the tech, the budgets, the open questions |
-| [`references.md`](references.md) | The research (2026-10-22): the sites, spaces and code this is modelled on, and what to take from each |
+| [`brief.md`](brief.md) | The *what*: the idea, the store, the visit, flat Sneakers in a 3D store, the art direction, the tech, the budgets, the open questions |
+| [`references.md`](references.md) | The research: the film, the sites, spaces and code this is modelled on, and what to take from each |
 | `part-*.md` | The *how* and the *order*, one file per session |
+| `look/` | Screenshots each part saves for Yash to compare |
 
 ## Start a session
 
@@ -28,30 +30,28 @@ does that as its last step).
 ## The whole picture in plain words
 
 ```text
-ARRIVE       showroom.stridemon.xyz. A short loader draws the line-Sneaker mark, then the doors
-             open on a long, dim stone hall: the nave.
+ARRIVE       showroom.stridemon.xyz. A short loader draws the line-Sneaker mark. You're on a
+             night street: wet-dark road, fog, a sodium lamp, dim neighbours. The StrideMon
+             front is dark, then its lights come on. "Step inside" walks you through the glass.
 
-THE NAVE     Overhead, 1,000 white plaster casts hang from the vault, one per design (after
-             Snarkitecture's cast-sneaker ceilings for Kith). When a pass is minted, its cast
-             takes its colours, live. Scroll or swipe to walk down the hall.
+THE STORE    The film's store, 10 × 10 m: a polished warm-grey floor that reflects the light,
+             white walls, a grid of downlights. Five stops: the #0137 lightbox, the Rare wall,
+             the Legendary corner, the Founding Pass wall, the Sneaker wall and its stand.
+             Scroll or swipe to walk; drag to look around a little.
 
-THE CHAPELS  Ten small, jewel-lit rooms off the nave, five a side: one per template (Runner,
-             Racer, Trail, Court, Hoop, Chunky, Sock, Skate, Spike, Hiker). Each holds its 100
-             designs on steel shelves with museum placards, and its Legendary in a glass case.
+LOOK CLOSER  Tap any Sneaker: the camera comes to it and a quiet card says its number, name,
+             rarity and whether it's minted. One button goes to its page on stridemon.xyz.
 
-THE APSE     The end of the hall, under an open oculus: one Sneaker on a tall plinth, turning
-             slowly. The Sneaker of the day, or the latest mint once minting starts.
+FIND         "Find a Sneaker" by number or name, or "Surprise me": that Sneaker goes on the
+             counter's stand and the camera walks you there.
 
-UP CLOSE     Tap any Sneaker: it comes off the shelf and turns in your hands. Its placard says
-             its number, name, rarity, layers and whether it's minted. One button goes to its
-             page on stridemon.xyz to favourite or mint it.
-
-FIND         "Find a Sneaker" by number or name, with filters and "Surprise me". The camera
-             walks you there.
+LEAVE        "Get your Founding Pass" and "Join the waitlist" are always on screen.
 ```
 
-Every Sneaker is the **frozen on-chain drawing, given depth**: the SVG's flat panels become
-raised enamel, its ink lines become dark metal ridges (cloisonné). Nothing is redrawn by hand.
+**The Sneakers stay flat:** each is its frozen laced art, a cut-out on a lit shelf or a print in
+a lightbox, exactly as in the film. Never redrawn, never recoloured. The building is the premium
+part: real floor reflections, gentle bloom on the lit things, soft shadows, an environment map,
+faint grain.
 
 The showroom **only shows**. It never connects a wallet, takes an email or mints: every action
 links to `stridemon.xyz`.
@@ -60,15 +60,12 @@ links to `stridemon.xyz`.
 
 | Part | What | Size | State |
 |---|---|---|---|
-| [0](part-0-decide.md) | Decide: the few open questions, the decision entry, the docs | S | Not started |
-| [1](part-1-look.md) | The look: set up `showroom/`, turn the art into 3D, one plinth to pick the finish and the mood | L | Not started |
-| [2](part-2-building.md) | The building: nave, chapels, apse, light, and the guided walk | L | Not started |
-| [3](part-3-collection.md) | The collection: all 1,000 on the shelves, the cast vault, the live minted state | L | Not started |
-| [4](part-4-up-close.md) | Up close: inspect, the placard, find, deep links, links to mint | M | Not started |
-| [5](part-5-finish.md) | Finish: the arrival, light and post, speed tiers, fallbacks, the stuck-point check | M | Not started |
-| [5b](part-5b-baked-light.md) | Baked light in Blender (optional: only if Part 5 still looks flat, Yash decides) | L | Not started |
-| [6](part-6-launch.md) | Launch: Vercel, `showroom.stridemon.xyz`, the API origin, links from the website, the X post draft | S | Not started |
-| [7](part-7-your-sneaker.md) | Your Sneaker: any Sneaker by number, read from Monad (optional, after early access starts) | M | Not started |
+| [0](part-0-decide.md) | Decide: the plan rewritten for the film's store, the open questions, the decision entry, the docs | S | **Done** (2026-10-22, D-063) |
+| [1](part-1-store.md) | The store: set up `showroom/`, export the art, port the film's store, add what live rendering brings, first tiers, the colour check | L | Not started |
+| [2](part-2-walk.md) | The arrival and the walk: the street, the lights coming on, Step inside, five stops, look around | M | Not started |
+| [3](part-3-look-closer.md) | Look closer and find: tap a Sneaker, the card, the minted state (the API's showroom origin), Find and the stand, the deep link | M | Not started |
+| [4](part-4-finish.md) | Finish and fallbacks: the loader, the last light pass, tuned tiers, no-WebGL still, slow network, the stuck-point check | M | Not started |
+| [5](part-5-launch.md) | Launch: Vercel, `showroom.stridemon.xyz`, the API origin, links from the website, the X post draft | S | Not started |
 
 ## Rules for every part
 
@@ -78,19 +75,21 @@ links to `stridemon.xyz`.
   first. A new decision takes the next free number in `docs/decisions.md`.
 - **Never run git** (the workspace `CLAUDE.md`). Leave changes in the working tree.
 - **Ask Yash first** before anything that deploys, touches DNS or the server's `.env`, sends a
-  transaction or costs money. Free options only: CC0 textures and HDRIs, the fonts the website
-  already uses, no paid models or plugins.
+  transaction or costs money. Free options only: no paid models, textures, fonts or plugins.
 - **Never run the local API against testnet** (`CLAUDE.md`). For a minted state on your laptop,
   use `cd apps/api && bun run pass:local-stack`.
-- **The art is frozen** (`DESIGNS_FROZEN_ON`, 2026-10-08). The showroom reads the exported art
-  and never changes a shape or a colour. Generated files say so and are never edited by hand. A
-  Sneaker's colours on screen must match its card on `stridemon.xyz/pass`, checked side by side.
+- **The film is the look.** The store's sizes, colours and lights come from
+  `launch-video/src/showroom/`. Changing them needs Yash's ok.
+- **The art is frozen** (`DESIGNS_FROZEN_ON`, 2026-10-08). The Sneakers are the exported laced
+  SVGs, shown flat: never redrawn, recoloured, bloomed or tinted. Generated files say so and are
+  never edited by hand. A Sneaker on screen must match its card on `stridemon.xyz/pass`, checked
+  side by side.
 - **`showroom/` is its own app**, like `website/`: its own `package.json` and `bun.lock`, not a
   Bun workspace, never imports `@stridemon/*`. Its Next.js differs from training data: read
   `node_modules/next/dist/docs/` before writing Next code.
-- **Rich, not loud.** Follow the brief's §6 (restraint, light, space, weight, the museum voice).
-  The UI layer is the Lusion look (`docs/architecture/design-system.md`): quiet motion, pills
-  with arrows (D-029), no corner "+" marks, nothing that bounces or flashes.
+- **Rich, not loud.** Follow the brief's §6. The UI layer is the Lusion look
+  (`docs/architecture/design-system.md`): quiet motion, pills with arrows (D-029), no corner "+"
+  marks, nothing that bounces or flashes.
 - **Nobody gets stuck.** Every view answers three things in plain words: where you are, what to
   do next, and where to get help (`stridemon.xyz/help`). Every UI part ends with a
   **stuck-point check**: walk each path, the failures included (slow network, no WebGL, the API
@@ -99,8 +98,9 @@ links to `stridemon.xyz`.
   *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Anywhere a
   pass is offered, say it's free and can't be sent or sold. Rarity is cosmetic: never say a rare
   design is worth more.
-- **Phone first.** Check every visual part on Yash's Android phone (Chrome, over the LAN:
-  `ipconfig getifaddr en1`) as well as the laptop. Most visitors come from X on a phone.
-- **Lean.** The main path end to end with great visuals. A few tests where they matter (the art
-  converter, the data), not a test matrix.
+- **Phone first.** Most visitors come from X on an Android phone. Check every visual part on
+  Yash's Android phone (Chrome, over the LAN: `ipconfig getifaddr en1`) as well as the laptop. It
+  has to look great and run smoothly there, on its tier (brief §7.6).
+- **Lean.** The main path end to end with great visuals. A few tests where they matter (the
+  export, the data, the API's CORS), not a test matrix.
 - **Done means done:** typecheck, lint and tests pass, and the part's own check passes.

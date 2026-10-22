@@ -2098,3 +2098,55 @@ gets an email that says they're on the list and how to get the early hour. He ch
   there are no sales words ("Be quick", "nothing is for sale"), no styling, the invite link is the
   only link (no footer link), and it ends "Any questions? Just reply" (hello@ forwards to Yash;
   replies are the strongest signal for Primary). Code and window emails keep "StrideMon".
+
+## D-063 — The 3D showroom at `showroom.stridemon.xyz`: the film's store, live
+
+Made 2026-10-22. The first showroom plan (same day) was a stone nave with ten chapels, an apse, a
+vault of 1,000 casts and every Sneaker rebuilt as cloisonné relief. Yash replaced it: the
+showroom is **the store from the Showroom film** (`launch-video/src/showroom/`), interactive and a
+little richer because it renders live, with the Sneakers kept flat. He asked Claude to research
+the open questions and pick.
+
+- **Decision:**
+  1. **The place is the film's store**, ported from its code (`ShowroomWorld.tsx`, `textures.ts`,
+     `sneakers.ts`), not rebuilt: the night street, the glass front with the lit fascia and blade
+     sign, the 10 × 10 m room with its polished floor and downlights, and its five walls. The
+     film's numbers stay unless Yash approves a change. After the port, the showroom's copy is the
+     live store; the film's isn't updated to follow.
+  2. **The Sneakers stay flat:** the exported laced SVGs, rasterised in the browser, shown as
+     cut-outs on lit shelves or prints in lightboxes, exactly as the film. Never redrawn,
+     recoloured, bloomed or tinted. The walls keep the film's 65 designs; **the counter's stand**
+     takes any of the 1,000 through Find, "Surprise me" (an available design) or a deep link
+     (`?pass=0137`, one page, no 1,000 static pages).
+  3. **What live rendering adds**, quietly: floor reflections, bloom only on what's brighter than
+     white, contact shadows rendered once, AO on the high tier, an environment built from
+     `Lightformer`s, faint CSS grain. Three tiers (High, Medium, Low) keep it smooth on phones.
+     **Tone mapping happens inside the architecture's materials** (the film's ACES Filmic) and
+     never in the composer, because three.js skips per-material tone mapping under a composer and
+     any curve there would darken the Sneakers (brief §5.2).
+  4. **The visit:** a loader, the street at night with the store's lights coming on, "Step
+     inside", a guided walk of five stops by scroll, swipe, keys or dots with a little look-around,
+     tap any Sneaker to look closer with a card (number, name, rarity, minted state from
+     `GET /v1/pass/collection`, one button to `stridemon.xyz/pass/NNNN?source=showroom`). The
+     counter's screen shows #0137 until minting starts, then the latest mint.
+  5. **It only shows:** no wallet, email, mint or STRIDE. "Get your Founding Pass" (free, can't be
+     sent or sold) and "Join the waitlist" always link to `stridemon.xyz`. The API gets its own
+     CORS list, `SHOWROOM_ALLOWED_ORIGINS`, opening the collection route and nothing else.
+  6. **`showroom/` is its own Next.js app on Bun** like `website/` (D-035): its own install, not a
+     workspace, never importing `@stridemon/*`. A second Vercel Hobby project. Free assets only.
+  7. **Live by Mon 2026-11-09**, before the Show HN and in the week DeltaV's amplification
+     unlocks. No sound at launch. The old plan's "Your Sneaker" part is dropped.
+  8. Built from `docs/showroom/`, one part per session: the store, the walk, look closer and find,
+     finish and fallbacks, launch.
+- **Why:** the film already made the place people will recognise, and porting it keeps the film,
+  the posts and the site one place. Flat Sneakers are the art as it is on Monad, with nothing to
+  get wrong, and they cost almost nothing to draw, which is what lets a phone from X run the
+  building's reflections and light. A store of 65 on the walls plus a stand for any one is a
+  calmer visit than walking past 1,000, and `/pass` already shows the whole collection as a grid.
+- **Trade-off:** the walls don't show all 1,000; you reach the rest one at a time through Find.
+  Flat Sneakers don't turn in your hands. `postprocessing` 6.39 caps three below 0.187, so three
+  stays on 0.186. The material-level tone mapping is a small shader patch to keep working on each
+  three upgrade.
+- **Revisit when:** minting starts (the walls could follow the mint), early access starts on fresh
+  contracts (a "Your Sneaker" on the stand), or Part 1's phone check misses the frame-rate budget on
+  the Medium tier.

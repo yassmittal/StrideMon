@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-063.
+for it. The next free decision number is D-064.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -200,11 +200,15 @@ structure, with a realistic phone. **Its music is that ad's own track, unlicense
 (`hyperSpeedCameraman.mp4` at the repo root), then a StrideMon Sneaker store in 3D
 (`@remotion/three`). **Its hook footage and music are the reference's own, unlicensed** (Yash's
 choice): never for Instagram; YouTube may claim it.
-**3D showroom (planned 2026-10-22):** a 3D gallery of the 1,000 Founding Pass Sneakers at
+**3D showroom (D-063, 2026-10-22):** the Showroom film's store, live and interactive, at
 `https://showroom.stridemon.xyz`, in `showroom/` at the repo root (its own Next.js app like
-`website/`, empty until Part 1). Built from `docs/showroom/`, **one part per session**: paste the
+`website/`, created in Part 1). Ported from the film's code, not rebuilt; **the Sneakers stay
+flat** (the laced SVGs as cut-outs and prints, never recoloured), and tone mapping lives in the
+architecture's materials, never in the composer (brief §5.2). Any of the 1,000 goes on the
+counter's stand through Find. Built from `docs/showroom/`, **one part per session**: paste the
 prompt in its `README.md`. It only shows: it links to `stridemon.xyz` to mint or join, and never
-connects a wallet or takes an email. Nothing is decided or built yet: Part 0 (decide) is next.
+connects a wallet or takes an email. Part 0 is done; **Part 1 (the store) is next**. Live by
+2026-11-09.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,
 WhatsApp and Telegram sharing, Monad's channels, YouTube, LinkedIn, one Show HN, partners and
