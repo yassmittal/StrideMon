@@ -1,14 +1,18 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useIsReducedMotion } from '@/lib/use-reduced-motion'
 import { STORE_TUNING } from '@/store/store-tuning'
+import { useCounterScreenDesign, useDeepLink } from '@/visit/use-visit-data'
 import { useWalkInput } from '@/visit/use-walk-input'
 import { WalkCamera } from '@/visit/walk-camera'
 import { walkController } from '@/visit/walk-controller'
 import { DevPanel } from './dev/dev-panel'
+import { FindSheet } from './ui/find-sheet'
+import { LookCloserCard } from './ui/look-closer-card'
 import { ShowroomHeader } from './ui/showroom-header'
+import { SneakerList } from './ui/sneaker-list'
 import { StoreFailed, StoreLoading } from './ui/store-status'
 import { WalkBar } from './ui/walk-bar'
 
@@ -32,12 +36,27 @@ const DevSceneHelpers = dynamic(
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
+/**
+ * The dev panel (frame rate, draw calls, tier) shows in development, and on any build with
+ * `?stats` in the link, for measuring on a phone.
+ */
+function useIsDevPanelShown(): boolean {
+  const [isShown, setIsShown] = useState(isDevelopment)
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has('stats')) setIsShown(true)
+  }, [])
+  return isShown
+}
+
 export function Showroom() {
   const surfaceRef = useRef<HTMLElement>(null)
   const veilRef = useRef<HTMLDivElement>(null)
   const isReducedMotion = useIsReducedMotion()
   useEffect(() => walkController.setReducedMotion(isReducedMotion), [isReducedMotion])
   useWalkInput(surfaceRef)
+  useDeepLink()
+  const isDevPanelShown = useIsDevPanelShown()
+  useCounterScreenDesign()
 
   return (
     <main
@@ -50,7 +69,7 @@ export function Showroom() {
         renderInside={(lighting) => (
           <>
             <WalkCamera lighting={lighting} veilRef={veilRef} />
-            {isDevelopment ? <DevSceneHelpers /> : null}
+            {isDevPanelShown ? <DevSceneHelpers /> : null}
           </>
         )}
       />
@@ -62,7 +81,10 @@ export function Showroom() {
       </div>
       <ShowroomHeader />
       <WalkBar />
-      {isDevelopment ? <DevPanel /> : null}
+      <LookCloserCard />
+      <SneakerList />
+      <FindSheet />
+      {isDevPanelShown ? <DevPanel /> : null}
     </main>
   )
 }

@@ -5,6 +5,7 @@ import { useThree } from '@react-three/fiber'
 import { useSmallStore } from '@/lib/create-small-store'
 import { visitStore } from '@/lib/visit-store'
 import { useStoreLightingEffect } from '../store-context'
+import { STORE_DEPTH, STORE_HALF_WIDTH } from '../store-dimensions'
 import { STORE_TUNING } from '../store-tuning'
 import {
   backOfStoreBlocks,
@@ -13,9 +14,10 @@ import {
   LegendaryCorner,
 } from './back-of-store'
 import { MergedLightStrips } from './light-strips'
+import { LookCloserCutout } from './look-closer-cutout'
 import { type BlockSpec, MergedBlocks } from './merged-blocks'
 import { NotReflected, useCameraSeesNotReflectedLayer } from './reflection-layer'
-import { Room, roomBlocks, STORE_DEPTH, STORE_HALF_WIDTH } from './room'
+import { Room, roomBlocks } from './room'
 import { Stand, standBlocks } from './stand'
 import { Neighbours, ShopFront, Street, streetBlocks, streetLightStrips } from './street'
 import { HeroWall, RareWall, SneakerWall, wallBlocks, wallLightStrips } from './walls'
@@ -56,6 +58,7 @@ export function StoreWorld() {
       <FoundingPassWall />
       <SneakerWall />
       <Stand designNumber={standDesignNumber} />
+      <LookCloserCutout />
       <StoreContactShadows />
     </group>
   )

@@ -11,7 +11,7 @@ import {
   colourCheckViews,
 } from '@/store/camera-poses'
 
-// Dev only (`bun run dev`): the colour check's face-on views and stand switch, the tier switch,
+// Dev only (`bun run dev`, or `?stats` on any build): the colour check's face-on views and stand switch, the tier switch,
 // and the frame rate and draw calls. The walk replaced Part 1's view switch (D-065).
 
 /** The colour check's designs (Part 1, step 7), plus the stand's own #0868. */
@@ -24,7 +24,7 @@ export function DevPanel() {
   const standDesignNumber = useSmallStore(visitStore, (state) => state.standDesignNumber)
   const stats = useSmallStore(devStatsStore, (state) => state)
   return (
-    <details className="pointer-events-auto absolute top-[132px] left-3 z-20 flex max-w-[min(560px,calc(100vw-24px))] flex-col gap-2 rounded-panel bg-black/70 p-2 font-mono text-[11px] text-white uppercase backdrop-blur md:top-24">
+    <details className="pointer-events-auto absolute top-[168px] left-3 z-20 flex max-w-[min(560px,calc(100vw-24px))] flex-col gap-2 rounded-panel bg-black/70 p-2 font-mono text-[11px] text-white uppercase backdrop-blur md:top-32">
       <summary data-testid="dev-stats" className="cursor-pointer">
         {stats.framesPerSecond} fps · {stats.drawCallCount} draw calls ·{' '}
         {Math.round(stats.triangleCount / 1000)}k triangles ·{' '}

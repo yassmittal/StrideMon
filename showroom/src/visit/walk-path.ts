@@ -26,6 +26,19 @@ export function buildWalkPath(from: WalkPose, to: WalkPose): WalkPath {
   return { curve, from, to, durationSeconds: readMoveSeconds(curve.getLength(), isThroughTheGlass) }
 }
 
+/**
+ * A straight, eased move, for look closer (D-066): its poses stand over the counters at eye
+ * height, where the floor plan's way round them would only make a detour.
+ */
+export function buildDirectPath(from: WalkPose, to: WalkPose): WalkPath {
+  const curve = new CatmullRomCurve3(
+    [new Vector3(...from.position), new Vector3(...to.position)],
+    false,
+    'centripetal',
+  )
+  return { curve, from, to, durationSeconds: readMoveSeconds(curve.getLength(), false) }
+}
+
 function readWaypoints(from: WalkPose, to: WalkPose): Vector3[] {
   const startHeight = from.position[1]
   const endHeight = to.position[1]

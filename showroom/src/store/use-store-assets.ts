@@ -14,7 +14,6 @@ import {
   RARE_WALL_DESIGN_NUMBERS,
   SNEAKER_WALL_DESIGN_NUMBERS,
   STORE_DESIGN_NUMBERS,
-  WINDOW_POSTER_DESIGN_NUMBER,
 } from './sneaker-placements'
 import { loadStoreFonts, readStoreFontFamilies, type StoreFontFamilies } from './store-fonts'
 import {
@@ -120,10 +119,7 @@ function buildStoreAssets(
     foundingPassTitle: createWallTitleTexture({ ...printOptions, text: 'Founding Pass' }),
     foundingPassLightbox: createFoundingPassLightboxTexture(printOptions),
     counterScreen: createCounterScreenTexture(printOptions),
-    windowPoster: createWindowPosterTexture({
-      ...printOptions,
-      designNumber: WINDOW_POSTER_DESIGN_NUMBER,
-    }),
+    windowPoster: createWindowPosterTexture(printOptions),
     sneakersLabel: createWallTitleTexture({ ...printOptions, text: 'Sneakers', color: '#141515' }),
     rareLabel: createWallTitleTexture({ ...printOptions, text: 'Rare', color: '#141515' }),
     paving: createPavingTexture(),

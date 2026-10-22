@@ -217,3 +217,33 @@ export const HINT = {
 } as const
 
 export const STREET_LIT_SESSION_KEY = 'stridemon-showroom:street-lit'
+
+/**
+ * Look closer (Part 3, D-066): where the Sneaker sits on screen, as a share of the screen from its
+ * centre (1 is the edge), so the card below it never covers it, and how the camera gets there.
+ */
+export const LOOK_CLOSER = {
+  /** A phone held upright: the card is a sheet over the bottom of the screen. */
+  portraitFrame: { horizontal: 0.86, vertical: 0.4, centerY: 0.3 },
+  /** A wide screen: the card is a small panel at the bottom left. */
+  landscapeFrame: { horizontal: 0.62, vertical: 0.58, centerY: 0.12 },
+  /** A little room round the Sneaker. */
+  marginShare: 1.4,
+  /** Never nearer than this (the brief's "about half a metre"). */
+  nearestMeters: 0.45,
+  /**
+   * The camera never goes lower than this: above the counters (1.0 m) and the chairs, so none of
+   * them stands between it and a Sneaker.
+   */
+  minimumEyeHeightMeters: 1.2,
+  /** A move longer than this cuts under the fade instead of flying across the store. */
+  longJumpMeters: 6,
+  /** Two hits this close in depth are on one surface: the nearer centre wins. */
+  sameSurfaceMeters: 0.01,
+  /** A press shorter than this, that moves less than the gesture's decision, is a tap. */
+  tapMaxMilliseconds: 500,
+  /** A horizontal swipe this long steps to a neighbour. */
+  neighbourSwipePixels: 40,
+  /** The stand's Sneaker fades to a new one over this long. */
+  standFadeSeconds: 0.6,
+} as const

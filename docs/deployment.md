@@ -585,6 +585,20 @@ No new variables: it uses Brevo, `WAITLIST_CODE_DAILY_EMAIL_LIMIT` and the sched
    It prints every address it emailed. If it stops on a refusal (the day's limit, say), run the
    same command again the next day: nobody gets it twice.
 
+## 16. The showroom's origin (showroom Part 3, D-063)
+
+The API reads one more, optional line: the origins of the 3D showroom, which may read
+`GET /v1/pass/collection` and no other route. Without it the API boots as before and the showroom
+says the minted state is unavailable. Showroom Part 5 adds it on the server, with the showroom's
+launch (`docs/showroom/part-5-launch.md`):
+
+| Variable | Value on the server |
+|---|---|
+| `SHOWROOM_ALLOWED_ORIGINS` | `https://showroom.stridemon.xyz` |
+
+- [ ] `curl -sI -H 'Origin: https://showroom.stridemon.xyz' https://api.stridemon.xyz/v1/pass/collection | grep -i access-control-allow-origin`
+  prints the showroom's origin, and the same `curl` on `/v1/waitlist/count` prints nothing.
+
 ## Updating the API later
 
 ```bash

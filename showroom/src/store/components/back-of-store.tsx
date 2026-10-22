@@ -1,17 +1,18 @@
 'use client'
 
+import { LEGENDARY_WALL_Z, PASS_WALL_CENTER_X, PASS_WALL_Z, printSpots } from '../sneaker-spots'
 import { useStoreContext } from '../store-context'
+import { CEILING_HEIGHT } from '../store-dimensions'
+import { useLookCloserPrint } from '../use-look-closer-print'
+import { CounterScreen } from './counter-screen'
 import type { LightStripSpec } from './light-strips'
 import type { BlockSpec } from './merged-blocks'
-import { CEILING_HEIGHT, STORE_DEPTH } from './room'
 import { Glow, LitPanel, StorePointLight } from './store-primitives'
 
 // The back of the store: the Legendary corner and the Founding Pass wall with its counter, ported
 // from the film's `LegendaryCorner` and `FoundingPassWall`.
 
-const LEGENDARY_WALL_Z = -STORE_DEPTH + 0.03
-const PASS_WALL_Z = -STORE_DEPTH + 0.04
-const PASS_WALL_CENTER_X = 0.7
+const { legendaryPoster, foundingPassLightbox } = printSpots
 /**
  * The black counter. The film's was 3 m wide from x = −0.8, so its screen (at x = −0.9) stood past
  * the end, in the air; here it reaches 0.5 m further left and the screen stands on it.
@@ -102,13 +103,14 @@ export const backOfStoreLightStrips: readonly LightStripSpec[] = [
 /** The back-left corner: the Legendary poster over a table and two chairs. */
 export function LegendaryCorner() {
   const { assets } = useStoreContext()
+  const posterTexture = useLookCloserPrint('legendaryPoster', assets.legendaryPoster)
   return (
     <group>
       <LitPanel
-        texture={assets.legendaryPoster}
-        position={[-3.4, 1.75, LEGENDARY_WALL_Z + 0.03]}
-        width={1.2}
-        height={2.0}
+        texture={posterTexture}
+        position={legendaryPoster.position}
+        width={legendaryPoster.width}
+        height={legendaryPoster.height}
         isPrint
       />
       <Glow
@@ -125,6 +127,7 @@ export function LegendaryCorner() {
 /** The back wall: the lit "Founding Pass" words over its lightbox, a counter in front. */
 export function FoundingPassWall() {
   const { assets } = useStoreContext()
+  const lightboxTexture = useLookCloserPrint('foundingPassLightbox', assets.foundingPassLightbox)
   return (
     <group>
       <LitPanel
@@ -142,10 +145,10 @@ export function FoundingPassWall() {
         opacity={0.22}
       />
       <LitPanel
-        texture={assets.foundingPassLightbox}
-        position={[PASS_WALL_CENTER_X, 1.62, PASS_WALL_Z + 0.04]}
-        width={2.5}
-        height={1.5}
+        texture={lightboxTexture}
+        position={foundingPassLightbox.position}
+        width={foundingPassLightbox.width}
+        height={foundingPassLightbox.height}
         isPrint
       />
       <Glow
@@ -163,13 +166,7 @@ export function FoundingPassWall() {
         opacity={0.5}
         lightingSource="led"
       />
-      <LitPanel
-        texture={assets.counterScreen}
-        position={[PASS_WALL_CENTER_X - 1.6, 1.4, -8.425]}
-        width={0.42}
-        height={0.7}
-        isPrint
-      />
+      <CounterScreen />
       <StorePointLight
         position={[PASS_WALL_CENTER_X, 2.4, -8.6]}
         color="#F4F4FF"

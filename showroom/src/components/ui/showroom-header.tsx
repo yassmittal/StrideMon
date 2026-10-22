@@ -1,9 +1,10 @@
 import { foundingPassUrl, headerCopy, helpUrl, waitlistUrl } from '@/content/showroom'
+import { CollectionNotice } from './collection-notice'
 import { PillLink } from './pill'
 
 // The header, always on screen: where you are (the wordmark), Help, and the two ways out to
 // stridemon.xyz (brief §4, Leave). A Founding Pass offer always says it's free and can't be sent
-// or sold.
+// or sold. Under Help, the quiet line when the minted state can't be read.
 
 export function ShowroomHeader() {
   return (
@@ -21,6 +22,7 @@ export function ShowroomHeader() {
         >
           {headerCopy.help}
         </a>
+        <CollectionNotice />
       </div>
       <nav
         aria-label="StrideMon"

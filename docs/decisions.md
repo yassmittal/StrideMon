@@ -2228,3 +2228,60 @@ by Claude; approved by Yash with Part 2 (2026-10-22), item 6 from his phone chec
   stand far back, so the Sneakers on them are small until look closer (Part 3).
 - **Revisit when:** Part 3's look closer lands (the wide stops may come closer), or Yash wants the
   film's LEDs in the dark front.
+
+## D-066 — The showroom's look closer and Find, as built: the API's own CORS list, what the card can know
+
+Made 2026-10-22, while building the showroom's Part 3 (look closer and find, D-063). Proposed by
+Claude; approved by Yash with Part 3 (2026-10-22), item 4's 1.2 m floor from his phone check.
+
+- **Decision:**
+  1. **`SHOWROOM_ALLOWED_ORIGINS`** is its own, optional list in the API: its origins get CORS on
+     `GET /v1/pass/collection` and on no other route. Unset or empty, it opens nothing, so the API
+     boots on the server's current `.env` until Part 5 adds the line. `pass:local-stack` allows
+     `http://localhost:3002`, and `--showroom-origin` adds another (a phone on the Wi-Fi) without
+     moving the SIWE domain as `--origin` does.
+  2. **The card says what the collection route knows.** "Minted · Founder 42" when the mint is one
+     of the route's last 10 (`recentMints`, the only place it gives a founder number); otherwise
+     "Minted". The showroom reads nothing from the chain. "Being minted" for a pending design;
+     "Couldn't check if it's minted" when the route hasn't answered.
+  3. **The card's button** goes to the website's own page path, `stridemon.xyz/pass/137?source=showroom`
+     (no leading zeros: the static export builds `/pass/137`, and `/pass/0137` is a 404). It says
+     "Mint it on stridemon.xyz" while the schedule is in the waitlist window or the open mint and
+     nobody has taken the design (the website then says who can mint), and "See it on
+     stridemon.xyz" otherwise. The schedule comes from the route, or the website's planned times
+     (copied by hand) when it hasn't answered.
+  4. **Look closer is square on.** The camera faces the Sneaker straight, level, at a distance
+     solved so it fits above the card with a little room round it (about 0.65 m on a laptop and
+     0.95 m on a phone held upright for a shelf Sneaker, never nearer than 0.45 m): the brief's
+     "half a metre" left the Sneaker with no air on the laptop. To make room for the card the camera moves down
+     rather than tilting, so the picture stays flat, but never below 1.2 m: on a phone held
+     upright it stands far back from the Founding Pass lightbox, and lower down the black counter
+     hid the Sneakers (found on Yash's phone). There it tilts a little instead, and a test checks
+     that no counter, table or chair stands between the camera and any Sneaker. A shelf Sneaker gets a 1,024 px picture laid over its
+     atlas cell; a print (the lightboxes, the posters, the screen) **redraws itself** with its
+     Sneaker at about 1,024 px (at most 2,048 px a side) instead, because the Founding Pass
+     lightbox's three Sneakers overlap and an overlay would change which one is in front. The
+     counter's screen is framed whole, with its words. Every sharp picture is released on leaving.
+  5. **Taps.** A shelf Sneaker's whole cell is its target, a print's Sneaker its rotated area; the
+     nearest hit wins, and in a print the Sneaker whose centre is closest. From the street only the
+     window poster can be tapped (the inside shows through the glass). While looking closer, a tap
+     on another Sneaker looks at that one and a tap on nothing goes back; a scroll, ↑ ↓ or a
+     vertical swipe goes back to the stop (the next one walks on); ← →, the small arrows or a
+     horizontal swipe step to the neighbour, left to right as seen, row by row.
+  6. **Long jumps cut.** A look-closer move longer than 6 m, and Find from any stop but the Sneaker
+     wall, fade out and in (as reduced motion does) instead of flying across the store.
+  7. **Find sits at the top of the screen**, as a small dialog: on Android, Chrome's keyboard
+     covers a sheet at the bottom. It matches a number (1 to 1,000, with or without `#` and zeros)
+     or any part of a name, shows up to six, and Enter takes the first. The deep link takes
+     `?pass=137` or `?pass=0137`.
+  8. **The counter's screen** shows #0137 until the schedule reaches the waitlist window, then the
+     newest of `recentMints` ("JUST MINTED", its number, "FOUNDER 42"), and #0137 again if there
+     is none.
+- **Why:** the collection route is public and cached, and it's the only thing the showroom needs;
+  a second chain client (and its CSP entry) for a founder number on 990 old mints isn't worth it.
+  Square-on views keep the frozen art flat on screen, and redrawing a print keeps its own
+  drawing order.
+- **Trade-off:** an older mint's card has no founder number; the website's pass page has it. A
+  print redrawn for look closer costs up to about 17 MB of texture while it's open.
+- **Revisit when:** the route gives founder numbers for every mint, or the phone's texture memory
+  is tight in Part 4.

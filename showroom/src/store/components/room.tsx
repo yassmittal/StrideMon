@@ -13,6 +13,7 @@ import {
   type PointLight,
 } from 'three'
 import { useStoreContext, useStoreLightingEffect } from '../store-context'
+import { CEILING_HEIGHT, STORE_DEPTH, STORE_HALF_WIDTH } from '../store-dimensions'
 import { readRoomLightLevel } from '../store-lighting'
 import { STORE_TUNING } from '../store-tuning'
 import { architectureToneMappingDefines } from '../tone-mapping'
@@ -26,9 +27,6 @@ import { useGlowShare } from './store-primitives'
 // the glass to the back as the lights come on; the floor reflects on the tiers that can afford it
 // (brief §6.3).
 
-export const STORE_HALF_WIDTH = 5
-export const STORE_DEPTH = 10
-export const CEILING_HEIGHT = 3.2
 const QUARTER_TURN = Math.PI / 2
 
 const DOWNLIGHT_XS = [-3.4, -1.0, 1.4, 3.6] as const

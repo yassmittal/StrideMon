@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-066.
+for it. The next free decision number is D-067.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -211,7 +211,11 @@ connects a wallet or takes an email. Parts 0 and 1 are done (2026-10-22): the st
 `showroom/` (`bun run dev`, port 3002; shots in `docs/showroom/look/part-1/`). **Part 2 (the
 arrival and the walk) is done** (2026-10-22, D-065: framed stops, the street as stop 0, the LEDs come
 on with the store; every walk number in `showroom/src/visit/walk-plan.ts`; shots in
-`docs/showroom/look/part-2/`). **Part 3 (look closer and find) is next.** Its rendering findings are D-064: no screen-space AO (it shaded the
+`docs/showroom/look/part-2/`). **Part 3 (look closer and find) is done** (2026-10-22, D-066: tap any
+Sneaker for a square-on look with its card, Find and "Surprise me" on the stand, `?pass=137`, the
+minted state through the API's own `SHOWROOM_ALLOWED_ORIGINS`, not yet on the server; shots in
+`docs/showroom/look/part-3/`). **Part 4 (finish and fallbacks) is next**: an older Android phone
+ran the dev build at 5 to 15 fps, so its tiers need the work. Its rendering findings are D-064: no screen-space AO (it shaded the
 Sneakers), glows draw under the Sneakers. Live by 2026-11-09.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,

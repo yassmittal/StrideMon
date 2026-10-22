@@ -18,6 +18,10 @@
  *                                 domain (a phone on the LAN, or a tunnel's https address)
  *   --early-access                the early-access gate on, so only pass holders get a Sneaker
  *                                 in the app (D-046)
+ *   --showroom-origin <origin>    another showroom origin that may read the collection (D-066), such
+ *                                 as http://<laptop IP>:3002 for a phone on the Wi-Fi (repeatable).
+ *                                 Unlike --origin it leaves the SIWE domain alone, so the website
+ *                                 on localhost:3000 can still sign in and mint
  *
  * It builds the API's whole environment itself and never reads `apps/api/.env` (the real one
  * holds the game-server key). The Anvil shares chain id 10143 with the testnet, so the contracts
@@ -44,6 +48,7 @@ const ANVIL_PORT = 8546
 const API_PORT = 3001
 const SITE_ORIGIN = 'http://localhost:3000'
 const SITE_DOMAIN = 'localhost:3000'
+const SHOWROOM_ORIGIN = 'http://localhost:3002'
 const MONGODB_URI = 'mongodb://127.0.0.1:27019/stridemon-pass-local'
 /** Monad's contract size limit (MIP-2): the pass art renderer is over Ethereum's 24 KB (D-042). */
 const MONAD_CONTRACT_SIZE_LIMIT_BYTES = 128 * 1024
@@ -75,6 +80,7 @@ const { values: options } = parseArgs({
     'slow-blocks': { type: 'boolean', default: false },
     origin: { type: 'string' },
     'early-access': { type: 'boolean', default: false },
+    'showroom-origin': { type: 'string', multiple: true, default: [] },
   },
 })
 
@@ -87,6 +93,7 @@ if (options.turnstile !== 'pass' && options.turnstile !== 'fail') {
   throw new Error('--turnstile must be pass or fail')
 }
 const extraOrigin = options.origin === undefined ? null : new URL(options.origin).origin
+const extraShowroomOrigins = options['showroom-origin'].map((origin) => new URL(origin).origin)
 const now = new Date()
 const scheduleTimes = buildScheduleTimes(phase, now)
 
@@ -162,6 +169,10 @@ const server = await buildServer({
     WAITLIST_ALLOWED_ORIGINS: [SITE_ORIGIN, extraOrigin]
       .filter((origin) => origin !== null)
       .join(','),
+    // The 3D showroom's dev server (`cd showroom && bun run dev`, D-063).
+    SHOWROOM_ALLOWED_ORIGINS: [SHOWROOM_ORIGIN, extraOrigin, ...extraShowroomOrigins]
+      .filter((origin) => origin !== null)
+      .join(','),
     EARLY_ACCESS_REQUIRED: String(options['early-access']),
     PASS_WAITLIST_WINDOW_STARTS_AT: scheduleTimes.waitlistWindowStartsAt.toISOString(),
     PASS_WAITLIST_WINDOW_HOURS: String(WAITLIST_WINDOW_HOURS),
@@ -204,6 +215,7 @@ Local Founding Pass stack (D-045). Nothing here touches testnet.
   Premints     ${premintCount}${waitlistEmails.length > 0 ? `\n  Waitlist     ${waitlistEmails.join(', ')}` : ''}
   Turnstile    always ${options.turnstile === 'pass' ? 'passes' : 'fails'}${options['slow-blocks'] ? `\n  Blocks       one every ${SLOW_BLOCK_SECONDS} s` : ''}
   Gate         ${options['early-access'] ? 'on: only pass holders get a Sneaker' : 'off'}
+  Showroom     ${[SHOWROOM_ORIGIN, ...extraShowroomOrigins].join(', ')} may read the collection
   Anvil        ${rpcUrl} (chain ${monadTestnet.id})
   API          http://localhost:${API_PORT}
   FoundingPass ${contractAddresses.foundingPass}

@@ -46,11 +46,13 @@ is minted, from the API.
 ## Check
 
 - With `cd apps/api && bun run pass:local-stack --premint 40` (never testnet), a minted design's
-  card says Minted with its founder number, "Surprise me" never picks one of them, and a mint made
-  on the local website shows within the refresh.
+  card says Minted, "Surprise me" never picks one of them, and a mint made on the local website
+  shows within the refresh, as "Minted · Founder 41" (the founder number comes only with the
+  collection's last 10 mints, D-066; premints never pass through the API, so they have none).
 - Stop the local API: the quiet line shows, the cards say they couldn't check, and everything else
   still works.
-- Every card's button lands on the right `stridemon.xyz/pass/NNNN` with `?source=showroom`.
+- Every card's button lands on the right `stridemon.xyz/pass/137` (the website's path, no leading zeros, D-066)
+  with `?source=showroom`.
 
 ## Nobody gets stuck
 

@@ -1,21 +1,26 @@
 'use client'
 
 import { useMemo } from 'react'
-import type { Vector3Tuple } from '../camera-poses'
 import { buildSneakerWallGeometry, type SneakerAtlas, type SneakerCell } from '../sneaker-pictures'
+import { RARE_WALL_ROW_COUNT, SNEAKER_WALL_ROW_COUNT } from '../sneaker-placements'
 import {
-  RARE_WALL_COLUMN_COUNT,
-  RARE_WALL_DESIGN_NUMBERS,
-  RARE_WALL_ROW_COUNT,
-  SNEAKER_WALL_COLUMN_COUNT,
-  SNEAKER_WALL_DESIGN_NUMBERS,
-  SNEAKER_WALL_ROW_COUNT,
-} from '../sneaker-placements'
+  LEFT_WALL_X,
+  printSpots,
+  RARE_NICHE,
+  RIGHT_WALL_X,
+  rareWallSpots,
+  readRareRowY,
+  readSneakerRowY,
+  type ShelfSpot,
+  SNEAKER_NICHE,
+  sneakerWallSpots,
+} from '../sneaker-spots'
 import { useStoreContext } from '../store-context'
+import { CEILING_HEIGHT } from '../store-dimensions'
+import { useLookCloserPrint } from '../use-look-closer-print'
 import type { LightStripSpec } from './light-strips'
 import type { BlockSpec } from './merged-blocks'
 import { SNEAKER_RENDER_ORDER } from './render-order'
-import { CEILING_HEIGHT, STORE_HALF_WIDTH } from './room'
 import { SneakerAtlasMesh } from './sneaker-atlas-mesh'
 import { Glow, LitPanel, StorePointLight } from './store-primitives'
 
@@ -24,13 +29,8 @@ import { Glow, LitPanel, StorePointLight } from './store-primitives'
 // atlas and one mesh. The counter and its stand are in stand.tsx.
 
 const QUARTER_TURN = Math.PI / 2
-const LEFT_WALL_X = -STORE_HALF_WIDTH + 0.03
-const RIGHT_WALL_X = STORE_HALF_WIDTH - 0.03
-const NICHE_SNEAKER_WIDTH = 0.42
-const NICHE_CELL_WIDTH = 0.5
-
-const RARE_NICHE = { centerZ: -1.55, centerY: 1.95, rowHeight: 0.33 } as const
-const SNEAKER_NICHE = { centerZ: -6.0, centerY: 2.2, height: 1.7, rowHeight: 0.34 } as const
+const DEGREES_TO_RADIANS = Math.PI / 180
+const { heroLightbox } = printSpots
 
 export const wallBlocks: readonly BlockSpec[] = [
   // The lightbox's frame and the tagline panel's.
@@ -83,46 +83,24 @@ export const wallLightStrips: readonly LightStripSpec[] = [
   ),
 ]
 
-function readRareRowY(row: number): number {
-  return RARE_NICHE.centerY + ((RARE_WALL_ROW_COUNT - 1) / 2 - row) * RARE_NICHE.rowHeight
+const rareWallCells: readonly SneakerCell[] = rareWallSpots.map(toSneakerCell)
+const sneakerWallCells: readonly SneakerCell[] = sneakerWallSpots.map(toSneakerCell)
+
+function toSneakerCell({ designNumber, position, facingDegrees, width }: ShelfSpot): SneakerCell {
+  return { designNumber, position, rotationY: facingDegrees * DEGREES_TO_RADIANS, width }
 }
-
-function readSneakerRowY(row: number): number {
-  return SNEAKER_NICHE.centerY + ((SNEAKER_WALL_ROW_COUNT - 1) / 2 - row) * SNEAKER_NICHE.rowHeight
-}
-
-const rareWallCells: readonly SneakerCell[] = RARE_WALL_DESIGN_NUMBERS.map(
-  (designNumber, index) => {
-    const column = index % RARE_WALL_COLUMN_COUNT
-    const row = Math.floor(index / RARE_WALL_COLUMN_COUNT)
-    const cellZ =
-      RARE_NICHE.centerZ + (column - (RARE_WALL_COLUMN_COUNT - 1) / 2) * NICHE_CELL_WIDTH
-    const position: Vector3Tuple = [LEFT_WALL_X + 0.06, readRareRowY(row) + 0.02, cellZ]
-    return { designNumber, position, rotationY: QUARTER_TURN, width: NICHE_SNEAKER_WIDTH }
-  },
-)
-
-const sneakerWallCells: readonly SneakerCell[] = SNEAKER_WALL_DESIGN_NUMBERS.map(
-  (designNumber, index) => {
-    const column = index % SNEAKER_WALL_COLUMN_COUNT
-    const row = Math.floor(index / SNEAKER_WALL_COLUMN_COUNT)
-    const cellZ =
-      SNEAKER_NICHE.centerZ - (column - (SNEAKER_WALL_COLUMN_COUNT - 1) / 2) * NICHE_CELL_WIDTH
-    const position: Vector3Tuple = [RIGHT_WALL_X - 0.06, readSneakerRowY(row) + 0.02, cellZ]
-    return { designNumber, position, rotationY: -QUARTER_TURN, width: NICHE_SNEAKER_WIDTH }
-  },
-)
 
 /** The left wall: the #0137 lightbox, the tagline panel and the warm cove over them. */
 export function HeroWall() {
   const { assets } = useStoreContext()
+  const heroLightboxTexture = useLookCloserPrint('heroLightbox', assets.heroLightbox)
   return (
     <group>
       <LitPanel
-        texture={assets.heroLightbox}
-        position={[LEFT_WALL_X + 0.04, 1.75, -4.4]}
-        width={1.3}
-        height={2.17}
+        texture={heroLightboxTexture}
+        position={heroLightbox.position}
+        width={heroLightbox.width}
+        height={heroLightbox.height}
         rotationY={QUARTER_TURN}
         isPrint
       />

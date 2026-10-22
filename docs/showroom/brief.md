@@ -2,7 +2,7 @@
 
 **Status:** decided (D-063, 2026-10-22): the store from the Showroom film, live. Part 1 (the
 store) is done (2026-10-22); its rendering findings are D-064. Part 2 (the arrival and the walk) is
-done (2026-10-22, D-065). Part 3 is next. The build order is in [`README.md`](README.md); the research is in
+done (2026-10-22, D-065). Part 3 (look closer and find) is done (2026-10-22, D-066). Part 4 is next. The build order is in [`README.md`](README.md); the research is in
 [`references.md`](references.md).
 
 The first plan (a stone nave, ten chapels, an apse, cloisonné 3D Sneakers and a vault of 1,000
@@ -86,7 +86,7 @@ to 5, and the floor is y = 0. Part 1 ports it as it is; later parts only add to 
 | **Look around** | At a stop, dragging turns the view a little (about 20° side to side, 8° up and down), damped. On a laptop the pointer does a smaller version without a press | Drag, the pointer |
 | **Look closer** | Tap any Sneaker you can see, on a shelf or in a lightbox: the camera comes to it, and a quiet card opens (§6.4): number, name, rarity, minted state, one button to its page on `stridemon.xyz`. Its neighbours on the same wall are one tap away | Tap, ← → for neighbours, Esc or "Back" |
 | **Find** | "Find a Sneaker": by number or name, or "Surprise me". The chosen Sneaker fades onto the counter's **stand**, its little card redraws, and the camera walks you there with the card open | The Find pill, `/` |
-| **Leave** | "Get your Founding Pass" and "Join the waitlist" are always on screen and link to `stridemon.xyz`. The card's button goes to `stridemon.xyz/pass/NNNN` | |
+| **Leave** | "Get your Founding Pass" and "Join the waitlist" are always on screen and link to `stridemon.xyz`. The card's button goes to the design's page, `stridemon.xyz/pass/137` (D-066) | |
 
 **Where you are, always.** A small line says where you are and what to do next ("2 of 5 · The
 Rare wall · Swipe for the Legendary corner · Tap a Sneaker to look closer"), and every view links
@@ -251,7 +251,8 @@ Free to mint. Can't be sent or sold.
 The state is Available, Being minted, or Minted with its founder number; "Couldn't check if it's
 minted" when the API is down. The button's words follow the schedule as `/pass` says them (before
 the window, "See it on stridemon.xyz"; once minting is open to the visitor, "Mint it on
-stridemon.xyz"). Every link carries `?source=showroom`.
+stridemon.xyz", D-066). Every link carries `?source=showroom`. The founder number shows when the mint
+is one of the collection's last 10, the only ones the route numbers (D-066).
 
 **Every Founding Pass mention says it's free and can't be sent or sold:** the card, and a short
 line beside "Get your Founding Pass" ("Free. Can't be sent or sold.").

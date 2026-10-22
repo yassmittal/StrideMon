@@ -3,7 +3,7 @@
 import { type RefObject, useEffect } from 'react'
 import { visitStore } from '@/lib/visit-store'
 import { walkController } from './walk-controller'
-import { FIRST_INSIDE_STOP_INDEX, INPUT, STREET_STOP_INDEX } from './walk-plan'
+import { FIRST_INSIDE_STOP_INDEX, INPUT, LOOK_CLOSER, STREET_STOP_INDEX } from './walk-plan'
 
 // The walk's input (Part 2, step 4), on the element over the whole store. A wheel or trackpad
 // scroll and a vertical swipe walk one stop (normalised, with a short lock so one flick is one
@@ -23,11 +23,12 @@ export function useWalkInput(surfaceRef: RefObject<HTMLElement | null>): void {
 
     const onWheel = (event: WheelEvent) => {
       if (event.ctrlKey) return // A trackpad's pinch: the browser's zoom.
+      if (visitStore.read().isFindOpen) return // Find's results scroll.
       event.preventDefault()
       wheel.handle(event)
     }
     const onPointerDown = (event: PointerEvent) => {
-      if (isOnControl(event.target) || !event.isPrimary) return
+      if (isOnControl(event.target) || !event.isPrimary || visitStore.read().isFindOpen) return
       gesture.start(event)
       surface.setPointerCapture(event.pointerId)
     }
@@ -41,6 +42,11 @@ export function useWalkInput(surfaceRef: RefObject<HTMLElement | null>): void {
           (event.clientX / window.innerWidth) * 2 - 1,
           (event.clientY / window.innerHeight) * 2 - 1,
         )
+        // A Sneaker under the pointer can be clicked to look closer.
+        const isOverSneaker =
+          !isOnPanel(event.target) &&
+          walkController.findTargetAt(...readScreenPoint(event)) !== null
+        surface.style.cursor = isOverSneaker ? 'pointer' : ''
       }
     }
     const onPointerEnd = (event: PointerEvent) => {
@@ -51,7 +57,20 @@ export function useWalkInput(surfaceRef: RefObject<HTMLElement | null>): void {
     const onPointerLeave = () => walkController.setPointerLook(0, 0)
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey || isTypingTarget(event.target)) return
-      if (event.key === 'ArrowDown' || event.key === 'PageDown') {
+      const { isFindOpen, lookCloserTargetId } = visitStore.read()
+      if (isFindOpen) return // Find's dialog has the keyboard.
+      if (event.key === '/') {
+        event.preventDefault()
+        if (visitStore.read().arrivalPhase === 'ready') visitStore.update({ isFindOpen: true })
+      } else if (event.key === 'Escape') {
+        walkController.leaveLookCloser()
+      } else if (lookCloserTargetId !== null && event.key === 'ArrowRight') {
+        event.preventDefault()
+        walkController.stepNeighbour(1)
+      } else if (lookCloserTargetId !== null && event.key === 'ArrowLeft') {
+        event.preventDefault()
+        walkController.stepNeighbour(-1)
+      } else if (event.key === 'ArrowDown' || event.key === 'PageDown') {
         event.preventDefault()
         walkController.step(1)
       } else if (event.key === 'ArrowUp' || event.key === 'PageUp') {
@@ -136,6 +155,7 @@ function createGestureTracker() {
   let startX = 0
   let startY = 0
   let startedAtMilliseconds = 0
+  let isStartedOnPanel = false
   return {
     isTracking: (event: PointerEvent) => event.pointerId === pointerId,
     start(event: PointerEvent) {
@@ -144,6 +164,7 @@ function createGestureTracker() {
       startX = event.clientX
       startY = event.clientY
       startedAtMilliseconds = event.timeStamp
+      isStartedOnPanel = isOnPanel(event.target)
     },
     move(event: PointerEvent) {
       const acrossPixels = event.clientX - startX
@@ -161,7 +182,28 @@ function createGestureTracker() {
       }
     },
     end(event: PointerEvent) {
-      if (axis === 'walk' && event.type === 'pointerup') {
+      const isUp = event.type === 'pointerup'
+      const elapsed = event.timeStamp - startedAtMilliseconds
+      // A press that barely moved: a tap on a Sneaker looks closer; on nothing, it goes back.
+      if (
+        axis === 'undecided' &&
+        isUp &&
+        !isStartedOnPanel &&
+        elapsed < LOOK_CLOSER.tapMaxMilliseconds
+      ) {
+        walkController.tapAt(...readScreenPoint(event))
+      }
+      // Looking closer, a swipe across steps to the neighbour (swipe left for the next).
+      const acrossPixels = event.clientX - startX
+      if (
+        axis === 'look' &&
+        isUp &&
+        visitStore.read().lookCloserTargetId !== null &&
+        Math.abs(acrossPixels) >= LOOK_CLOSER.neighbourSwipePixels
+      ) {
+        walkController.stepNeighbour(acrossPixels < 0 ? 1 : -1)
+      }
+      if (axis === 'walk' && isUp) {
         const upPixels = startY - event.clientY
         const elapsedMilliseconds = Math.max(event.timeStamp - startedAtMilliseconds, 1)
         const isLongEnough = Math.abs(upPixels) >= INPUT.swipeStepPixels
@@ -175,6 +217,16 @@ function createGestureTracker() {
       axis = 'undecided'
     },
   }
+}
+
+/** A point on the screen, −1 to 1 across and up from the centre (the canvas fills the page). */
+function readScreenPoint(event: PointerEvent): [number, number] {
+  return [(event.clientX / window.innerWidth) * 2 - 1, 1 - (event.clientY / window.innerHeight) * 2]
+}
+
+/** The DOM layer's panels (the walk bar, the card, Find): a tap there isn't a tap on the store. */
+function isOnPanel(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest('[data-ui-panel]') !== null
 }
 
 function isOnControl(target: EventTarget | null): boolean {

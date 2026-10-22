@@ -6,8 +6,8 @@ exported as static files. Like `website/`, it is **not** a Bun workspace: it has
 `package.json` and `bun.lock`, and never imports `@stridemon/*`.
 
 The plan is [`../docs/showroom/`](../docs/showroom/README.md) (the brief, the research and one file
-per build part). Part 1 (the store) and Part 2 (the arrival and the walk) are built; look closer,
-the finish and the launch are Parts 3 to 5.
+per build part). Part 1 (the store), Part 2 (the arrival and the walk) and Part 3 (look closer and
+find) are built; the finish and the launch are Parts 4 and 5.
 
 ## Run it
 
@@ -18,7 +18,8 @@ bun run dev          # http://localhost:3002 (the website uses 3000, the local A
 bun run build        # writes the static site to out/
 bun run start        # serves out/ on 3002
 bun run typecheck
-bun run test         # the exported art matches the design table; the walk's stops and paths
+bun run test         # the art and design table; the walk's stops and paths; look closer's targets
+                     # and views; Find and the deep link; reading the collection
 bun run export-art   # copies the website's laced Sneakers and design table (see below)
 ```
 
@@ -29,7 +30,8 @@ laptop's LAN IP with `ipconfig getifaddr en1`, and open `http://<that IP>:3002` 
 Android phone. `next.config.ts` lets the dev server answer private LAN addresses.
 
 **In development** a small panel under the header shows the frame rate, the draw calls of the whole
-frame (every pass), the triangles and the tier. Open it to hold one of the four face-on colour-check
+frame (every pass), the triangles and the tier. Add `?stats` to the link to show it on a production
+build too (`bun run build && bun run start`), which is the one to measure on a phone. Open it to hold one of the four face-on colour-check
 views (Walk goes back to the walk), put a colour-check design on the stand, or force a tier. A
 production build doesn't include it.
 
@@ -42,19 +44,24 @@ clear the session storage (`stridemon-showroom:street-lit`).
 |---|---|
 | `src/app/` | The layout (fonts, as the website loads them) and the one page |
 | `src/components/showroom.tsx` | The page: the canvas (client-only, `next/dynamic`, `ssr: false`), the grain, vignette and reduced motion's veil over it, the DOM layer, the dev panel. The whole page is the walk's input surface |
-| `src/components/ui/` | The DOM layer: the header, the walk bar (where you are, the next step, the arrows and dots, Step inside), the hint, the pills, and the placeholder loading and failure lines (Part 4 builds the loader) |
+| `src/components/ui/` | The DOM layer: the header (with the quiet "can't check" line), the walk bar (where you are, the next step, the arrows and dots, Step inside, Find), the hint, the card, Find, the keyboard list, the pills, and the placeholder loading and failure lines (Part 4 builds the loader) |
 | `src/visit/walk-plan.ts` | **Every number of the walk** (D-065): the stops, the lens and safe frame, the furniture, the doorway, the arrival's timings, the look-around and the input |
 | `src/visit/frame-subject.ts` | Frames a stop's subject for the screen's shape: solves the camera's distance. Level, never roll |
 | `src/visit/walk-path.ts` | The path of a move: through the doorway, round the furniture, eased, turning the short way |
 | `src/visit/arrival-lighting.ts` | The lights coming on: downlights row by row, then the lightboxes, the signs and the LEDs |
-| `src/visit/walk-controller.ts` | The walk's state: the arrival, the moves, the one queued step, look-around, reduced motion's cuts |
+| `src/visit/walk-controller.ts` | The walk's state: the arrival, the moves between places (a stop, or a Sneaker seen close), the one queued move, look-around, taps, reduced motion's and long jumps' cuts |
+| `src/visit/look-closer-targets.ts` | Every Sneaker you can tap (D-066): what a tap hits, what look closer frames, its stop and neighbours |
+| `src/visit/use-visit-data.ts` | The deep link (`?pass=137`) and what the counter's screen shows |
+| `src/store/sneaker-spots.ts` | Where every Sneaker sits: shelf cells, the prints' painted Sneakers, the stand, the screen. The store draws from it and look closer taps it |
+| `src/lib/collection/` | The minted state from `GET /v1/pass/collection`, copied by hand from the website (types, timing, schedule) |
+| `src/lib/find-sneaker.ts` | Find's matching, "Surprise me" and the deep link's parsing |
 | `src/visit/walk-camera.tsx`, `use-walk-input.ts` | The canvas side (camera, lights, veil each frame) and the input (wheel, swipe, drag, keys, pointer) |
 | `src/components/dev/` | Dev only: the panel, and the camera and frame stats inside the canvas |
 | `src/content/showroom.ts` | The showroom's words and links |
 | `src/content/sneaker-designs.ts` | **Generated** by `bun run export-art`: the 1,000 designs. Never edit it by hand |
 | `src/lib/sneaker-design.ts` | The design helpers, copied by hand from the website's `pass-design.ts` |
 | `src/lib/render-tier.ts` | The High, Medium and Low tiers (brief §7.6) |
-| `src/lib/visit-store.ts` | The visit's small store: the tier, the arrival, the stop, the stand's Sneaker |
+| `src/lib/visit-store.ts` | The visit's small store: the tier, the arrival, the stop, look closer, Find, the stand's Sneaker, the counter's screen |
 | `src/store/` | The store itself, ported from `launch-video/src/showroom/` (each file says from where) |
 | `src/store/components/` | The world: street, room, walls, back of the store, the stand, merged boxes and LED strips, effects |
 | `src/store/sneaker-placements.ts` | Which Sneakers are where (brief §5.4) |
@@ -110,3 +117,29 @@ up and down, ↑ ↓, the arrows or the dots walk; a horizontal drag (or a lapto
 looks around. Walking back from stop 1 goes out to the street. Under reduced motion every move is a
 cut under a short fade and the lights are simply on. Change a stop's numbers in `walk-plan.ts`, then
 `bun run test`: it checks every stop and every path on six screen shapes.
+
+## Look closer and Find (Part 3, D-066)
+
+Tap or click any Sneaker you can see (a shelf's whole cell, a print's Sneaker, the screen, the
+stand): the camera comes square on in front of it, above the card, and its sharp picture swaps in.
+← → (or the card's arrows, or a swipe across) step to its neighbours, left to right as seen; Esc,
+Back, a tap on nothing, a scroll or ↑ ↓ go back to the stop. `/` or the Find pill opens Find: a
+number or any part of a name, or "Surprise me" (never a design someone has taken), puts it on the
+counter's stand and brings the camera there (a fade from anywhere but the Sneaker wall). Tab
+reaches a list of the Sneakers at the stop. `?pass=137` opens straight on the stand with its card;
+a bad number says so on the street.
+
+**The minted state** comes from the API. In development, point the showroom at the local stack,
+never at the local API against testnet:
+
+```bash
+cd apps/api && bun run pass:local-stack --premint 40      # allows http://localhost:3002
+cd showroom && NEXT_PUBLIC_API_BASE_URL=http://localhost:3001 bun run dev
+```
+
+On the phone over the LAN, add `--showroom-origin http://<laptop IP>:3002` to the stack (not
+`--origin`, which also moves the SIWE domain and stops the laptop's website minting) and use
+`NEXT_PUBLIC_API_BASE_URL=http://<laptop IP>:3001`. Without an API answer the showroom still works:
+the cards say "Couldn't check if it's minted" and a quiet line under Help says so until it answers.
+The hosted API opens to the showroom once Part 5 sets `SHOWROOM_ALLOWED_ORIGINS` on the server.
+Screenshots: `docs/showroom/look/part-3/`.

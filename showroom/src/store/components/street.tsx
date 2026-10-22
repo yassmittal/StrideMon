@@ -2,8 +2,10 @@
 
 import { useMemo } from 'react'
 import { RepeatWrapping } from 'three'
+import { printSpots } from '../sneaker-spots'
 import { useStoreContext } from '../store-context'
 import { architectureToneMappingDefines } from '../tone-mapping'
+import { useLookCloserPrint } from '../use-look-closer-print'
 import type { LightStripSpec } from './light-strips'
 import type { BlockSpec } from './merged-blocks'
 import { GLASS_RENDER_ORDER } from './render-order'
@@ -159,6 +161,7 @@ export function Neighbours() {
 
 export function ShopFront() {
   const { assets, environmentMap } = useStoreContext()
+  const windowPosterTexture = useLookCloserPrint('windowPoster', assets.windowPoster)
   return (
     <group>
       {/* The fascia's lit STRIDEMON letters and their glow. */}
@@ -212,10 +215,10 @@ export function ShopFront() {
       </group>
       {/* A poster in the window, facing the street. */}
       <LitPanel
-        texture={assets.windowPoster}
-        position={[2.9, 1.25, -0.45]}
-        width={1.0}
-        height={1.5}
+        texture={windowPosterTexture}
+        position={printSpots.windowPoster.position}
+        width={printSpots.windowPoster.width}
+        height={printSpots.windowPoster.height}
         lightingSource="sign"
         isPrint
       />

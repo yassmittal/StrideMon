@@ -1,11 +1,8 @@
 import type { Texture } from 'three'
 import { formatPassNumber } from '@/lib/sneaker-design'
 import type { SneakerImages } from './load-sneaker-images'
-import {
-  FOUNDING_PASS_WALL_DESIGN_NUMBERS,
-  HERO_DESIGN_NUMBER,
-  LEGENDARY_DESIGN_NUMBER,
-} from './sneaker-placements'
+import { HERO_DESIGN_NUMBER, LEGENDARY_DESIGN_NUMBER } from './sneaker-placements'
+import { type PrintSpot, printSpots } from './sneaker-spots'
 import { drawCanvasTexture, drawSneaker, type PrintCanvasOptions } from './textures'
 import { themeColors } from './theme-colors'
 
@@ -14,12 +11,31 @@ import { themeColors } from './theme-colors'
 
 const SIGN_WHITE = '#F4F6FF'
 
-type PrintOptions = PrintCanvasOptions & { sneakerImages: SneakerImages }
+export type PrintOptions = PrintCanvasOptions & { sneakerImages: SneakerImages }
 
 function readSneakerImage(sneakerImages: SneakerImages, designNumber: number): HTMLImageElement {
   const image = sneakerImages.get(designNumber)
   if (image === undefined) throw new Error(`Sneaker #${designNumber} isn't loaded`)
   return image
+}
+
+/** A print's Sneakers at their film places, in order. `designNumber` swaps a one-Sneaker print's. */
+function drawPrintSneakers(
+  context: CanvasRenderingContext2D,
+  spot: PrintSpot,
+  sneakerImages: SneakerImages,
+  designNumber?: number,
+): void {
+  for (const sneaker of spot.sneakers) {
+    drawSneaker({
+      context,
+      image: readSneakerImage(sneakerImages, designNumber ?? sneaker.designNumber),
+      centerX: sneaker.centerX,
+      centerY: sneaker.centerY,
+      width: sneaker.width,
+      rotationDegrees: sneaker.rotationDegrees,
+    })
+  }
 }
 
 /** The big portrait lightbox: #0137 on a deep violet field, its name at the top. */
@@ -29,8 +45,8 @@ export function createHeroLightboxTexture({
   sneakerImages,
 }: PrintOptions): Texture {
   return drawCanvasTexture({
-    width: 1200,
-    height: 2000,
+    width: printSpots.heroLightbox.canvasWidth,
+    height: printSpots.heroLightbox.canvasHeight,
     scale: printScale,
     draw: (context, width, height) => {
       const gradient = context.createLinearGradient(0, 0, width, height)
@@ -45,14 +61,7 @@ export function createHeroLightboxTexture({
       context.font = `500 56px ${fontFamilies.mono}`
       context.fillStyle = 'rgba(244, 246, 255, 0.75)'
       context.fillText(`${formatPassNumber(HERO_DESIGN_NUMBER)} · FOUNDING PASS`, 94, 340)
-      drawSneaker({
-        context,
-        image: readSneakerImage(sneakerImages, HERO_DESIGN_NUMBER),
-        centerX: 600,
-        centerY: 1200,
-        width: 960,
-        rotationDegrees: -28,
-      })
+      drawPrintSneakers(context, printSpots.heroLightbox, sneakerImages)
     },
   })
 }
@@ -64,8 +73,8 @@ export function createLegendaryPosterTexture({
   sneakerImages,
 }: PrintOptions): Texture {
   return drawCanvasTexture({
-    width: 1200,
-    height: 2000,
+    width: printSpots.legendaryPoster.canvasWidth,
+    height: printSpots.legendaryPoster.canvasHeight,
     scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = '#07080C'
@@ -83,14 +92,7 @@ export function createLegendaryPosterTexture({
       context.letterSpacing = '6px'
       context.fillText('LEGENDARY', 0, 0)
       context.restore()
-      drawSneaker({
-        context,
-        image: readSneakerImage(sneakerImages, LEGENDARY_DESIGN_NUMBER),
-        centerX: 680,
-        centerY: 1050,
-        width: 880,
-        rotationDegrees: -18,
-      })
+      drawPrintSneakers(context, printSpots.legendaryPoster, sneakerImages)
       context.fillStyle = SIGN_WHITE
       context.font = `700 76px ${fontFamilies.satoshi}`
       context.fillText('Earthshine', 420, 1720)
@@ -108,8 +110,8 @@ export function createFoundingPassLightboxTexture({
   sneakerImages,
 }: PrintOptions): Texture {
   return drawCanvasTexture({
-    width: 2000,
-    height: 1200,
+    width: printSpots.foundingPassLightbox.canvasWidth,
+    height: printSpots.foundingPassLightbox.canvasHeight,
     scale: printScale,
     draw: (context, width, height) => {
       const gradient = context.createLinearGradient(0, 0, width, height)
@@ -124,55 +126,42 @@ export function createFoundingPassLightboxTexture({
       context.font = `700 120px ${fontFamilies.satoshi}`
       context.letterSpacing = '0px'
       context.fillText('1,000 one-of-ones.', 104, 310)
-      const [leftDesign, middleDesign, rightDesign] = FOUNDING_PASS_WALL_DESIGN_NUMBERS
-      const drawWallSneaker = (
-        designNumber: number,
-        centerX: number,
-        centerY: number,
-        sneakerWidth: number,
-        rotationDegrees: number,
-      ) =>
-        drawSneaker({
-          context,
-          image: readSneakerImage(sneakerImages, designNumber),
-          centerX,
-          centerY,
-          width: sneakerWidth,
-          rotationDegrees,
-        })
-      drawWallSneaker(leftDesign, 520, 820, 760, -10)
-      drawWallSneaker(rightDesign, 1500, 820, 760, 10)
-      drawWallSneaker(middleDesign, 1010, 760, 900, -4)
+      drawPrintSneakers(context, printSpots.foundingPassLightbox, sneakerImages)
     },
   })
 }
 
-/** The upright screen on the counter: one Sneaker on black, its number under it (brief §10, #2). */
+/**
+ * The upright screen on the counter: one Sneaker on black, its number under it. Once minting has
+ * started it shows the newest mint, with "Just minted" and its founder number (brief §10, #2).
+ */
 export function createCounterScreenTexture({
   fontFamilies,
   printScale,
   sneakerImages,
   designNumber = HERO_DESIGN_NUMBER,
-}: PrintOptions & { designNumber?: number }): Texture {
+  founderNumber = null,
+}: PrintOptions & { designNumber?: number; founderNumber?: number | null }): Texture {
+  const { counterScreen } = printSpots
   return drawCanvasTexture({
-    width: 600,
-    height: 1000,
+    width: counterScreen.canvasWidth,
+    height: counterScreen.canvasHeight,
     scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = '#0D0E14'
       context.fillRect(0, 0, width, height)
-      drawSneaker({
-        context,
-        image: readSneakerImage(sneakerImages, designNumber),
-        centerX: 300,
-        centerY: 470,
-        width: 500,
-        rotationDegrees: -6,
-      })
+      drawPrintSneakers(context, counterScreen, sneakerImages, designNumber)
       context.fillStyle = SIGN_WHITE
       context.textAlign = 'center'
       context.font = `500 44px ${fontFamilies.mono}`
       context.fillText(formatPassNumber(designNumber), 300, 760)
+      if (founderNumber !== null) {
+        context.font = `500 30px ${fontFamilies.mono}`
+        context.letterSpacing = '3px'
+        context.fillStyle = 'rgba(244, 246, 255, 0.7)'
+        context.fillText('JUST MINTED', 300, 170)
+        context.fillText(`FOUNDER ${founderNumber}`, 300, 830)
+      }
     },
   })
 }
@@ -182,23 +171,15 @@ export function createWindowPosterTexture({
   fontFamilies,
   printScale,
   sneakerImages,
-  designNumber,
-}: PrintOptions & { designNumber: number }): Texture {
+}: PrintOptions): Texture {
   return drawCanvasTexture({
-    width: 800,
-    height: 1200,
+    width: printSpots.windowPoster.canvasWidth,
+    height: printSpots.windowPoster.canvasHeight,
     scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = themeColors.background
       context.fillRect(0, 0, width, height)
-      drawSneaker({
-        context,
-        image: readSneakerImage(sneakerImages, designNumber),
-        centerX: 400,
-        centerY: 660,
-        width: 640,
-        rotationDegrees: -24,
-      })
+      drawPrintSneakers(context, printSpots.windowPoster, sneakerImages)
       context.fillStyle = themeColors.textPrimary
       context.font = `700 84px ${fontFamilies.satoshi}`
       context.fillText('Walk.', 70, 170)

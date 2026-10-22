@@ -17,11 +17,18 @@ export function ArrowIcon({ className = '' }: { className?: string }) {
   )
 }
 
+const chevronPaths = {
+  up: 'M4 11.5l5-5 5 5',
+  down: 'M4 6.5l5 5 5-5',
+  left: 'M11.5 4l-5 5 5 5',
+  right: 'M6.5 4l5 5-5 5',
+} as const
+
 export function ChevronIcon({
   direction,
   className = '',
 }: {
-  direction: 'up' | 'down'
+  direction: 'up' | 'down' | 'left' | 'right'
   className?: string
 }) {
   return (
@@ -35,7 +42,7 @@ export function ChevronIcon({
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d={direction === 'up' ? 'M4 11.5l5-5 5 5' : 'M4 6.5l5 5 5-5'} />
+      <path d={chevronPaths[direction]} />
     </svg>
   )
 }

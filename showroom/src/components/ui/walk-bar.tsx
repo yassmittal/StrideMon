@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { arrivalCopy, stopNames, walkCopy } from '@/content/showroom'
+import { arrivalCopy, findCopy, lookCloserCopy, stopNames, walkCopy } from '@/content/showroom'
 import { useSmallStore } from '@/lib/create-small-store'
 import { readIsTouchFirst } from '@/lib/use-reduced-motion'
 import { visitStore } from '@/lib/visit-store'
@@ -12,21 +12,25 @@ import {
   LAST_STOP_INDEX,
   STREET_STOP_INDEX,
 } from '@/visit/walk-plan'
+import { openFindSheet } from './find-sheet'
 import { ChevronIcon } from './icons'
 import { PillButton } from './pill'
 import { WalkHint } from './walk-hint'
 
 // The bottom of the screen: where you are and what to do next, always (README, "Nobody gets
-// stuck"). On the street, the line and "Step inside"; inside, "2 of 5 · The Rare wall", the next
-// step, the arrows and the dots. The where-you-are line names the stop being walked to, so it's
+// stuck"). On the street, the line, "Step inside" and Find; inside, "2 of 5 · The Rare wall", the
+// next step, the arrows, the dots and Find. Looking closer, the card takes its place. The where-you-are line names the stop being walked to, so it's
 // right mid-move too, and it's announced.
 
 export function WalkBar() {
   const arrivalPhase = useSmallStore(visitStore, (state) => state.arrivalPhase)
   const stopIndex = useSmallStore(visitStore, (state) => state.stopIndex)
   const isMoving = useSmallStore(visitStore, (state) => state.isMoving)
+  const lookCloserTargetId = useSmallStore(visitStore, (state) => state.lookCloserTargetId)
+  const notice = useSmallStore(visitStore, (state) => state.notice)
   const isTouchFirst = useIsTouchFirst()
-  if (arrivalPhase === 'waiting') return null
+  // Looking closer, the card takes the bottom of the screen (look-closer-card.tsx).
+  if (arrivalPhase === 'waiting' || lookCloserTargetId !== null) return null
 
   const isOnStreet = stopIndex === STREET_STOP_INDEX
   const whereYouAre = isOnStreet
@@ -39,7 +43,15 @@ export function WalkBar() {
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-4 px-4 pb-[max(20px,env(safe-area-inset-bottom))] sm:px-6 sm:pb-6">
       <div className="flex min-w-0 max-w-[30rem] flex-col items-start gap-3">
         {isOnStreet ? null : <WalkHint />}
-        <div className="pointer-events-auto flex w-full flex-col gap-2 rounded-panel border border-hairline-on-dark bg-dark-panel/70 px-4 py-3 backdrop-blur-md">
+        <div
+          data-ui-panel
+          className="pointer-events-auto flex w-full flex-col gap-2 rounded-panel border border-hairline-on-dark bg-dark-panel/70 px-4 py-3 backdrop-blur-md"
+        >
+          {notice === null || !isOnStreet ? null : (
+            <p role="status" className="text-[14px] text-on-dark-secondary leading-snug">
+              {notice}
+            </p>
+          )}
           <p aria-live="polite" className="font-mono text-label text-on-dark uppercase">
             {whereYouAre}
           </p>
@@ -74,11 +86,14 @@ function StreetNextStep({ isReady }: { isReady: boolean }) {
         {arrivalCopy.line}
       </p>
       {isReady ? (
-        <PillButton
-          label={arrivalCopy.stepInside}
-          variant="light"
-          onPress={() => walkController.goTo(FIRST_INSIDE_STOP_INDEX)}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <PillButton
+            label={arrivalCopy.stepInside}
+            variant="light"
+            onPress={() => walkController.goTo(FIRST_INSIDE_STOP_INDEX)}
+          />
+          <PillButton label={findCopy.open} size="compact" onPress={openFindSheet} />
+        </div>
       ) : null}
     </div>
   )
@@ -90,11 +105,17 @@ function InsideNextStep({ stopIndex, isTouchFirst }: { stopIndex: number; isTouc
   return (
     <>
       <p className="text-[15px] text-on-dark-secondary leading-snug">
-        {isLastStop || nextStopName === undefined
-          ? walkCopy.lastStop
-          : walkCopy.nextStep(isTouchFirst, nextStopName)}
+        {walkCopy.withLookCloserHint(
+          isLastStop || nextStopName === undefined
+            ? walkCopy.lastStop
+            : walkCopy.nextStep(isTouchFirst, nextStopName),
+          isTouchFirst ? lookCloserCopy.tapHint : lookCloserCopy.clickHint,
+        )}
       </p>
-      <StopDots stopIndex={stopIndex} />
+      <div className="flex items-center justify-between gap-3">
+        <StopDots stopIndex={stopIndex} />
+        <PillButton label={findCopy.open} size="compact" onPress={openFindSheet} />
+      </div>
     </>
   )
 }
