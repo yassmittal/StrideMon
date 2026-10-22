@@ -126,7 +126,7 @@ export const INSIDE_BOUNDS = { minX: -4.55, maxX: 4.55, minZ: -9.55, maxZ: -0.35
  */
 export const OBSTACLES = [
   { name: 'table and chairs', minX: -4.55, maxX: -1.45, minZ: -8.95, maxZ: -6.95 },
-  { name: 'Founding Pass counter', minX: -1.15, maxX: 2.55, minZ: -9.3, maxZ: -7.85 },
+  { name: 'Founding Pass counter', minX: -1.6, maxX: 2.55, minZ: -9.3, maxZ: -7.85 },
   { name: 'white counter', minX: 3.1, maxX: 4.7, minZ: -7.25, maxZ: -3.55 },
 ] as const
 

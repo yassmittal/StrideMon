@@ -2191,7 +2191,7 @@ changed four of the additions D-063 listed. Proposed by Claude; approved by Yash
 ## D-065 — The showroom's walk, as built: framed stops, the street as a stop, LEDs that come on
 
 Made 2026-10-22, while building the showroom's Part 2 (the arrival and the walk, D-063). Proposed
-by Claude; Yash approves it with Part 2.
+by Claude; approved by Yash with Part 2 (2026-10-22), item 6 from his phone check.
 
 - **Decision:**
   1. **Each stop is a subject, framed for the screen.** A stop names a rectangle in the world (the
@@ -2215,6 +2215,12 @@ by Claude; Yash approves it with Part 2.
      film's.
   5. **The dev view switch is gone; the colour check's four face-on views stay** in the dev panel,
      so the colour check can be run again after a change to the materials or the effects.
+  6. **Two fixes to the film's store, found on Yash's phone.** The black counter on the Founding
+     Pass wall is 3.5 m wide, not 3 m: it now reaches 0.5 m further left, so the upright screen
+     (where the film put it, at x = −0.9) stands on it instead of in the air past its end. And the
+     blade sign's faces draw after its glow (as the Sneakers do, D-064): the glow sprite sits at the
+     sign's centre, and seen at an angle it lit only the far half of a face, so the words seemed to
+     hang off a smaller black box.
 - **Why:** the brief's walk has to show the whole subject on a phone held upright and on a laptop,
   never walk through furniture, and keep the film's light; and the lights-on moment needs a dark
   store to come up from.

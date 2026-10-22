@@ -12,6 +12,11 @@ import { Glow, LitPanel, StorePointLight } from './store-primitives'
 const LEGENDARY_WALL_Z = -STORE_DEPTH + 0.03
 const PASS_WALL_Z = -STORE_DEPTH + 0.04
 const PASS_WALL_CENTER_X = 0.7
+/**
+ * The black counter. The film's was 3 m wide from x = −0.8, so its screen (at x = −0.9) stood past
+ * the end, in the air; here it reaches 0.5 m further left and the screen stands on it.
+ */
+const PASS_COUNTER = { centerX: PASS_WALL_CENTER_X - 0.25, width: 3.5 } as const
 const CHROME = { color: '#B9BBC2', metalness: 0.6, roughness: 0.3, environmentShare: 1 } as const
 const CHAIR_BLACK = '#111113'
 
@@ -69,15 +74,15 @@ export const backOfStoreBlocks: readonly BlockSpec[] = [
     roughness: 0.5,
   },
   {
-    position: [PASS_WALL_CENTER_X, 0.5, -8.55],
-    size: [3.0, 1.0, 0.7],
+    position: [PASS_COUNTER.centerX, 0.5, -8.55],
+    size: [PASS_COUNTER.width, 1.0, 0.7],
     color: '#18181B',
     roughness: 0.35,
     environmentShare: 0.3,
   },
   {
-    position: [PASS_WALL_CENTER_X, 1.01, -8.55],
-    size: [3.04, 0.03, 0.74],
+    position: [PASS_COUNTER.centerX, 1.01, -8.55],
+    size: [PASS_COUNTER.width + 0.04, 0.03, 0.74],
     color: '#232327',
     roughness: 0.25,
     environmentShare: 0.5,

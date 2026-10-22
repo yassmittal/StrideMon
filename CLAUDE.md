@@ -209,9 +209,9 @@ counter's stand through Find. Built from `docs/showroom/`, **one part per sessio
 prompt in its `README.md`. It only shows: it links to `stridemon.xyz` to mint or join, and never
 connects a wallet or takes an email. Parts 0 and 1 are done (2026-10-22): the store runs in
 `showroom/` (`bun run dev`, port 3002; shots in `docs/showroom/look/part-1/`). **Part 2 (the
-arrival and the walk) is built** (2026-10-22, D-065: framed stops, the street as stop 0, the LEDs come
-on with the store; every walk number in `showroom/src/visit/walk-plan.ts`) and waits for Yash's
-phone check; Part 3 comes after his go-ahead. Its rendering findings are D-064: no screen-space AO (it shaded the
+arrival and the walk) is done** (2026-10-22, D-065: framed stops, the street as stop 0, the LEDs come
+on with the store; every walk number in `showroom/src/visit/walk-plan.ts`; shots in
+`docs/showroom/look/part-2/`). **Part 3 (look closer and find) is next.** Its rendering findings are D-064: no screen-space AO (it shaded the
 Sneakers), glows draw under the Sneakers. Live by 2026-11-09.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,

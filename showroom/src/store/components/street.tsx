@@ -195,7 +195,12 @@ export function ShopFront() {
       </mesh>
       {/* The blade sign over the pavement, both faces lit. */}
       <group position={[5.55, 3.0, 0.75]}>
-        <LitQuads texture={assets.bladeSign} quads={BLADE_SIGN_FACES} lightingSource="sign" />
+        <LitQuads
+          texture={assets.bladeSign}
+          quads={BLADE_SIGN_FACES}
+          lightingSource="sign"
+          isDrawnOverGlows
+        />
         <Glow
           texture={assets.glow}
           position={[0, 0, 0]}

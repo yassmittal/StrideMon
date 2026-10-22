@@ -47,7 +47,8 @@ at each. It works with a thumb on a portrait phone as well as on a laptop.
 
 As built (D-065): each stop is framed by solving the camera's distance for its subject; the
 street is stop 0 (walking back from stop 1 goes out to it); the inside LEDs dim with the store in
-the dark front so they can come on. The numbers are in `showroom/src/visit/walk-plan.ts`.
+the dark front so they can come on. Two fixes to the film's store: the Founding Pass counter is
+0.5 m longer so its screen stands on it, and the blade sign draws over its own glow. The numbers are in `showroom/src/visit/walk-plan.ts`.
 
 ## Nobody gets stuck
 

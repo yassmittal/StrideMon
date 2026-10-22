@@ -180,12 +180,15 @@ export function LitQuads({
   brightness = 1,
   lightingSource = 'store',
   isTransparent = false,
+  isDrawnOverGlows = false,
 }: {
   texture: Texture
   quads: readonly LitQuad[]
   brightness?: number
   lightingSource?: LightingSource
   isTransparent?: boolean
+  /** A sign with its own glow around it: drawn after the glow, so the glow never cuts across it. */
+  isDrawnOverGlows?: boolean
 }) {
   const materialRef = useRef<MeshBasicMaterial>(null)
   const geometry = useMemo(() => mergeQuads(quads), [quads])
@@ -194,12 +197,12 @@ export function LitQuads({
     materialRef.current?.color.setScalar(brightness * readLightLevel(levels, lightingSource))
   })
   return (
-    <mesh geometry={geometry}>
+    <mesh geometry={geometry} renderOrder={isDrawnOverGlows ? SNEAKER_RENDER_ORDER : 0}>
       <meshBasicMaterial
         ref={materialRef}
         map={texture}
         toneMapped={false}
-        transparent={isTransparent}
+        transparent={isTransparent || isDrawnOverGlows}
         depthWrite={!isTransparent}
       />
     </mesh>
