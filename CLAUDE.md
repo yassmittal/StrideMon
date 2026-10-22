@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-064.
+for it. The next free decision number is D-065.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -207,8 +207,10 @@ flat** (the laced SVGs as cut-outs and prints, never recoloured), and tone mappi
 architecture's materials, never in the composer (brief §5.2). Any of the 1,000 goes on the
 counter's stand through Find. Built from `docs/showroom/`, **one part per session**: paste the
 prompt in its `README.md`. It only shows: it links to `stridemon.xyz` to mint or join, and never
-connects a wallet or takes an email. Part 0 is done; **Part 1 (the store) is next**. Live by
-2026-11-09.
+connects a wallet or takes an email. Parts 0 and 1 are done (2026-10-22): the store runs in
+`showroom/` (`bun run dev`, port 3002; shots in `docs/showroom/look/part-1/`). **Part 2 (the
+arrival and the walk) is next**. Its rendering findings are D-064: no screen-space AO (it shaded the
+Sneakers), glows draw under the Sneakers. Live by 2026-11-09.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,
 WhatsApp and Telegram sharing, Monad's channels, YouTube, LinkedIn, one Show HN, partners and

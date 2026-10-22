@@ -61,7 +61,7 @@ links to `stridemon.xyz`.
 | Part | What | Size | State |
 |---|---|---|---|
 | [0](part-0-decide.md) | Decide: the plan rewritten for the film's store, the open questions, the decision entry, the docs | S | **Done** (2026-10-22, D-063) |
-| [1](part-1-store.md) | The store: set up `showroom/`, export the art, port the film's store, add what live rendering brings, first tiers, the colour check | L | Not started |
+| [1](part-1-store.md) | The store: set up `showroom/`, export the art, port the film's store, add what live rendering brings, first tiers, the colour check | L | **Done** (2026-10-22, D-064) |
 | [2](part-2-walk.md) | The arrival and the walk: the street, the lights coming on, Step inside, five stops, look around | M | Not started |
 | [3](part-3-look-closer.md) | Look closer and find: tap a Sneaker, the card, the minted state (the API's showroom origin), Find and the stand, the deep link | M | Not started |
 | [4](part-4-finish.md) | Finish and fallbacks: the loader, the last light pass, tuned tiers, no-WebGL still, slow network, the stuck-point check | M | Not started |

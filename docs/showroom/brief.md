@@ -1,7 +1,7 @@
 # The StrideMon Showroom: brief
 
-**Status:** decided (D-063, 2026-10-22): the store from the Showroom film, live. Nothing is built
-yet; Part 1 is next. The build order is in [`README.md`](README.md); the research is in
+**Status:** decided (D-063, 2026-10-22): the store from the Showroom film, live. Part 1 (the
+store) is done (2026-10-22); its rendering findings are D-064. Part 2 is next. The build order is in [`README.md`](README.md); the research is in
 [`references.md`](references.md).
 
 The first plan (a stone nave, ten chapels, an apse, cloisonné 3D Sneakers and a vault of 1,000
@@ -134,11 +134,16 @@ grey and every colour a little darker. So:
 
 - The **lit architecture** (walls, floor, ceiling, counters, street) applies the film's tone
   mapping, ACES Filmic, the React Three Fiber default the film renders with, **inside its own
-  shader** (a small `onBeforeCompile` patch on the standard material). That keeps the film's look
-  and stays at or under 1.
+  shader** (a shader-chunk patch switched on by a define, `showroom/src/store/tone-mapping.ts`, so
+  drei's reflector gets it too). That keeps the film's look and stays at or under 1.
 - **Sneakers and prints** are never tone-mapped, as in the film.
-- **Lit things** (downlights, LED strips, the fascia letters) stay above 1, so they're the only
-  things the bloom picks up.
+- **Lit things** (downlights, the amber coves, the fascia letters, the lit words) stay above 1, so
+  they're the only things the bloom picks up. The shelves' LED strips stay at 1, so no bloom spills
+  onto the Sneakers just above them (D-064).
+- **Glows never cover a Sneaker or a print.** The film's additive glow sprites draw first and the
+  Sneakers and prints after, over them (D-064).
+- **No CSS grade on the canvas.** The film's `contrast`/`saturate`/`brightness` filters would change
+  the Sneakers; the dark shot's brightness is folded into the `dark` light levels.
 - The composer runs **no tone-mapping pass**: only the effects and the final sRGB output. The Low
   tier, with no composer, uses the same patched materials, so every tier shows the same colours.
 
@@ -215,15 +220,16 @@ All of it quiet: rich, not loud. Each step is on or off by tier (§7.6).
 
 | Addition | How | Limit |
 |---|---|---|
-| **Real floor reflections** | drei `MeshReflectorMaterial` on the floor: blurred, low mix, the floor's own colour and roughness | The reflection of a lightbox reads as a soft smear, never a mirror |
+| **Real floor reflections** | drei `MeshReflectorMaterial` on the floor: fully blurred, low mix, the floor's own colour and roughness. The street and the glows are on a layer it skips (D-064) | The reflection of a lightbox reads as a soft smear, never a mirror |
 | **Gentle bloom on the lit things** | `@react-three/postprocessing` `Bloom` (mipmap blur) with a threshold **above 1**: only what's brighter than white blooms (downlights, LED strips, the fascia letters). Sneakers and prints sit at 1 and never bloom; their halo stays the film's glow sprite | With bloom on, the glow sprites are turned down so the two don't add up |
-| **Soft contact shadows, ambient occlusion** | drei `ContactShadows` under the counters, the table, the chairs and the pedestal, rendered **once** (the store doesn't move). Screen-space AO (`N8AO`) on the high tier only | Shadows soft and short, never black |
-| **An environment map** | drei `Environment` built from `Lightformer`s that match the room (the downlight grid, the amber cove, the violet glow), rendered once at a small size. No HDRI download | Only metal, glass and the polished surfaces show it |
+| **Soft contact shadows** | drei `ContactShadows` under the counters, the table, the chairs and the pedestal, rendered **once** (the store doesn't move). No screen-space AO: N8AO shaded the Sneakers too (D-064) | Shadows soft and short, never black |
+| **An environment map** | A small scene of light shapes that match the room (the downlight grid, the amber cove, the violet glow, the lit back wall), turned into a PMREM once. Given to the shiny materials only, not set as `scene.environment` (D-064). No HDRI download | Only metal, glass and the polished surfaces show it |
 | **Faint film grain** | A small tiled noise picture over the canvas in CSS (overlay blend, low opacity), stepping a few times a second like the film's; still under reduced motion | Barely there |
 | **A little life** | The lights-on moment at arrival; the stand's Sneaker fading when it changes | Nothing that loops for attention |
 
 Not used: chromatic aberration, lens flares, glitches, depth of field outside look closer, a
-vignette stronger than faint, any tone mapping on the Sneakers or in the composer (§5.2).
+vignette stronger than faint, screen-space AO (D-064), any tone mapping on the Sneakers or in the
+composer (§5.2).
 
 ### 6.4 The DOM layer
 
@@ -327,8 +333,8 @@ showroom still works and says so in one quiet line.
 | Who | Laptops and strong phones | Most phones | Weak phones |
 | Pixel ratio, at most | 2 | 1.5 | 1 |
 | Floor | Reflector, full | Reflector, low resolution | No reflection, a little rougher |
-| Bloom | On | On, half size | Off: the film's glow sprites only |
-| Shadows, AO | Contact shadows + `N8AO` | Contact shadows | Contact shadows |
+| Bloom | On, 7 levels | On, half size, 5 levels | Off: the film's glow sprites only |
+| Shadows | Contact shadows | Contact shadows | Contact shadows |
 | Sneaker pictures (walls) | 512 px each | 384 px | 256 px |
 | Prints | Full size | Half | Half |
 

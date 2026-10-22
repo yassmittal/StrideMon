@@ -47,10 +47,10 @@ Everything after this part walks around in it, so take the time to make it beaut
      16 downlights and their glows are instanced.
    - The store's brightness is one value that can animate (Part 2's lights-on moment), and the
      stand's Sneaker and card can change (Part 3).
-4. **What live rendering adds** (brief §6.3): the environment from `Lightformer`s, the reflective
-   floor, contact shadows rendered once, bloom above a threshold of 1, `N8AO` on the high tier,
-   tone mapping inside the architecture's materials and none in the composer (brief §5.2), and
-   the grain. Tune each one until it's rich and
+4. **What live rendering adds** (brief §6.3): the environment map for the shiny things, the
+   reflective floor, contact shadows rendered once, bloom above a threshold of 1, tone mapping
+   inside the architecture's materials and none in the composer (brief §5.2), and the grain.
+   (`N8AO` was tried and dropped: it shaded the Sneakers, D-064.) Tune each one until it's rich and
    quiet. A dev-only tuning panel (for example `leva`) is fine; remove it when the numbers are
    final.
 5. **The tiers** (brief §7.6): a first version of High, Medium and Low, chosen by hand in dev,

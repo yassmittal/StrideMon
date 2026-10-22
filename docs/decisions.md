@@ -2150,3 +2150,40 @@ the open questions and pick.
 - **Revisit when:** minting starts (the walls could follow the mint), early access starts on fresh
   contracts (a "Your Sneaker" on the stand), or Part 1's phone check misses the frame-rate budget on
   the Medium tier.
+
+## D-064 — The showroom's live rendering, as built: no screen-space AO, glows under the Sneakers
+
+Made 2026-10-22, while building the showroom's Part 1 (D-063). Measuring the store against the
+brief's two hard rules (the Sneakers never change colour, brief §5.2; the draw-call budget, §8)
+changed four of the additions D-063 listed. Proposed by Claude; approved by Yash with Part 1.
+
+- **Decision:**
+  1. **No screen-space AO.** N8AO darkened a Sneaker on the stand by up to 7/255 on the colour
+     check, even with its transparency handling on (that only spares see-through pixels, and the
+     Sneakers' pixels are opaque). Without it every check is within 2/255. The contact shadows
+     (rendered once) give the furniture its weight.
+  2. **Glows never cover a Sneaker or a print.** The film's additive glow sprites sit in front of
+     the lightboxes and the Sneakers niche, which tints them. In the showroom every glow draws first
+     and every Sneaker and print after, over it (render order; glows write no depth). The shelves'
+     LED strips stay at a brightness of 1, so the bloom picks up the coves, the downlights and the
+     lit words, never a strip right under a row of Sneakers.
+  3. **The environment map is for the shiny things only.** It's a small scene of light shapes that
+     match the room (the downlight grid, the amber cove, the violet niche, the lit back wall),
+     turned into a PMREM once, and given to the chrome, the glass, the counters and the floor.
+     It's not drei's `Environment` (which sets `scene.environment`): three r186 lights every
+     standard material with the scene's environment at one intensity, which washed the film's
+     matte walls.
+  4. **The floor's reflection skips what it can't show.** Everything outside the glass and every
+     glow is on a layer the reflection camera doesn't see. With the static boxes merged per surface
+     (each keeps its film colour as a vertex colour), the street view costs about 107 draw calls on
+     the laptop (High) and 85 on a phone-shaped screen (Medium).
+  - The architecture's tone mapping is a shader-chunk patch switched on by a define, rather than an
+    `onBeforeCompile` per material, so drei's reflector gets it too. The film's CSS grade on the
+    canvas (`contrast`, `saturate`, the dark shot's `brightness`) isn't ported: it would change the
+    Sneakers. The dark shot's 0.75 brightness is folded into the `dark` light levels instead.
+- **Why:** the colour rule is the one thing the showroom can't get wrong (the art is frozen), and
+  a phone from X has to stay smooth. Each change keeps the film's look and costs nothing visible.
+- **Trade-off:** no AO in the corners and under the shelves; the glows read a little flatter where
+  a Sneaker sits in front of them.
+- **Revisit when:** an AO pass can leave chosen objects out (a selective AO, or a mask), or the
+  phone check shows headroom for more.
