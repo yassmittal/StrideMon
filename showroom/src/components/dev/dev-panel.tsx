@@ -6,35 +6,32 @@ import { RENDER_TIERS, renderTierSettings } from '@/lib/render-tier'
 import { formatPassNumber } from '@/lib/sneaker-design'
 import { visitStore } from '@/lib/visit-store'
 import {
-  type AnyStoreViewName,
   COLOUR_CHECK_VIEW_NAMES,
-  readStoreView,
-  STORE_VIEW_NAMES,
+  type ColourCheckViewName,
+  colourCheckViews,
 } from '@/store/camera-poses'
 
-// Dev only (`bun run dev`): the view switch, the stand switch for the colour check, the tier
-// switch, and the frame rate and draw calls.
-// It's how the store is compared with the film; Part 2's walk replaces the view switch.
+// Dev only (`bun run dev`): the colour check's face-on views and stand switch, the tier switch,
+// and the frame rate and draw calls. The walk replaced Part 1's view switch (D-065).
 
 /** The colour check's designs (Part 1, step 7), plus the stand's own #0868. */
 const COLOUR_CHECK_STAND_DESIGNS = [868, 137, 52, 29, 542] as const
 
 export function DevPanel() {
-  const viewName = useSmallStore(visitStore, (state) => state.viewName)
+  const colourCheckViewName = useSmallStore(visitStore, (state) => state.colourCheckViewName)
   const tier = useSmallStore(visitStore, (state) => state.tier)
   const isTierChosenByHand = useSmallStore(visitStore, (state) => state.isTierChosenByHand)
   const standDesignNumber = useSmallStore(visitStore, (state) => state.standDesignNumber)
   const stats = useSmallStore(devStatsStore, (state) => state)
   return (
-    <div className="pointer-events-auto absolute top-3 left-3 z-20 flex max-w-[min(560px,calc(100vw-24px))] flex-col gap-2 rounded-panel bg-black/70 p-3 font-mono text-[11px] text-white uppercase backdrop-blur">
-      <p data-testid="dev-stats">
+    <details className="pointer-events-auto absolute top-[132px] left-3 z-20 flex max-w-[min(560px,calc(100vw-24px))] flex-col gap-2 rounded-panel bg-black/70 p-2 font-mono text-[11px] text-white uppercase backdrop-blur md:top-24">
+      <summary data-testid="dev-stats" className="cursor-pointer">
         {stats.framesPerSecond} fps · {stats.drawCallCount} draw calls ·{' '}
         {Math.round(stats.triangleCount / 1000)}k triangles ·{' '}
         {tier === null ? '…' : renderTierSettings[tier].label}
         {isTierChosenByHand ? ' (by hand)' : ' (auto)'}
-      </p>
-      <ViewButtons names={STORE_VIEW_NAMES} activeName={viewName} />
-      <ViewButtons names={COLOUR_CHECK_VIEW_NAMES} activeName={viewName} />
+      </summary>
+      <ColourCheckButtons activeName={colourCheckViewName} />
       <div className="flex flex-wrap gap-1">
         {COLOUR_CHECK_STAND_DESIGNS.map((designNumber) => (
           <DevButton
@@ -56,25 +53,25 @@ export function DevPanel() {
           />
         ))}
       </div>
-    </div>
+    </details>
   )
 }
 
-function ViewButtons({
-  names,
-  activeName,
-}: {
-  names: readonly AnyStoreViewName[]
-  activeName: AnyStoreViewName
-}) {
+function ColourCheckButtons({ activeName }: { activeName: ColourCheckViewName | null }) {
   return (
     <div className="flex flex-wrap gap-1">
-      {names.map((name) => (
+      <DevButton
+        label="Walk"
+        isActive={activeName === null}
+        onPress={() => visitStore.update({ colourCheckViewName: null })}
+        testId="view-walk"
+      />
+      {COLOUR_CHECK_VIEW_NAMES.map((name) => (
         <DevButton
           key={name}
-          label={readStoreView(name).label}
+          label={colourCheckViews[name].label}
           isActive={name === activeName}
-          onPress={() => visitStore.update({ viewName: name })}
+          onPress={() => visitStore.update({ colourCheckViewName: name })}
           testId={`view-${name}`}
         />
       ))}

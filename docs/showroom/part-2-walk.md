@@ -42,7 +42,12 @@ at each. It works with a thumb on a portrait phone as well as on a laptop.
    ("2 of 5 · The Rare wall"), the next step ("Swipe for the Legendary corner"), the dots and
    arrows, a Help link to `stridemon.xyz/help`, and a one-time hint: "Scroll or swipe to walk".
    Lusion look, quiet, dark pills on the night store.
-7. **Delete the dev view switch.** The stops replace it.
+7. **Delete the dev view switch.** The stops replace it. The colour check's four face-on views
+   stay in the dev panel, so the check can be run again (D-065).
+
+As built (D-065): each stop is framed by solving the camera's distance for its subject; the
+street is stop 0 (walking back from stop 1 goes out to it); the inside LEDs dim with the store in
+the dark front so they can come on. The numbers are in `showroom/src/visit/walk-plan.ts`.
 
 ## Nobody gets stuck
 

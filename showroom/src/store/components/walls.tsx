@@ -146,6 +146,7 @@ export function HeroWall() {
         size={[4.6, 0.7]}
         color="#FF9A2E"
         opacity={0.45}
+        lightingSource="led"
       />
       <StorePointLight
         position={[LEFT_WALL_X + 0.4, CEILING_HEIGHT - 0.2, -5.0]}
@@ -153,6 +154,7 @@ export function HeroWall() {
         intensity={4}
         distance={4}
         decay={1.5}
+        lightingSource="led"
       />
     </group>
   )

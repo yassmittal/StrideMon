@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef } from 'react'
 import {
   AdditiveBlending,
   type BufferGeometry,
-  type Color,
   type MeshBasicMaterial,
   PlaneGeometry,
   type PointLight,
@@ -22,11 +21,15 @@ import { GLOW_RENDER_ORDER, SNEAKER_RENDER_ORDER } from './render-order'
 // The store's building blocks, ported from the film's `ShowroomWorld.tsx`. Lit things are unlit
 // materials at full colour, scaled by the store's light level; everything else is lit softly.
 
-/** Which light level a thing follows: the room's, the signs' outside, or none (always on). */
-export type LightingSource = 'store' | 'sign' | 'none'
+/**
+ * Which light level a thing follows: the store's lit things, the LEDs inside, the signs outside,
+ * or none (always on).
+ */
+export type LightingSource = 'store' | 'led' | 'sign' | 'none'
 
 export function readLightLevel(levels: StoreLightingLevels, source: LightingSource): number {
   if (source === 'store') return levels.storeBrightness
+  if (source === 'led') return levels.ledBrightness
   if (source === 'sign') return levels.signBrightness
   return 1
 }
@@ -166,15 +169,6 @@ export function StorePointLight({
       decay={decay}
     />
   )
-}
-
-/** Sets a basic material's colour to `baseColor` times the light level. */
-export function scaleColor(
-  target: Color,
-  baseColor: readonly [number, number, number],
-  level: number,
-): void {
-  target.setRGB(baseColor[0] * level, baseColor[1] * level, baseColor[2] * level)
 }
 
 export type LitQuad = { position: Vector3Tuple; width: number; height: number; rotationY?: number }

@@ -156,6 +156,7 @@ export function FoundingPassWall() {
         size={[0.8, 3.6]}
         color="#FF9A2E"
         opacity={0.5}
+        lightingSource="led"
       />
       <LitPanel
         texture={assets.counterScreen}

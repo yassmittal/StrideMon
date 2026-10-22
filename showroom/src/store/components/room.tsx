@@ -5,23 +5,26 @@ import { useLayoutEffect, useRef } from 'react'
 import {
   AdditiveBlending,
   type AmbientLight,
+  Color,
   DoubleSide,
   type InstancedMesh,
   type Material,
-  type MeshBasicMaterial,
   Object3D,
+  type PointLight,
 } from 'three'
 import { useStoreContext, useStoreLightingEffect } from '../store-context'
+import { readRoomLightLevel } from '../store-lighting'
 import { STORE_TUNING } from '../store-tuning'
 import { architectureToneMappingDefines } from '../tone-mapping'
 import type { BlockSpec } from './merged-blocks'
 import { useNotReflected } from './reflection-layer'
 import { GLOW_RENDER_ORDER } from './render-order'
-import { StorePointLight, scaleColor, useGlowShare } from './store-primitives'
+import { useGlowShare } from './store-primitives'
 
 // The room: floor, ceiling and its downlights, the three walls and the soft light. Ported from the
-// film's `Room`. The 16 downlights and their glows are two instanced meshes; the floor reflects
-// on the tiers that can afford it (brief §6.3).
+// film's `Room`. The 16 downlights and their glows are two instanced meshes, lit row by row from
+// the glass to the back as the lights come on; the floor reflects on the tiers that can afford it
+// (brief §6.3).
 
 export const STORE_HALF_WIDTH = 5
 export const STORE_DEPTH = 10
@@ -29,9 +32,10 @@ export const CEILING_HEIGHT = 3.2
 const QUARTER_TURN = Math.PI / 2
 
 const DOWNLIGHT_XS = [-3.4, -1.0, 1.4, 3.6] as const
+/** The rows, from the glass to the back (`downlightRowBrightness` follows this order). */
 const DOWNLIGHT_ZS = [-1.4, -3.9, -6.4, -8.9] as const
 const DOWNLIGHT_POSITIONS = DOWNLIGHT_XS.flatMap((lightX) =>
-  DOWNLIGHT_ZS.map((lightZ) => [lightX, lightZ] as const),
+  DOWNLIGHT_ZS.map((lightZ, rowIndex) => ({ lightX, lightZ, rowIndex })),
 )
 /** The film's downlight colour, brighter than white so the bloom picks it up. */
 const DOWNLIGHT_COLOR = [1.6, 1.55, 1.7] as const
@@ -156,13 +160,12 @@ function Downlights() {
   const glowShare = useGlowShare()
   const discsRef = useRef<InstancedMesh>(null)
   const glowsRef = useRef<InstancedMesh>(null)
-  const discMaterialRef = useRef<MeshBasicMaterial>(null)
-  const glowMaterialRef = useRef<MeshBasicMaterial>(null)
   useNotReflected(glowsRef)
 
   useLayoutEffect(() => {
     const placement = new Object3D()
-    DOWNLIGHT_POSITIONS.forEach(([lightX, lightZ], lightIndex) => {
+    const white = new Color(1, 1, 1)
+    DOWNLIGHT_POSITIONS.forEach(({ lightX, lightZ }, lightIndex) => {
       placement.rotation.set(QUARTER_TURN, 0, 0)
       placement.position.set(lightX, CEILING_HEIGHT - 0.005, lightZ)
       placement.updateMatrix()
@@ -171,6 +174,9 @@ function Downlights() {
       placement.position.set(lightX, CEILING_HEIGHT - 0.03, lightZ)
       placement.updateMatrix()
       glowsRef.current?.setMatrixAt(lightIndex, placement.matrix)
+      // Each light's level is its instance colour, so a row can come on before the next.
+      discsRef.current?.setColorAt(lightIndex, white)
+      glowsRef.current?.setColorAt(lightIndex, white)
     })
     for (const mesh of [discsRef.current, glowsRef.current]) {
       if (mesh === null) continue
@@ -179,11 +185,14 @@ function Downlights() {
     }
   }, [])
 
-  useStoreLightingEffect(({ storeBrightness }) => {
-    if (discMaterialRef.current !== null)
-      scaleColor(discMaterialRef.current.color, DOWNLIGHT_COLOR, storeBrightness)
-    if (glowMaterialRef.current !== null) {
-      glowMaterialRef.current.opacity = DOWNLIGHT_GLOW_OPACITY * glowShare * storeBrightness
+  useStoreLightingEffect((levels) => {
+    const level = new Color()
+    for (const mesh of [discsRef.current, glowsRef.current]) {
+      if (mesh === null || mesh.instanceColor === null) continue
+      DOWNLIGHT_POSITIONS.forEach(({ rowIndex }, lightIndex) => {
+        mesh.setColorAt(lightIndex, level.setScalar(levels.downlightRowBrightness[rowIndex] ?? 1))
+      })
+      mesh.instanceColor.needsUpdate = true
     }
   })
 
@@ -191,7 +200,7 @@ function Downlights() {
     <group>
       <instancedMesh ref={discsRef} args={[undefined, undefined, DOWNLIGHT_POSITIONS.length]}>
         <circleGeometry args={[DOWNLIGHT_RADIUS, 32]} />
-        <meshBasicMaterial ref={discMaterialRef} toneMapped={false} side={DoubleSide} />
+        <meshBasicMaterial color={DOWNLIGHT_COLOR} toneMapped={false} side={DoubleSide} />
       </instancedMesh>
       <instancedMesh
         ref={glowsRef}
@@ -200,8 +209,8 @@ function Downlights() {
       >
         <planeGeometry args={[DOWNLIGHT_GLOW_SIZE, DOWNLIGHT_GLOW_SIZE]} />
         <meshBasicMaterial
-          ref={glowMaterialRef}
           map={assets.glow}
+          opacity={DOWNLIGHT_GLOW_OPACITY * glowShare}
           blending={AdditiveBlending}
           depthWrite={false}
           toneMapped={false}
@@ -213,27 +222,45 @@ function Downlights() {
   )
 }
 
-/** Soft fill plus a few ceiling lights, as the film. */
+/** The film's four ceiling lights, each lit with the downlight rows around it. */
+const ROOM_POINT_LIGHTS = [-2.5, 2.5].flatMap((lightX) => [
+  { lightX, lightZ: -2.5, rowIndexes: [0, 1] },
+  { lightX, lightZ: -7.5, rowIndexes: [2, 3] },
+])
+const ALL_DOWNLIGHT_ROWS = DOWNLIGHT_ZS.map((_, rowIndex) => rowIndex)
+const ROOM_POINT_LIGHT_INTENSITY = 9
+const ROOM_AMBIENT_INTENSITY = 0.55
+
+/** Soft fill plus a few ceiling lights, as the film. They follow the downlights. */
 function RoomLight() {
   const ambientRef = useRef<AmbientLight>(null)
-  useStoreLightingEffect(({ storeBrightness }) => {
-    if (ambientRef.current !== null) ambientRef.current.intensity = 0.55 * storeBrightness
+  const pointLightRefs = useRef<(PointLight | null)[]>([])
+  useStoreLightingEffect((levels) => {
+    if (ambientRef.current !== null) {
+      ambientRef.current.intensity =
+        ROOM_AMBIENT_INTENSITY * readRoomLightLevel(levels, ALL_DOWNLIGHT_ROWS)
+    }
+    ROOM_POINT_LIGHTS.forEach(({ rowIndexes }, lightIndex) => {
+      const light = pointLightRefs.current[lightIndex]
+      if (light)
+        light.intensity = ROOM_POINT_LIGHT_INTENSITY * readRoomLightLevel(levels, rowIndexes)
+    })
   })
   return (
     <group>
       <ambientLight ref={ambientRef} color="#E8EAF5" />
-      {[-2.5, 2.5].flatMap((lightX) =>
-        [-2.5, -7.5].map((lightZ) => (
-          <StorePointLight
-            key={`${lightX}:${lightZ}`}
-            position={[lightX, CEILING_HEIGHT - 0.25, lightZ]}
-            intensity={9}
-            distance={9}
-            decay={1.4}
-            color="#F2F2FF"
-          />
-        )),
-      )}
+      {ROOM_POINT_LIGHTS.map(({ lightX, lightZ }, lightIndex) => (
+        <pointLight
+          key={`${lightX}:${lightZ}`}
+          ref={(light) => {
+            pointLightRefs.current[lightIndex] = light
+          }}
+          position={[lightX, CEILING_HEIGHT - 0.25, lightZ]}
+          distance={9}
+          decay={1.4}
+          color="#F2F2FF"
+        />
+      ))}
     </group>
   )
 }

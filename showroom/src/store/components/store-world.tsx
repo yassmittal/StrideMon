@@ -41,10 +41,10 @@ export function StoreWorld() {
       <ambientLight intensity={0.12} color="#8090B0" />
       <ExposureFollowsLighting />
       <MergedBlocks blocks={INSIDE_BLOCKS} />
-      <MergedLightStrips strips={INSIDE_LIGHT_STRIPS} />
+      <MergedLightStrips strips={INSIDE_LIGHT_STRIPS} lightingSource="led" />
       <NotReflected>
         <MergedBlocks blocks={streetBlocks} />
-        <MergedLightStrips strips={streetLightStrips} />
+        <MergedLightStrips strips={streetLightStrips} lightingSource="none" />
         <Street />
         <Neighbours />
         <ShopFront />

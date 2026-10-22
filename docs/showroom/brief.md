@@ -1,7 +1,8 @@
 # The StrideMon Showroom: brief
 
 **Status:** decided (D-063, 2026-10-22): the store from the Showroom film, live. Part 1 (the
-store) is done (2026-10-22); its rendering findings are D-064. Part 2 is next. The build order is in [`README.md`](README.md); the research is in
+store) is done (2026-10-22); its rendering findings are D-064. Part 2 (the arrival and the walk) is
+built (2026-10-22, D-065) and waits for Yash's check on the phone. The build order is in [`README.md`](README.md); the research is in
 [`references.md`](references.md).
 
 The first plan (a stone nave, ten chapels, an apse, cloisonné 3D Sneakers and a vault of 1,000

@@ -7,6 +7,7 @@
   --color-dark: #000000;
   --color-dark-panel: #141515;
   --color-night: #05060a;
+  --color-surface-muted: #e4e6ef;
   --color-on-dark: #ffffff;
   --color-on-dark-secondary: rgba(255, 255, 255, 0.6);
   --color-hairline-on-dark: rgba(255, 255, 255, 0.15);
@@ -44,6 +45,60 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
+  }
+
+  /* Visible on the night store; lime only ever on dark (brief §6.1). */
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 3px;
+  }
+
+  button:not(:disabled),
+  a[href] {
+    cursor: pointer;
+  }
+}
+
+/* The pill: the label rolls and the arrow nudges right on hover (the website's, D-029, D-031). */
+.pill-label-window {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.pill-label,
+.pill-label-clone {
+  display: block;
+  transition: transform 400ms var(--ease-standard);
+}
+
+.pill-label-clone {
+  position: absolute;
+  inset: 0;
+  transform: translateY(100%);
+}
+
+.pill-arrow {
+  transition: transform 300ms var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .pill:hover .pill-label {
+    transform: translateY(-100%);
+  }
+  .pill:hover .pill-label-clone {
+    transform: translateY(0);
+  }
+  .pill:hover .pill-arrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-label,
+  .pill-label-clone,
+  .pill-arrow {
+    transition: none;
   }
 }
 

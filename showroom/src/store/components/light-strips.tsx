@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
-import { BoxGeometry, type BufferGeometry, Color } from 'three'
+import { useEffect, useMemo, useRef } from 'react'
+import { BoxGeometry, type BufferGeometry, Color, type MeshBasicMaterial } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import type { Vector3Tuple } from '../camera-poses'
+import { useStoreLightingEffect } from '../store-context'
+import { type LightingSource, readLightLevel } from './store-primitives'
 
-// The LED strips (coves, shelf edges, the lamp's head), as one unlit mesh per colour. They stay
-// on in the dark front shot, as in the film. A strip brighter than white (`intensity` > 1) is
-// one the bloom picks up (brief §6.3); the shelf strips stay at 1 so no bloom spills onto the
-// Sneakers just above them.
+// The LED strips (coves, shelf edges, the lamp's head), as one unlit mesh per colour. The inside
+// ones come on with the store at the arrival (D-065); the street lamp's stays on. A strip brighter
+// than white (`intensity` > 1) is one the bloom picks up (brief §6.3); the shelf strips stay at 1
+// so no bloom spills onto the Sneakers just above them.
 
 export type LightStripSpec = {
   position: Vector3Tuple
@@ -17,7 +19,13 @@ export type LightStripSpec = {
   intensity?: number
 }
 
-export function MergedLightStrips({ strips }: { strips: readonly LightStripSpec[] }) {
+export function MergedLightStrips({
+  strips,
+  lightingSource,
+}: {
+  strips: readonly LightStripSpec[]
+  lightingSource: LightingSource
+}) {
   const groups = useMemo(() => groupStripsByLook(strips), [strips])
   useEffect(
     () => () => {
@@ -28,11 +36,34 @@ export function MergedLightStrips({ strips }: { strips: readonly LightStripSpec[
   return (
     <group>
       {groups.map(({ key, color, geometry }) => (
-        <mesh key={key} geometry={geometry}>
-          <meshBasicMaterial color={color} toneMapped={false} />
-        </mesh>
+        <LightStripMesh
+          key={key}
+          color={color}
+          geometry={geometry}
+          lightingSource={lightingSource}
+        />
       ))}
     </group>
+  )
+}
+
+function LightStripMesh({
+  color,
+  geometry,
+  lightingSource,
+}: {
+  color: Color
+  geometry: BufferGeometry
+  lightingSource: LightingSource
+}) {
+  const materialRef = useRef<MeshBasicMaterial>(null)
+  useStoreLightingEffect((levels) => {
+    materialRef.current?.color.copy(color).multiplyScalar(readLightLevel(levels, lightingSource))
+  })
+  return (
+    <mesh geometry={geometry}>
+      <meshBasicMaterial ref={materialRef} color={color} toneMapped={false} />
+    </mesh>
   )
 }
 

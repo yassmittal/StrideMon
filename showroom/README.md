@@ -6,8 +6,8 @@ exported as static files. Like `website/`, it is **not** a Bun workspace: it has
 `package.json` and `bun.lock`, and never imports `@stridemon/*`.
 
 The plan is [`../docs/showroom/`](../docs/showroom/README.md) (the brief, the research and one file
-per build part). Part 1 (the store) is built; the walk, look closer, the finish and the launch are
-Parts 2 to 5.
+per build part). Part 1 (the store) and Part 2 (the arrival and the walk) are built; look closer,
+the finish and the launch are Parts 3 to 5.
 
 ## Run it
 
@@ -18,7 +18,7 @@ bun run dev          # http://localhost:3002 (the website uses 3000, the local A
 bun run build        # writes the static site to out/
 bun run start        # serves out/ on 3002
 bun run typecheck
-bun run test         # the exported art matches the design table
+bun run test         # the exported art matches the design table; the walk's stops and paths
 bun run export-art   # copies the website's laced Sneakers and design table (see below)
 ```
 
@@ -28,28 +28,37 @@ Lint from the repo root: `bun run lint`.
 laptop's LAN IP with `ipconfig getifaddr en1`, and open `http://<that IP>:3002` in Chrome on the
 Android phone. `next.config.ts` lets the dev server answer private LAN addresses.
 
-**In development** a panel in the top-left corner switches the view (the film's camera poses made
-level, plus four face-on colour-check views), puts a colour-check design on the stand, and forces a
-tier. It shows the frame rate, the draw calls of the whole frame (every pass) and the triangles. A
+**In development** a small panel under the header shows the frame rate, the draw calls of the whole
+frame (every pass), the triangles and the tier. Open it to hold one of the four face-on colour-check
+views (Walk goes back to the walk), put a colour-check design on the stand, or force a tier. A
 production build doesn't include it.
+
+**A second visit in the same tab starts lit.** To watch the lights come on again, open a new tab or
+clear the session storage (`stridemon-showroom:street-lit`).
 
 ## Where things live
 
 | Path | What |
 |---|---|
 | `src/app/` | The layout (fonts, as the website loads them) and the one page |
-| `src/components/showroom.tsx` | The page: the canvas (client-only, `next/dynamic`, `ssr: false`), the grain and vignette over it, the dev panel |
-| `src/components/ui/` | The DOM layer. For now the placeholder loading and failure lines (Part 4 builds the loader) |
+| `src/components/showroom.tsx` | The page: the canvas (client-only, `next/dynamic`, `ssr: false`), the grain, vignette and reduced motion's veil over it, the DOM layer, the dev panel. The whole page is the walk's input surface |
+| `src/components/ui/` | The DOM layer: the header, the walk bar (where you are, the next step, the arrows and dots, Step inside), the hint, the pills, and the placeholder loading and failure lines (Part 4 builds the loader) |
+| `src/visit/walk-plan.ts` | **Every number of the walk** (D-065): the stops, the lens and safe frame, the furniture, the doorway, the arrival's timings, the look-around and the input |
+| `src/visit/frame-subject.ts` | Frames a stop's subject for the screen's shape: solves the camera's distance. Level, never roll |
+| `src/visit/walk-path.ts` | The path of a move: through the doorway, round the furniture, eased, turning the short way |
+| `src/visit/arrival-lighting.ts` | The lights coming on: downlights row by row, then the lightboxes, the signs and the LEDs |
+| `src/visit/walk-controller.ts` | The walk's state: the arrival, the moves, the one queued step, look-around, reduced motion's cuts |
+| `src/visit/walk-camera.tsx`, `use-walk-input.ts` | The canvas side (camera, lights, veil each frame) and the input (wheel, swipe, drag, keys, pointer) |
 | `src/components/dev/` | Dev only: the panel, and the camera and frame stats inside the canvas |
 | `src/content/showroom.ts` | The showroom's words and links |
 | `src/content/sneaker-designs.ts` | **Generated** by `bun run export-art`: the 1,000 designs. Never edit it by hand |
 | `src/lib/sneaker-design.ts` | The design helpers, copied by hand from the website's `pass-design.ts` |
 | `src/lib/render-tier.ts` | The High, Medium and Low tiers (brief §7.6) |
-| `src/lib/visit-store.ts` | The visit's small store: the tier, the view, the stand's Sneaker |
+| `src/lib/visit-store.ts` | The visit's small store: the tier, the arrival, the stop, the stand's Sneaker |
 | `src/store/` | The store itself, ported from `launch-video/src/showroom/` (each file says from where) |
 | `src/store/components/` | The world: street, room, walls, back of the store, the stand, merged boxes and LED strips, effects |
 | `src/store/sneaker-placements.ts` | Which Sneakers are where (brief §5.4) |
-| `src/store/store-lighting.ts` | The light levels (`dark`, `lit`) every lit thing follows, without re-rendering React |
+| `src/store/store-lighting.ts` | The light levels (`dark`, `lit`, each downlight row, the LEDs) every lit thing follows, without re-rendering React |
 | `src/store/store-tuning.ts` | The numbers for what live rendering adds: floor reflection, bloom, contact shadows, grain |
 | `src/store/tone-mapping.ts` | The architecture's own ACES tone mapping (brief §5.2) |
 | `public/sneakers/laced/` | **Generated**: the 1,000 laced SVGs. Never edit them by hand |
@@ -86,4 +95,18 @@ any change to the materials, the effects or the overlays.
 | Frame rate, this MacBook (Chrome) | 100 (the cap of the test browser) | 100 | 100 |
 | Frame rate, Yash's Android phone (Chrome) | to measure | to measure | to measure |
 
-The JavaScript is 536 KB gzipped (three.js included), under the brief's 1.5 MB.
+The JavaScript is 472 KB gzipped (three.js included), under the brief's 1.5 MB.
+
+**Through the walk** (Part 2, the production build in headless Chrome): every move holds the test
+browser's 100 fps cap on the laptop (High) and on a phone-shaped screen (Medium), with no frame over
+12 ms. Yash's Android phone is still to measure.
+
+## The walk
+
+The street, then five stops (D-065): the #0137 lightbox, the Rare wall, the Legendary corner, the
+Founding Pass wall, the Sneaker wall. Each stop is a rectangle in the world and an angle; the camera
+stands where the whole rectangle fits the screen, on a phone held upright or a laptop. Scroll, swipe
+up and down, ↑ ↓, the arrows or the dots walk; a horizontal drag (or a laptop's pointer, a little)
+looks around. Walking back from stop 1 goes out to the street. Under reduced motion every move is a
+cut under a short fade and the lights are simply on. Change a stop's numbers in `walk-plan.ts`, then
+`bun run test`: it checks every stop and every path on six screen shapes.

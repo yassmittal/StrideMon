@@ -2,44 +2,17 @@
 
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
-import { MathUtils, type PerspectiveCamera } from 'three'
-import { useSmallStore } from '@/lib/create-small-store'
+import { MathUtils } from 'three'
 import { devStatsStore } from '@/lib/dev-stats-store'
-import { visitStore } from '@/lib/visit-store'
-import { readStoreView, readVerticalFovDegrees } from '@/store/camera-poses'
-import { type StoreLighting, storeLightingPresets } from '@/store/store-lighting'
 
-// Dev-only: holds the camera on the view picked in the dev panel (with its lighting), and counts
-// the frame rate and the draw calls of every pass in a frame.
+// Dev-only: counts the frame rate and the draw calls of every pass in a frame. (The colour check's
+// views are held by the walk's camera, walk-camera.tsx.)
 
 const STATS_INTERVAL_SECONDS = 0.5
 
 /** Everything dev-only that lives inside the canvas. */
-export function DevSceneHelpers({ lighting }: { lighting: StoreLighting }) {
-  return (
-    <>
-      <DevViewCamera lighting={lighting} />
-      <DevFrameStats />
-    </>
-  )
-}
-
-function DevViewCamera({ lighting }: { lighting: StoreLighting }) {
-  const viewName = useSmallStore(visitStore, (state) => state.viewName)
-  const camera = useThree((state) => state.camera) as PerspectiveCamera
-  const aspectRatio = useThree((state) => state.size.width / state.size.height)
-  useEffect(() => {
-    const view = readStoreView(viewName)
-    camera.position.set(...view.pose.position)
-    camera.up.set(0, 1, 0)
-    camera.lookAt(...view.pose.target)
-    camera.fov = readVerticalFovDegrees(view.pose, aspectRatio)
-    camera.near = 0.05
-    camera.far = 120
-    camera.updateProjectionMatrix()
-    lighting.setLevels(storeLightingPresets[view.lighting])
-  }, [viewName, camera, aspectRatio, lighting])
-  return null
+export function DevSceneHelpers() {
+  return <DevFrameStats />
 }
 
 function DevFrameStats() {

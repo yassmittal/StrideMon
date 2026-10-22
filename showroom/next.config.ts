@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   turbopack: { root: dirname(fileURLToPath(import.meta.url)) },
   // The phone opens the dev server over the LAN (`ipconfig getifaddr en1`).
   allowedDevOrigins: ['192.168.*.*', '10.*.*.*', '172.*.*.*'],
+  // The indicator sat on the walk's bottom bar. Errors still show.
+  devIndicators: false,
 }
 
 export default nextConfig

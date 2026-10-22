@@ -2187,3 +2187,38 @@ changed four of the additions D-063 listed. Proposed by Claude; approved by Yash
   a Sneaker sits in front of them.
 - **Revisit when:** an AO pass can leave chosen objects out (a selective AO, or a mask), or the
   phone check shows headroom for more.
+
+## D-065 — The showroom's walk, as built: framed stops, the street as a stop, LEDs that come on
+
+Made 2026-10-22, while building the showroom's Part 2 (the arrival and the walk, D-063). Proposed
+by Claude; Yash approves it with Part 2.
+
+- **Decision:**
+  1. **Each stop is a subject, framed for the screen.** A stop names a rectangle in the world (the
+     lightbox, a niche, a wall) and the angle it's seen from; the camera's distance is solved so
+     the whole rectangle sits inside a safe frame clear of the header and the walk bar, on a
+     portrait phone (a wider lens, up to 76° vertical) and a wide laptop (50°) alike. The camera
+     is level: yaw and pitch only, never roll. Every number is in `showroom/src/visit/walk-plan.ts`.
+  2. **Moves follow a smooth path that stays in the store.** A move between two stops is a
+     centripetal Catmull-Rom curve through the open floor when the straight line would cross the
+     table, the chairs or a counter, and through the gap in the glass between the mullions at
+     x = −2.5 and 0 when it goes in or out. A test walks every pair of stops on both screen shapes
+     and checks the path stays inside and clear.
+  3. **The street is stop 0.** Step inside walks to stop 1; walking back from stop 1 goes out to
+     the lit street, where Step inside shows again. The dots and the "n of 5" count only the five
+     stops inside.
+  4. **The inside LEDs come on with the store.** The film keeps the coves and shelf strips on in
+     its dark front shot. The showroom dims them with the store (to the dark shot's store
+     brightness) so they have something to come on from: downlights row by row from the glass,
+     then the lightboxes, the Sneakers, the signs and the LEDs. The lit store is unchanged. The
+     dark level is one number (`storeLightingPresets.dark.ledBrightness`) if Yash prefers the
+     film's.
+  5. **The dev view switch is gone; the colour check's four face-on views stay** in the dev panel,
+     so the colour check can be run again after a change to the materials or the effects.
+- **Why:** the brief's walk has to show the whole subject on a phone held upright and on a laptop,
+  never walk through furniture, and keep the film's light; and the lights-on moment needs a dark
+  store to come up from.
+- **Trade-off:** on a portrait phone the wide stops (the Founding Pass wall, the Sneaker wall)
+  stand far back, so the Sneakers on them are small until look closer (Part 3).
+- **Revisit when:** Part 3's look closer lands (the wide stops may come closer), or Yash wants the
+  film's LEDs in the dark front.
