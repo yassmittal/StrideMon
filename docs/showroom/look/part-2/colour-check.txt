@@ -1,8 +1,0 @@
-== #0868 on the stand, re-run after Part 2 (per-row downlights, LED levels, the DOM layer)
-  art #141515  rendered #141515  delta [0, 0, 0]
-  art #6E2310  rendered #702410  delta [2, 1, 0]
-  art #C1FF00  rendered #C2FF00  delta [1, 0, 0]
-  art #C9431A  rendered #CA441A  delta [1, 1, 0]
-  art #F5F0E3  rendered #F5F0E3  delta [0, 0, 0]
-  art #FF6F2E  rendered #FF712F  delta [0, 2, 1]
-Same as Part 1: every flat colour within 2/255.

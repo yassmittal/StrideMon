@@ -214,13 +214,11 @@ architecture's materials, never in the composer (brief §5.2). Any of the 1,000 
 counter's stand through Find. Built from `docs/showroom/`, **one part per session**: paste the
 prompt in its `README.md`. It only shows: it links to `stridemon.xyz` to mint or join, and never
 connects a wallet or takes an email. Parts 0 and 1 are done (2026-10-22): the store runs in
-`showroom/` (`bun run dev`, port 3002; shots in `docs/showroom/look/part-1/`). **Part 2 (the
+`showroom/` (`bun run dev`, port 3002). **Part 2 (the
 arrival and the walk) is done** (2026-10-22, D-065: framed stops, the street as stop 0, the LEDs come
-on with the store; every walk number in `showroom/src/visit/walk-plan.ts`; shots in
-`docs/showroom/look/part-2/`). **Part 3 (look closer and find) is done** (2026-10-22, D-066: tap any
+on with the store; every walk number in `showroom/src/visit/walk-plan.ts`). **Part 3 (look closer and find) is done** (2026-10-22, D-066: tap any
 Sneaker for a square-on look with its card, Find and "Surprise me" on the stand, `?pass=137`, the
-minted state through the API's own `SHOWROOM_ALLOWED_ORIGINS`, both removed by D-068; shots in
-`docs/showroom/look/part-3/`). **Part 4 (finish and fallbacks) is built** (2026-10-23, D-067),
+minted state through the API's own `SHOWROOM_ALLOWED_ORIGINS`, both removed by D-068). **Part 4 (finish and fallbacks) is built** (2026-10-23, D-067),
 checked by Yash: the loader in the HTML drawn from real progress, tiers that only step down,
 smaller wall pictures on phones, the no-WebGL / lost-context / failed-files fallbacks with stills
 from `bun run render-stills`, the share card, and a look-closer texture leak fixed
