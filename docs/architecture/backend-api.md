@@ -178,7 +178,6 @@ upgrade: the app reads and writes those on-chain directly.
 | `GAME_SERVER_PRIVATE_KEY` | `0x…` | **testnet only**; KMS in Phase 10 |
 | `GAS_DRIP_AMOUNT_WEI` | `"100000000000000000"` | 0.1 testnet MON |
 | `WAITLIST_ALLOWED_ORIGINS` | `https://stridemon.xyz` | comma-separated origins allowed to call the browser routes: `/v1/waitlist`, `/v1/pass/*` and SIWE's nonce, verify and refresh (D-037, D-040, D-043) |
-| `SHOWROOM_ALLOWED_ORIGINS` | `https://showroom.stridemon.xyz` | optional, comma-separated: origins that may read `GET /v1/pass/collection` and nothing else, the 3D showroom (D-063). Empty or unset opens nothing |
 | `EARLY_ACCESS_REQUIRED` | `false` | `true` turns the early-access gate on (D-041). Off until Metropolis judging ends |
 | `PASS_WAITLIST_WINDOW_STARTS_AT` | `2026-11-28T14:30:00Z` | when the waitlist window opens (ISO 8601) |
 | `PASS_WAITLIST_WINDOW_HOURS` | `48` | the window's length; the open mint starts when it ends |
@@ -379,9 +378,7 @@ shows it only from 1,000 (D-056).
 
 **CORS** (`plugins/cors.ts`, `@fastify/cors`): `/v1/waitlist` and every `/v1/waitlist/*` route
 answer browser requests, but only for an origin in `WAITLIST_ALLOWED_ORIGINS`. The Founding Pass
-adds its own routes to the list (below). The 3D showroom's origins, in `SHOWROOM_ALLOWED_ORIGINS`,
-get CORS on `GET /v1/pass/collection` only (D-063): it only reads which designs are minted, so it
-never reaches a route that takes an email, a sign-in or a mint. Every other route sends no CORS
+adds its own routes to the list (below). (The 3D showroom calls no API route, D-068.) Every other route sends no CORS
 headers, so browsers still can't call it. The mobile app sends no `Origin` and is unaffected.
 
 **The backfill:** `bun run waitlist:backfill-canonical-emails` (once, on the server, right after
@@ -533,8 +530,7 @@ frees the design, email and wallet. A confirmed `mintFounderSneaker` sets
 `mintFounderSneaker` (D-032).
 
 **CORS and limits:** the `/v1/pass/*` routes and `/v1/auth/nonce`, `/v1/auth/verify` and
-`/v1/auth/refresh` answer the origins in `WAITLIST_ALLOWED_ORIGINS` (D-043), and
-`/v1/pass/collection` (`GET` only) the showroom's in `SHOWROOM_ALLOWED_ORIGINS` too (D-063). Per IP and minute:
+`/v1/auth/refresh` answer the origins in `WAITLIST_ALLOWED_ORIGINS` (D-043). Per IP and minute:
 `email-code` 5, `email-verify` 10, `email-google` 10, `POST mints` 10, `GET mints/:mintId` 60,
 `collection` 60. In
 `bun test`, each injected request gets its own `remoteAddress`.

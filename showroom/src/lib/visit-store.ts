@@ -1,5 +1,5 @@
 import type { ColourCheckViewName } from '@/store/camera-poses'
-import { HERO_DESIGN_NUMBER, STAND_DESIGN_NUMBER } from '@/store/sneaker-placements'
+import { STAND_DESIGN_NUMBER } from '@/store/sneaker-placements'
 import { createSmallStore } from './create-small-store'
 import type { RenderTier } from './render-tier'
 
@@ -8,9 +8,6 @@ import type { RenderTier } from './render-tier'
 
 /** The street before the lights are on, while they come on, and once "Step inside" shows. */
 export type ArrivalPhase = 'waiting' | 'lightsComingOn' | 'ready'
-
-/** What the counter's upright screen shows (brief §10, #2). */
-export type CounterScreenDesign = { designNumber: number; founderNumber: number | null }
 
 export type VisitState = {
   /** Null until the canvas picks the starting tier on the device. */
@@ -30,9 +27,10 @@ export type VisitState = {
   /** The look-closer target the camera is at or walking to (look-closer-targets.ts), or null. */
   lookCloserTargetId: string | null
   isFindOpen: boolean
-  counterScreen: CounterScreenDesign
-  /** A calm line for the walk bar: a deep link to a Sneaker that doesn't exist. */
+  /** A calm line that fades: a deep link to a Sneaker that doesn't exist. */
   notice: string | null
+  /** The store button (its id) or `tag` under a laptop's pointer, which brightens a little. */
+  hoveredHitId: string | null
 }
 
 export const visitStore = createSmallStore<VisitState>({
@@ -46,6 +44,6 @@ export const visitStore = createSmallStore<VisitState>({
   standDesignNumber: STAND_DESIGN_NUMBER,
   lookCloserTargetId: null,
   isFindOpen: false,
-  counterScreen: { designNumber: HERO_DESIGN_NUMBER, founderNumber: null },
   notice: null,
+  hoveredHitId: null,
 })

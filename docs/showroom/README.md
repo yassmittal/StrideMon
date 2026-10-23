@@ -39,13 +39,14 @@ THE STORE    The film's store, 10 × 10 m: a polished warm-grey floor that refle
              the Legendary corner, the Founding Pass wall, the Sneaker wall and its stand.
              Scroll or swipe to walk; drag to look around a little.
 
-LOOK CLOSER  Tap any Sneaker: the camera comes to it and a quiet card says its number, name,
-             rarity and whether it's minted. One button goes to its page on stridemon.xyz.
+LOOK CLOSER  Tap any Sneaker: the camera comes to it and a small white shop tag beside it says
+             its number, name and rarity. Tap the tag for its page on stridemon.xyz.
 
-FIND         "Find a Sneaker" by number or name, or "Surprise me": that Sneaker goes on the
-             counter's stand and the camera walks you there.
+FIND         The lit "Find a Sneaker" plate by the stand (or /): by number or name, or
+             "Surprise me". That Sneaker goes on the counter's stand and the camera walks there.
 
-LEAVE        "Get your Founding Pass" and "Join the waitlist" are always on screen.
+LEAVE        Lit buttons in the store (D-068): the window decal and the blade sign on the
+             street; "Get your Founding Pass" and the waitlist kiosk at the Founding Pass wall.
 ```
 
 **The Sneakers stay flat:** each is its frozen laced art, a cut-out on a lit shelf or a print in
@@ -64,7 +65,7 @@ links to `stridemon.xyz`.
 | [1](part-1-store.md) | The store: set up `showroom/`, export the art, port the film's store, add what live rendering brings, first tiers, the colour check | L | **Done** (2026-10-22, D-064) |
 | [2](part-2-walk.md) | The arrival and the walk: the street, the lights coming on, Step inside, five stops, look around | M | **Done** (2026-10-22, D-065) |
 | [3](part-3-look-closer.md) | Look closer and find: tap a Sneaker, the card, the minted state (the API's showroom origin), Find and the stand, the deep link | M | **Done** (2026-10-22, D-066) |
-| [4](part-4-finish.md) | Finish and fallbacks: the loader, the last light pass, tuned tiers, no-WebGL still, slow network, the stuck-point check | M | Not started |
+| [4](part-4-finish.md) | Finish and fallbacks: the loader, the last light pass, tuned tiers, no-WebGL still, slow network, the stuck-point check | M | Built (2026-10-23, D-067); the interface moved into the store after Yash's check (D-068), his check of that next |
 | [5](part-5-launch.md) | Launch: Vercel, `showroom.stridemon.xyz`, the API origin, links from the website, the X post draft | S | Not started |
 
 ## Rules for every part
@@ -76,8 +77,8 @@ links to `stridemon.xyz`.
 - **Never run git** (the workspace `CLAUDE.md`). Leave changes in the working tree.
 - **Ask Yash first** before anything that deploys, touches DNS or the server's `.env`, sends a
   transaction or costs money. Free options only: no paid models, textures, fonts or plugins.
-- **Never run the local API against testnet** (`CLAUDE.md`). For a minted state on your laptop,
-  use `cd apps/api && bun run pass:local-stack`.
+- **Never run the local API against testnet** (`CLAUDE.md`). The showroom calls no server since
+  D-068.
 - **The film is the look.** The store's sizes, colours and lights come from
   `launch-video/src/showroom/`. Changing them needs Yash's ok.
 - **The art is frozen** (`DESIGNS_FROZEN_ON`, 2026-10-08). The Sneakers are the exported laced
@@ -87,13 +88,15 @@ links to `stridemon.xyz`.
 - **`showroom/` is its own app**, like `website/`: its own `package.json` and `bun.lock`, not a
   Bun workspace, never imports `@stridemon/*`. Its Next.js differs from training data: read
   `node_modules/next/dist/docs/` before writing Next code.
-- **Rich, not loud.** Follow the brief's §6. The UI layer is the Lusion look
-  (`docs/architecture/design-system.md`): quiet motion, pills with arrows (D-029), no corner "+"
-  marks, nothing that bounces or flashes.
-- **Nobody gets stuck.** Every view answers three things in plain words: where you are, what to
-  do next, and where to get help (`stridemon.xyz/help`). Every UI part ends with a
-  **stuck-point check**: walk each path, the failures included (slow network, no WebGL, the API
-  down, reduced motion, keyboard only), and confirm each one ends in a next step.
+- **Rich, not loud, and in the store.** Follow the brief's §6. The interface is lit things in the
+  store (D-068); the little left over the canvas is the Lusion look
+  (`docs/architecture/design-system.md`): quiet motion, no corner "+" marks, nothing that bounces
+  or flashes.
+- **Nobody gets stuck.** The store says where you are (each stop's lit words, the dots), the
+  arrows and a one-time hint say what to do next, and every failure says what happened with a
+  next step and Help (`stridemon.xyz/help`). Help isn't over the walk (D-068). Every UI part ends
+  with a **stuck-point check**: walk each path, the failures included (slow network, no WebGL,
+  reduced motion, keyboard only, a screen reader), and confirm each one ends in a next step.
 - **Words.** Founding Pass, founder, waitlist, waitlist window, open mint, one of one. Never
   *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Anywhere a
   pass is offered, say it's free and can't be sent or sold. Rarity is cosmetic: never say a rare

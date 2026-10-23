@@ -25,6 +25,8 @@ import {
 const ENVIRONMENT_ROOM_COLOR = '#16171B'
 const ENVIRONMENT_BLUR_SIGMA = 0.04
 const ENVIRONMENT_CENTER = new Vector3(0, 1.4, -5)
+/** The PMREM's cube side. Blurred light shapes need no more, and 128 is a quarter of 256's memory. */
+const ENVIRONMENT_CUBE_PIXELS = 128
 
 export function useStoreEnvironmentMap(): Texture | null {
   const renderer = useThree((state) => state.gl)
@@ -34,6 +36,7 @@ export function useStoreEnvironmentMap(): Texture | null {
     const generator = new PMREMGenerator(renderer)
     const renderTarget = generator.fromScene(environmentScene, ENVIRONMENT_BLUR_SIGMA, 0.1, 30, {
       position: ENVIRONMENT_CENTER,
+      size: ENVIRONMENT_CUBE_PIXELS,
     })
     generator.dispose()
     disposeScene(environmentScene)

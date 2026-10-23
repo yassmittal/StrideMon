@@ -9,7 +9,7 @@ import { themeColors } from './theme-colors'
 
 export const SNEAKER_ASPECT = 600 / 1000
 
-const SIGN_WHITE = '#F4F6FF'
+export const SIGN_WHITE = '#F4F6FF'
 const TEXTURE_ANISOTROPY = 8
 
 export type PrintCanvasOptions = { fontFamilies: StoreFontFamilies; printScale: number }
@@ -67,10 +67,11 @@ export function drawSneaker({
 }
 
 /** The fascia's lit letters, white on nothing, with the mark's line Sneaker before them. */
-export function createStoreSignTexture({ fontFamilies }: PrintCanvasOptions): Texture {
+export function createStoreSignTexture({ fontFamilies, printScale }: PrintCanvasOptions): Texture {
   return drawCanvasTexture({
     width: 2048,
     height: 320,
+    scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = SIGN_WHITE
       context.font = `700 220px ${fontFamilies.satoshi}`
@@ -85,6 +86,47 @@ export function createStoreSignTexture({ fontFamilies }: PrintCanvasOptions): Te
       context.fillText(text, left + markSize + gap, height / 2 + 8)
     },
   })
+}
+
+/**
+ * Sets the largest font, up to `maxSizePixels`, at which `text` fits `maxWidthPixels`. Returns the
+ * size it used.
+ */
+export function setFittedFont(
+  context: CanvasRenderingContext2D,
+  family: string,
+  weight: number,
+  maxSizePixels: number,
+  text: string,
+  maxWidthPixels: number,
+): number {
+  context.font = `${weight} ${maxSizePixels}px ${family}`
+  const textWidth = context.measureText(text).width
+  const size =
+    textWidth <= maxWidthPixels
+      ? maxSizePixels
+      : Math.floor((maxSizePixels * maxWidthPixels) / textWidth)
+  context.font = `${weight} ${size}px ${family}`
+  return size
+}
+
+/** The website's arrow (ArrowIcon: 1.5 strokes on an 18-unit grid), its left edge at `left`. */
+export function drawArrow(
+  context: CanvasRenderingContext2D,
+  left: number,
+  centerY: number,
+  size: number,
+  color: string,
+): void {
+  context.save()
+  context.translate(left, centerY - size / 2)
+  context.scale(size / 18, size / 18)
+  context.strokeStyle = color
+  context.lineWidth = 1.7
+  context.lineCap = 'round'
+  context.lineJoin = 'round'
+  context.stroke(new Path2D('M3 9h12M10 4l5 5-5 5'))
+  context.restore()
 }
 
 /** The StrideMon mark's three strokes, on its 64-unit grid. */
@@ -105,32 +147,46 @@ function drawMark(context: CanvasRenderingContext2D, left: number, top: number, 
 }
 
 /** The blade sign that sticks out from the front: a lit dark panel. */
-export function createBladeSignTexture({ fontFamilies }: PrintCanvasOptions): Texture {
+export function createBladeSignTexture({ fontFamilies, printScale }: PrintCanvasOptions): Texture {
   return drawCanvasTexture({
     width: 1024,
     height: 512,
+    scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = '#10131C'
       context.fillRect(0, 0, width, height)
       context.fillStyle = SIGN_WHITE
       context.textAlign = 'center'
       context.textBaseline = 'middle'
-      context.font = `700 168px ${fontFamilies.satoshi}`
       context.letterSpacing = '8px'
+      // The film's 168 px ran to the face's edges; the letters fit within its middle (D-068).
+      setFittedFont(context, `${fontFamilies.satoshi}`, 700, 168, 'STRIDEMON', width * 0.84)
       context.fillText('STRIDEMON', width / 2, 210)
-      context.font = `500 72px ${fontFamilies.mono}`
+      // "FOUNDING PASS →": a tap on the sign opens stridemon.xyz/pass (D-068).
+      context.font = `500 66px ${fontFamilies.mono}`
       context.letterSpacing = '6px'
       context.fillStyle = themeColors.highlight
-      context.fillText('FOUNDING PASS', width / 2, 370)
+      const label = 'FOUNDING PASS'
+      const arrowSize = 60
+      const gap = 26
+      const labelWidth = context.measureText(label).width
+      const left = (width - (labelWidth + gap + arrowSize)) / 2
+      context.textAlign = 'left'
+      context.fillText(label, left, 370)
+      drawArrow(context, left + labelWidth + gap, 370, arrowSize, themeColors.highlight)
     },
   })
 }
 
 /** The dark panel beside the lightbox: the tagline. */
-export function createTaglinePanelTexture({ fontFamilies }: PrintCanvasOptions): Texture {
+export function createTaglinePanelTexture({
+  fontFamilies,
+  printScale,
+}: PrintCanvasOptions): Texture {
   return drawCanvasTexture({
     width: 800,
     height: 1000,
+    scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = '#0B0C10'
       context.fillRect(0, 0, width, height)
@@ -148,12 +204,14 @@ export function createTaglinePanelTexture({ fontFamilies }: PrintCanvasOptions):
 /** Lit words on the walls, on nothing: "Founding Pass", "Sneakers", "Rare". */
 export function createWallTitleTexture({
   fontFamilies,
+  printScale,
   text,
   color = SIGN_WHITE,
 }: PrintCanvasOptions & { text: string; color?: string }): Texture {
   return drawCanvasTexture({
     width: 2048,
     height: 400,
+    scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = color
       context.textAlign = 'center'
@@ -189,10 +247,11 @@ export function createStandCardTexture({
 }
 
 /** Paving slabs for the pavement, with a little noise so it isn't flat. */
-export function createPavingTexture(): Texture {
+export function createPavingTexture(printScale: number): Texture {
   return drawCanvasTexture({
     width: 1024,
     height: 1024,
+    scale: printScale,
     draw: (context, width, height) => {
       context.fillStyle = '#4A4A4C'
       context.fillRect(0, 0, width, height)

@@ -61,24 +61,6 @@ const originListSchema = z
       .min(1, 'must name at least one origin'),
   )
 
-/** The same list, but optional and possibly empty: a missing or empty value opens nothing. */
-const optionalOriginListSchema = z
-  .string()
-  .optional()
-  .transform((originListText) =>
-    (originListText ?? '')
-      .split(',')
-      .map((originText) => originText.trim())
-      .filter((originText) => originText !== ''),
-  )
-  .pipe(
-    z.array(
-      z.url().refine((originText) => new URL(originText).origin === originText, {
-        message: 'must be a bare origin such as https://showroom.stridemon.xyz (no path or /)',
-      }),
-    ),
-  )
-
 const environmentVariablesSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']),
   API_PORT: z.string().regex(/^\d+$/, 'must be a port number').transform(Number),
@@ -117,7 +99,6 @@ const environmentVariablesSchema = z.object({
     .transform((privateKey) => privateKey as Hex),
   GAS_DRIP_AMOUNT_WEI: weiAmountStringSchema,
   WAITLIST_ALLOWED_ORIGINS: originListSchema,
-  SHOWROOM_ALLOWED_ORIGINS: optionalOriginListSchema,
   EARLY_ACCESS_REQUIRED: booleanStringSchema,
   PASS_WAITLIST_WINDOW_STARTS_AT: isoDateTimeSchema,
   PASS_WAITLIST_WINDOW_HOURS: positiveIntegerStringSchema,
@@ -167,8 +148,6 @@ export type ApiConfig = {
   gasDripAmountWei: bigint
   /** The only browser origins that may call the website's routes (D-037, D-043). */
   waitlistAllowedOrigins: string[]
-  /** The 3D showroom's origins: they may read `GET /v1/pass/collection` and nothing else (D-063). */
-  showroomAllowedOrigins: string[]
   /** The early-access gate's switch (D-041). The schedule turns it off by itself. */
   isEarlyAccessRequired: boolean
   passScheduleTimes: PassScheduleTimes
@@ -236,7 +215,6 @@ export function parseApiConfig(
     gameServerPrivateKey: variables.GAME_SERVER_PRIVATE_KEY,
     gasDripAmountWei: variables.GAS_DRIP_AMOUNT_WEI,
     waitlistAllowedOrigins: variables.WAITLIST_ALLOWED_ORIGINS,
-    showroomAllowedOrigins: variables.SHOWROOM_ALLOWED_ORIGINS,
     isEarlyAccessRequired: variables.EARLY_ACCESS_REQUIRED,
     passScheduleTimes,
     earlyHourStartsAt: new Date(

@@ -46,3 +46,19 @@ export function ChevronIcon({
     </svg>
   )
 }
+
+export function CloseIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={`size-[18px] shrink-0 ${className}`}
+      viewBox="0 0 18 18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    >
+      <path d="M4.5 4.5l9 9M13.5 4.5l-9 9" />
+    </svg>
+  )
+}

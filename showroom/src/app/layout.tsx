@@ -3,6 +3,7 @@ import { IBM_Plex_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 import { preload } from 'react-dom'
 import { showroomDescription, showroomTitle, showroomUrl } from '@/content/showroom'
+import { buildPageMetadata } from '@/lib/build-page-metadata'
 import { fontshareCssUrl, loadFontshareCss } from '@/lib/load-fontshare-css'
 import './globals.css'
 
@@ -17,8 +18,7 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(showroomUrl),
-  title: showroomTitle,
-  description: showroomDescription,
+  ...buildPageMetadata({ title: showroomTitle, description: showroomDescription, path: '/' }),
 }
 
 export const viewport: Viewport = {

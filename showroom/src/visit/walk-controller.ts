@@ -1,5 +1,6 @@
 import { MathUtils, PerspectiveCamera, Vector3 } from 'three'
 import { visitStore } from '@/lib/visit-store'
+import { STORE_BUTTON_SPOTS, type StoreButtonSpot } from '@/store/store-buttons'
 import { type StoreLightingLevels, storeLightingPresets } from '@/store/store-lighting'
 import { readArrivalLighting } from './arrival-lighting'
 import {
@@ -10,13 +11,16 @@ import {
   type WalkPose,
 } from './frame-subject'
 import {
-  findTargetOnRay,
+  findTargetHitOnRay,
   frameLookCloser,
   type LookCloserTarget,
+  placeLookCloserTag,
   readLookCloserTarget,
   readNeighbourTarget,
+  readTargetDesignNumber,
   STAND_TARGET_ID,
 } from './look-closer-targets'
+import { measureRayHit } from './store-hits'
 import {
   buildDirectPath,
   buildWalkPath,
@@ -45,6 +49,12 @@ import {
 // visit store for the DOM layer. Times are in seconds on `performance.now()`'s clock.
 
 type Place = { kind: 'stop'; index: number } | { kind: 'closer'; targetId: string }
+
+/** What a tap or the pointer is on (D-068): a Sneaker, one of the store's buttons, or the tag. */
+export type StoreHit =
+  | { kind: 'sneaker'; target: LookCloserTarget }
+  | { kind: 'button'; spot: StoreButtonSpot }
+  | { kind: 'tag'; designNumber: number }
 
 type Motion =
   | { kind: 'arrival'; startSeconds: number; path: WalkPath }
@@ -196,30 +206,53 @@ export class WalkController {
   }
 
   /**
-   * A tap at a point on the screen (−1 to 1 across, and up): look closer at the Sneaker there.
-   * Looking closer, a tap on nothing goes back to the stop.
+   * What's at a point on the screen (−1 to 1 across, and up): the nearest Sneaker, store button or
+   * look closer's tag. Nothing while the camera moves. From the street only the street's.
    */
-  tapAt(across: number, up: number): void {
-    if (visitStore.read().arrivalPhase !== 'ready' || this.isBusy()) return
-    const target = this.findTargetAt(across, up)
-    if (target !== null) {
-      if (this.at.kind !== 'closer' || this.at.targetId !== target.id) this.lookCloser(target.id)
-      return
-    }
-    this.leaveLookCloser()
-  }
-
-  /** The Sneaker under a point on the screen, for the tap and the pointer's cursor. */
-  findTargetAt(across: number, up: number): LookCloserTarget | null {
+  findHitAt(across: number, up: number): StoreHit | null {
     const pose = this.shownPose
-    if (pose === null || this.isBusy()) return null
+    if (pose === null || this.isBusy() || visitStore.read().arrivalPhase !== 'ready') return null
     const camera = this.hitCamera
     camera.aspect = this.aspectRatio
     placeCamera(camera, pose)
     camera.updateProjectionMatrix()
     const origin = new Vector3().setFromMatrixPosition(camera.matrixWorld)
     const direction = new Vector3(across, up, 0.5).unproject(camera).sub(origin).normalize()
-    return findTargetOnRay(origin, direction, isOutside(pose))
+    const isOnStreet = isOutside(pose)
+    const hits: { hit: StoreHit; distance: number }[] = []
+    const targetHit = findTargetHitOnRay(origin, direction, isOnStreet)
+    if (targetHit !== null) {
+      hits.push({
+        hit: { kind: 'sneaker', target: targetHit.target },
+        distance: targetHit.distance,
+      })
+    }
+    // Looking closer, the store's buttons step back (store-buttons.tsx): only the tag is a button.
+    for (const spot of this.at.kind === 'closer' ? [] : STORE_BUTTON_SPOTS) {
+      if ((spot.stopId === 'street') !== isOnStreet) continue
+      const buttonHit = measureRayHit(origin, direction, spot)
+      if (buttonHit !== null)
+        hits.push({ hit: { kind: 'button', spot }, distance: buttonHit.distance })
+    }
+    const lookedAt = this.at.kind === 'closer' ? readLookCloserTarget(this.at.targetId) : null
+    if (lookedAt !== null) {
+      const tagHit = measureRayHit(
+        origin,
+        direction,
+        placeLookCloserTag(lookedAt, this.aspectRatio),
+      )
+      if (tagHit !== null) {
+        const designNumber = readTargetDesignNumber(lookedAt, visitStore.read().standDesignNumber)
+        hits.push({ hit: { kind: 'tag', designNumber }, distance: tagHit.distance })
+      }
+    }
+    hits.sort((first, second) => first.distance - second.distance)
+    return hits[0]?.hit ?? null
+  }
+
+  /** A move (a walk or a cut) is under way: taps wait for it. */
+  isMovingNow(): boolean {
+    return this.isBusy()
   }
 
   /** A drag that looks around starts. */

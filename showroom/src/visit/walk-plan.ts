@@ -76,11 +76,12 @@ export const walkStops: Record<WalkStopId, WalkStop> = {
     sideDegrees: 18,
     pitchDegrees: 2,
   },
-  // 4. The lit words, the lightbox, the screen and the amber strip over the counter.
+  // 4. The lit words, the lightbox, the kiosk and the amber strip, down to the counter's lit
+  // "Get your Founding Pass" (D-068).
   foundingPassWall: {
-    center: [0.55, 1.82, -9.96],
+    center: [0.55, 1.72, -9.96],
     width: 3.6,
-    height: 2.45,
+    height: 2.75,
     facingDegrees: 0,
     sideDegrees: -12,
     pitchDegrees: 5,
@@ -219,16 +220,31 @@ export const HINT = {
 export const STREET_LIT_SESSION_KEY = 'stridemon-showroom:street-lit'
 
 /**
- * Look closer (Part 3, D-066): where the Sneaker sits on screen, as a share of the screen from its
- * centre (1 is the edge), so the card below it never covers it, and how the camera gets there.
+ * Look closer (Part 3, D-066, D-068): where the Sneaker and its tag sit on screen, as a share of
+ * the screen from its centre (1 is the edge), clear of the small controls at the bottom, and how
+ * the camera gets there.
  */
 export const LOOK_CLOSER = {
-  /** A phone held upright: the card is a sheet over the bottom of the screen. */
-  portraitFrame: { horizontal: 0.86, vertical: 0.4, centerY: 0.3 },
-  /** A wide screen: the card is a small panel at the bottom left. */
-  landscapeFrame: { horizontal: 0.62, vertical: 0.58, centerY: 0.12 },
-  /** A little room round the Sneaker. */
-  marginShare: 1.4,
+  /** A phone held upright: ‹ ✕ › at the bottom. */
+  portraitFrame: { horizontal: 0.88, vertical: 0.7, centerY: 0.1 },
+  /** A wide screen. */
+  landscapeFrame: { horizontal: 0.72, vertical: 0.7, centerY: 0.06 },
+  /** A little room round the Sneaker and its tag. */
+  marginShare: 1.2,
+  /**
+   * The shop tag (D-068), hung just in front of the Sneaker: beside it on a wide screen, under it
+   * and as wide as it on a phone held upright, where it covers the row below (so it's plainly this
+   * Sneaker's) and its words stay big enough to read. Sized to the Sneaker, within limits.
+   */
+  tag: {
+    beside: { widthShare: 0.72, minWidthMeters: 0.26, maxWidthMeters: 0.62 },
+    below: { widthShare: 1, minWidthMeters: 0.4, maxWidthMeters: 1.1 },
+    /** Width over height: the tag's canvas is 1,024 × 640. */
+    aspectRatio: 1.6,
+    /** The gap to the Sneaker, as a share of the tag's width. */
+    gapShare: 0.06,
+    forwardMeters: 0.08,
+  },
   /** Never nearer than this (the brief's "about half a metre"). */
   nearestMeters: 0.45,
   /**

@@ -2,7 +2,8 @@
 
 **Status:** decided (D-063, 2026-10-22): the store from the Showroom film, live. Part 1 (the
 store) is done (2026-10-22); its rendering findings are D-064. Part 2 (the arrival and the walk) is
-done (2026-10-22, D-065). Part 3 (look closer and find) is done (2026-10-22, D-066). Part 4 is next. The build order is in [`README.md`](README.md); the research is in
+done (2026-10-22, D-065). Part 3 (look closer and find) is done (2026-10-22, D-066). Part 4 (finish and fallbacks) is built
+(2026-10-23, D-067); after Yash's check, its interface moved into the store (D-068). The build order is in [`README.md`](README.md); the research is in
 [`references.md`](references.md).
 
 The first plan (a stone nave, ten chapels, an apse, cloisonné 3D Sneakers and a vault of 1,000
@@ -81,16 +82,17 @@ to 5, and the floor is y = 0. Part 1 ports it as it is; later parts only add to 
 
 | Moment | What happens | Controls |
 |---|---|---|
-| **Arrive** | A short loader draws the line-Sneaker mark as the files load (real progress, never a timer). Then the street at night: the store is dark, and its lights come on, the film's `darkFront` → `litFront` moment, softly and in a few seconds (nothing flickers). "Step inside" walks you through the glass | "Step inside", Enter |
+| **Arrive** | A short loader draws the line-Sneaker mark as the files load (real progress, never a timer). Then the street at night: the store is dark, and its lights come on, the film's `darkFront` → `litFront` moment, softly and in a few seconds (nothing flickers). "Step inside", a lit decal on the glass door, walks you through it | The decal, ⌄, Enter, a swipe |
 | **Walk** | A guided walk with five stops: **1** the lightbox (#0137), **2** the Rare wall, **3** the Legendary corner, **4** the Founding Pass wall, **5** the Sneaker wall and the stand. Moves are slow and smooth, with weight, and nothing overshoots | Scroll, swipe up and down, ↑ ↓, the arrows, the dots |
 | **Look around** | At a stop, dragging turns the view a little (about 20° side to side, 8° up and down), damped. On a laptop the pointer does a smaller version without a press | Drag, the pointer |
-| **Look closer** | Tap any Sneaker you can see, on a shelf or in a lightbox: the camera comes to it, and a quiet card opens (§6.4): number, name, rarity, minted state, one button to its page on `stridemon.xyz`. Its neighbours on the same wall are one tap away | Tap, ← → for neighbours, Esc or "Back" |
-| **Find** | "Find a Sneaker": by number or name, or "Surprise me". The chosen Sneaker fades onto the counter's **stand**, its little card redraws, and the camera walks you there with the card open | The Find pill, `/` |
-| **Leave** | "Get your Founding Pass" and "Join the waitlist" are always on screen and link to `stridemon.xyz`. The card's button goes to the design's page, `stridemon.xyz/pass/137` (D-066) | |
+| **Look closer** | Tap any Sneaker you can see, on a shelf or in a lightbox: the camera comes to it, and a small white shop tag in the store beside it says its number, name and rarity, with "See it on stridemon.xyz →" (§6.4, D-068). Its neighbours on the same wall are one tap away | Tap, ‹ › or ← → for neighbours, ✕, Esc or a tap on nothing |
+| **Find** | "Find a Sneaker": by number or name, or "Surprise me". The chosen Sneaker fades onto the counter's **stand**, its little card redraws, and the camera walks you there with its tag | The lit "Find a Sneaker" plate on the white counter, `/` |
+| **Leave** | Lit buttons in the store (D-068): on the street, the Founding Pass decal on the window and the blade sign; at the Founding Pass wall, "Get your Founding Pass" on the black counter and the waitlist kiosk (the counter's upright screen). The tag goes to the design's page, `stridemon.xyz/pass/137` (D-066) | Tap |
 
-**Where you are, always.** A small line says where you are and what to do next ("2 of 5 · The
-Rare wall · Swipe for the Legendary corner · Tap a Sneaker to look closer"), and every view links
-`stridemon.xyz/help`.
+**Where you are, said by the store** (D-068). Each stop's own lit words name it ("Rare",
+"LEGENDARY", "Founding Pass", "Sneakers"); the dots and ⌃ ⌄ say how far along you are, and a
+one-time hint says how to walk. A screen reader hears "2 of 5 · The Rare wall" from a hidden
+line. Help (`stridemon.xyz/help`) is on the fallbacks, where someone is stuck, not over the walk.
 
 **No free roaming.** A guided walk can't get anyone lost, and it works the same with a thumb.
 The camera stays level: the film's rolled, dutch angles were for its fast edit, not for walking.
@@ -174,7 +176,7 @@ Taken from the film's `sneakers.ts`, numbers copied by hand:
 | The Rare niche | 20 Gold and Chrome Rares: 52, 93, 159, 145, 184, 220, 223, 279, 293, 282, 306, 337, 372, 351, 394, 363, 419, 475, 441, 483 |
 | The Legendary poster | #0020 Earthshine |
 | The Founding Pass lightbox | #0049, #0542, #0029 |
-| The counter's screen | #0137, then the latest mint once minting starts (§10) |
+| The counter's screen | None: it's the waitlist kiosk (D-068) |
 | The Sneakers niche | The first 45 of the Sneaker drop film's sequence (`SEQUENCE_DESIGN_NUMBERS`), so light and dark alternate: 137, 129, 868, 429, 775, 291, 33, 382, 675, 361, 726, 941, 224, 211, 289, 892, 806, 109, 150, 132, 611, 97, 344, 810, 327, 894, 676, 388, 918, 600, 751, 717, 753, 223, 337, 888, 353, 135, 750, 220, 592, 590, 184, 574, 862 |
 | The stand | #0868 Ember Court Night, until Find or a deep link puts another there |
 | The window poster | #0542 |
@@ -232,30 +234,40 @@ Not used: chromatic aberration, lens flares, glitches, depth of field outside lo
 vignette stronger than faint, screen-space AO (D-064), any tone mapping on the Sneakers or in the
 composer (§5.2).
 
-### 6.4 The DOM layer
+### 6.4 The interface is the store (D-068)
 
-Over the canvas: the website's Lusion look. Satoshi and IBM Plex Mono, white and dark pills with
-arrows (D-029), small uppercase metadata, Lusion's easing, no corner "+" marks. On the night
-store, the pills are mostly dark with white text; lime only on dark.
+Over the canvas there's almost nothing: the stop dots and ⌃ ⌄ at a stop, ⌄ on the street, ‹ ✕ ›
+while looking closer, a one-time walking hint, the loader, the fallbacks and Find's dialog. They
+keep the website's Lusion look (Satoshi and IBM Plex Mono, dark round buttons, Lusion's easing, no
+corner "+" marks; lime only on dark).
 
-The **card** (a bottom sheet on a phone, a small panel on a laptop):
+Everything else is a lit thing in the store, drawn on a canvas texture like the film's signs, with
+a pointer cursor on a laptop:
+
+| Where | The button | Goes to |
+|---|---|---|
+| The glass door | "STEP INSIDE →", a white decal | The walk, stop 1 |
+| The window beside it | "1,000 Founding Passes · Free to mint →", a white decal | `stridemon.xyz/pass` |
+| The blade sign | "STRIDEMON / FOUNDING PASS →" | `stridemon.xyz/pass` |
+| The black counter's front | "GET YOUR FOUNDING PASS →" and "FREE · CAN'T BE SENT OR SOLD" | `stridemon.xyz/pass` |
+| The counter's upright screen | The waitlist kiosk: "JOIN THE WAITLIST →" | `stridemon.xyz/waitlist` |
+| The white counter's front | "FIND A SNEAKER", by the stand | Find |
+
+The **tag** (look closer): a small white shop tag in the store, beside the Sneaker (under it on a
+phone held upright, unless a ledge or a counter is there), facing the same way:
 
 ```text
 #0137                                   COMMON
 Rose Hiker Night
-AVAILABLE
 Free to mint. Can't be sent or sold.
-[ See it on stridemon.xyz → ]
+[ SEE IT ON STRIDEMON.XYZ → ]
 ```
 
-The state is Available, Being minted, or Minted with its founder number; "Couldn't check if it's
-minted" when the API is down. The button's words follow the schedule as `/pass` says them (before
-the window, "See it on stridemon.xyz"; once minting is open to the visitor, "Mint it on
-stridemon.xyz", D-066). Every link carries `?source=showroom`. The founder number shows when the mint
-is one of the collection's last 10, the only ones the route numbers (D-066).
+Tapping the tag opens the design's page. Every link carries `?source=showroom`. The showroom shows
+no minted state (D-068): the website's page has it.
 
-**Every Founding Pass mention says it's free and can't be sent or sold:** the card, and a short
-line beside "Get your Founding Pass" ("Free. Can't be sent or sold.").
+**Every Founding Pass offer says it's free and can't be sent or sold:** the tag, the counter's
+button, the window decal.
 
 ## 7. Tech
 
@@ -311,22 +323,16 @@ showroom/public/sneakers/laced/*.svg  +  showroom/src/content/sneaker-designs.ts
   │  in the browser: rasterised on a canvas at the tier's size
   ▼
 the walls' atlases, the prints, the stand
-
-API  GET /v1/pass/collection  →  minted and pending designs, recent mints, the schedule
-  →  the card's state and button, "Surprise me", the counter's screen (§10)
 ```
 
 The showroom reads the website's files at export time only, so it builds on its own on Vercel.
-The design table is about 7 KB gzipped, loaded with the page so Find works offline from the API.
+The design table is about 7 KB gzipped, loaded with the page, so Find needs no server.
 
 ### 7.5 The API
 
-The browser reads `GET https://api.stridemon.xyz/v1/pass/collection`, the route `/pass` uses.
-Today the origins in `WAITLIST_ALLOWED_ORIGINS` get CORS on every browser route
-(`apps/api/src/plugins/cors.ts`), email and mint included. The showroom needs one read, so it gets
-its own list, **`SHOWROOM_ALLOWED_ORIGINS`**, which opens `GET /v1/pass/collection` and nothing
-else. A small API change in Part 3, deployed in Part 5. If the route can't be reached, the
-showroom still works and says so in one quiet line.
+None (D-068). Part 3 read the minted state from `GET /v1/pass/collection` through its own CORS
+list, `SHOWROOM_ALLOWED_ORIGINS`; Yash dropped the minted state after Part 4, so the showroom calls
+no server and the list was removed from the API before it was ever deployed.
 
 ### 7.6 Tiers
 
@@ -334,14 +340,16 @@ showroom still works and says so in one quiet line.
 |---|---|---|---|
 | Who | Laptops and strong phones | Most phones | Weak phones |
 | Pixel ratio, at most | 2 | 1.5 | 1 |
-| Floor | Reflector, full | Reflector, low resolution | No reflection, a little rougher |
+| Floor | Reflector, 512 px (fully blurred) | Reflector, 256 px | No reflection, a little rougher |
 | Bloom | On, 7 levels | On, half size, 5 levels | Off: the film's glow sprites only |
 | Shadows | Contact shadows | Contact shadows | Contact shadows |
-| Sneaker pictures (walls) | 512 px each | 384 px | 256 px |
-| Prints | Full size | Half | Half |
+| Sneaker pictures (walls) | 384 px each | 256 px | 256 px |
+| Prints, signs, paving | Full size | Half | Half |
 
 Touch devices start on Medium, others on High. drei's `PerformanceMonitor` steps down one tier
-when the frame rate stays low and never flips back and forth. Every tier keeps the same store, the
+when 8 of 10 quarter-second samples are under 45 fps, and never steps up, so it can't flip back
+and forth (D-067). The wall pictures are smaller than first planned (D-067): a Rare-wall Sneaker is
+about 190 screen pixels wide on a laptop, and look closer brings its own 1,024 px picture. Every tier keeps the same store, the
 same Sneakers and the same colours.
 
 ### 7.7 Measuring
@@ -358,7 +366,7 @@ brings.
 | Download before the street shows | ≤ 1.5 MB gzipped, three.js and fonts included |
 | Frame rate | 60 fps on a MacBook; ≥ 50 fps on Yash's Android phone at its tier; ≥ 30 on the Low tier with Chrome's CPU throttled ×4 |
 | Per frame | ≤ 150 draw calls on the laptop, ≤ 100 on a phone |
-| Texture memory | ≤ 160 MB on the laptop, ≤ 64 MB on a phone |
+| Texture memory | ≤ 160 MB on the laptop, ≤ 64 MB on a phone: every texture, render targets included, with the multisample renderbuffers listed apart. On the laptop the bloom's screen-sized HDR buffers (about 105 MB at a pixel ratio of 2) are listed beside it, as they grow with the screen (D-067, proposed) |
 | Shaders | Compiled during the loader (`gl.compile`), so nothing stutters on the first move |
 | No WebGL, or it fails | A still picture of the lit store with the same links (Part 4) |
 
@@ -378,10 +386,10 @@ Yash asked Claude to research and pick (2026-10-22).
 | # | Question | Decided |
 |---|---|---|
 | 1 | Live by | **Mon 2026-11-09** (§2). If it slips, the latest useful date is 11-20, the day before early access starts |
-| 2 | The counter's upright screen | #0137, as the film, until the schedule says minting has started (the waitlist window); then the latest confirmed mint ("Just minted · #0137 · Founder 42"). The deployer's test pass doesn't count: before the window the screen ignores recent mints |
+| 2 | The counter's upright screen | ~~#0137, then the latest mint~~ The waitlist kiosk (D-068) |
 | 3 | The walls' Sneakers | The film's selection, fixed (§5.4), so the showroom and the film stay one place. Any of the 1,000 reaches the stand through Find |
 | 4 | The deep link's shape | `showroom.stridemon.xyz/?pass=0137`: one page, no 1,000 static pages. A shared showroom link shows the store's own card (the stronger picture); a Sneaker's card stays the website's `/pass/0137`, which is canonical |
-| 5 | "Surprise me" | An available design (not minted or being minted); any design if the minted state can't be read |
+| 5 | "Surprise me" | Any design but the one on the stand (D-068: no minted state) |
 | 6 | Sound | None at launch. Most visitors arrive from X on a muted phone, and a sound button is scope without a payoff yet (§11) |
 | 7 | "Your Sneaker" (any Sneaker on Monad on the stand), the old plan's Part 7 | Dropped. It can come back after early access starts on fresh contracts (D-049) |
 

@@ -3,20 +3,23 @@ import { PerspectiveCamera, Vector3 } from 'three'
 import { STORE_DESIGN_NUMBERS } from '@/store/sneaker-placements'
 import { placeCamera } from './frame-subject'
 import {
+  findTargetHitOnRay,
   findTargetOnRay,
   frameLookCloser,
   listGroupTargets,
   lookCloserTargets,
+  placeLookCloserTag,
   readAcross,
   readNeighbourTarget,
   readNormal,
 } from './look-closer-targets'
+import { measureRayHit } from './store-hits'
 import { isOutside } from './walk-path'
 import { LOOK_CLOSER } from './walk-plan'
 
-// Look closer's geometry (D-066): every Sneaker the store shows is a target, its view stands square
-// on in front of it, it sits clear of the card on every screen shape, a tap where it shows hits it,
-// and its neighbours go left to right as seen.
+// Look closer's geometry (D-066, D-068): every Sneaker the store shows is a target, its view stands
+// square on in front of it, it and its tag sit clear of the controls on every screen shape, a tap
+// where it shows hits it and a tap on the tag hits the tag, and its neighbours go left to right.
 
 const SCREEN_SHAPES = {
   'phone upright': 390 / 844,
@@ -33,13 +36,29 @@ const FURNITURE = [
   { name: 'chairs', min: [-4.15, 0, -8.4], max: [-1.8, 1.03, -7.3] },
 ] as const
 
-function readFrameCorners(target: (typeof lookCloserTargets)[number]): Vector3[] {
+function readSneakerCorners(target: (typeof lookCloserTargets)[number]): Vector3[] {
   const across = readAcross(target.facingDegrees)
   return [-1, 1].flatMap((side) =>
     [-1, 1].map((upDown) =>
       new Vector3(...target.center)
         .addScaledVector(across, (side * target.frameWidth) / 2)
         .add(new Vector3(0, (upDown * target.frameHeight) / 2, 0)),
+    ),
+  )
+}
+
+/** The corners of what look closer frames: the Sneaker and its tag together. */
+function readFrameCorners(
+  target: (typeof lookCloserTargets)[number],
+  aspectRatio: number,
+): Vector3[] {
+  const across = readAcross(target.facingDegrees)
+  const tag = placeLookCloserTag(target, aspectRatio)
+  return [-1, 1].flatMap((side) =>
+    [-1, 1].map((upDown) =>
+      new Vector3(...tag.frameCenter)
+        .addScaledVector(across, (side * tag.frameWidth) / 2)
+        .add(new Vector3(0, (upDown * tag.frameHeight) / 2, 0)),
     ),
   )
 }
@@ -89,7 +108,7 @@ test('every Sneaker the store shows can be looked at, and only those', () => {
 
 describe('the look-closer view', () => {
   for (const [shapeName, aspectRatio] of Object.entries(SCREEN_SHAPES)) {
-    test(`stands square on, clear of the card, and a tap there hits it, on a ${shapeName}`, () => {
+    test(`stands square on, frames it with its tag, and a tap hits each, on a ${shapeName}`, () => {
       const camera = new PerspectiveCamera(50, aspectRatio, 0.05, 120)
       const frame = readFrame(aspectRatio)
       for (const target of lookCloserTargets) {
@@ -108,26 +127,21 @@ describe('the look-closer view', () => {
           id: target.id,
           outside: target.groupId === 'street',
         })
-        // Nothing stands between the camera and any corner of it.
-        for (const corner of readFrameCorners(target)) {
+        // Nothing stands between the camera and any corner of the Sneaker. (The tag draws over
+        // everything, so a counter in front of it never hides it.)
+        const corners = readFrameCorners(target, aspectRatio)
+        for (const corner of readSneakerCorners(target)) {
           expect({
             id: target.id,
             shapeName,
             blockedBy: findFurnitureBetween(position, corner),
           }).toEqual({ id: target.id, shapeName, blockedBy: null })
         }
-        // Its corners sit inside the space above the card.
-        const across = readAcross(target.facingDegrees)
-        for (const side of [-1, 1]) {
-          for (const upDown of [-1, 1]) {
-            const corner = center
-              .clone()
-              .addScaledVector(across, (side * target.frameWidth) / 2)
-              .add(new Vector3(0, (upDown * target.frameHeight) / 2, 0))
-              .project(camera)
-            expect(Math.abs(corner.x)).toBeLessThanOrEqual(frame.horizontal + 1e-6)
-            expect(Math.abs(corner.y - frame.centerY)).toBeLessThanOrEqual(frame.vertical + 1e-6)
-          }
+        // The corners of it and its tag sit inside the frame, clear of the controls.
+        for (const corner of corners) {
+          const projected = corner.clone().project(camera)
+          expect(Math.abs(projected.x)).toBeLessThanOrEqual(frame.horizontal + 1e-6)
+          expect(Math.abs(projected.y - frame.centerY)).toBeLessThanOrEqual(frame.vertical + 1e-6)
         }
         // A tap where its centre shows hits it (a print's neighbours overlap: the closest centre wins).
         const projectedCenter = center.clone().project(camera)
@@ -137,6 +151,17 @@ describe('the look-closer view', () => {
           .sub(origin)
           .normalize()
         expect(findTargetOnRay(origin, direction, isOutside(pose))?.id).toBe(target.id)
+        // The tag never covers the Sneaker, and a tap on the tag hits the tag first.
+        const tag = placeLookCloserTag(target, aspectRatio)
+        expect(measureRayHit(origin, direction, tag)).toBeNull()
+        const tagCenter = new Vector3(...tag.center)
+        const toTag = tagCenter.clone().sub(origin).normalize()
+        const tagHit = measureRayHit(origin, toTag, tag)
+        const sneakerBehind = findTargetHitOnRay(origin, toTag, isOutside(pose))
+        expect(tagHit).not.toBeNull()
+        if (sneakerBehind !== null && tagHit !== null) {
+          expect(tagHit.distance).toBeLessThan(sneakerBehind.distance)
+        }
       }
     })
   }
@@ -169,7 +194,7 @@ test('neighbours go row by row, left to right as seen', () => {
     }
   }
   const passWall = listGroupTargets('foundingPassWall').map((target) => target.design)
-  expect(passWall).toEqual(['counterScreen', 49, 542, 29])
+  expect(passWall).toEqual([49, 542, 29])
   const first = sneakerWall[0]
   if (first === undefined) throw new Error('missing target')
   expect(readNeighbourTarget(first, -1)).toBeNull()

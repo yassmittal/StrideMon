@@ -131,41 +131,6 @@ export function createFoundingPassLightboxTexture({
   })
 }
 
-/**
- * The upright screen on the counter: one Sneaker on black, its number under it. Once minting has
- * started it shows the newest mint, with "Just minted" and its founder number (brief §10, #2).
- */
-export function createCounterScreenTexture({
-  fontFamilies,
-  printScale,
-  sneakerImages,
-  designNumber = HERO_DESIGN_NUMBER,
-  founderNumber = null,
-}: PrintOptions & { designNumber?: number; founderNumber?: number | null }): Texture {
-  const { counterScreen } = printSpots
-  return drawCanvasTexture({
-    width: counterScreen.canvasWidth,
-    height: counterScreen.canvasHeight,
-    scale: printScale,
-    draw: (context, width, height) => {
-      context.fillStyle = '#0D0E14'
-      context.fillRect(0, 0, width, height)
-      drawPrintSneakers(context, counterScreen, sneakerImages, designNumber)
-      context.fillStyle = SIGN_WHITE
-      context.textAlign = 'center'
-      context.font = `500 44px ${fontFamilies.mono}`
-      context.fillText(formatPassNumber(designNumber), 300, 760)
-      if (founderNumber !== null) {
-        context.font = `500 30px ${fontFamilies.mono}`
-        context.letterSpacing = '3px'
-        context.fillStyle = 'rgba(244, 246, 255, 0.7)'
-        context.fillText('JUST MINTED', 300, 170)
-        context.fillText(`FOUNDER ${founderNumber}`, 300, 830)
-      }
-    },
-  })
-}
-
 /** The poster in the window, seen from the street: one Sneaker on the pale field. */
 export function createWindowPosterTexture({
   fontFamilies,

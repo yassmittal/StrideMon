@@ -1,8 +1,7 @@
 import { PASS_DESIGN_COUNT, type PassDesign, passDesigns, readPassDesign } from './sneaker-design'
 
 // Find a Sneaker (brief §10, D-066): a number (1 to 1,000, with or without `#` and leading zeros)
-// or any part of a name, matched against the design table that ships with the page, so it works
-// even when the API doesn't answer.
+// or any part of a name, matched against the design table that ships with the page.
 
 export const FIND_RESULT_LIMIT = 6
 
@@ -33,27 +32,15 @@ export function findSneakerDesigns(query: string): readonly PassDesign[] {
     .slice(0, FIND_RESULT_LIMIT)
 }
 
-/**
- * "Surprise me": a design nobody has minted or is minting, never the one already on the stand. Any
- * design when the minted state is unknown (an empty set), D-063 §10, #5.
- */
+/** "Surprise me": any design but the one already on the stand (D-068: no minted state). */
 export function pickSurpriseDesignNumber({
-  takenDesignNumbers,
   standDesignNumber,
   random = Math.random,
 }: {
-  takenDesignNumbers: ReadonlySet<number>
   standDesignNumber: number
   random?: () => number
 }): number {
-  const candidates = passDesigns
-    .map((design) => design.designNumber)
-    .filter(
-      (designNumber) => !takenDesignNumbers.has(designNumber) && designNumber !== standDesignNumber,
-    )
-  if (candidates.length === 0) {
-    // All taken: any design but the one on the stand.
-    return (standDesignNumber % PASS_DESIGN_COUNT) + 1
-  }
-  return candidates[Math.floor(random() * candidates.length)] ?? standDesignNumber
+  // One of the other 999, counted on from the stand's design.
+  const offset = 1 + Math.min(Math.floor(random() * (PASS_DESIGN_COUNT - 1)), PASS_DESIGN_COUNT - 2)
+  return ((standDesignNumber - 1 + offset) % PASS_DESIGN_COUNT) + 1
 }

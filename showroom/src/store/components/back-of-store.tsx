@@ -4,13 +4,13 @@ import { LEGENDARY_WALL_Z, PASS_WALL_CENTER_X, PASS_WALL_Z, printSpots } from '.
 import { useStoreContext } from '../store-context'
 import { CEILING_HEIGHT } from '../store-dimensions'
 import { useLookCloserPrint } from '../use-look-closer-print'
-import { CounterScreen } from './counter-screen'
 import type { LightStripSpec } from './light-strips'
 import type { BlockSpec } from './merged-blocks'
 import { Glow, LitPanel, StorePointLight } from './store-primitives'
 
 // The back of the store: the Legendary corner and the Founding Pass wall with its counter, ported
-// from the film's `LegendaryCorner` and `FoundingPassWall`.
+// from the film's `LegendaryCorner` and `FoundingPassWall`. The counter's upright screen is the
+// waitlist kiosk now, one of the store's buttons (store-buttons.tsx, D-068).
 
 const { legendaryPoster, foundingPassLightbox } = printSpots
 /**
@@ -166,7 +166,6 @@ export function FoundingPassWall() {
         opacity={0.5}
         lightingSource="led"
       />
-      <CounterScreen />
       <StorePointLight
         position={[PASS_WALL_CENTER_X, 2.4, -8.6]}
         color="#F4F4FF"

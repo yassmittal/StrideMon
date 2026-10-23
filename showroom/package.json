@@ -8,7 +8,8 @@
     "start": "bunx serve out --listen 3002",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "export-art": "bun scripts/export-sneaker-art.ts"
+    "export-art": "bun scripts/export-sneaker-art.ts",
+    "render-stills": "bun scripts/render-stills.ts"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",

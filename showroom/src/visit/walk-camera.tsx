@@ -4,6 +4,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { type RefObject, useEffect, useRef } from 'react'
 import type { PerspectiveCamera } from 'three'
 import { useSmallStore } from '@/lib/create-small-store'
+import { loadingStore } from '@/lib/loading-store'
 import { visitStore } from '@/lib/visit-store'
 import { colourCheckViews } from '@/store/camera-poses'
 import { type StoreLighting, storeLightingPresets } from '@/store/store-lighting'
@@ -11,7 +12,8 @@ import { placeCamera, poseLookingAt } from './frame-subject'
 import { walkController } from './walk-controller'
 
 // Inside the canvas: every frame, the walk says where the camera is, how lit the store is and how
-// dark the veil (reduced motion's fade, a DOM element over the canvas) should be.
+// dark the veil (reduced motion's fade, a DOM element over the canvas) should be. The arrival
+// begins when the loader goes (the store is warm), not while it still covers the canvas.
 
 export function WalkCamera({
   lighting,
@@ -34,7 +36,7 @@ export function WalkCamera({
 
   useFrame((state, deltaSeconds) => {
     const aspectRatio = state.size.width / Math.max(state.size.height, 1)
-    walkController.begin(aspectRatio)
+    if (loadingStore.read().phase === 'ready') walkController.begin(aspectRatio)
     const frame = walkController.update(aspectRatio, deltaSeconds)
     if (colourCheckViewName === null) {
       if (frame.lighting !== null) lighting.setLevels(frame.lighting)

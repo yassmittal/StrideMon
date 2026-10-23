@@ -15,10 +15,12 @@ import {
 } from './back-of-store'
 import { MergedLightStrips } from './light-strips'
 import { LookCloserCutout } from './look-closer-cutout'
+import { LookCloserTag } from './look-closer-tag'
 import { type BlockSpec, MergedBlocks } from './merged-blocks'
 import { NotReflected, useCameraSeesNotReflectedLayer } from './reflection-layer'
 import { Room, roomBlocks } from './room'
 import { Stand, standBlocks } from './stand'
+import { InsideButtons, StreetButtons } from './store-buttons'
 import { Neighbours, ShopFront, Street, streetBlocks, streetLightStrips } from './street'
 import { HeroWall, RareWall, SneakerWall, wallBlocks, wallLightStrips } from './walls'
 
@@ -50,6 +52,7 @@ export function StoreWorld() {
         <Street />
         <Neighbours />
         <ShopFront />
+        <StreetButtons />
       </NotReflected>
       <Room />
       <HeroWall />
@@ -59,6 +62,8 @@ export function StoreWorld() {
       <SneakerWall />
       <Stand designNumber={standDesignNumber} />
       <LookCloserCutout />
+      <InsideButtons />
+      <LookCloserTag />
       <StoreContactShadows />
     </group>
   )

@@ -2285,3 +2285,107 @@ Claude; approved by Yash with Part 3 (2026-10-22), item 4's 1.2 m floor from his
   print redrawn for look closer costs up to about 17 MB of texture while it's open.
 - **Revisit when:** the route gives founder numbers for every mint, or the phone's texture memory
   is tight in Part 4.
+
+## D-067 — The showroom's finish, as built: a real loader, smaller pictures on phones, fallbacks
+
+Made 2026-10-23, while building the showroom's Part 4 (finish and fallbacks, D-063). Proposed by
+Claude; for Yash's approval with Part 4's phone check.
+
+- **Decision:**
+  1. **The loader is in the page's HTML** and draws the line-Sneaker mark (the website's
+     `icon.svg`) from real milestones: the page's code (30 %, three.js comes with it because the
+     walk's maths uses it), the store's chunk (10 %), each of the 66 files (45 %), then the
+     shaders (15 %, the lime stroke, last). The shaders compile with `compileAsync` and three
+     frames are drawn under the loader, so the effects compile too; the arrival starts as it
+     fades. The store's files start loading with the page, not after three.js. It sits under the
+     header, so Help, the Founding Pass and the waitlist are there from the first paint. After 8
+     seconds a CSS-only line says the collection is also at `stridemon.xyz/pass`.
+  2. **Tiers step down, never up** (drei's `PerformanceMonitor`): 8 of 10 quarter-second samples
+     under 45 fps steps one tier down, measured only once the loader has gone and afresh after
+     each step. It can't flicker. `?tier=low|medium|high` holds a tier.
+  3. **Smaller pictures where nobody sees the difference** (measured, brief §7.6 and §8 updated):
+     the walls' atlases are 384 px a Sneaker on High and 256 on Medium and Low (on a laptop a
+     Rare-wall Sneaker is about 190 screen pixels wide; look closer swaps in its own 1,024 px
+     picture anyway); the floor's reflection is 512 on High and 256 on Medium (it's fully blurred);
+     the signs, wall titles, tagline and paving follow the tier's print scale; the contact shadows
+     are 512 (2 cm a pixel, blurred); the environment map's cube is 128. A phone (Medium) went from
+     117 MB of textures to 61.
+  4. **What "texture memory" counts.** Every texture the store uploads, render targets included;
+     the multisample renderbuffers are listed apart. On a phone that's 61 MB at a stop (budget 64),
+     up to 74 MB while a print is redrawn for look closer (D-066's trade-off). On the laptop at a
+     pixel ratio of 2 it's 230 MB: 125 MB of pictures, reflection, shadows and environment, and
+     105 MB of screen-sized HDR buffers for the bloom (the composer's two 2,880 × 1,800 half-float
+     targets and the first bloom level), which grow with the screen. **The proposal:** the 160 MB
+     laptop budget counts everything but those screen-sized buffers, which the brief now lists
+     beside it.
+  5. **Fallbacks.** No WebGL 2 (checked before three.js's chunk is used, and a canvas that can't
+     start) shows a still of the lit store, "Your browser can't show the 3D store", and See all
+     1,000 on stridemon.xyz, under the header's Founding Pass (free, can't be sent or sold),
+     waitlist and Help. A lost context ("The 3D store stopped") and files that didn't come ("The
+     store couldn't load") add **Try again**, which reloads (a deep link survives it). The minted
+     state's quiet line hides on a fallback.
+  6. **Stills and the share card are rendered from the showroom itself** by `bun run render-stills`
+     (Chrome over the DevTools protocol, no dependency) on the production build with `?still`
+     (no DOM layer, the lit street at once): `public/stills/` holds a 2,160 × 1,350 and an 860 ×
+     1,864 WebP (58 and 22 KB) and the 1,200 × 630 JPEG share card (65 KB).
+  7. **A leak fixed.** Look closer disposed its sharp picture while the material still drew it, so
+     the next frame uploaded it again and that copy was never freed (about 13 MB a look on a
+     phone). `useDisposeWhenReplaced` disposes a texture only after React has swapped it off.
+- **Why:** the brief's §8 budgets on a phone from X, and nobody left looking at a blank page.
+- **Trade-off:** the walls' Sneakers are a little softer on a large laptop screen than at 512 px
+  (still about twice their screen size); three.js arrives with the page's code (about 234 KB
+  gzipped) even for a visitor without WebGL.
+- **Revisit when:** Yash's phone shows a tier stepping down on a phone that looks smooth, or the
+  laptop's memory matters (High's multisampling could drop from 4 to 2 at a pixel ratio of 2).
+
+## D-068 — The showroom's interface lives in the store: lit buttons, a shop tag, no minted state
+
+Made 2026-10-23, after Yash's check of the showroom's Part 4 (D-067). Asked for by Yash ("make it
+minimal, and use 3D elements as much as possible", in the spirit of Apple, Duolingo and Phantom);
+the layout was his pick of Claude's options.
+
+- **Decision:**
+  1. **Almost nothing over the canvas.** No header, wordmark, Help, where-you-are panel, card sheet
+     or Find pill. On screen: the stop dots and ⌃ ⌄ at a stop, ⌄ alone on the street (Step
+     inside), ‹ ✕ › while looking closer, the one-time walking hint, and a short line that fades
+     for a bad deep link. The loader, the fallbacks and Find's dialog (a text field) stay in the
+     DOM. For keyboards and screen readers a visually hidden layer keeps the where-you-are line
+     (announced), the store's buttons and the Sneakers at each stop, and look closer's details
+     and link, each shown as a small panel when it holds the keyboard's focus.
+  2. **The store's own buttons**, lit, tappable, with a pointer cursor on a laptop (links open in
+     the same tab, as before):
+     - The street: a "Step inside →" decal on the glass door, a Founding Pass decal on the
+       window beside it ("1,000 Founding Passes · Free to mint →"), and the blade sign
+       ("FOUNDING PASS →"), both to `stridemon.xyz/pass`.
+     - The Founding Pass wall: a lit "Get your Founding Pass →" pill on the black counter's front,
+       with "Free · Can't be sent or sold" under it; the counter's upright screen is a **waitlist
+       kiosk**, "Join the waitlist →" to `stridemon.xyz/waitlist`. It no longer shows #0137 or
+       the newest mint (D-063 §10, #2, retired).
+     - The Sneaker wall: a "Find a Sneaker" plate on the white counter's front, beside the stand.
+       `/` still opens Find anywhere.
+  3. **Look closer shows a shop tag in the store**, not a card on the screen: a small white tag
+     with its number, rarity, name, "Free to mint. Can't be sent or sold." and "See it on
+     stridemon.xyz →". On a wide screen it hangs beside the Sneaker (left of the stand's, whose
+     little printed card is on its right); on a phone held upright it hangs under it, as wide as
+     it, covering the row below, so it's plainly that Sneaker's and its words stay readable. It
+     draws over everything. Tapping it opens the design's page. The camera frames the Sneaker and
+     its tag together, square on, and while you look closer the store's buttons step back
+     (hidden, and taps pass them by).
+  4. **No minted state.** The showroom no longer reads `GET /v1/pass/collection`: no Available or
+     Minted on the tag, no "Mint it" wording, "Surprise me" picks any design but the one on the
+     stand, and no quiet "can't check" line. The API's `SHOWROOM_ALLOWED_ORIGINS` (D-066, never
+     deployed) is removed with it, so Part 5 has no API step.
+  5. **Help only where someone is stuck:** the fallbacks keep "Get help"; the walk has none.
+  6. **The blade sign's letters fit its face** (measured, at most 84 % of its width): they ran to
+     the edge, past the box at an angle.
+  7. **Stop 4 frames down to the counter's front** (`walk-plan.ts`: centre 1.72 m, 2.75 m high),
+     so "Get your Founding Pass" is in the picture on every screen shape; a test checks every
+     button shows from its stop and that a tap on it hits it. The buttons' pictures follow the
+     tier's print scale, so a phone stays at 64 MB of textures at a stop.
+- **Why:** the store is the interface: fewer words over the picture, and every action is a lit
+  thing in the place.
+- **Trade-off:** the two exits are only at the street and the Founding Pass wall, not on every
+  screen (the brief's "always on screen" is retired); a design's minted state is only on
+  `stridemon.xyz`; Help isn't on screen during the walk. Users who can't see the 3D buttons
+  reach the same actions through the hidden layer.
+- **Revisit when:** a phone check shows visitors missing the exits or Find.

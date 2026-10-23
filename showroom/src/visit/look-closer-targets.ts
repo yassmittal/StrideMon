@@ -13,12 +13,13 @@ import {
 import { SNEAKER_ASPECT } from '@/store/textures'
 import type { WalkPose } from './frame-subject'
 import { readVerticalFovDegrees } from './frame-subject'
+import { measureRayHit, readAcross, readNormal } from './store-hits'
 import { LOOK_CLOSER, STREET_STOP_INDEX, WALK_STOP_IDS, type WalkStopId } from './walk-plan'
 
-// Every Sneaker you can tap (Part 3, D-066): a shelf's cells, the Sneakers painted into the prints,
-// the counter's screen and the stand. Each knows where it is, what a tap hits, what the camera
+// Every Sneaker you can tap (Part 3, D-066): a shelf's cells, the Sneakers painted into the prints
+// and the stand. Each knows where it is, what a tap hits, what the camera
 // frames, which stop it belongs to and its neighbours on the same wall. Look closer frames it square
-// on, level, above the card.
+// on, level, together with its shop tag (D-068).
 
 export type LookCloserGroupId = WalkStopId | 'stand'
 
@@ -29,8 +30,8 @@ export type LookCloserTarget = {
   printId: PrintId | null
   /** Its index in the print's Sneakers, for the sharp redraw. */
   printSneakerIndex: number
-  /** A fixed design, or the stand's or the screen's, which change. */
-  design: number | 'stand' | 'counterScreen'
+  /** A fixed design, or the stand's, which changes. */
+  design: number | 'stand'
   groupId: LookCloserGroupId
   /** The stop it belongs to, for the list at a stop. */
   stopIndex: number
@@ -40,7 +41,7 @@ export type LookCloserTarget = {
   /** What a tap hits, along the wall and up, in metres. */
   hitWidth: number
   hitHeight: number
-  /** What the camera fits above the card. */
+  /** The Sneaker's own size, which the camera frames with its tag. */
   frameWidth: number
   frameHeight: number
   /** Neighbours go row by row (0 is the top), then left to right as seen. */
@@ -54,16 +55,7 @@ function readStopIndex(stopId: WalkStopId): number {
   return WALK_STOP_IDS.indexOf(stopId)
 }
 
-/** Along a wall that faces `facingDegrees`, left to right as seen (the walk's convention). */
-export function readAcross(facingDegrees: number): Vector3 {
-  const facingRadians = facingDegrees * DEGREES_TO_RADIANS
-  return new Vector3(Math.cos(facingRadians), 0, -Math.sin(facingRadians))
-}
-
-export function readNormal(facingDegrees: number): Vector3 {
-  const facingRadians = facingDegrees * DEGREES_TO_RADIANS
-  return new Vector3(Math.sin(facingRadians), 0, Math.cos(facingRadians))
-}
+export { readAcross, readNormal }
 
 function buildShelfTargets(
   spots: readonly ShelfSpot[],
@@ -132,24 +124,6 @@ function buildPrintTargets(printId: PrintId, groupId: WalkStopId): readonly Look
   })
 }
 
-/** The screen is framed whole, with its words; its Sneaker follows the schedule (brief §10). */
-const counterScreenTarget: LookCloserTarget = {
-  id: 'counterScreen',
-  kind: 'print',
-  printId: 'counterScreen',
-  printSneakerIndex: 0,
-  design: 'counterScreen',
-  groupId: 'foundingPassWall',
-  stopIndex: readStopIndex('foundingPassWall'),
-  center: printSpots.counterScreen.position,
-  facingDegrees: printSpots.counterScreen.facingDegrees,
-  hitWidth: printSpots.counterScreen.width,
-  hitHeight: printSpots.counterScreen.height,
-  frameWidth: printSpots.counterScreen.width,
-  frameHeight: printSpots.counterScreen.height,
-  row: 0,
-}
-
 export const STAND_TARGET_ID = 'stand'
 
 const standTarget: LookCloserTarget = {
@@ -174,7 +148,6 @@ export const lookCloserTargets: readonly LookCloserTarget[] = [
   ...buildPrintTargets('heroLightbox', 'lightbox'),
   ...buildShelfTargets(rareWallSpots, 'rareWall'),
   ...buildPrintTargets('legendaryPoster', 'legendaryCorner'),
-  counterScreenTarget,
   ...buildPrintTargets('foundingPassLightbox', 'foundingPassWall'),
   ...buildShelfTargets(sneakerWallSpots, 'sneakerWall'),
   standTarget,
@@ -189,14 +162,9 @@ export function readLookCloserTarget(targetId: string | null): LookCloserTarget 
 /** The design a target shows now. */
 export function readTargetDesignNumber(
   target: LookCloserTarget,
-  {
-    standDesignNumber,
-    counterScreenDesignNumber,
-  }: { standDesignNumber: number; counterScreenDesignNumber: number },
+  standDesignNumber: number,
 ): number {
-  if (target.design === 'stand') return standDesignNumber
-  if (target.design === 'counterScreen') return counterScreenDesignNumber
-  return target.design
+  return target.design === 'stand' ? standDesignNumber : target.design
 }
 
 /** A group's targets in neighbour order: row by row, then left to right as seen. */
@@ -238,68 +206,125 @@ function listReachableTargets(isOutside: boolean): readonly LookCloserTarget[] {
 }
 
 /**
- * The target a ray from the camera hits: the nearest, and in a print the Sneaker whose centre is
- * closest. A target facing away is never hit.
+ * The target a ray from the camera hits, and how far: the nearest, and in a print the Sneaker whose
+ * centre is closest.
  */
+export function findTargetHitOnRay(
+  origin: Vector3,
+  direction: Vector3,
+  isOutside: boolean,
+): { target: LookCloserTarget; distance: number } | null {
+  let best: { target: LookCloserTarget; distance: number; offCentre: number } | null = null
+  for (const target of listReachableTargets(isOutside)) {
+    const hit = measureRayHit(origin, direction, {
+      center: target.center,
+      facingDegrees: target.facingDegrees,
+      width: target.hitWidth,
+      height: target.hitHeight,
+    })
+    if (hit === null) continue
+    const isNearer =
+      best === null ||
+      hit.distance < best.distance - LOOK_CLOSER.sameSurfaceMeters ||
+      (Math.abs(hit.distance - best.distance) <= LOOK_CLOSER.sameSurfaceMeters &&
+        hit.offCentre < best.offCentre)
+    if (isNearer) best = { target, ...hit }
+  }
+  return best === null ? null : { target: best.target, distance: best.distance }
+}
+
 export function findTargetOnRay(
   origin: Vector3,
   direction: Vector3,
   isOutside: boolean,
 ): LookCloserTarget | null {
-  let best: { target: LookCloserTarget; distance: number; offCentre: number } | null = null
-  const toCenter = new Vector3()
-  const hitPoint = new Vector3()
-  for (const target of listReachableTargets(isOutside)) {
-    const normal = readNormal(target.facingDegrees)
-    const facing = direction.dot(normal)
-    if (facing >= -1e-6) continue
-    const center = new Vector3(...target.center)
-    const distance = toCenter.copy(center).sub(origin).dot(normal) / facing
-    if (distance <= 0) continue
-    hitPoint.copy(origin).addScaledVector(direction, distance).sub(center)
-    const acrossMeters = hitPoint.dot(readAcross(target.facingDegrees))
-    const upMeters = hitPoint.y
-    if (Math.abs(acrossMeters) > target.hitWidth / 2 || Math.abs(upMeters) > target.hitHeight / 2) {
-      continue
-    }
-    const offCentre = Math.hypot(acrossMeters, upMeters)
-    const isNearer =
-      best === null ||
-      distance < best.distance - LOOK_CLOSER.sameSurfaceMeters ||
-      (Math.abs(distance - best.distance) <= LOOK_CLOSER.sameSurfaceMeters &&
-        offCentre < best.offCentre)
-    if (isNearer) best = { target, distance, offCentre }
-  }
-  return best?.target ?? null
+  return findTargetHitOnRay(origin, direction, isOutside)?.target ?? null
+}
+
+/** Look closer's shop tag (D-068): where it hangs, and the rectangle the camera frames with it. */
+export type TagPlacement = {
+  side: 'below' | 'beside'
+  center: Vector3Tuple
+  facingDegrees: number
+  width: number
+  height: number
+  /** The Sneaker and its tag together. */
+  frameCenter: Vector3Tuple
+  frameWidth: number
+  frameHeight: number
 }
 
 /**
- * The camera for a target: square on and level, at the distance where it fits the space above the
- * card. The camera moves down to make that space rather than tilting, so the picture stays flat
- * (D-066), but never below the counters' height: there it tilts a little instead.
+ * Under the Sneaker on a phone held upright (the screen is tall), beside it on a wide screen: to the
+ * right as seen, except on the stand, whose own little printed card is on its right. The tag draws
+ * over everything (no depth test), so a counter or a ledge in the way never hides it.
+ */
+export function placeLookCloserTag(target: LookCloserTarget, aspectRatio: number): TagPlacement {
+  const { tag } = LOOK_CLOSER
+  const side = aspectRatio < 1 ? 'below' : 'beside'
+  const size = tag[side]
+  const width = MathUtils.clamp(
+    target.frameWidth * size.widthShare,
+    size.minWidthMeters,
+    size.maxWidthMeters,
+  )
+  const height = width / tag.aspectRatio
+  const gap = width * tag.gapShare
+  const center = new Vector3(...target.center)
+  const across = readAcross(target.facingDegrees).multiplyScalar(target.kind === 'stand' ? -1 : 1)
+  const forward = readNormal(target.facingDegrees).multiplyScalar(tag.forwardMeters)
+  const tagCenter =
+    side === 'below'
+      ? center.clone().add(new Vector3(0, -(target.frameHeight / 2 + gap + height / 2), 0))
+      : center.clone().addScaledVector(across, target.frameWidth / 2 + gap + width / 2)
+  tagCenter.add(forward)
+  const frameCenter =
+    side === 'below'
+      ? center.clone().add(new Vector3(0, -(gap + height) / 2, 0))
+      : center.clone().addScaledVector(across, (gap + width) / 2)
+  return {
+    side,
+    center: [tagCenter.x, tagCenter.y, tagCenter.z],
+    facingDegrees: target.facingDegrees,
+    width,
+    height,
+    frameCenter: [frameCenter.x, frameCenter.y, frameCenter.z],
+    frameWidth:
+      side === 'below' ? Math.max(target.frameWidth, width) : target.frameWidth + gap + width,
+    frameHeight:
+      side === 'below' ? target.frameHeight + gap + height : Math.max(target.frameHeight, height),
+  }
+}
+
+/**
+ * The camera for a target: square on and level, at the distance where the Sneaker and its tag fit
+ * the screen above the small controls. The camera moves down to centre them rather than tilting,
+ * so the picture stays flat (D-066), but never below the counters' height: there it tilts a
+ * little instead.
  */
 export function frameLookCloser(target: LookCloserTarget, aspectRatio: number): WalkPose {
+  const placement = placeLookCloserTag(target, aspectRatio)
   const verticalFovDegrees = readVerticalFovDegrees(aspectRatio)
   const frame = aspectRatio >= 1 ? LOOK_CLOSER.landscapeFrame : LOOK_CLOSER.portraitFrame
   const halfVerticalTan = Math.tan(MathUtils.degToRad(verticalFovDegrees / 2))
   const halfHorizontalTan = halfVerticalTan * aspectRatio
-  const halfWidth = (target.frameWidth * LOOK_CLOSER.marginShare) / 2
-  const halfHeight = (target.frameHeight * LOOK_CLOSER.marginShare) / 2
+  const halfWidth = (placement.frameWidth * LOOK_CLOSER.marginShare) / 2
+  const halfHeight = (placement.frameHeight * LOOK_CLOSER.marginShare) / 2
   const distanceMeters = Math.max(
     halfWidth / (frame.horizontal * halfHorizontalTan),
     halfHeight / (frame.vertical * halfVerticalTan),
     LOOK_CLOSER.nearestMeters,
   )
-  const position = new Vector3(...target.center)
+  const position = new Vector3(...placement.frameCenter)
     .addScaledVector(readNormal(target.facingDegrees), distanceMeters)
     .add(new Vector3(0, -frame.centerY * halfVerticalTan * distanceMeters, 0))
   // Never down behind a counter: from there the camera tilts a little instead, so the Sneaker
-  // still sits above the card (a phone held upright stands far back from a wide print).
+  // and its tag still sit in the frame (a phone held upright stands far back from a wide print).
   const eyeHeight = Math.max(position.y, LOOK_CLOSER.minimumEyeHeightMeters)
   const pitchRadians =
     eyeHeight === position.y
       ? 0
-      : Math.atan2(target.center[1] - eyeHeight, distanceMeters) -
+      : Math.atan2(placement.frameCenter[1] - eyeHeight, distanceMeters) -
         Math.atan(frame.centerY * halfVerticalTan)
   return {
     position: [position.x, eyeHeight, position.z],

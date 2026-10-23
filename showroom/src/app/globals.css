@@ -135,3 +135,35 @@
     animation: none;
   }
 }
+
+/* The loader's strokes follow the real progress, eased between steps (store-loader.tsx). */
+.loader-stroke {
+  transition: stroke-dashoffset 500ms var(--ease-standard);
+}
+
+/*
+ * After 8 seconds the loader says where else the collection is. CSS, not script, so it shows even
+ * when the script is what's slow. Hidden (not only transparent) until then, so its link can't be
+ * reached by Tab.
+ */
+.loader-slow-note {
+  opacity: 0;
+  visibility: hidden;
+  animation: loader-slow-note-reveal 600ms var(--ease-standard) 8s forwards;
+}
+
+@keyframes loader-slow-note-reveal {
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-stroke {
+    transition: none;
+  }
+  .loader-slow-note {
+    animation-duration: 1ms;
+  }
+}

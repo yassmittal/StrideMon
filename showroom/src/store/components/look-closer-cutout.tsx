@@ -8,6 +8,7 @@ import { readLookCloserTarget, readNormal } from '@/visit/look-closer-targets'
 import { createSneakerPictureTexture, SHARP_SNEAKER_PIXELS } from '../sneaker-pictures'
 import { useStoreContext, useStoreLightingEffect } from '../store-context'
 import { SNEAKER_ASPECT } from '../textures'
+import { useDisposeWhenReplaced } from '../use-dispose-when-replaced'
 import { SNEAKER_RENDER_ORDER } from './render-order'
 
 // Look closer at a shelf Sneaker (brief §5.3, D-066): its own sharp picture (1,024 px) laid exactly
@@ -31,16 +32,12 @@ export function LookCloserCutout() {
   })
 
   useEffect(() => {
-    if (designNumber === null) return
-    const image = assets.sneakerImages.get(designNumber)
-    if (image === undefined) return
-    const sharpTexture = createSneakerPictureTexture(image, SHARP_SNEAKER_PIXELS)
-    setTexture(sharpTexture)
-    return () => {
-      setTexture(null)
-      sharpTexture.dispose()
-    }
+    const image = designNumber === null ? undefined : assets.sneakerImages.get(designNumber)
+    setTexture(
+      image === undefined ? null : createSneakerPictureTexture(image, SHARP_SNEAKER_PIXELS),
+    )
   }, [assets, designNumber])
+  useDisposeWhenReplaced(texture)
 
   if (shelfTarget === null || texture === null) return null
   const normal = readNormal(shelfTarget.facingDegrees)

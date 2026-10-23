@@ -15,7 +15,7 @@ import { STORE_DEPTH, STORE_HALF_WIDTH } from './store-dimensions'
 
 // Where each Sneaker the store shows sits in the world, as the film's `ShowroomWorld.tsx` places
 // it: the niches' shelf cells, the prints (a lightbox or a poster, with its Sneakers painted in at
-// the film's canvas places), the stand and the counter's screen. The store's components draw from
+// the film's canvas places) and the stand. The store's components draw from
 // these, and look closer (Part 3) taps and frames them, so the two can't drift apart.
 
 const QUARTER_TURN_DEGREES = 90
@@ -102,7 +102,6 @@ export const PRINT_IDS = [
   'heroLightbox',
   'legendaryPoster',
   'foundingPassLightbox',
-  'counterScreen',
   'windowPoster',
 ] as const
 export type PrintId = (typeof PRINT_IDS)[number]
@@ -186,24 +185,6 @@ export const printSpots: Record<PrintId, PrintSpot> = {
         centerY: 760,
         width: 900,
         rotationDegrees: -4,
-      },
-    ],
-  },
-  // The upright screen on the black counter. Its Sneaker changes (brief §10, #2): this is #0137's.
-  counterScreen: {
-    canvasWidth: 600,
-    canvasHeight: 1000,
-    position: [PASS_WALL_CENTER_X - 1.6, 1.4, -8.425],
-    width: 0.42,
-    height: 0.7,
-    facingDegrees: 0,
-    sneakers: [
-      {
-        designNumber: HERO_DESIGN_NUMBER,
-        centerX: 300,
-        centerY: 470,
-        width: 500,
-        rotationDegrees: -6,
       },
     ],
   },

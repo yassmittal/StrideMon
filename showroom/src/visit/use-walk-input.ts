@@ -2,14 +2,16 @@
 
 import { type RefObject, useEffect } from 'react'
 import { visitStore } from '@/lib/visit-store'
-import { walkController } from './walk-controller'
+import { openFind, tapStoreAt } from './store-actions'
+import { type StoreHit, walkController } from './walk-controller'
 import { FIRST_INSIDE_STOP_INDEX, INPUT, LOOK_CLOSER, STREET_STOP_INDEX } from './walk-plan'
 
 // The walk's input (Part 2, step 4), on the element over the whole store. A wheel or trackpad
 // scroll and a vertical swipe walk one stop (normalised, with a short lock so one flick is one
 // step); a horizontal drag looks around; ↑ ↓ walk; Enter steps inside from the street. On touch,
-// a gesture's main axis after a few pixels decides between walking and looking. Presses on links
-// and buttons are theirs, never the walk's.
+// a gesture's main axis after a few pixels decides between walking and looking. A tap is the
+// store's (a Sneaker, a lit button, the tag, D-068). Presses on the DOM's own links and buttons
+// are theirs, never the walk's.
 
 const LINE_HEIGHT_PIXELS = 16
 
@@ -42,11 +44,12 @@ export function useWalkInput(surfaceRef: RefObject<HTMLElement | null>): void {
           (event.clientX / window.innerWidth) * 2 - 1,
           (event.clientY / window.innerHeight) * 2 - 1,
         )
-        // A Sneaker under the pointer can be clicked to look closer.
-        const isOverSneaker =
-          !isOnPanel(event.target) &&
-          walkController.findTargetAt(...readScreenPoint(event)) !== null
-        surface.style.cursor = isOverSneaker ? 'pointer' : ''
+        // A Sneaker, a lit button or the tag under the pointer can be clicked.
+        const hit = isOnPanel(event.target)
+          ? null
+          : walkController.findHitAt(...readScreenPoint(event))
+        surface.style.cursor = hit === null ? '' : 'pointer'
+        showHovered(hit)
       }
     }
     const onPointerEnd = (event: PointerEvent) => {
@@ -54,14 +57,17 @@ export function useWalkInput(surfaceRef: RefObject<HTMLElement | null>): void {
       gesture.end(event)
       if (surface.hasPointerCapture(event.pointerId)) surface.releasePointerCapture(event.pointerId)
     }
-    const onPointerLeave = () => walkController.setPointerLook(0, 0)
+    const onPointerLeave = () => {
+      walkController.setPointerLook(0, 0)
+      showHovered(null)
+    }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.altKey || event.ctrlKey || event.metaKey || isTypingTarget(event.target)) return
       const { isFindOpen, lookCloserTargetId } = visitStore.read()
       if (isFindOpen) return // Find's dialog has the keyboard.
       if (event.key === '/') {
         event.preventDefault()
-        if (visitStore.read().arrivalPhase === 'ready') visitStore.update({ isFindOpen: true })
+        openFind()
       } else if (event.key === 'Escape') {
         walkController.leaveLookCloser()
       } else if (lookCloserTargetId !== null && event.key === 'ArrowRight') {
@@ -100,6 +106,12 @@ export function useWalkInput(surfaceRef: RefObject<HTMLElement | null>): void {
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [surfaceRef])
+}
+
+/** The button under a laptop's pointer brightens a little (`hoveredHitId`). */
+function showHovered(hit: StoreHit | null): void {
+  const hoveredHitId = hit?.kind === 'button' ? hit.spot.id : hit?.kind === 'tag' ? 'tag' : null
+  if (visitStore.read().hoveredHitId !== hoveredHitId) visitStore.update({ hoveredHitId })
 }
 
 /** One step per scroll: the wheel locks after a step until it's quiet, or a new flick starts. */
@@ -191,7 +203,7 @@ function createGestureTracker() {
         !isStartedOnPanel &&
         elapsed < LOOK_CLOSER.tapMaxMilliseconds
       ) {
-        walkController.tapAt(...readScreenPoint(event))
+        tapStoreAt(...readScreenPoint(event))
       }
       // Looking closer, a swipe across steps to the neighbour (swipe left for the next).
       const acrossPixels = event.clientX - startX

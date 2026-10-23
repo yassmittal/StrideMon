@@ -7,3 +7,5 @@
 export const GLOW_RENDER_ORDER = 1
 export const SNEAKER_RENDER_ORDER = 2
 export const GLASS_RENDER_ORDER = 3
+/** Look closer's tag (D-068) hangs in front of everything it's near, the glass included. */
+export const TAG_RENDER_ORDER = 4

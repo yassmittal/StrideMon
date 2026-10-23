@@ -29,7 +29,8 @@ export const STORE_TUNING = {
     blur: 2.4,
     /** Height above the floor that casts: counters, the table, chairs, the pedestal. */
     farMeters: 1.2,
-    resolutionPixels: 1024,
+    /** 2 cm a pixel over the 10 m room, blurred: 1,024 cost four times as much for nothing seen. */
+    resolutionPixels: 512,
   },
   grain: {
     opacity: 0.07,

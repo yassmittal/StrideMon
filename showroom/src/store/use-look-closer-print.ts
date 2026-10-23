@@ -14,6 +14,7 @@ import {
 } from './print-textures'
 import { type PrintId, printSpots } from './sneaker-spots'
 import { useStoreContext } from './store-context'
+import { useDisposeWhenReplaced } from './use-dispose-when-replaced'
 
 // Look closer at a print (D-066): the print redraws itself with the Sneaker you're looking at at
 // about 1,024 px (brief §5.3), and goes back to its tier's size when you leave. A redraw, not an
@@ -24,7 +25,7 @@ const MAX_SHARP_PRINT_SIDE_PIXELS = 2048
 /** Not worth a redraw for less than this much sharper. */
 const MIN_SHARPER_SHARE = 1.2
 
-const staticPrintCreators: Partial<Record<PrintId, (options: PrintOptions) => Texture>> = {
+const printCreators: Record<PrintId, (options: PrintOptions) => Texture> = {
   heroLightbox: createHeroLightboxTexture,
   legendaryPoster: createLegendaryPosterTexture,
   foundingPassLightbox: createFoundingPassLightboxTexture,
@@ -41,15 +42,8 @@ export function readSharpPrintScale(printId: PrintId, sneakerIndex: number): num
   )
 }
 
-/**
- * The texture a print shows: its own, or a sharper redraw while look closer is on it.
- * `createAtScale` draws it (the four fixed prints have their own; the counter's screen passes one).
- */
-export function useLookCloserPrint(
-  printId: PrintId,
-  baseTexture: Texture,
-  createAtScale?: (printScale: number) => Texture,
-): Texture {
+/** The texture a print shows: its own, or a sharper redraw while look closer is on it. */
+export function useLookCloserPrint(printId: PrintId, baseTexture: Texture): Texture {
   const { assets, tierSettings } = useStoreContext()
   const targetId = useSmallStore(visitStore, (state) => state.lookCloserTargetId)
   const target = readLookCloserTarget(targetId)
@@ -58,27 +52,20 @@ export function useLookCloserPrint(
   const isWorthRedrawing =
     sharpScale !== null && sharpScale > tierSettings.printScale * MIN_SHARPER_SHARE
   const create = useMemo(() => {
-    if (createAtScale !== undefined) return createAtScale
-    const createStaticPrint = staticPrintCreators[printId]
-    if (createStaticPrint === undefined) return null
+    const createPrint = printCreators[printId]
     return (printScale: number) =>
-      createStaticPrint({
+      createPrint({
         fontFamilies: assets.fontFamilies,
         sneakerImages: assets.sneakerImages,
         printScale,
       })
-  }, [assets, createAtScale, printId])
+  }, [assets, printId])
   const [sharpTexture, setSharpTexture] = useState<Texture | null>(null)
 
   useEffect(() => {
-    if (!isWorthRedrawing || sharpScale === null || create === null) return
-    const texture = create(sharpScale)
-    setSharpTexture(texture)
-    return () => {
-      setSharpTexture(null)
-      texture.dispose()
-    }
+    setSharpTexture(!isWorthRedrawing || sharpScale === null ? null : create(sharpScale))
   }, [create, isWorthRedrawing, sharpScale])
+  useDisposeWhenReplaced(sharpTexture)
 
   return sharpTexture ?? baseTexture
 }

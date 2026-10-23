@@ -61,7 +61,6 @@ describe('parseApiConfig', () => {
       gameServerPrivateKey: `0x${'ab'.repeat(32)}`,
       gasDripAmountWei: 100_000_000_000_000_000n,
       waitlistAllowedOrigins: ['https://stridemon.xyz', 'http://localhost:3000'],
-      showroomAllowedOrigins: [],
       isEarlyAccessRequired: false,
       passScheduleTimes: {
         waitlistWindowStartsAt: new Date('2026-11-28T14:30:00Z'),
@@ -206,20 +205,5 @@ describe('parseApiConfig', () => {
         WAITLIST_ALLOWED_ORIGINS: 'https://stridemon.xyz/',
       }),
     ).toThrow(/WAITLIST_ALLOWED_ORIGINS/)
-  })
-
-  it('reads the showroom origins, and rejects one with a path', () => {
-    expect(
-      parseApiConfig({
-        ...VALID_ENVIRONMENT_VARIABLES,
-        SHOWROOM_ALLOWED_ORIGINS: 'https://showroom.stridemon.xyz, http://localhost:3002',
-      }).showroomAllowedOrigins,
-    ).toEqual(['https://showroom.stridemon.xyz', 'http://localhost:3002'])
-    expect(() =>
-      parseApiConfig({
-        ...VALID_ENVIRONMENT_VARIABLES,
-        SHOWROOM_ALLOWED_ORIGINS: 'https://showroom.stridemon.xyz/pass',
-      }),
-    ).toThrow(/SHOWROOM_ALLOWED_ORIGINS/)
   })
 })

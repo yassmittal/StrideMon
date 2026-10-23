@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-067.
+for it. The next free decision number is D-069.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -213,10 +213,20 @@ arrival and the walk) is done** (2026-10-22, D-065: framed stops, the street as 
 on with the store; every walk number in `showroom/src/visit/walk-plan.ts`; shots in
 `docs/showroom/look/part-2/`). **Part 3 (look closer and find) is done** (2026-10-22, D-066: tap any
 Sneaker for a square-on look with its card, Find and "Surprise me" on the stand, `?pass=137`, the
-minted state through the API's own `SHOWROOM_ALLOWED_ORIGINS`, not yet on the server; shots in
-`docs/showroom/look/part-3/`). **Part 4 (finish and fallbacks) is next**: an older Android phone
-ran the dev build at 5 to 15 fps, so its tiers need the work. Its rendering findings are D-064: no screen-space AO (it shaded the
-Sneakers), glows draw under the Sneakers. Live by 2026-11-09.
+minted state through the API's own `SHOWROOM_ALLOWED_ORIGINS`, both removed by D-068; shots in
+`docs/showroom/look/part-3/`). **Part 4 (finish and fallbacks) is built** (2026-10-23, D-067),
+checked by Yash: the loader in the HTML drawn from real progress, tiers that only step down,
+smaller wall pictures on phones, the no-WebGL / lost-context / failed-files fallbacks with stills
+from `bun run render-stills`, the share card, and a look-closer texture leak fixed
+(`useDisposeWhenReplaced`). **After his check, the interface moved into the store (D-068):** no
+header or panels over the canvas (only dots, ⌃ ⌄, ‹ ✕ ›), lit tappable buttons in the store
+(`showroom/src/store/store-buttons.ts`: door and window decals, the blade sign, the counter's
+pill, the waitlist kiosk, the Find plate), a shop tag beside the Sneaker for look closer, Help
+only on the fallbacks, and **no minted state and no API** (`SHOWROOM_ALLOWED_ORIGINS` removed from
+the API). Waiting for Yash's check of that. Measurements are in `showroom/README.md`; the phone's
+frame rate is still to measure (`?stats`). Its rendering findings
+are D-064: no screen-space AO (it shaded the Sneakers), glows draw under the Sneakers. Live by
+2026-11-09.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist
 from 18 to 10,000 before the window (2026-11-28 14:30 UTC). Its parts are the referral early hour,
 WhatsApp and Telegram sharing, Monad's channels, YouTube, LinkedIn, one Show HN, partners and

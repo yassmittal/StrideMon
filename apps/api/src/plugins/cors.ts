@@ -12,13 +12,10 @@ const BROWSER_ROUTE_PATHS: ReadonlySet<string> = new Set([
   '/v1/help/chat',
 ])
 const BROWSER_ROUTE_PATH_PREFIXES = ['/v1/pass/', '/v1/waitlist/']
-// The 3D showroom only reads which designs are minted (D-063), so its origins open this one route.
-const SHOWROOM_ROUTE_PATH = '/v1/pass/collection'
 
 export const corsPlugin = fastifyPlugin(
   async (fastify) => {
     const websiteOrigins = fastify.config.waitlistAllowedOrigins
-    const showroomRouteOrigins = [...websiteOrigins, ...fastify.config.showroomAllowedOrigins]
     await fastify.register(fastifyCors, {
       delegator: (request, callback) => {
         const requestPath = (request.url ?? '').split('?')[0] ?? ''
@@ -28,7 +25,7 @@ export const corsPlugin = fastifyPlugin(
         }
         // An origin outside the list gets no Access-Control-Allow-Origin, so the browser blocks it.
         callback(null, {
-          origin: requestPath === SHOWROOM_ROUTE_PATH ? showroomRouteOrigins : websiteOrigins,
+          origin: websiteOrigins,
           methods: ['GET', 'POST'],
           allowedHeaders: ['Content-Type', 'Authorization'],
           maxAge: 600,

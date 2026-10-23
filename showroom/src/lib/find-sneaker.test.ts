@@ -32,28 +32,20 @@ describe('findSneakerDesigns', () => {
 })
 
 describe('pickSurpriseDesignNumber', () => {
-  test('never picks a taken design or the one on the stand', () => {
-    const takenDesignNumbers = new Set(Array.from({ length: 40 }, (_, index) => 961 + index))
-    for (let step = 0; step < 200; step += 1) {
-      const picked = pickSurpriseDesignNumber({
-        takenDesignNumbers,
+  test('picks any design but the one on the stand', () => {
+    const picked = new Set<number>()
+    for (let step = 0; step < 1000; step += 1) {
+      const designNumber = pickSurpriseDesignNumber({
         standDesignNumber: 868,
-        random: () => step / 200,
+        random: () => step / 1000,
       })
-      expect(takenDesignNumbers.has(picked)).toBe(false)
-      expect(picked).not.toBe(868)
-      expect(picked).toBeGreaterThanOrEqual(1)
-      expect(picked).toBeLessThanOrEqual(960)
+      expect(designNumber).not.toBe(868)
+      expect(designNumber).toBeGreaterThanOrEqual(1)
+      expect(designNumber).toBeLessThanOrEqual(1000)
+      picked.add(designNumber)
     }
-  })
-
-  test('still picks one when every design is taken', () => {
-    const everyDesign = new Set(Array.from({ length: 1000 }, (_, index) => index + 1))
-    const picked = pickSurpriseDesignNumber({
-      takenDesignNumbers: everyDesign,
-      standDesignNumber: 1000,
-    })
-    expect(picked).toBe(1)
+    // Every other design can come up, the first and the last included.
+    expect(picked.size).toBe(999)
   })
 })
 

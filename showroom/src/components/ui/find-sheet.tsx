@@ -2,8 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from 'react'
 import { findCopy } from '@/content/showroom'
-import { listTakenDesignNumbers } from '@/lib/collection/pass-collection'
-import { readLatestPassCollection } from '@/lib/collection/use-pass-collection'
 import { useSmallStore } from '@/lib/create-small-store'
 import { findSneakerDesigns, pickSurpriseDesignNumber } from '@/lib/find-sneaker'
 import { formatPassNumber, passRarityLabels } from '@/lib/sneaker-design'
@@ -12,13 +10,9 @@ import { walkController } from '@/visit/walk-controller'
 import { PillButton } from './pill'
 
 // Find a Sneaker (brief §10, D-066): one field, a number from 1 to 1,000 or any part of a name,
-// matched as you type against the design table, and "Surprise me" (a design nobody has taken).
-// The pick goes on the counter's stand and the camera comes to it with its card. It sits at the
+// matched as you type against the design table, and "Surprise me" (any other design, D-068).
+// The pick goes on the counter's stand and the camera comes to it with its tag. It sits at the
 // top of the screen, where a phone's keyboard can't cover it.
-
-export function openFindSheet(): void {
-  if (visitStore.read().arrivalPhase === 'ready') visitStore.update({ isFindOpen: true })
-}
 
 export function putOnStand(designNumber: number): void {
   visitStore.update({ standDesignNumber: designNumber, isFindOpen: false })
@@ -48,13 +42,7 @@ function FindDialog() {
   }, [])
 
   const surprise = () => {
-    const collection = readLatestPassCollection()
-    putOnStand(
-      pickSurpriseDesignNumber({
-        takenDesignNumbers: listTakenDesignNumbers(collection),
-        standDesignNumber: visitStore.read().standDesignNumber,
-      }),
-    )
+    putOnStand(pickSurpriseDesignNumber({ standDesignNumber: visitStore.read().standDesignNumber }))
   }
 
   return (
