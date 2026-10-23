@@ -260,6 +260,8 @@ export const passGalleryContent = {
   showAllLabel: 'Show all passes',
   showMoreLabel: 'Show more',
   allPassesLinkLabel: 'Every pass by number',
+  /** The 3D showroom (D-063), beside the collection's heading. */
+  showroomLabel: 'Walk into the store in 3D',
   shownCountText: (shownCount: number, totalCount: number) =>
     `Showing ${shownCount.toLocaleString('en-US')} of ${totalCount.toLocaleString('en-US')}`,
   emptyHeading: 'No pass matches these filters.',
@@ -305,6 +307,8 @@ export const passDetailContent = {
   copyLinkLabel: 'Copy link',
   copiedLabel: 'Copied',
   explorerLabel: 'See it on MonadVision',
+  /** This design on the showroom's stand (D-063). */
+  showroomLabel: 'See it in the 3D store',
   backToGalleryLabel: 'All 1,000 passes',
   previousPassLabel: 'Previous pass',
   nextPassLabel: 'Next pass',
@@ -477,6 +481,8 @@ export const foundingPassSectionContent = {
     'Before StrideMon opens to everyone, 1,000 Founding Passes go out free. Each is a different Sneaker design and your early access: the app gives you a Founder Sneaker in the same design.',
   galleryLabel: 'See all 1,000',
   waitlistLabel: 'Join the waitlist',
+  /** The 3D showroom (D-063). */
+  showroomLabel: 'Walk into the store in 3D',
   showcaseDesignNumbers: [137, 185, 162, 153, 155, 200],
 } as const
 

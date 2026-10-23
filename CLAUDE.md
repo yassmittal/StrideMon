@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-069.
+for it. The next free decision number is D-070.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -229,8 +229,12 @@ header or panels over the canvas (only dots, ⌃ ⌄, ‹ ✕ ›), lit tappable
 (`showroom/src/store/store-buttons.ts`: door and window decals, the blade sign, the counter's
 pill, the waitlist kiosk, the Find plate), a shop tag beside the Sneaker for look closer, Help
 only on the fallbacks, and **no minted state and no API** (`SHOWROOM_ALLOWED_ORIGINS` removed from
-the API). Waiting for Yash's check of that. Measurements are in `showroom/README.md`; the phone's
-frame rate is still to measure (`?stats`). Its rendering findings
+the API). Yash checked it on his phone and the laptop: **Part 4 is done** (2026-10-23).
+Measurements are in `showroom/README.md`. **Part 5 (launch, D-069) is built** (2026-10-23): `showroom/vercel.json`
+(a strict CSP), Vercel Analytics, robots and sitemap, the website's links (`showroomUrl` in
+`site.ts`: `/pass`, every pass page, the landing page, `/help#showroom`, `llms.txt`), the website
+keeping a visit's first `?source=` for the waitlist, `deployment.md` §16, and the X drafts
+(`social/posts/2026-11-xx-showroom-live*.md`). Waiting for Yash to deploy it and walk it live. Its rendering findings
 are D-064: no screen-space AO (it shaded the Sneakers), glows draw under the Sneakers. Live by
 2026-11-09.
 **Waitlist growth (2026-10-18):** `docs/waitlist-growth-plan.md` is the plan to grow the waitlist

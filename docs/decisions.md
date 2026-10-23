@@ -2289,7 +2289,7 @@ Claude; approved by Yash with Part 3 (2026-10-22), item 4's 1.2 m floor from his
 ## D-067 — The showroom's finish, as built: a real loader, smaller pictures on phones, fallbacks
 
 Made 2026-10-23, while building the showroom's Part 4 (finish and fallbacks, D-063). Proposed by
-Claude; for Yash's approval with Part 4's phone check.
+Claude; approved by Yash with Part 4's check on his phone and the laptop (2026-10-23).
 
 - **Decision:**
   1. **The loader is in the page's HTML** and draws the line-Sneaker mark (the website's
@@ -2389,3 +2389,36 @@ the layout was his pick of Claude's options.
   `stridemon.xyz`; Help isn't on screen during the walk. Users who can't see the 3D buttons
   reach the same actions through the hidden layer.
 - **Revisit when:** a phone check shows visitors missing the exits or Find.
+
+## D-069 — The showroom's launch: its links from the website, the source kept for the visit, its CSP
+
+Made 2026-10-23, while building the showroom's Part 5 (launch, D-063). Proposed by Claude; for
+Yash's approval with the live check.
+
+- **Decision:**
+  1. **The website links to the showroom in four places**, all from `showroomUrl` in
+     `website/src/content/site.ts`: a "Walk into the store in 3D" pill beside the collection's
+     heading on `/pass`; "See it in the 3D store" on every pass page and in the gallery's detail
+     sheet, to `https://showroom.stridemon.xyz/?pass=<number>`; a quiet text link under the landing
+     page's Founding Pass buttons; and the help answer "What is the 3D showroom?" (`#showroom`),
+     with `llms.txt` listing it under Optional. Same tab, as the showroom's own links. The header
+     stays at three links (D-050).
+  2. **The website keeps a visit's first `?source=` for the whole visit** (`sessionStorage`, beside
+     the invite code's `?ref=`, D-056), so someone who comes from the showroom to
+     `/pass/137?source=showroom`, then browses, still joins with `showroom`. A page whose own link
+     carries a `?source=` (like `/waitlist?source=x-waitlist`) still wins.
+  3. **The showroom's CSP restricts everything** (unlike the website's, D-051, which the wallet
+     makes hard): `default-src 'self'`, scripts and styles `'self' 'unsafe-inline'` (a static export
+     can't use nonces), Fontshare's CSS and fonts, `img-src` with `data:` and `blob:` (the
+     Sneakers are rasterised from blob URLs), `connect-src 'self'` (Vercel Analytics posts to its
+     own origin), and the website's frame, object, base and form rules. A walk through every stop,
+     look closer, Find and a deep link on the production build with these headers showed no
+     violation.
+  4. **Vercel Analytics page views** (brief §7.7) are on the page, and the project uses the website
+     project's defaults (the Next.js preset, root `showroom`): `deployment.md` §16.
+- **Why:** the showroom only earns its place if people from the website find it and the waitlist
+  sees who it sends.
+- **Trade-off:** the visit's source sticks to the first link of the tab's visit, so a later
+  different source in the same tab only counts when that page carries it.
+- **Revisit when:** the waitlist's sources show `showroom` brings nobody, or the website's own CSP
+  gets its allowlist (D-051's revisit).

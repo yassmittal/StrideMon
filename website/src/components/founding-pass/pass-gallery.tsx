@@ -8,7 +8,7 @@ import {
   passSectionIds,
 } from '@/content/founding-pass'
 import { passDesignTables } from '@/content/founding-pass-designs'
-import { passIndexPath } from '@/content/site'
+import { passIndexPath, showroomUrl } from '@/content/site'
 import { findRecentPassMint, readPassAvailability } from '@/lib/founding-pass/pass-collection'
 import { PASS_RARITIES, type PassRarity, passRarityLabels } from '@/lib/founding-pass/pass-design'
 import {
@@ -22,7 +22,7 @@ import {
 import { useFavouritePasses } from '@/lib/founding-pass/use-favourite-passes'
 import { retryPassCollection, usePassCollection } from '@/lib/founding-pass/use-pass-collection'
 import { MetaLabel } from '../ui/meta-label'
-import { buildPillClassName, PillContent } from '../ui/pill-button'
+import { buildPillClassName, PillButton, PillContent } from '../ui/pill-button'
 import { SelectMenu } from '../ui/select-menu'
 import { PassCard } from './pass-card'
 import { PassDetailSheet } from './pass-detail-sheet'
@@ -110,11 +110,19 @@ export function PassGallery() {
         aria-labelledby="pass-gallery-heading"
         className="page-gutter page-container flex flex-col gap-6 pt-10 pb-16 md:pt-16 md:pb-24"
       >
-        <div className="flex flex-col gap-5">
-          <MetaLabel items={passGalleryContent.metaLabels} />
-          <h2 id="pass-gallery-heading" className="-ml-[0.04em] text-heading text-balance">
-            {passGalleryContent.heading}
-          </h2>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+          <div className="flex flex-col gap-5">
+            <MetaLabel items={passGalleryContent.metaLabels} />
+            <h2 id="pass-gallery-heading" className="-ml-[0.04em] text-heading text-balance">
+              {passGalleryContent.heading}
+            </h2>
+          </div>
+          <PillButton
+            href={showroomUrl}
+            label={passGalleryContent.showroomLabel}
+            variant="secondary"
+            size="compact"
+          />
         </div>
 
         <div className="flex flex-col gap-3">

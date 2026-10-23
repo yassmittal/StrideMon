@@ -65,8 +65,8 @@ links to `stridemon.xyz`.
 | [1](part-1-store.md) | The store: set up `showroom/`, export the art, port the film's store, add what live rendering brings, first tiers, the colour check | L | **Done** (2026-10-22, D-064) |
 | [2](part-2-walk.md) | The arrival and the walk: the street, the lights coming on, Step inside, five stops, look around | M | **Done** (2026-10-22, D-065) |
 | [3](part-3-look-closer.md) | Look closer and find: tap a Sneaker, the card, the minted state (the API's showroom origin), Find and the stand, the deep link | M | **Done** (2026-10-22, D-066) |
-| [4](part-4-finish.md) | Finish and fallbacks: the loader, the last light pass, tuned tiers, no-WebGL still, slow network, the stuck-point check | M | Built (2026-10-23, D-067); the interface moved into the store after Yash's check (D-068), his check of that next |
-| [5](part-5-launch.md) | Launch: Vercel, `showroom.stridemon.xyz`, the API origin, links from the website, the X post draft | S | Not started |
+| [4](part-4-finish.md) | Finish and fallbacks: the loader, the last light pass, tuned tiers, no-WebGL still, slow network, the stuck-point check | M | **Done** (2026-10-23, D-067, D-068) |
+| [5](part-5-launch.md) | Launch: Vercel, `showroom.stridemon.xyz`, the API origin, links from the website, the X post draft | S | Built (2026-10-23, D-069): Yash deploys (`deployment.md` §16), then the live check |
 
 ## Rules for every part
 

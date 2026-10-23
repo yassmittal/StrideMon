@@ -17,8 +17,10 @@ steps, the config and the copy.
 
 1. **Docs first: a `deployment.md` section, "The showroom"**, steps Yash can follow without
    guessing:
-   - Vercel: a new project from the same repository, root directory `showroom`, install
-     `bun install`, build `bun run build`, output `out`, the same Bun version as the website
+   - Vercel: a new project from the same repository, root directory `showroom`, and otherwise the
+     `stridemon` project's settings: the Next.js preset with its default commands and output
+     (Vercel installs with Bun from `bun.lock` and finds the static export itself), plus Web
+     Analytics turned on
    - The domain: add `showroom.stridemon.xyz` in Vercel; at Namecheap, a `CNAME` record for
      `showroom` with the value Vercel shows
    - No API step: the showroom calls no server (D-068)

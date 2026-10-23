@@ -6,8 +6,16 @@ exported as static files. Like `website/`, it is **not** a Bun workspace: it has
 `package.json` and `bun.lock`, and never imports `@stridemon/*`.
 
 The plan is [`../docs/showroom/`](../docs/showroom/README.md) (the brief, the research and one file
-per build part). Parts 1 to 4 are built (the store; the arrival and the walk; look closer and find;
-the finish and fallbacks), and the interface lives in the store (D-068); the launch is Part 5.
+per build part). Parts 1 to 4 are done (the store; the arrival and the walk; look closer and find;
+the finish and fallbacks), and the interface lives in the store (D-068).
+
+**Hosting (Part 5, D-069):** its own Vercel project, `stridemon-showroom`, root directory
+`showroom`, on the website project's defaults, at `https://showroom.stridemon.xyz` (a `CNAME` at
+Namecheap). The steps are `docs/deployment.md` §16; Yash runs them. `vercel.json` holds the
+security headers and a CSP that allows only what the store uses (D-069): after adding anything that
+loads from somewhere new, walk the production build with its headers and watch the console for
+"Refused to …". Vercel Analytics counts page views (brief §7.7); off Vercel its script 404s, which
+is expected.
 
 ## Run it
 
@@ -47,7 +55,8 @@ clear the session storage (`stridemon-showroom:street-lit`).
 
 | Path | What |
 |---|---|
-| `src/app/` | The layout (fonts, as the website loads them) and the one page |
+| `src/app/` | The layout (fonts, as the website loads them, and Vercel Analytics), the one page, `robots.ts` and `sitemap.ts` |
+| `vercel.json` | The security headers and the CSP (D-069) |
 | `src/components/showroom.tsx` | The page: the canvas (client-only, `next/dynamic`, `ssr: false`), the grain, vignette and reduced motion's veil over it, the little DOM left over it, the dev panel. The whole page is the walk's input surface |
 | `src/components/ui/` | The little DOM over the canvas (D-068): the loader, the fallback, the bottom controls (dots, ⌃ ⌄, ‹ ✕ ›, the hint, a notice that fades), Find's dialog, and the hidden list for keyboards and screen readers |
 | `src/store/store-buttons.ts` | **The store's own buttons** (D-068): where each lit button is (the door and window decals, the blade sign, the counter's pill, the waitlist kiosk, the Find plate) and what it does |
@@ -125,7 +134,7 @@ ratio of 2, a phone 412 × 915 at 2.625 (capped by the tier).
 | Looking closer (the sharp picture and the tag), at most | 246 MB | 78 MB | 59 MB |
 | Multisample renderbuffers (apart) | 261 MB | 26 MB | 3 MB |
 | Frame rate, this MacBook | 60 (the headless cap), worst frame 17 ms, every move | 60 | 60, also with the CPU throttled ×4 |
-| Frame rate, Yash's Android phone (Chrome) | | **to measure** (`?stats`) | **to measure** (`?stats&tier=low`) |
+| Frame rate, Yash's Android phone (Chrome) | | Smooth through the whole visit (Yash, 2026-10-23); not read off `?stats` | |
 
 The GPU, not the CPU, is what costs here: with Chrome's CPU throttled ×4 every tier still held 60
 on the Mac, so the step-down was checked by forcing slow frames (about 30 fps): Medium stepped to

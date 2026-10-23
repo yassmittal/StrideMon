@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
@@ -42,7 +43,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <link rel="stylesheet" href={fontshareCssUrl} />
         )}
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Page views, free on Vercel, as the website (brief §7.7). */}
+        <Analytics />
+      </body>
     </html>
   )
 }

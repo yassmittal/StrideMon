@@ -10,7 +10,7 @@ import {
   passPromiseLine,
   passScheduleContent,
 } from '@/content/founding-pass'
-import { sectionIds, siteUrl } from '@/content/site'
+import { buildShowroomPassUrl, sectionIds, siteUrl } from '@/content/site'
 import {
   findRecentPassMint,
   listTakenDesignNumbers,
@@ -148,6 +148,13 @@ export function PassDetails({
             messageText={buildPassShareMessage(passNumberText, design.name)}
             xPostText={buildPassShareText(passNumberText, design.name)}
           />
+          <a
+            href={buildShowroomPassUrl(design.designNumber)}
+            className="group inline-flex min-h-11 items-center gap-2 self-start text-label font-medium tracking-[0.08em] uppercase"
+          >
+            {passDetailContent.showroomLabel}
+            <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+          </a>
           {availability === 'minted' ? (
             <a
               href={buildExplorerTokenUrl(foundingPassContract.address, design.designNumber)}

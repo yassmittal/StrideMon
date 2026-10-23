@@ -585,6 +585,75 @@ No new variables: it uses Brevo, `WAITLIST_CODE_DAILY_EMAIL_LIMIT` and the sched
    It prints every address it emailed. If it stops on a refusal (the day's limit, say), run the
    same command again the next day: nobody gets it twice.
 
+## 16. The showroom (D-063, Part 5)
+
+`https://showroom.stridemon.xyz`, the 3D store in `showroom/`: a second Vercel project from the same
+repository, set up like the website's. **No API step:** the showroom calls no server (D-068), so the
+server's `.env` doesn't change. Yash runs every step.
+
+### 16.1 The Vercel project
+
+vercel.com → **Add New… → Project** → import the StrideMon repository again:
+
+| Setting | Value |
+|---|---|
+| Project name | `stridemon-showroom` |
+| Framework preset | Next.js |
+| Root directory | `showroom` |
+| Build, output and install commands | Leave the defaults, as the `stridemon` project does. Vercel sees `bun.lock` and installs with Bun, and finds the static export (`output: 'export'`) itself |
+| Environment variables | None |
+
+Deploy. The headers (the CSP, `nosniff`, the referrer and frame rules) come from
+`showroom/vercel.json`.
+
+Then **Analytics → Enable** (Web Analytics, free on Hobby), and deploy once more so the page's
+`/_vercel/insights/script.js` answers.
+
+- [ ] The `….vercel.app` address shows the loader, then the street, and the lights come on.
+
+### 16.2 The domain
+
+1. The project → **Settings → Domains → Add** `showroom.stridemon.xyz`. Vercel shows a `CNAME`
+   value for it.
+2. Namecheap → `stridemon.xyz` → **Advanced DNS → Host Records** → add:
+
+   | Type | Host | Value | TTL |
+   |------|------|-------|-----|
+   | `CNAME` | `showroom` | the value Vercel shows (like `….vercel-dns-017.com.`) | Automatic |
+
+- [ ] `dig +short showroom.stridemon.xyz` prints Vercel's name and its IPs.
+- [ ] `https://showroom.stridemon.xyz` has a certificate. If it hasn't come 20 minutes after DNS is
+      right: `vercel certs issue showroom.stridemon.xyz` (as 11.1).
+- [ ] `curl -sI https://showroom.stridemon.xyz | grep -i content-security-policy` prints the CSP.
+- [ ] `curl -s https://showroom.stridemon.xyz/robots.txt` and `/sitemap.xml` name
+      `showroom.stridemon.xyz`.
+
+### 16.3 The website's links
+
+**Deploy the website after the showroom is live**, so its new links (`/pass`, each pass page, the
+landing page's Founding Pass section, the help answer "What is the 3D showroom?" and `llms.txt`)
+never point at nothing. Push, as for any website change. The help chatbot's knowledge changed too
+(`help:export-knowledge` ran), so redeploy the API ("Updating the API later" below, no new
+variables). Then run `bun run indexnow` from `website/`.
+
+### 16.4 The live check (phone and laptop)
+
+- [ ] The arrival: the loader, the street, the lights coming on, Step inside.
+- [ ] The walk: all five stops, and back out to the street.
+- [ ] Look closer on a shelf Sneaker, its tag, and ‹ ›. The tag opens its page on `stridemon.xyz`.
+- [ ] Find: a number, a name, Surprise me.
+- [ ] `https://showroom.stridemon.xyz/?pass=137` opens on the stand, and `?pass=5000` says so.
+- [ ] Every lit button: the door, the window decal and the blade sign on the street; Get your
+      Founding Pass and the waitlist kiosk at the Founding Pass wall; Find a Sneaker. Each lands on
+      `stridemon.xyz` with `?source=showroom`.
+- [ ] From the website: `/pass`, a pass page ("See it in the 3D store" opens that design on the
+      stand), the landing page and `/help#showroom` all reach the showroom.
+- [ ] The source arrives: open a pass from the showroom, join the waitlist on that page, and the
+      sign-up in `waitlistSignups` has `source: "showroom"` (then delete that row).
+- [ ] The share card: paste `https://showroom.stridemon.xyz` into a card preview (X's composer, or
+      opengraph.xyz): the lit store, "StrideMon Showroom".
+- [ ] DevTools → Console on the laptop: no "Refused to …" (CSP) lines through the whole visit.
+
 ## Updating the API later
 
 ```bash

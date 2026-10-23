@@ -3,7 +3,7 @@
 
 import { waitlistApiUrl, waitlistApiUrls } from '@/content/site'
 import { type ApiResult, requestApiJson } from './api-request'
-import { isRecord } from './browser-storage'
+import { isRecord, readSessionString, writeSessionString } from './browser-storage'
 
 export type WaitlistSignupRequest = {
   email: string
@@ -45,10 +45,33 @@ export function isLikelyEmail(emailText: string): boolean {
   return LIKELY_EMAIL_PATTERN.test(emailText.trim())
 }
 
-/** The page's `?source=` (for example `x-stridemon`), or null when it's missing or malformed. */
-export function readWaitlistSource(searchText: string): string | null {
+const ARRIVAL_SOURCE_STORAGE_KEY = 'stridemon:waitlist-arrival-source'
+
+function readSourceParameter(searchText: string): string | null {
   const source = new URLSearchParams(searchText).get('source')
   return source !== null && WAITLIST_SOURCE_PATTERN.test(source) ? source : null
+}
+
+/**
+ * Keeps the `?source=` a visitor arrived with for the whole visit, so someone who comes from the
+ * showroom to `/pass/137?source=showroom`, then browses, still joins with it. The first one stays.
+ */
+export function rememberArrivalSource(searchText: string): void {
+  const source = readSourceParameter(searchText)
+  if (source === null || readSessionString(ARRIVAL_SOURCE_STORAGE_KEY) !== null) return
+  writeSessionString(ARRIVAL_SOURCE_STORAGE_KEY, source)
+}
+
+/**
+ * The page's `?source=` (for example `x-stridemon`), else the one the visit arrived with, or null
+ * when neither is there or well formed.
+ */
+export function readWaitlistSource(searchText: string): string | null {
+  const arrivalSource = readSessionString(ARRIVAL_SOURCE_STORAGE_KEY)
+  return (
+    readSourceParameter(searchText) ??
+    (arrivalSource !== null && WAITLIST_SOURCE_PATTERN.test(arrivalSource) ? arrivalSource : null)
+  )
 }
 
 /** Joins (D-056). The answer is the same for a new and a repeat email: the email's invite link. */
