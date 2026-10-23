@@ -200,6 +200,12 @@ structure, with a realistic phone. **Its music is that ad's own track, unlicense
 (`hyperSpeedCameraman.mp4` at the repo root), then a StrideMon Sneaker store in 3D
 (`@remotion/three`). **Its hook footage and music are the reference's own, unlicensed** (Yash's
 choice): never for Instagram; YouTube may claim it.
+**Crush film (2026-10-23):** `Crush9x16` in `launch-video/` (`src/crush/`, brief
+`docs/crush-video-prompt.md`), a Naisnow ad on the "He will look at the person he likes first" trend
+(`inspiration.mp4` at the repo root) remade shot for shot with #0137 in place of its cup: the
+reference's hook, its cup-free plates (LaMa, `scripts/build-crush-plates.py`) and its tracked camera.
+**Its footage (four real people) and music are the reference's own, unlicensed** (Yash's choice):
+never for Instagram; YouTube may claim it.
 **3D showroom (D-063, 2026-10-22):** the Showroom film's store, live and interactive, at
 `https://showroom.stridemon.xyz`, in `showroom/` at the repo root (its own Next.js app like
 `website/`, created in Part 1). Ported from the film's code, not rebuilt; **the Sneakers stay

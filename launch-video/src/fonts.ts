@@ -1,6 +1,7 @@
 import { loadFont as loadLocalFont } from '@remotion/fonts'
 import { loadFont as loadIbmPlexMono } from '@remotion/google-fonts/IBMPlexMono'
 import { loadFont as loadKnewave } from '@remotion/google-fonts/Knewave'
+import { loadFont as loadPoppins } from '@remotion/google-fonts/Poppins'
 import { staticFile } from 'remotion'
 import satoshiMediumUrl from '../../apps/mobile/assets/fonts/Satoshi-Medium.ttf'
 import satoshiRegularUrl from '../../apps/mobile/assets/fonts/Satoshi-Regular.ttf'
@@ -17,6 +18,9 @@ export function loadFilmFonts(): void {
   // The Pass chat film's script face (its lime keywords and the handwritten "isn’t"): Knewave by
   // Tyler Finck, SIL Open Font License 1.1, which allows use in video. Only that film uses it.
   loadKnewave('normal', { weights: ['400'], subsets: ['latin'] })
+  // The Crush film's captions and title: Poppins, the reference's own face, by Indian Type Foundry
+  // and Jonny Pinhorn, SIL Open Font License 1.1, which allows use in video. Only that film uses it.
+  loadPoppins('normal', { weights: ['600', '800'], subsets: ['latin'] })
   // Satoshi Bold, for the App tour film's headlines only (Yash, 2026-10-17): Fontshare's file from
   // the same release as the app's (its Medium is byte-identical), under the same licence.
   void loadLocalFont({

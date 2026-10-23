@@ -297,3 +297,35 @@ Two files the other films already use (above, from `scripts/fetch-audio.sh`), pl
 |---|---|---|
 | `sfx-tap.wav` | each tap ring (START A RUN, STOP, the SNEAKER tab, REPAIR TO 100, CONFIRM IN WALLET, UPGRADE TO LEVEL 2), at 0.7 | Kenney's UI Audio pack, CC0 (the launch film's tap) |
 | `pass-chat-sfx-boom.wav` | the drop, "Level 2 reached", at 0.5 | "Cinematic Boom" by LordSonny, Pixabay Content License (the Pass chat film's boom) |
+
+# The Crush film
+
+The Crush film (`Crush9x16`, `docs/crush-video-prompt.md`). Its media is made by
+`bash scripts/copy-crush-media.sh` into `public/crush/` and `public/audio/` (both gitignored).
+
+## Footage and music
+
+**The reference's own footage and music** (`../inspiration.mp4`, untracked): a Naisnow bubble-tea ad
+on the "He will look at the person he likes first" trend. The film plays its frames 0–263 as they
+are, and its backgrounds after that (with the cup taken out). The music is its track, untouched
+(`public/audio/crush-music.wav`): a Brazilian funk song with vocals ("rouba meu coração"),
+unidentified.
+
+**StrideMon holds no licence for any of it, and the four people in the hook never agreed to appear
+in a StrideMon video.** Yash's choice (2026-10-23), with the risk known: it isn't for Instagram,
+YouTube may claim it, and the rights holder or the people in it can ask for it to be taken down
+anywhere it's posted.
+
+## The clean plates
+
+LaMa (big-lama, Apache 2.0), the ONNX export at https://huggingface.co/Carve/LaMa-ONNX
+(`lama_fp32.onnx`), downloaded by `scripts/build-crush-plates.py` into `out/work/crush/` and run
+locally on the CPU.
+
+## Font
+
+**Poppins** by Indian Type Foundry and Jonny Pinhorn, **SIL Open Font License 1.1**, loaded from
+Google Fonts by `@remotion/google-fonts` (`src/fonts.ts`): the reference's own caption face. The
+wordmark is Satoshi, as on the website.
+
+No sound effects: the reference has none.
