@@ -247,9 +247,9 @@ a pointer cursor on a laptop:
 | Where | The button | Goes to |
 |---|---|---|
 | The glass door | "STEP INSIDE →", a white decal | The walk, stop 1 |
-| The window beside it | "1,000 Founding Passes · Free to mint →", a white decal | `stridemon.xyz/pass` |
+| The window beside it | "1,000 Founding Passes →", a white decal (D-071) | `stridemon.xyz/pass` |
 | The blade sign | "STRIDEMON / FOUNDING PASS →" | `stridemon.xyz/pass` |
-| The black counter's front | "GET YOUR FOUNDING PASS →" and "FREE · CAN'T BE SENT OR SOLD" | `stridemon.xyz/pass` |
+| The black counter's front | "GET YOUR FOUNDING PASS →" (D-071) | `stridemon.xyz/pass` |
 | The counter's upright screen | The waitlist kiosk: "JOIN THE WAITLIST →" | `stridemon.xyz/waitlist` |
 | The white counter's front | "FIND A SNEAKER", by the stand | Find |
 
@@ -259,15 +259,15 @@ phone held upright, unless a ledge or a counter is there), facing the same way:
 ```text
 #0137                                   COMMON
 Rose Hiker Night
-Free to mint. Can't be sent or sold.
 [ SEE IT ON STRIDEMON.XYZ → ]
 ```
 
-Tapping the tag opens the design's page. Every link carries `?source=showroom`. The showroom shows
+Tapping the tag opens the design's page. Every link carries `?source=showroom` and opens in a new
+tab (D-071). The showroom shows
 no minted state (D-068): the website's page has it.
 
-**Every Founding Pass offer says it's free and can't be sent or sold:** the tag, the counter's
-button, the window decal.
+~~Every Founding Pass offer says it's free and can't be sent or sold~~ The showroom doesn't say
+"Free to mint" or "Can't be sent or sold" anywhere (D-071, Yash, 2026-10-24); the website does.
 
 ## 7. Tech
 
@@ -390,10 +390,10 @@ Yash asked Claude to research and pick (2026-10-22).
 | 3 | The walls' Sneakers | The film's selection, fixed (§5.4), so the showroom and the film stay one place. Any of the 1,000 reaches the stand through Find |
 | 4 | The deep link's shape | `showroom.stridemon.xyz/?pass=0137`: one page, no 1,000 static pages. A shared showroom link shows the store's own card (the stronger picture); a Sneaker's card stays the website's `/pass/0137`, which is canonical |
 | 5 | "Surprise me" | Any design but the one on the stand (D-068: no minted state) |
-| 6 | Sound | None at launch. Most visitors arrive from X on a muted phone, and a sound button is scope without a payoff yet (§11) |
+| 6 | Sound | ~~None at launch~~ One lo-fi track on repeat and soft cues, from the visitor's first press, with one sound button (D-070, 2026-10-24) |
 | 7 | "Your Sneaker" (any Sneaker on Monad on the stand), the old plan's Part 7 | Dropped. It can come back after early access starts on fresh contracts (D-049) |
 
 ## 11. Later, not planned
 
-A quiet room tone (off until pressed), a minted mark on the shelves, the walls changing on mint
+A minted mark on the shelves, the walls changing on mint
 night, baked lighting from Blender, WebXR, and the app opening the showroom from a Sneaker.

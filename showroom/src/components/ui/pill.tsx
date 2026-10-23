@@ -47,7 +47,7 @@ export function PillLink({
   size?: PillSize
 }) {
   return (
-    <a href={href} className={buildPillClassName(variant, size)}>
+    <a target="_blank" rel="noopener" href={href} className={buildPillClassName(variant, size)}>
       <PillContent label={label} />
     </a>
   )

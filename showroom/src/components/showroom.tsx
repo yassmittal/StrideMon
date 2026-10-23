@@ -5,6 +5,7 @@ import { Component, type ReactNode, useEffect, useRef, useState } from 'react'
 import { useSmallStore } from '@/lib/create-small-store'
 import { loadingStore, showLoadingFallback } from '@/lib/loading-store'
 import { useIsReducedMotion } from '@/lib/use-reduced-motion'
+import { useStoreSounds } from '@/sound/use-store-sounds'
 import { loadStoreFiles } from '@/store/store-files'
 import { STORE_TUNING } from '@/store/store-tuning'
 import { useDeepLink } from '@/visit/use-visit-data'
@@ -14,15 +15,16 @@ import { walkController } from '@/visit/walk-controller'
 import { DevPanel } from './dev/dev-panel'
 import { BottomControls } from './ui/bottom-controls'
 import { FindSheet } from './ui/find-sheet'
+import { SoundButton } from './ui/sound-button'
 import { StoreFallback } from './ui/store-fallback'
 import { StoreList } from './ui/store-list'
 import { StoreLoader } from './ui/store-loader'
 
 // The one page: the loader (in the HTML, so it paints first), the 3D store over the night
 // background, the grain over it, the little left over it (D-068: the walk's controls, the hidden
-// list, Find) and, in development, the dev panel. The canvas loads client-only (brief §7.1), and the store's
-// files start loading alongside it. When the store can't run, a still and the ways on take its
-// place (Part 4). The whole page is the walk's input surface.
+// list, Find; D-070: the sound button) and, with `?stats`, the dev panel. The canvas loads
+// client-only (brief §7.1), and the store's files start loading alongside it. When the store can't
+// run, a still and the ways on take its place (Part 4). The whole page is the walk's input surface.
 
 const StoreCanvas = dynamic(
   () =>
@@ -39,14 +41,12 @@ const DevSceneHelpers = dynamic(
   },
 )
 
-const isDevelopment = process.env.NODE_ENV === 'development'
-
 /**
- * The dev panel (frame rate, draw calls, tier) shows in development, and on any build with
- * `?stats` in the link, for measuring on a phone.
+ * The dev panel (frame rate, draw calls, tier) shows only with `?stats` in the link, on any build,
+ * for measuring on a phone. Hidden by default, in development too (Yash, 2026-10-24).
  */
 function useIsDevPanelShown(): boolean {
-  const [isShown, setIsShown] = useState(isDevelopment)
+  const [isShown, setIsShown] = useState(false)
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has('stats')) setIsShown(true)
   }, [])
@@ -118,6 +118,7 @@ export function Showroom() {
   )
   useWalkInput(surfaceRef)
   useDeepLink()
+  useStoreSounds()
   const isDevPanelShown = useIsDevPanelShown() && !isStillCapture
   const canRunStore = useCanRunStore()
   const loadingPhase = useSmallStore(loadingStore, (state) => state.phase)
@@ -152,6 +153,7 @@ export function Showroom() {
       {isWalkShown ? (
         <>
           <BottomControls />
+          <SoundButton />
           <StoreList />
           <FindSheet />
         </>

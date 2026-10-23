@@ -5,7 +5,7 @@ export const showroomUrl = 'https://showroom.stridemon.xyz'
 export const showroomSiteName = 'StrideMon'
 export const showroomTitle = 'StrideMon Showroom'
 export const showroomDescription =
-  "Walk into the StrideMon store after hours. Look closer at any of the 1,000 Founding Pass Sneakers: free to mint, can't be sent or sold."
+  'Walk into the StrideMon store after hours. Look closer at any of the 1,000 Founding Pass Sneakers.'
 
 /** The share card's X fields, as the website's `site.ts` sets them. */
 export const xCardMetadata = {
@@ -61,8 +61,7 @@ export const storeStills = {
 /** The street, before stepping inside: said to screen readers (the store says it to the eye). */
 export const arrivalCopy = {
   lightsComingOn: 'Outside the StrideMon store. The lights are coming on.',
-  where:
-    "Outside the StrideMon store. 1,000 Founding Pass Sneakers, free to mint, can't be sent or sold.",
+  where: 'Outside the StrideMon store. 1,000 Founding Pass Sneakers.',
   stepInside: 'Step inside',
 } as const
 
@@ -96,7 +95,6 @@ export function buildPassPageUrl(designNumber: number): string {
 
 /** Look closer (D-068): the store's tag shows it; these are for the controls and screen readers. */
 export const lookCloserCopy = {
-  promise: "Free to mint. Can't be sent or sold.",
   seeIt: 'See it on stridemon.xyz',
   back: 'Back to the stop',
   previous: 'Previous Sneaker',
@@ -112,7 +110,7 @@ export const lookCloserCopy = {
 /** The store's own buttons (D-068), as the hidden list names them. */
 export const storeButtonCopy = {
   stepInside: 'Step inside',
-  foundingPass: "Get your Founding Pass. Free, can't be sent or sold",
+  foundingPass: 'Get your Founding Pass',
   waitlist: 'Join the waitlist',
   find: 'Find a Sneaker',
 } as const
@@ -129,6 +127,13 @@ export const findCopy = {
     `No Sneaker matches “${query}”. Try a number from 1 to 1,000, or let us pick one.`,
   resultsLabel: 'Matching Sneakers',
   putOnStand: 'Puts it on the stand',
+} as const
+
+/** The one sound button (D-070): the music and the cues start on the first press. */
+export const soundCopy = {
+  label: 'Music and sounds',
+  turnOn: 'Turn the sound on',
+  turnOff: 'Turn the sound off',
 } as const
 
 /** The deep link, `?pass=137` (brief §10). */

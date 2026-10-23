@@ -101,6 +101,8 @@ export function StoreLoader() {
       <p className="loader-slow-note absolute inset-x-4 bottom-[max(32px,env(safe-area-inset-bottom))] mx-auto max-w-sm text-center text-[14px] text-on-dark-secondary leading-snug">
         {loaderCopy.slow}{' '}
         <a
+          target="_blank"
+          rel="noopener"
           href={passCollectionUrl}
           className="text-on-dark underline decoration-hairline-on-dark underline-offset-4"
         >
