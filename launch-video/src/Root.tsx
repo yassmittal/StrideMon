@@ -8,6 +8,13 @@ import {
 } from './app-tour/beats'
 import { RebuildCheck, rebuildCheckNames } from './app-tour/checks/RebuildCheck'
 import { type AppTourSceneName, appTourScenes } from './app-tour/timeline'
+import { CrushFilm, defaultCrushProps } from './crush/CrushFilm'
+import {
+  CRUSH_DURATION_IN_FRAMES,
+  CRUSH_FRAMES_PER_SECOND,
+  CRUSH_HEIGHT,
+  CRUSH_WIDTH,
+} from './crush/timeline'
 import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
 import { RunScreenCheck } from './checks/RunScreenCheck'
 import { LaunchFilm } from './LaunchFilm'
@@ -315,6 +322,15 @@ export function RemotionRoot() {
         fps={SHOWROOM_FRAMES_PER_SECOND}
         durationInFrames={SHOWROOM_DURATION_IN_FRAMES}
         defaultProps={defaultShowroomProps}
+      />
+      <Composition
+        id="Crush9x16"
+        component={CrushFilm}
+        width={CRUSH_WIDTH}
+        height={CRUSH_HEIGHT}
+        fps={CRUSH_FRAMES_PER_SECOND}
+        durationInFrames={CRUSH_DURATION_IN_FRAMES}
+        defaultProps={defaultCrushProps}
       />
       <Folder name="Checks">
         <Composition

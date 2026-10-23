@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* The website's tokens (docs/architecture/design-system.md), plus the night store's own. */
+@theme {
+  --color-page: #f0f1fa;
+  --color-ink: #000000;
+  --color-dark: #000000;
+  --color-dark-panel: #141515;
+  --color-night: #05060a;
+  --color-surface-muted: #e4e6ef;
+  --color-on-dark: #ffffff;
+  --color-on-dark-secondary: rgba(255, 255, 255, 0.6);
+  --color-hairline-on-dark: rgba(255, 255, 255, 0.15);
+  /* Lime: only on dark backgrounds, never as text on light. */
+  --color-lime: #c1ff00;
+
+  --font-sans: "Satoshi", "Satoshi Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-panel: 10px;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.1, 1);
+  --ease-emphasized: cubic-bezier(0.35, 0, 0, 1);
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.15;
+}
+
+/* Arial resized to Satoshi's metrics, so the swap to Satoshi moves nothing (CLS 0). */
+@font-face {
+  font-family: "Satoshi Fallback";
+  src: local("Arial");
+  size-adjust: 96.73%;
+  ascent-override: 104.41%;
+  descent-override: 24.81%;
+  line-gap-override: 10.34%;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    background-color: var(--color-night);
+    color: var(--color-on-dark);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* Visible on the night store; lime only ever on dark (brief §6.1). */
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 3px;
+  }
+
+  button:not(:disabled),
+  a[href] {
+    cursor: pointer;
+  }
+}
+
+/* The pill: the label rolls and the arrow nudges right on hover (the website's, D-029, D-031). */
+.pill-label-window {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.pill-label,
+.pill-label-clone {
+  display: block;
+  transition: transform 400ms var(--ease-standard);
+}
+
+.pill-label-clone {
+  position: absolute;
+  inset: 0;
+  transform: translateY(100%);
+}
+
+.pill-arrow {
+  transition: transform 300ms var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .pill:hover .pill-label {
+    transform: translateY(-100%);
+  }
+  .pill:hover .pill-label-clone {
+    transform: translateY(0);
+  }
+  .pill:hover .pill-arrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-label,
+  .pill-label-clone,
+  .pill-arrow {
+    transition: none;
+  }
+}
+
+/*
+ * Faint film grain over the canvas (brief §6.3): a tiled noise picture, overlay-blended, stepping
+ * a few times a second like the film's. Still under reduced motion.
+ */
+.film-grain {
+  position: absolute;
+  inset: -50%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  animation: film-grain-step 0.6s steps(1, end) infinite;
+}
+
+@keyframes film-grain-step {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-7%, 4%);
+  }
+  50% {
+    transform: translate(5%, -6%);
+  }
+  75% {
+    transform: translate(-3%, -9%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain {
+    animation: none;
+  }
+}
+
+/* The loader's strokes follow the real progress, eased between steps (store-loader.tsx). */
+.loader-stroke {
+  transition: stroke-dashoffset 500ms var(--ease-standard);
+}
+
+/*
+ * After 8 seconds the loader says where else the collection is. CSS, not script, so it shows even
+ * when the script is what's slow. Hidden (not only transparent) until then, so its link can't be
+ * reached by Tab.
+ */
+.loader-slow-note {
+  opacity: 0;
+  visibility: hidden;
+  animation: loader-slow-note-reveal 600ms var(--ease-standard) 8s forwards;
+}
+
+@keyframes loader-slow-note-reveal {
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-stroke {
+    transition: none;
+  }
+  .loader-slow-note {
+    animation-duration: 1ms;
+  }
+}

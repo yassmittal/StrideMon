@@ -378,8 +378,8 @@ shows it only from 1,000 (D-056).
 
 **CORS** (`plugins/cors.ts`, `@fastify/cors`): `/v1/waitlist` and every `/v1/waitlist/*` route
 answer browser requests, but only for an origin in `WAITLIST_ALLOWED_ORIGINS`. The Founding Pass
-adds its own routes to the list (below). Every other route sends no CORS headers, so browsers
-still can't call it. The mobile app sends no `Origin` and is unaffected.
+adds its own routes to the list (below). (The 3D showroom calls no API route, D-068.) Every other route sends no CORS
+headers, so browsers still can't call it. The mobile app sends no `Origin` and is unaffected.
 
 **The backfill:** `bun run waitlist:backfill-canonical-emails` (once, on the server, right after
 the deploy that adds `canonicalEmail`) fills `canonicalEmail` and `inviteCode` on old sign-ups.

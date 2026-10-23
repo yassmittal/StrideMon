@@ -26,6 +26,8 @@ export const llmsTextContent = {
     fullText: 'The home page, the Founding Pass page and the whole help in one file',
     privacyPolicy: 'What the app and site collect, and for how long',
     deleteAccount: 'How to delete a StrideMon account',
+    showroom:
+      'The StrideMon store in 3D in the browser: walk it and see any of the 1,000 designs up close (it can’t mint)',
     github: 'The source code: the app, the API and the contracts',
     x: 'News and updates',
     youtube: 'Demo videos',
@@ -39,6 +41,7 @@ export const llmsTextContent = {
     fullText: 'Everything in one file',
     privacyPolicy: 'Privacy policy',
     deleteAccount: 'Delete your account',
+    showroom: 'The 3D showroom',
     github: 'GitHub',
     x: 'StrideMon on X',
     youtube: 'StrideMon on YouTube',

@@ -2098,3 +2098,327 @@ gets an email that says they're on the list and how to get the early hour. He ch
   there are no sales words ("Be quick", "nothing is for sale"), no styling, the invite link is the
   only link (no footer link), and it ends "Any questions? Just reply" (hello@ forwards to Yash;
   replies are the strongest signal for Primary). Code and window emails keep "StrideMon".
+
+## D-063 — The 3D showroom at `showroom.stridemon.xyz`: the film's store, live
+
+Made 2026-10-22. The first showroom plan (same day) was a stone nave with ten chapels, an apse, a
+vault of 1,000 casts and every Sneaker rebuilt as cloisonné relief. Yash replaced it: the
+showroom is **the store from the Showroom film** (`launch-video/src/showroom/`), interactive and a
+little richer because it renders live, with the Sneakers kept flat. He asked Claude to research
+the open questions and pick.
+
+- **Decision:**
+  1. **The place is the film's store**, ported from its code (`ShowroomWorld.tsx`, `textures.ts`,
+     `sneakers.ts`), not rebuilt: the night street, the glass front with the lit fascia and blade
+     sign, the 10 × 10 m room with its polished floor and downlights, and its five walls. The
+     film's numbers stay unless Yash approves a change. After the port, the showroom's copy is the
+     live store; the film's isn't updated to follow.
+  2. **The Sneakers stay flat:** the exported laced SVGs, rasterised in the browser, shown as
+     cut-outs on lit shelves or prints in lightboxes, exactly as the film. Never redrawn,
+     recoloured, bloomed or tinted. The walls keep the film's 65 designs; **the counter's stand**
+     takes any of the 1,000 through Find, "Surprise me" (an available design) or a deep link
+     (`?pass=0137`, one page, no 1,000 static pages).
+  3. **What live rendering adds**, quietly: floor reflections, bloom only on what's brighter than
+     white, contact shadows rendered once, AO on the high tier, an environment built from
+     `Lightformer`s, faint CSS grain. Three tiers (High, Medium, Low) keep it smooth on phones.
+     **Tone mapping happens inside the architecture's materials** (the film's ACES Filmic) and
+     never in the composer, because three.js skips per-material tone mapping under a composer and
+     any curve there would darken the Sneakers (brief §5.2).
+  4. **The visit:** a loader, the street at night with the store's lights coming on, "Step
+     inside", a guided walk of five stops by scroll, swipe, keys or dots with a little look-around,
+     tap any Sneaker to look closer with a card (number, name, rarity, minted state from
+     `GET /v1/pass/collection`, one button to `stridemon.xyz/pass/NNNN?source=showroom`). The
+     counter's screen shows #0137 until minting starts, then the latest mint.
+  5. **It only shows:** no wallet, email, mint or STRIDE. "Get your Founding Pass" (free, can't be
+     sent or sold) and "Join the waitlist" always link to `stridemon.xyz`. The API gets its own
+     CORS list, `SHOWROOM_ALLOWED_ORIGINS`, opening the collection route and nothing else.
+  6. **`showroom/` is its own Next.js app on Bun** like `website/` (D-035): its own install, not a
+     workspace, never importing `@stridemon/*`. A second Vercel Hobby project. Free assets only.
+  7. **Live by Mon 2026-11-09**, before the Show HN and in the week DeltaV's amplification
+     unlocks. No sound at launch. The old plan's "Your Sneaker" part is dropped.
+  8. Built from `docs/showroom/`, one part per session: the store, the walk, look closer and find,
+     finish and fallbacks, launch.
+- **Why:** the film already made the place people will recognise, and porting it keeps the film,
+  the posts and the site one place. Flat Sneakers are the art as it is on Monad, with nothing to
+  get wrong, and they cost almost nothing to draw, which is what lets a phone from X run the
+  building's reflections and light. A store of 65 on the walls plus a stand for any one is a
+  calmer visit than walking past 1,000, and `/pass` already shows the whole collection as a grid.
+- **Trade-off:** the walls don't show all 1,000; you reach the rest one at a time through Find.
+  Flat Sneakers don't turn in your hands. `postprocessing` 6.39 caps three below 0.187, so three
+  stays on 0.186. The material-level tone mapping is a small shader patch to keep working on each
+  three upgrade.
+- **Revisit when:** minting starts (the walls could follow the mint), early access starts on fresh
+  contracts (a "Your Sneaker" on the stand), or Part 1's phone check misses the frame-rate budget on
+  the Medium tier.
+
+## D-064 — The showroom's live rendering, as built: no screen-space AO, glows under the Sneakers
+
+Made 2026-10-22, while building the showroom's Part 1 (D-063). Measuring the store against the
+brief's two hard rules (the Sneakers never change colour, brief §5.2; the draw-call budget, §8)
+changed four of the additions D-063 listed. Proposed by Claude; approved by Yash with Part 1.
+
+- **Decision:**
+  1. **No screen-space AO.** N8AO darkened a Sneaker on the stand by up to 7/255 on the colour
+     check, even with its transparency handling on (that only spares see-through pixels, and the
+     Sneakers' pixels are opaque). Without it every check is within 2/255. The contact shadows
+     (rendered once) give the furniture its weight.
+  2. **Glows never cover a Sneaker or a print.** The film's additive glow sprites sit in front of
+     the lightboxes and the Sneakers niche, which tints them. In the showroom every glow draws first
+     and every Sneaker and print after, over it (render order; glows write no depth). The shelves'
+     LED strips stay at a brightness of 1, so the bloom picks up the coves, the downlights and the
+     lit words, never a strip right under a row of Sneakers.
+  3. **The environment map is for the shiny things only.** It's a small scene of light shapes that
+     match the room (the downlight grid, the amber cove, the violet niche, the lit back wall),
+     turned into a PMREM once, and given to the chrome, the glass, the counters and the floor.
+     It's not drei's `Environment` (which sets `scene.environment`): three r186 lights every
+     standard material with the scene's environment at one intensity, which washed the film's
+     matte walls.
+  4. **The floor's reflection skips what it can't show.** Everything outside the glass and every
+     glow is on a layer the reflection camera doesn't see. With the static boxes merged per surface
+     (each keeps its film colour as a vertex colour), the street view costs about 107 draw calls on
+     the laptop (High) and 85 on a phone-shaped screen (Medium).
+  - The architecture's tone mapping is a shader-chunk patch switched on by a define, rather than an
+    `onBeforeCompile` per material, so drei's reflector gets it too. The film's CSS grade on the
+    canvas (`contrast`, `saturate`, the dark shot's `brightness`) isn't ported: it would change the
+    Sneakers. The dark shot's 0.75 brightness is folded into the `dark` light levels instead.
+- **Why:** the colour rule is the one thing the showroom can't get wrong (the art is frozen), and
+  a phone from X has to stay smooth. Each change keeps the film's look and costs nothing visible.
+- **Trade-off:** no AO in the corners and under the shelves; the glows read a little flatter where
+  a Sneaker sits in front of them.
+- **Revisit when:** an AO pass can leave chosen objects out (a selective AO, or a mask), or the
+  phone check shows headroom for more.
+
+## D-065 — The showroom's walk, as built: framed stops, the street as a stop, LEDs that come on
+
+Made 2026-10-22, while building the showroom's Part 2 (the arrival and the walk, D-063). Proposed
+by Claude; approved by Yash with Part 2 (2026-10-22), item 6 from his phone check.
+
+- **Decision:**
+  1. **Each stop is a subject, framed for the screen.** A stop names a rectangle in the world (the
+     lightbox, a niche, a wall) and the angle it's seen from; the camera's distance is solved so
+     the whole rectangle sits inside a safe frame clear of the header and the walk bar, on a
+     portrait phone (a wider lens, up to 76° vertical) and a wide laptop (50°) alike. The camera
+     is level: yaw and pitch only, never roll. Every number is in `showroom/src/visit/walk-plan.ts`.
+  2. **Moves follow a smooth path that stays in the store.** A move between two stops is a
+     centripetal Catmull-Rom curve through the open floor when the straight line would cross the
+     table, the chairs or a counter, and through the gap in the glass between the mullions at
+     x = −2.5 and 0 when it goes in or out. A test walks every pair of stops on both screen shapes
+     and checks the path stays inside and clear.
+  3. **The street is stop 0.** Step inside walks to stop 1; walking back from stop 1 goes out to
+     the lit street, where Step inside shows again. The dots and the "n of 5" count only the five
+     stops inside.
+  4. **The inside LEDs come on with the store.** The film keeps the coves and shelf strips on in
+     its dark front shot. The showroom dims them with the store (to the dark shot's store
+     brightness) so they have something to come on from: downlights row by row from the glass,
+     then the lightboxes, the Sneakers, the signs and the LEDs. The lit store is unchanged. The
+     dark level is one number (`storeLightingPresets.dark.ledBrightness`) if Yash prefers the
+     film's.
+  5. **The dev view switch is gone; the colour check's four face-on views stay** in the dev panel,
+     so the colour check can be run again after a change to the materials or the effects.
+  6. **Two fixes to the film's store, found on Yash's phone.** The black counter on the Founding
+     Pass wall is 3.5 m wide, not 3 m: it now reaches 0.5 m further left, so the upright screen
+     (where the film put it, at x = −0.9) stands on it instead of in the air past its end. And the
+     blade sign's faces draw after its glow (as the Sneakers do, D-064): the glow sprite sits at the
+     sign's centre, and seen at an angle it lit only the far half of a face, so the words seemed to
+     hang off a smaller black box.
+- **Why:** the brief's walk has to show the whole subject on a phone held upright and on a laptop,
+  never walk through furniture, and keep the film's light; and the lights-on moment needs a dark
+  store to come up from.
+- **Trade-off:** on a portrait phone the wide stops (the Founding Pass wall, the Sneaker wall)
+  stand far back, so the Sneakers on them are small until look closer (Part 3).
+- **Revisit when:** Part 3's look closer lands (the wide stops may come closer), or Yash wants the
+  film's LEDs in the dark front.
+
+## D-066 — The showroom's look closer and Find, as built: the API's own CORS list, what the card can know
+
+Made 2026-10-22, while building the showroom's Part 3 (look closer and find, D-063). Proposed by
+Claude; approved by Yash with Part 3 (2026-10-22), item 4's 1.2 m floor from his phone check.
+
+- **Decision:**
+  1. **`SHOWROOM_ALLOWED_ORIGINS`** is its own, optional list in the API: its origins get CORS on
+     `GET /v1/pass/collection` and on no other route. Unset or empty, it opens nothing, so the API
+     boots on the server's current `.env` until Part 5 adds the line. `pass:local-stack` allows
+     `http://localhost:3002`, and `--showroom-origin` adds another (a phone on the Wi-Fi) without
+     moving the SIWE domain as `--origin` does.
+  2. **The card says what the collection route knows.** "Minted · Founder 42" when the mint is one
+     of the route's last 10 (`recentMints`, the only place it gives a founder number); otherwise
+     "Minted". The showroom reads nothing from the chain. "Being minted" for a pending design;
+     "Couldn't check if it's minted" when the route hasn't answered.
+  3. **The card's button** goes to the website's own page path, `stridemon.xyz/pass/137?source=showroom`
+     (no leading zeros: the static export builds `/pass/137`, and `/pass/0137` is a 404). It says
+     "Mint it on stridemon.xyz" while the schedule is in the waitlist window or the open mint and
+     nobody has taken the design (the website then says who can mint), and "See it on
+     stridemon.xyz" otherwise. The schedule comes from the route, or the website's planned times
+     (copied by hand) when it hasn't answered.
+  4. **Look closer is square on.** The camera faces the Sneaker straight, level, at a distance
+     solved so it fits above the card with a little room round it (about 0.65 m on a laptop and
+     0.95 m on a phone held upright for a shelf Sneaker, never nearer than 0.45 m): the brief's
+     "half a metre" left the Sneaker with no air on the laptop. To make room for the card the camera moves down
+     rather than tilting, so the picture stays flat, but never below 1.2 m: on a phone held
+     upright it stands far back from the Founding Pass lightbox, and lower down the black counter
+     hid the Sneakers (found on Yash's phone). There it tilts a little instead, and a test checks
+     that no counter, table or chair stands between the camera and any Sneaker. A shelf Sneaker gets a 1,024 px picture laid over its
+     atlas cell; a print (the lightboxes, the posters, the screen) **redraws itself** with its
+     Sneaker at about 1,024 px (at most 2,048 px a side) instead, because the Founding Pass
+     lightbox's three Sneakers overlap and an overlay would change which one is in front. The
+     counter's screen is framed whole, with its words. Every sharp picture is released on leaving.
+  5. **Taps.** A shelf Sneaker's whole cell is its target, a print's Sneaker its rotated area; the
+     nearest hit wins, and in a print the Sneaker whose centre is closest. From the street only the
+     window poster can be tapped (the inside shows through the glass). While looking closer, a tap
+     on another Sneaker looks at that one and a tap on nothing goes back; a scroll, ↑ ↓ or a
+     vertical swipe goes back to the stop (the next one walks on); ← →, the small arrows or a
+     horizontal swipe step to the neighbour, left to right as seen, row by row.
+  6. **Long jumps cut.** A look-closer move longer than 6 m, and Find from any stop but the Sneaker
+     wall, fade out and in (as reduced motion does) instead of flying across the store.
+  7. **Find sits at the top of the screen**, as a small dialog: on Android, Chrome's keyboard
+     covers a sheet at the bottom. It matches a number (1 to 1,000, with or without `#` and zeros)
+     or any part of a name, shows up to six, and Enter takes the first. The deep link takes
+     `?pass=137` or `?pass=0137`.
+  8. **The counter's screen** shows #0137 until the schedule reaches the waitlist window, then the
+     newest of `recentMints` ("JUST MINTED", its number, "FOUNDER 42"), and #0137 again if there
+     is none.
+- **Why:** the collection route is public and cached, and it's the only thing the showroom needs;
+  a second chain client (and its CSP entry) for a founder number on 990 old mints isn't worth it.
+  Square-on views keep the frozen art flat on screen, and redrawing a print keeps its own
+  drawing order.
+- **Trade-off:** an older mint's card has no founder number; the website's pass page has it. A
+  print redrawn for look closer costs up to about 17 MB of texture while it's open.
+- **Revisit when:** the route gives founder numbers for every mint, or the phone's texture memory
+  is tight in Part 4.
+
+## D-067 — The showroom's finish, as built: a real loader, smaller pictures on phones, fallbacks
+
+Made 2026-10-23, while building the showroom's Part 4 (finish and fallbacks, D-063). Proposed by
+Claude; approved by Yash with Part 4's check on his phone and the laptop (2026-10-23).
+
+- **Decision:**
+  1. **The loader is in the page's HTML** and draws the line-Sneaker mark (the website's
+     `icon.svg`) from real milestones: the page's code (30 %, three.js comes with it because the
+     walk's maths uses it), the store's chunk (10 %), each of the 66 files (45 %), then the
+     shaders (15 %, the lime stroke, last). The shaders compile with `compileAsync` and three
+     frames are drawn under the loader, so the effects compile too; the arrival starts as it
+     fades. The store's files start loading with the page, not after three.js. It sits under the
+     header, so Help, the Founding Pass and the waitlist are there from the first paint. After 8
+     seconds a CSS-only line says the collection is also at `stridemon.xyz/pass`.
+  2. **Tiers step down, never up** (drei's `PerformanceMonitor`): 8 of 10 quarter-second samples
+     under 45 fps steps one tier down, measured only once the loader has gone and afresh after
+     each step. It can't flicker. `?tier=low|medium|high` holds a tier.
+  3. **Smaller pictures where nobody sees the difference** (measured, brief §7.6 and §8 updated):
+     the walls' atlases are 384 px a Sneaker on High and 256 on Medium and Low (on a laptop a
+     Rare-wall Sneaker is about 190 screen pixels wide; look closer swaps in its own 1,024 px
+     picture anyway); the floor's reflection is 512 on High and 256 on Medium (it's fully blurred);
+     the signs, wall titles, tagline and paving follow the tier's print scale; the contact shadows
+     are 512 (2 cm a pixel, blurred); the environment map's cube is 128. A phone (Medium) went from
+     117 MB of textures to 61.
+  4. **What "texture memory" counts.** Every texture the store uploads, render targets included;
+     the multisample renderbuffers are listed apart. On a phone that's 61 MB at a stop (budget 64),
+     up to 74 MB while a print is redrawn for look closer (D-066's trade-off). On the laptop at a
+     pixel ratio of 2 it's 230 MB: 125 MB of pictures, reflection, shadows and environment, and
+     105 MB of screen-sized HDR buffers for the bloom (the composer's two 2,880 × 1,800 half-float
+     targets and the first bloom level), which grow with the screen. **The proposal:** the 160 MB
+     laptop budget counts everything but those screen-sized buffers, which the brief now lists
+     beside it.
+  5. **Fallbacks.** No WebGL 2 (checked before three.js's chunk is used, and a canvas that can't
+     start) shows a still of the lit store, "Your browser can't show the 3D store", and See all
+     1,000 on stridemon.xyz, under the header's Founding Pass (free, can't be sent or sold),
+     waitlist and Help. A lost context ("The 3D store stopped") and files that didn't come ("The
+     store couldn't load") add **Try again**, which reloads (a deep link survives it). The minted
+     state's quiet line hides on a fallback.
+  6. **Stills and the share card are rendered from the showroom itself** by `bun run render-stills`
+     (Chrome over the DevTools protocol, no dependency) on the production build with `?still`
+     (no DOM layer, the lit street at once): `public/stills/` holds a 2,160 × 1,350 and an 860 ×
+     1,864 WebP (58 and 22 KB) and the 1,200 × 630 JPEG share card (65 KB).
+  7. **A leak fixed.** Look closer disposed its sharp picture while the material still drew it, so
+     the next frame uploaded it again and that copy was never freed (about 13 MB a look on a
+     phone). `useDisposeWhenReplaced` disposes a texture only after React has swapped it off.
+- **Why:** the brief's §8 budgets on a phone from X, and nobody left looking at a blank page.
+- **Trade-off:** the walls' Sneakers are a little softer on a large laptop screen than at 512 px
+  (still about twice their screen size); three.js arrives with the page's code (about 234 KB
+  gzipped) even for a visitor without WebGL.
+- **Revisit when:** Yash's phone shows a tier stepping down on a phone that looks smooth, or the
+  laptop's memory matters (High's multisampling could drop from 4 to 2 at a pixel ratio of 2).
+
+## D-068 — The showroom's interface lives in the store: lit buttons, a shop tag, no minted state
+
+Made 2026-10-23, after Yash's check of the showroom's Part 4 (D-067). Asked for by Yash ("make it
+minimal, and use 3D elements as much as possible", in the spirit of Apple, Duolingo and Phantom);
+the layout was his pick of Claude's options.
+
+- **Decision:**
+  1. **Almost nothing over the canvas.** No header, wordmark, Help, where-you-are panel, card sheet
+     or Find pill. On screen: the stop dots and ⌃ ⌄ at a stop, ⌄ alone on the street (Step
+     inside), ‹ ✕ › while looking closer, the one-time walking hint, and a short line that fades
+     for a bad deep link. The loader, the fallbacks and Find's dialog (a text field) stay in the
+     DOM. For keyboards and screen readers a visually hidden layer keeps the where-you-are line
+     (announced), the store's buttons and the Sneakers at each stop, and look closer's details
+     and link, each shown as a small panel when it holds the keyboard's focus.
+  2. **The store's own buttons**, lit, tappable, with a pointer cursor on a laptop (links open in
+     the same tab, as before):
+     - The street: a "Step inside →" decal on the glass door, a Founding Pass decal on the
+       window beside it ("1,000 Founding Passes · Free to mint →"), and the blade sign
+       ("FOUNDING PASS →"), both to `stridemon.xyz/pass`.
+     - The Founding Pass wall: a lit "Get your Founding Pass →" pill on the black counter's front,
+       with "Free · Can't be sent or sold" under it; the counter's upright screen is a **waitlist
+       kiosk**, "Join the waitlist →" to `stridemon.xyz/waitlist`. It no longer shows #0137 or
+       the newest mint (D-063 §10, #2, retired).
+     - The Sneaker wall: a "Find a Sneaker" plate on the white counter's front, beside the stand.
+       `/` still opens Find anywhere.
+  3. **Look closer shows a shop tag in the store**, not a card on the screen: a small white tag
+     with its number, rarity, name, "Free to mint. Can't be sent or sold." and "See it on
+     stridemon.xyz →". On a wide screen it hangs beside the Sneaker (left of the stand's, whose
+     little printed card is on its right); on a phone held upright it hangs under it, as wide as
+     it, covering the row below, so it's plainly that Sneaker's and its words stay readable. It
+     draws over everything. Tapping it opens the design's page. The camera frames the Sneaker and
+     its tag together, square on, and while you look closer the store's buttons step back
+     (hidden, and taps pass them by).
+  4. **No minted state.** The showroom no longer reads `GET /v1/pass/collection`: no Available or
+     Minted on the tag, no "Mint it" wording, "Surprise me" picks any design but the one on the
+     stand, and no quiet "can't check" line. The API's `SHOWROOM_ALLOWED_ORIGINS` (D-066, never
+     deployed) is removed with it, so Part 5 has no API step.
+  5. **Help only where someone is stuck:** the fallbacks keep "Get help"; the walk has none.
+  6. **The blade sign's letters fit its face** (measured, at most 84 % of its width): they ran to
+     the edge, past the box at an angle.
+  7. **Stop 4 frames down to the counter's front** (`walk-plan.ts`: centre 1.72 m, 2.75 m high),
+     so "Get your Founding Pass" is in the picture on every screen shape; a test checks every
+     button shows from its stop and that a tap on it hits it. The buttons' pictures follow the
+     tier's print scale, so a phone stays at 64 MB of textures at a stop.
+- **Why:** the store is the interface: fewer words over the picture, and every action is a lit
+  thing in the place.
+- **Trade-off:** the two exits are only at the street and the Founding Pass wall, not on every
+  screen (the brief's "always on screen" is retired); a design's minted state is only on
+  `stridemon.xyz`; Help isn't on screen during the walk. Users who can't see the 3D buttons
+  reach the same actions through the hidden layer.
+- **Revisit when:** a phone check shows visitors missing the exits or Find.
+
+## D-069 — The showroom's launch: its links from the website, the source kept for the visit, its CSP
+
+Made 2026-10-23, while building the showroom's Part 5 (launch, D-063). Proposed by Claude; for
+Yash's approval with the live check.
+
+- **Decision:**
+  1. **The website links to the showroom in four places**, all from `showroomUrl` in
+     `website/src/content/site.ts`: a "Walk into the store in 3D" pill beside the collection's
+     heading on `/pass`; "See it in the 3D store" on every pass page and in the gallery's detail
+     sheet, to `https://showroom.stridemon.xyz/?pass=<number>`; a quiet text link under the landing
+     page's Founding Pass buttons; and the help answer "What is the 3D showroom?" (`#showroom`),
+     with `llms.txt` listing it under Optional. Same tab, as the showroom's own links. The header
+     stays at three links (D-050).
+  2. **The website keeps a visit's first `?source=` for the whole visit** (`sessionStorage`, beside
+     the invite code's `?ref=`, D-056), so someone who comes from the showroom to
+     `/pass/137?source=showroom`, then browses, still joins with `showroom`. A page whose own link
+     carries a `?source=` (like `/waitlist?source=x-waitlist`) still wins.
+  3. **The showroom's CSP restricts everything** (unlike the website's, D-051, which the wallet
+     makes hard): `default-src 'self'`, scripts and styles `'self' 'unsafe-inline'` (a static export
+     can't use nonces), Fontshare's CSS and fonts, `img-src` with `data:` and `blob:` (the
+     Sneakers are rasterised from blob URLs), `connect-src 'self'` (Vercel Analytics posts to its
+     own origin), and the website's frame, object, base and form rules. A walk through every stop,
+     look closer, Find and a deep link on the production build with these headers showed no
+     violation.
+  4. **Vercel Analytics page views** (brief §7.7) are on the page, and the project uses the website
+     project's defaults (the Next.js preset, root `showroom`): `deployment.md` §16.
+- **Why:** the showroom only earns its place if people from the website find it and the waitlist
+  sees who it sends.
+- **Trade-off:** the visit's source sticks to the first link of the tab's visit, so a later
+  different source in the same tab only counts when that page carries it.
+- **Revisit when:** the waitlist's sources show `showroom` brings nobody, or the website's own CSP
+  gets its allowlist (D-051's revisit).

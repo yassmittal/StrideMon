@@ -23,7 +23,7 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | Path | What |
 |---|---|
 | `src/content/` | Every piece of copy, number, link and address, as typed data |
-| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `apiBaseUrl` and the API routes, `githubRepositoryUrl`, `supportEmail`, the X and YouTube links (D-059), the legal and pass page paths |
+| `src/content/site.ts` | `siteUrl` (the one place the domain lives), `showroomUrl` and `buildShowroomPassUrl` (the 3D showroom, D-069: linked from `/pass`, every pass, the landing page's Founding Pass section and `/help#showroom`), `apiBaseUrl` and the API routes, `githubRepositoryUrl`, `supportEmail`, the X and YouTube links (D-059), the legal and pass page paths |
 | `src/content/legal/` | The privacy policy (`/privacy`) and account deletion (`/delete-account`) pages Google Play asks for (D-039). Keep them true to the app and API |
 | `src/content/waitlist.ts` | The waitlist section's copy and error lines, the joined card, the X post's text and the `/waitlist` page's words (D-055, D-059) |
 | `src/content/contracts.ts` | Addresses copied from `packages/contracts/deployments/10143.json` |
@@ -215,7 +215,10 @@ signs in for its domain), and start the website with the three tunnel addresses 
 The `#waitlist` section (D-037) posts `{ email, turnstileToken, phonePlatform?, source?, inviteCode?,
 emailProof?, website? }` to the StrideMon API at `waitlistApiUrl` (`POST /v1/waitlist`). `website` is a
 hidden honeypot. The page's `?source=` goes along when it's 1–32 characters of `[a-z0-9-]`, so a link
-such as `https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it.
+such as `https://stridemon.xyz/?source=x-stridemon` credits the X account that shared it. The first
+`?source=` of a visit is kept for the tab (`sessionStorage`, D-069), so someone who arrives on
+`/pass/137?source=showroom` and joins on another page still counts for the showroom; a page whose
+own link has a `?source=` wins.
 
 **The invite loop (D-056, D-057):**
 

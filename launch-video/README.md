@@ -50,6 +50,18 @@ the reference's own cut. Its code is in `src/showroom/` (the cut in `timeline.ts
 footage and music in `CREDITS.md`. **Its hook footage and music are the reference's own, which
 StrideMon holds no licence for** (Yash's choice): it isn't for Instagram, and YouTube may claim it.
 
+The **Crush film** (`Crush9x16`, 1080 × 1920, 25 fps, 25.4 s), from `docs/crush-video-prompt.md`: a
+Naisnow bubble-tea ad on the "He will look at the person he likes first" trend (`../inspiration.mp4`),
+remade shot for shot with #0137 Rose Hiker Night in place of its cup. The hook is the reference's
+footage untouched; every shot after it is the reference's own background with the cup taken out
+(clean plates by LaMa) and moved by the reference's own tracked camera, while the four making shots
+build the Sneaker one layer at a time. Then the pair on the bench, its name and the StrideMon mark
+drawing in. Its code is in `src/crush/` (the cut in `timeline.ts`, the Sneaker's place in each shot
+in `poses.ts`, the generated camera in `tracks.ts`), its words in `FACTS.md` §17, and its footage,
+music and plates in `CREDITS.md`. **Its footage (including four real people) and music are the
+reference's own, which StrideMon holds no licence for** (Yash's choice): it isn't for Instagram, and
+YouTube may claim it.
+
 The **Metropolis pitch video** (`Pitch16x9`, 1920 × 1080, 30 fps, about 1:24) lives here too:
 Yash's voiceover over the submission reel, one scene per part of the script, captions burned in.
 Its code is in `src/pitch/`, its words in `src/pitch/script.ts`, and it is cut to the voice's
@@ -81,6 +93,7 @@ bash scripts/copy-pass-chat-art.sh    # public/pass-chat/: every gallery card's 
 bash scripts/cut-app-tour-footage.sh  # public/footage/app-tour/: the App tour film's clips from the submission reel (needs ffmpeg)
 bash scripts/fetch-app-tour-sneaker-art.sh # public/sneaker/: Sneaker #3's pictures from the live renderer, read-only (needs cast)
 bash scripts/copy-showroom-media.sh   # public/showroom/ and its music: from ../hyperSpeedCameraman.mp4 (needs ffmpeg, rsvg-convert, bun)
+bash scripts/copy-crush-media.sh      # public/crush/ (plates, #0137) and its music, src/crush/tracks.ts: from ../inspiration.mp4 (needs ffmpeg, curl, uv)
 ```
 
 `fetch-audio.sh` makes the App tour film's music from `../reference.mp4` (untracked); without that
@@ -107,6 +120,7 @@ six scenes, and `Checks/SneakerDropSync` is its sync check (a flash per hit over
 `PassChat16x9` is the Pass chat film, and `PassChatScenes-16x9` has its eight scenes.
 `AppTour9x16` is the App tour film, and `AppTourScenes-9x16` has its seven sections.
 `Showroom9x16` is the Showroom film.
+`Crush9x16` is the Crush film.
 Motion blur (the walk's fast stretch) needs Chrome 149+ with
 `chrome://flags/#canvas-draw-element` to show in the Studio; renders don't need it.
 

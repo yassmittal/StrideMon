@@ -5,6 +5,7 @@ import {
   appInstallPageUrl,
   legalPagePaths,
   passGalleryPath,
+  showroomUrl,
   supportEmail,
   waitlistInvitesPath,
   waitlistPagePath,
@@ -48,6 +49,7 @@ export type HelpTopicId =
   | 'laced'
   | 'after-all-minted'
   | 'invites'
+  | 'showroom'
   // When something goes wrong: the waitlist (D-056)
   | 'friend-not-counting'
   | 'lost-invite-link'
@@ -137,6 +139,7 @@ const helpLinks = {
   invites: { label: 'See your invites', href: waitlistInvitesPath },
   waitlist: { label: 'Join the waitlist', href: waitlistPagePath },
   getApp: { label: 'Get the app', href: appInstallPageUrl },
+  showroom: { label: 'Walk into the 3D store', href: showroomUrl },
 } as const satisfies Record<string, HelpLink>
 
 export const helpPageContent = {
@@ -423,6 +426,16 @@ export const helpPlainAnswers: readonly HelpAnswer[] = [
     paragraphs: [
       'No new passes, ever. StrideMon opens to everyone with a free normal Sneaker. If they aren’t all minted, it opens on the last date in the schedule anyway. Founders keep their pass and Founder Sneaker.',
     ],
+  },
+  {
+    id: 'showroom',
+    question: 'What is the 3D showroom?',
+    paragraphs: [
+      'The StrideMon store at night, in 3D, at showroom.stridemon.xyz. Walk through it, tap any Sneaker to see it up close, or use Find to put any of the 1,000 on the counter’s stand.',
+      'It only shows. You can’t mint, connect a wallet or join the waitlist there: its buttons bring you back to stridemon.xyz to do that.',
+      'If it won’t load, your browser or phone may not run 3D. It then shows a picture of the store and a link to all 1,000 here, which have the same designs. Try Chrome, or a newer phone or laptop.',
+    ],
+    links: [helpLinks.showroom, helpLinks.gallery],
   },
 ]
 

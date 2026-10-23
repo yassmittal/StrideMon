@@ -14,6 +14,7 @@ monad/                         repo folder (the product is StrideMon)
 ├── tsconfig.base.json         strict compiler options every workspace extends
 ├── scripts/                   repo-level dev scripts (local mongod, demo tooling)
 ├── website/                   landing page (Next.js, its own install, not a workspace, D-035)
+├── showroom/                  3D store at showroom.stridemon.xyz (Next.js, its own install, not a workspace, D-063)
 │
 ├── apps/
 │   ├── mobile/                Expo + React Native app            → mobile-app.md

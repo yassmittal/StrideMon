@@ -80,6 +80,17 @@ export const waitlistPagePath = '/waitlist'
 export const waitlistInvitesPath = '/waitlist/invites'
 
 /**
+ * The 3D showroom (D-063): the Showroom film's store, live in the browser, its own Vercel project
+ * (`showroom/`). It only shows: every way to mint or join leads back here with `?source=showroom`.
+ */
+export const showroomUrl = 'https://showroom.stridemon.xyz'
+
+/** The showroom opened on one design, on the counter's stand with its tag (`?pass=137`). */
+export function buildShowroomPassUrl(designNumber: number): string {
+  return `${showroomUrl}/?pass=${designNumber}`
+}
+
+/**
  * The Markdown copies of the pages that answer questions, for answer engines and agents (D-061).
  * Each page links its own with `rel="alternate"`, and `/llms.txt` lists them.
  */
@@ -99,7 +110,7 @@ export const llmsFullTextPath = '/llms-full.txt'
  * structured data's `dateModified` and `/llms.txt`. Change it with real copy changes, not on every
  * deploy.
  */
-export const contentUpdatedOn = '2026-10-19'
+export const contentUpdatedOn = '2026-10-23'
 
 /**
  * IndexNow's key (D-061). Public by design: `public/<key>.txt` must hold exactly this, so the

@@ -317,3 +317,20 @@ reel's explorer pages, emoji, or anything of the reference's.
 | Upgrade: `50 STRIDE`, `Level 1 → 2`, `Efficiency 10 → 12`, `UPGRADE TO LEVEL 2`, `STEP 2 OF 2 • CONFIRMING`, `Confirming on Monad…`, `CONFIRMED ON MONAD`, `Level 2 reached`, `Spent 50 STRIDE`, the card's `LEVEL 02 / 30` and `EFFICIENCY 12` | `UpgradePanel.tsx`, `SneakerTransactionSheet.tsx`; cost 50 × level and +2 efficiency (§2); a real 1 → 2 upgrade (§5, v2 M11) | ⚠ **A rebuild, not footage.** That real upgrade was Sneaker #2 when the token was SOLE, and the reel never upgrades #3. It shows how upgrading works, with the app's real words and rules. **No STRIDE balance anywhere in this beat**: the repair left 9.3, which can't pay 50, so the panel's "You have N STRIDE." and the sheet's balance row are left out |
 | `Walk. Earn. Upgrade.` · `StrideMon` · `Ready to move?` · `stridemon.xyz` · `ANDROID DEMO` · `MONAD TESTNET` | §1, §9 (row 7: `MONAD TESTNET • ANDROID DEMO`); D-040; "Ready to move?" is a question and claims nothing | ✓ |
 | `Monad testnet. STRIDE has no monetary value.` | `voice.md` §4 | ⚠ **Not on the end card** (Yash, 2026-10-17: "it's unnecessary"). STRIDE amounts are on screen, so every post of this film carries it in its caption, as `voice.md` §4 allows ("in the post or in its thread"). The app's own summary screen still shows it under `+10 STRIDE` |
+
+## 17. The Crush film (2026-10-23)
+
+`Crush9x16`, `docs/crush-video-prompt.md`. Everything else on screen is the reference's own footage
+(its hook caption "He will look at the person he likes first ❤️" included) or #0137's art.
+
+**Never on screen in this film:** a STRIDE amount, a price, "free", a date, a user count, a wallet,
+an app screen, or anything of Naisnow's (its cup, logo, name or drink).
+
+| On screen | Source | Status |
+|---|---|---|
+| #0137's laced Sneaker, built in four layers | `website/public/pass-art/laced/0137.svg`, the contract renderer's own art (DESIGNS_FROZEN_ON); the build only moves, clips and hides its paths, and ends on the art as minted | ✓ |
+| `4-layers On-chain` | The four making shots (sole, colour, panels, laces); the art is drawn on-chain (D-030, D-041) | ✓ |
+| `Love In Every Step` | A line, no claim | ✓ |
+| `ROSE HIKER` / `NIGHT` | #0137's name (`src/showroom/sneakers.ts`, the design table) | ✓ |
+| The pair on the bench | Two copies of #0137: a pair of the same shoe, not two passes | ✓ Each pass is one of one; the film never says or shows "two" |
+| The mark, `StrideMon`, `stridemon.xyz/pass` | `website/src/app/icon.svg`'s strokes; D-040 | ✓ |

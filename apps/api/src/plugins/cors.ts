@@ -15,7 +15,7 @@ const BROWSER_ROUTE_PATH_PREFIXES = ['/v1/pass/', '/v1/waitlist/']
 
 export const corsPlugin = fastifyPlugin(
   async (fastify) => {
-    const allowedOrigins = fastify.config.waitlistAllowedOrigins
+    const websiteOrigins = fastify.config.waitlistAllowedOrigins
     await fastify.register(fastifyCors, {
       delegator: (request, callback) => {
         const requestPath = (request.url ?? '').split('?')[0] ?? ''
@@ -25,7 +25,7 @@ export const corsPlugin = fastifyPlugin(
         }
         // An origin outside the list gets no Access-Control-Allow-Origin, so the browser blocks it.
         callback(null, {
-          origin: allowedOrigins,
+          origin: websiteOrigins,
           methods: ['GET', 'POST'],
           allowedHeaders: ['Content-Type', 'Authorization'],
           maxAge: 600,

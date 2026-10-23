@@ -1,5 +1,5 @@
 import { foundingPassSectionContent } from '@/content/founding-pass'
-import { passGalleryPath, sectionIds } from '@/content/site'
+import { passGalleryPath, sectionIds, showroomUrl } from '@/content/site'
 import { buildRevealDelayStyle } from '@/lib/build-reveal-delay-style'
 import {
   buildPassPagePath,
@@ -7,6 +7,7 @@ import {
   readPassDesign,
 } from '@/lib/founding-pass/pass-design'
 import { PassArt } from '../founding-pass/pass-art'
+import { ArrowIcon } from '../ui/arrow-icon'
 import { MetaLabel } from '../ui/meta-label'
 import { PillButton } from '../ui/pill-button'
 
@@ -50,6 +51,13 @@ export function FoundingPassSection() {
                 variant="secondary"
               />
             </div>
+            <a
+              href={showroomUrl}
+              className="group inline-flex min-h-11 items-center gap-2 self-start text-label font-medium tracking-[0.08em] uppercase"
+            >
+              {foundingPassSectionContent.showroomLabel}
+              <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
+            </a>
           </div>
         </div>
         <ul className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-6">

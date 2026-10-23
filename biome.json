@@ -15,6 +15,8 @@
       "!apps/api/src/lib/waitlist/disposable-email-domain-list.ts",
       "!website/src/content/founding-pass-designs.ts",
       "!website/public",
+      "!showroom/src/content/sneaker-designs.ts",
+      "!showroom/public",
       "!launch-video/public",
       "!launch-video/out",
       "!launch-video/.agents",
@@ -62,6 +64,7 @@
         "apps/mobile/app/**",
         "apps/mobile/app.config.ts",
         "website/src/app/**",
+        "showroom/src/app/**",
         "website/src/lib/screenshot-image-loader.ts",
         "**/*.config.*"
       ],

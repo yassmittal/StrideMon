@@ -74,6 +74,8 @@ export const fontFamilies = {
   mono: 'IBM Plex Mono',
   /** The Pass chat film's script face, for its lime keywords and "isn’t" (fonts.ts). */
   script: 'Knewave',
+  /** The Crush film's captions and title, the reference's own face (fonts.ts). */
+  crushCaption: 'Poppins',
 } as const
 
 /** Satoshi 400 for everything readable, 500 only for uppercase meta and pills. */
