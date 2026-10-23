@@ -13,7 +13,6 @@ read, what to build, how to check it, and where to stop.
 | [`brief.md`](brief.md) | The *what*: the idea, the store, the visit, flat Sneakers in a 3D store, the art direction, the tech, the budgets, the open questions |
 | [`references.md`](references.md) | The research: the film, the sites, spaces and code this is modelled on, and what to take from each |
 | `part-*.md` | The *how* and the *order*, one file per session |
-| `look/` | Screenshots each part saves for Yash to compare |
 
 ## Start a session
 

@@ -115,7 +115,7 @@ its own 1,024 px picture.
 fogged or bloomed, and drawn over the glows. The architecture tone-maps itself and the composer
 has no tone-mapping pass. Part 1's colour check measured every flat colour of #0137, #0052, #0029,
 #0542 and #0868 in the store against the SVG's own fills: all within 2/255
-(`docs/showroom/look/part-1/colour-check.txt`, and the side-by-side PNGs there). Run it again after
+(measured 2026-10-22; the screenshots and the measurement file were removed on 2026-10-23). Run it again after
 any change to the materials, the effects or the overlays.
 
 ## Tiers and measurements
@@ -186,7 +186,7 @@ on the stand with its tag; a bad number says so on the street. Tab reaches a hid
 itself when focused) of the stop's buttons and Sneakers, and a screen reader hears where you are.
 
 **No minted state, and no server** (D-068): the showroom calls no API. Help is on the fallbacks,
-not over the walk. Screenshots: `docs/showroom/look/part-4-in-store/`.
+not over the walk.
 
 ## The loader and the fallbacks (Part 4, D-067)
 
@@ -204,4 +204,4 @@ after a visible change to the street, run `bun run build && bun run start`, then
 
 To see each one: Chrome with `--disable-webgl`; on a running store, `document.querySelector('canvas')
 .getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()` in the console; DevTools →
-Network → block `/sneakers/laced/*`. Screenshots: `docs/showroom/look/part-4/`.
+Network → block `/sneakers/laced/*`.

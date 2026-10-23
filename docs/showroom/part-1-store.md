@@ -61,8 +61,8 @@ Everything after this part walks around in it, so take the time to make it beaut
    wall. That's how Yash compares the store with the film now, and it's Part 2's starting point.
 7. **The colour check:** for #0137, #0052 (Gold), #0029 (Chrome) and #0542 (Nacreous), the
    Sneaker in the store, face-on and lit, beside its card on `stridemon.xyz/pass`. They should
-   look the same to the eye, with the composer on (brief §5.2's gotcha). Save the pairs and one
-   shot per view as PNGs in `docs/showroom/look/`.
+   look the same to the eye, with the composer on (brief §5.2's gotcha). Write the measured
+   result into `showroom/README.md` (no screenshots are kept: Yash, 2026-10-23).
 8. **On the phone:** Yash opens `http://<LAN IP>:3002` (`ipconfig getifaddr en1`) on his Android
    phone in Chrome. Note each tier's frame rate there and on the laptop in `showroom/README.md`.
 
@@ -70,7 +70,7 @@ Everything after this part walks around in it, so take the time to make it beaut
 
 - Yash has compared each view with the film on the laptop and the phone and approved the store
   and its live additions.
-- The colour check passes, and the shots are in `docs/showroom/look/`.
+- The colour check passes, and its result is in `showroom/README.md`.
 - Typecheck, lint and tests pass.
 
 Mark Part 1 **Done**, then stop.

@@ -61,8 +61,6 @@ the dark front so they can come on. Two fixes to the film's store: the Founding 
 
 - Yash walks the whole store on his phone and the laptop and approves the arrival and the walk.
 - The frame rate holds through every move at each device's tier (brief §8).
-- Screenshots of the street (dark and lit) and each stop, portrait and landscape, are in
-  `docs/showroom/look/`.
 - Typecheck, lint and tests pass.
 
 Mark Part 2 **Done**, then stop.
