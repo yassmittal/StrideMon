@@ -7,7 +7,9 @@ exported as static files. Like `website/`, it is **not** a Bun workspace: it has
 
 The plan is [`../docs/showroom/`](../docs/showroom/README.md) (the brief, the research and one file
 per build part). Parts 1 to 4 are done (the store; the arrival and the walk; look closer and find;
-the finish and fallbacks), and the interface lives in the store (D-068).
+the finish and fallbacks), and the interface lives in the store (D-068). It plays one lo-fi
+track on repeat and soft cues from the first press, with one sound button (D-070), and its links open in
+a new tab (D-071).
 
 **Hosting (Part 5, D-069):** its own Vercel project, `stridemon-showroom`, root directory
 `showroom`, on the website project's defaults, at `https://showroom.stridemon.xyz` (a `CNAME` at
@@ -38,9 +40,10 @@ Lint from the repo root: `bun run lint`.
 laptop's LAN IP with `ipconfig getifaddr en1`, and open `http://<that IP>:3002` in Chrome on the
 Android phone. `next.config.ts` lets the dev server answer private LAN addresses.
 
-**In development** a small panel at the top left shows the frame rate, the draw calls of the whole
-frame (every pass), the triangles and the tier. Add `?stats` to the link to show it on a production
-build too (`bun run build && bun run start`), which is the one to measure on a phone. Open it to hold one of the four face-on colour-check
+**With `?stats` in the link** a small panel at the top left shows the frame rate, the draw calls of
+the whole frame (every pass), the triangles and the tier. It's hidden by default, in development too
+(Yash, 2026-10-24). Measure on a production build (`bun run build && bun run start`), which is the
+one to measure on a phone. Open it to hold one of the four face-on colour-check
 views (Walk goes back to the walk), put a colour-check design on the stand, or force a tier. A
 production build doesn't include it.
 
@@ -72,6 +75,9 @@ clear the session storage (`stridemon-showroom:street-lit`).
 | `src/lib/build-page-metadata.ts` | The title, description and share cards, copied by hand from the website |
 | `scripts/render-stills.ts` | Renders `public/stills/` from the running production build (Chrome over the DevTools protocol) |
 | `public/stills/` | **Generated**: the lit store, portrait and landscape WebP for the fallback, and the 1,200 × 630 share card |
+| `src/sound/` | **The sound** (D-070): the store's music on repeat (`store-music.ts`), the cues, synthesised with Web Audio (`sound-cues.ts`), which change of the visit plays which (`visit-cues.ts`), the engine (`sound-engine.ts`: the graph, the first press, on and off, Find's muffle, a hidden tab) and the page's hook. Nothing plays before a press |
+| `public/music/` | The one track on repeat (see Music below) |
+| `src/components/ui/sound-button.tsx` | The one sound button, top right; turning it off is remembered (`localStorage`) |
 | `src/visit/walk-plan.ts` | **Every number of the walk** (D-065): the stops, the lens and safe frame, the furniture, the doorway, the arrival's timings, the look-around and the input |
 | `src/visit/frame-subject.ts` | Frames a stop's subject for the screen's shape: solves the camera's distance. Level, never roll |
 | `src/visit/walk-path.ts` | The path of a move: through the doorway, round the furniture, eased, turning the short way |
@@ -117,6 +123,26 @@ has no tone-mapping pass. Part 1's colour check measured every flat colour of #0
 #0542 and #0868 in the store against the SVG's own fills: all within 2/255
 (measured 2026-10-22; the screenshots and the measurement file were removed on 2026-10-23). Run it again after
 any change to the materials, the effects or the overlays.
+
+## Music
+
+The store's music (D-070): one track on repeat, Yash's pick (2026-10-24), **"Lofi Beats" by
+zephiramusic** (https://pixabay.com/music/lofi-lofi-beats-580208/), under the **Pixabay Content
+License** (free for commercial use, no attribution required). Its page marks it AI generated and
+"Content ID Registered" (which only matters for YouTube uploads).
+
+`public/music/lofi-beats.mp3` is its first 35 bars (84.7 BPM: 0.023 s to 99.164 s of the
+original, before the quieter outro), so the repeat lands on the beat, at 128 kbps and −1.1 dB
+(about −16 LUFS; a plain gain, so the level can't jump at the loop):
+
+```bash
+ffmpeg -i zephiramusic-lofi-beats-580208.mp3 -ss 0.023 -to 99.164 \
+  -af "volume=-1.1dB,afade=t=in:d=0.005,afade=t=out:st=99.136:d=0.005" \
+  -ar 44100 -ac 2 -b:a 128k public/music/lofi-beats.mp3
+```
+
+It streams (1.6 MB) only after the visitor's first press. To change it, replace the file and
+`STORE_MUSIC_URL` in `src/sound/store-music.ts`.
 
 ## Tiers and measurements
 

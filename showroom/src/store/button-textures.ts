@@ -11,7 +11,7 @@ import { themeColors } from './theme-colors'
 
 // The store's own buttons and look closer's tag, drawn on canvases like the film's signs (D-068).
 // Each canvas has its button's shape in the world (store-buttons.ts): width over height matches.
-// Every Founding Pass offer says it's free and can't be sent or sold.
+// The showroom doesn't say "Free to mint" or "Can't be sent or sold" (D-071).
 
 const DECAL_BLACK = 'rgba(10, 11, 14, 0.84)'
 const SCREEN_BLACK = '#0D0E14'
@@ -85,7 +85,7 @@ export function createDoorDecalTexture({ fontFamilies, printScale }: PrintCanvas
   })
 }
 
-/** On the window: the Founding Pass, free, can't be sent or sold, and an arrow. */
+/** On the window: the Founding Pass and an arrow. */
 export function createWindowDecalTexture({
   fontFamilies,
   printScale,
@@ -104,18 +104,13 @@ export function createWindowDecalTexture({
       context.textBaseline = 'middle'
       context.fillStyle = SIGN_WHITE
       setFittedFont(context, fontFamilies.satoshi, 700, 116, '1,000 Founding Passes', textWidth)
-      context.fillText('1,000 Founding Passes', left, 200)
-      context.fillStyle = SECONDARY_ON_DARK
-      context.letterSpacing = '4px'
-      const promise = "FREE TO MINT · CAN'T BE SENT OR SOLD"
-      setFittedFont(context, fontFamilies.mono, 500, 46, promise, textWidth)
-      context.fillText(promise, left, 330)
+      context.fillText('1,000 Founding Passes', left, height / 2)
       drawArrow(context, width - 210, height / 2, 120, themeColors.highlight)
     },
   })
 }
 
-/** On the black counter's front: a lit white pill, and the promise under it. */
+/** On the black counter's front: a lit white pill. */
 export function createCounterPassTexture({
   fontFamilies,
   printScale,
@@ -140,11 +135,6 @@ export function createCounterPassTexture({
         arrowSize: 76,
         gap: 28,
       })
-      context.font = `500 46px ${fontFamilies.mono}`
-      context.letterSpacing = '5px'
-      context.fillStyle = SECONDARY_ON_DARK
-      context.textAlign = 'center'
-      context.fillText("FREE · CAN'T BE SENT OR SOLD", width / 2, 312)
     },
   })
 }
@@ -279,10 +269,7 @@ export function createLookCloserTagTexture({
       context.textAlign = 'left'
       context.letterSpacing = '0px'
       setFittedFont(context, fontFamilies.satoshi, 700, 84, design.name, right - left)
-      context.fillText(design.name, left, 262)
-      context.font = `500 40px ${fontFamilies.satoshi}`
-      context.fillStyle = 'rgba(0, 0, 0, 0.6)'
-      context.fillText("Free to mint. Can't be sent or sold.", left, 340)
+      context.fillText(design.name, left, 300)
       traceRoundedRect(context, left, 418, right - left, 140, 70)
       context.fillStyle = '#0B0B0C'
       context.fill()

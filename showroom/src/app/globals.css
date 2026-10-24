@@ -167,3 +167,24 @@
     animation-duration: 1ms;
   }
 }
+
+/* The sound button's bars sway while the score plays (sound-button.tsx, D-070). Still under reduced motion. */
+.sound-bar-playing {
+  transform-origin: center;
+  animation: sound-bar-sway 1.1s var(--ease-standard) infinite alternate;
+}
+
+@keyframes sound-bar-sway {
+  from {
+    transform: scaleY(0.45);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-bar-playing {
+    animation: none;
+  }
+}

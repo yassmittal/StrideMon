@@ -97,8 +97,8 @@ links to `stridemon.xyz`.
   with a **stuck-point check**: walk each path, the failures included (slow network, no WebGL,
   reduced motion, keyboard only, a screen reader), and confirm each one ends in a next step.
 - **Words.** Founding Pass, founder, waitlist, waitlist window, open mint, one of one. Never
-  *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Anywhere a
-  pass is offered, say it's free and can't be sent or sold. Rarity is cosmetic: never say a rare
+  *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). The showroom
+  doesn't say "Free to mint" or "Can't be sent or sold" (D-071). Rarity is cosmetic: never say a rare
   design is worth more.
 - **Phone first.** Most visitors come from X on an Android phone. Check every visual part on
   Yash's Android phone (Chrome, over the LAN: `ipconfig getifaddr en1`) as well as the laptop. It

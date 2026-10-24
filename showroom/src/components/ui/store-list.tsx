@@ -49,7 +49,7 @@ export function StoreList() {
           formatPassNumber(lookedAtDesign.designNumber),
           lookedAtDesign.name,
           passRarityLabels[lookedAtDesign.rarity],
-        )}. ${lookCloserCopy.promise}`
+        )}`
       : stopIndex === STREET_STOP_INDEX
         ? arrivalPhase === 'ready'
           ? arrivalCopy.where
@@ -66,7 +66,12 @@ export function StoreList() {
           {lookedAtDesign !== undefined ? (
             <ul className="flex flex-col">
               <li>
-                <a href={buildPassPageUrl(lookedAtDesign.designNumber)} className={ITEM_CLASS}>
+                <a
+                  target="_blank"
+                  rel="noopener"
+                  href={buildPassPageUrl(lookedAtDesign.designNumber)}
+                  className={ITEM_CLASS}
+                >
                   {lookCloserCopy.seeIt}
                 </a>
               </li>

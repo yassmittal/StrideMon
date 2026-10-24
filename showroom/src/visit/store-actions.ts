@@ -5,12 +5,12 @@ import { type StoreHit, walkController } from './walk-controller'
 import { FIRST_INSIDE_STOP_INDEX } from './walk-plan'
 
 // What the store's own buttons do (D-068), for a tap, a click or the hidden list's buttons. The
-// links open in the same tab, as the DOM's links did.
+// links open in a new tab, as the DOM's links do, so the visit stays in its own (D-071).
 
 export function runStoreAction(action: StoreButtonAction): void {
   if (action === 'stepInside') walkController.goTo(FIRST_INSIDE_STOP_INDEX)
-  else if (action === 'foundingPass') window.location.assign(foundingPassUrl)
-  else if (action === 'waitlist') window.location.assign(waitlistUrl)
+  else if (action === 'foundingPass') openInNewTab(foundingPassUrl)
+  else if (action === 'waitlist') openInNewTab(waitlistUrl)
   else openFind()
 }
 
@@ -20,7 +20,14 @@ export function openFind(): void {
 
 /** A design's page on stridemon.xyz: the tag's link. */
 export function openPassPage(designNumber: number): void {
-  window.location.assign(buildPassPageUrl(designNumber))
+  openInNewTab(buildPassPageUrl(designNumber))
+}
+
+/** A new tab, or this one when the browser blocks it (a tap it didn't count as a press). */
+function openInNewTab(url: string): void {
+  const opened = window.open(url, '_blank')
+  if (opened === null) window.location.assign(url)
+  else opened.opener = null
 }
 
 /**

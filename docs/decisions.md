@@ -2422,3 +2422,67 @@ Yash's approval with the live check.
   different source in the same tab only counts when that page carries it.
 - **Revisit when:** the waitlist's sources show `showroom` brings nobody, or the website's own CSP
   gets its allowlist (D-051's revisit).
+
+## D-070 — The showroom gets sound: one lo-fi track on repeat and soft cues, from the first press
+
+Made 2026-10-24. Asked for by Yash ("a little soothing music playing in the background, and when
+we click something, we will get real feel"). The same day he turned down a generated ambient score,
+then a Pixabay pop playlist, then a six-track sneaker-boutique playlist (the real songs he named,
+FE!N, The Hills, Nights and others, can't be licensed for a website), and settled it: "remove all
+songs, use just this single song on repeat". It replaces brief §10 #6 ("None at launch") and the
+"quiet room tone" in §11.
+
+- **Decision:**
+  1. **The music is one track on repeat:** "Lofi Beats" by zephiramusic
+     (https://pixabay.com/music/lofi-lofi-beats-580208/, Pixabay Content License: free for
+     commercial use on a website, no credit needed; marked AI generated on its page). Cut to its
+     first 35 bars, before the quieter outro, so the loop lands on the beat; 128 kbps MP3 at about
+     −16 LUFS (`showroom/public/music/lofi-beats.mp3`, 1.6 MB), streamed by a looping `<audio>`
+     element only after the first press, so the street's download is unchanged. Same origin, so
+     the CSP needs nothing new. The cut is in `showroom/README.md` → Music.
+  2. **Nothing plays before a press** (brief §9 still holds, and browsers forbid it anyway). The
+     music fades in on the visitor's first tap, click or key, anywhere. A scroll alone isn't a
+     press, so a laptop visitor who only scrolls hears nothing until they click.
+  3. **One sound button, top right:** three small bars that sway while the music plays and lie
+     flat when it doesn't (still under reduced motion). It's the only thing added over the canvas
+     (D-068's "only dots, ⌃ ⌄, ‹ ✕ ›" gains it). Turning it off is remembered on the device
+     (`localStorage`), so the next visit stays quiet until the button is pressed.
+  4. **Soft cues follow what the visit does**, synthesised with Web Audio (no files) and read from
+     the visit store's changes, so every way of doing a thing sounds the same: a short press click
+     on the page's buttons, an airy move between stops, the shop door's chime when crossing the
+     doorway, a rising glass note to look closer and a falling one to go back, a lighter tick
+     between neighbours, a soft set-down when a Sneaker goes on the stand, a quiet pop for Find
+     (which also muffles the music while it's open), and a barely-there tick when a laptop's
+     pointer finds a button.
+  5. **It behaves on phones:** on iOS the page asks for the "ambient" audio session where Safari
+     offers it, so the ringer switch silences it; the music pauses while the tab is hidden (a link
+     opened in a new tab, D-071) and comes back when it returns.
+- **Why:** Yash wants one calm track he picked, nothing else.
+  Pixabay keeps it free and licensed; starting on the first press means a muted phone from X is
+  never surprised by a blast.
+- **Trade-off:** one 99-second loop repeats for a long visit. A scroll-only visit stays silent.
+- **Revisit when:** Yash wants another track (swap the file and `STORE_MUSIC_URL` in
+  `showroom/src/sound/store-music.ts`), or visitors turn the sound off more often than not.
+
+## D-071 — The showroom: links open in a new tab, no "free to mint" lines, the dev panel only with `?stats`
+
+Made 2026-10-24, asked for by Yash.
+
+- **Decision:**
+  1. **Every link out of the showroom opens in a new tab**: the store's buttons (the window decal,
+     the blade sign, the counter's pill, the waitlist kiosk), look closer's tag, and the DOM's
+     links (the fallback, the loader's slow line, the hidden list). The visit stays where it was
+     in its own tab. A browser that blocks the new tab gets the same link in this tab. This
+     replaces "same tab" in D-068 and D-069 for the showroom; the website's links into the
+     showroom are unchanged.
+  2. **The showroom no longer says "Free to mint" or "Can't be sent or sold"** anywhere: not on
+     the window decal, the counter, the tag, the page description or the screen-reader lines. This
+     is an exception to D-041's "every surface with the pass says it's free and can't be sent or
+     sold" for the showroom only; the website, the app and the posts keep it. The store's stills
+     and share card are re-rendered without it.
+  3. **The dev panel (frame rate, draw calls) shows only with `?stats`**, in development too.
+- **Why:** Yash wants the showroom kept open while people look at the website, and its signs kept
+  short.
+- **Trade-off:** a visitor who reads only the showroom learns that the pass is free on the website
+  instead.
+- **Revisit when:** the waitlist shows showroom visitors confused about the price.

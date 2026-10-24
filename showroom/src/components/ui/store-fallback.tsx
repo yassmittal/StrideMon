@@ -15,7 +15,7 @@ import { PillButton, PillLink } from './pill'
 
 // When the 3D store can't run (Part 4): a still of the lit store (rendered from the showroom
 // itself), what happened in plain words, and the ways on that the store's lit buttons would have
-// given (D-068): the collection, the Founding Pass (free, can't be sent or sold), the waitlist and
+// given (D-068): the collection, the Founding Pass, the waitlist and
 // Help. A lost context or files that didn't come can try again: a reload, which keeps a deep link.
 
 export function StoreFallback() {
@@ -57,6 +57,8 @@ export function StoreFallback() {
           </div>
           <p className="text-[14px] text-on-dark-secondary leading-snug">
             <a
+              target="_blank"
+              rel="noopener"
               href={foundingPassUrl}
               className="text-on-dark underline decoration-hairline-on-dark underline-offset-4"
             >
@@ -64,6 +66,8 @@ export function StoreFallback() {
             </a>
             {' · '}
             <a
+              target="_blank"
+              rel="noopener"
               href={waitlistUrl}
               className="text-on-dark underline decoration-hairline-on-dark underline-offset-4"
             >
@@ -71,6 +75,8 @@ export function StoreFallback() {
             </a>
           </p>
           <a
+            target="_blank"
+            rel="noopener"
             href={helpUrl}
             className="py-1 font-mono text-label text-on-dark-secondary uppercase underline decoration-hairline-on-dark underline-offset-4 transition-colors duration-300 ease-standard hover:text-on-dark"
           >
