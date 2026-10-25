@@ -100,6 +100,7 @@ export function HashTabs({ label, tabs }: HashTabsProps) {
           role="tabpanel"
           aria-labelledby={`${tab.id}-tab`}
           hidden={tab.id !== selectedId}
+          className="tab-panel"
         >
           {tab.panel}
         </div>

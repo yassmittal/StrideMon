@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ClosingSection } from '@/components/sections/closing-section'
 import { FaqSection } from '@/components/sections/faq-section'
 import { FoundingPassSection } from '@/components/sections/founding-pass-section'
 import { HeroSection } from '@/components/sections/hero-section'
@@ -34,6 +35,7 @@ export default function HomePage() {
         <WaitlistSection />
         <UnderTheHoodSection />
         <FaqSection />
+        <ClosingSection />
       </main>
       <SiteFooter />
       <RevealObserver />

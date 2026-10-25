@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { demoVideo, demoVideoChapters } from '@/content/demo-video'
 import { heroContent } from '@/content/hero'
 import { screenshots } from '@/content/screenshots'
@@ -15,6 +16,10 @@ type HeroSectionProps = {
 
 const phoneClassName = 'w-[38%] max-w-[296px] shrink-0 self-end'
 
+function buildHeroDelayStyle(delayMilliseconds: number): CSSProperties {
+  return { '--hero-delay': `${delayMilliseconds}ms` } as CSSProperties
+}
+
 // The buttons are what a visitor can do (D-050): get a pass, or try the app. With the demo video in public/, it stands beside the Sneaker art in place of the Home screenshot
 // (its poster is that same screen).
 export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
@@ -27,15 +32,20 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
       <div className="flex flex-col gap-6 lg:col-span-6 lg:pb-4">
         <MetaLabel items={heroContent.metaLabels} />
         <h1 id="hero-heading" className="-ml-[0.05em] text-display">
-          {heroContent.headlineWords.map((word) => (
-            // The trailing space keeps the words apart in the text crawlers and screen readers get.
-            <span key={word} className="block">
-              {word}{' '}
+          {/* Each word rises from its own mask on the first view (D-072). */}
+          {heroContent.headlineWords.map((word, wordIndex) => (
+            <span key={word} className="hero-word-mask">
+              <span className="hero-word" style={buildHeroDelayStyle(wordIndex * 90)}>
+                {/* The trailing space keeps the words apart in the text crawlers and screen readers get. */}
+                {word}{' '}
+              </span>
             </span>
           ))}
         </h1>
-        <p className="max-w-[17em] text-intro">{heroContent.intro}</p>
-        <div className="flex flex-wrap gap-2.5 pt-2">
+        <p className="hero-enter max-w-[17em] text-intro" style={buildHeroDelayStyle(350)}>
+          {heroContent.intro}
+        </p>
+        <div className="hero-enter flex flex-wrap gap-2.5 pt-2" style={buildHeroDelayStyle(450)}>
           <PillButton href={passGalleryPath} label={heroContent.getPassLabel} />
           <PillButton
             href={appInstallPageUrl}
@@ -44,12 +54,18 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
             isExternal
           />
         </div>
-        <p className="max-w-[26em] text-sm leading-[1.45] text-ink-secondary-small">
+        <p
+          className="hero-enter max-w-[26em] text-sm leading-[1.45] text-ink-secondary-small"
+          style={buildHeroDelayStyle(550)}
+        >
           {heroContent.appReviewNote}
         </p>
       </div>
 
-      <div className="flex items-stretch gap-2.5 lg:col-span-6 lg:justify-end">
+      <div
+        className="hero-enter flex items-stretch gap-2.5 lg:col-span-6 lg:justify-end"
+        style={buildHeroDelayStyle(250)}
+      >
         <figure className="relative flex min-w-0 flex-1 flex-col justify-center rounded-panel bg-dark-panel lg:max-w-[440px]">
           <div
             className="sneaker-art w-full"

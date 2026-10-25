@@ -137,6 +137,44 @@
   transform: none;
 }
 
+/* ---------- Hero: the first view arrives in order (D-072) ---------- */
+
+/* The mask's padding keeps the descenders ("p" in Upgrade) inside it; the margin gives the space back. */
+.hero-word-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.hero-word {
+  display: block;
+}
+
+/* The headline only moves, never fades: it is the page's largest paint. */
+.reveal-ready .hero-word {
+  animation: hero-word-rise 1000ms var(--ease-emphasized) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+.reveal-ready .hero-enter {
+  animation: hero-enter 800ms var(--ease-standard) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+@keyframes hero-word-rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
 /* ---------- Pill button: label roll and arrow nudge ---------- */
 
 .pill-label-window {
@@ -266,6 +304,37 @@
 
 .faq-item[open] .faq-plus {
   transform: rotate(45deg);
+}
+
+/* The answer opens and closes smoothly (D-072). Browsers without `::details-content` open it at
+   once; those without `interpolate-size` open it at once too, with nothing broken. */
+.faq-item {
+  interpolate-size: allow-keywords;
+}
+
+.faq-item::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 450ms var(--ease-standard),
+    content-visibility 450ms allow-discrete;
+}
+
+.faq-item[open]::details-content {
+  block-size: auto;
+}
+
+/* ---------- Tabs: the chosen panel fades in (D-072) ---------- */
+
+.tab-panel:not([hidden]) {
+  animation: tab-panel-enter 400ms var(--ease-standard);
+}
+
+@keyframes tab-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 /* "More questions" on /pass (D-050): the same plus, turning to a cross when open. */
@@ -500,6 +569,10 @@ html:has(.pass-sheet[open]) {
     animation: none !important;
     /* biome-ignore lint/complexity/noImportantStyles: same, for transitions. */
     transition: none !important;
+  }
+
+  .faq-item::details-content {
+    transition: none;
   }
 
   .reveal-ready [data-reveal] {
