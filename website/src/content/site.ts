@@ -142,10 +142,12 @@ export const githubRepositoryUrl = 'https://github.com/yassmittal/StrideMon'
  * Every "Get the app" button (D-045, D-052): the Android `demo` build's page on expo.dev, as in the
  * README's "Try it". A page, not the bare APK, so nobody gets a file they didn't ask for: it shows
  * an Install button on a phone and a QR code on a laptop. A new `demo` build means a new link here.
+ * EAS deletes a build 14 days after it's made, so the link dies with it: rebuild and update it in
+ * time (this one, built 2026-10-30, expires 2026-11-12).
  * The Google Play listing replaces it once its review passes.
  */
 export const appInstallPageUrl =
-  'https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265'
+  'https://expo.dev/accounts/yashmittal/projects/stridemon/builds/175c7ab4-84bf-4a55-82a0-78acab665731'
 
 // The product's X account and the builder's (D-036). Handles keep their `@`.
 export const xAccountHandle = '@stridemon'

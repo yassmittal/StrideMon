@@ -316,10 +316,10 @@ The dashboard grew fields after the copy above was drafted. Each answer below is
   `paused()` is `false`, and the only `GameConfigUpdated` event is the deploy's, so the launch
   energy setting (30 minutes) was never changed. Run `bun run demo:energy revert` after any demo
   that applies it.
-- [x] Keep the app link alive. EAS keeps build artifacts for about 30 days on the free plan, so the
-  2026-10-12 build (`f62511df`, D-052), the one linked, lasts until about 2026-11-11, past
-  judging (10-27). Check the expiry
-  shown on the build's expo.dev page. **A new `demo` build gets a new link:** if you rebuild,
+- [x] Keep the app link alive. EAS keeps a build for **14 days** on this account (not 30): the
+  2026-10-12 build (`f62511df`, D-052) expired on 2026-10-26. It was replaced on 2026-10-30 by
+  `175c7ab4-84bf-4a55-82a0-78acab665731` (same code, `8de838f`), which expires 2026-11-12. Check the
+  expiry with `bunx eas-cli build:list --platform android --limit 1` (its `expirationDate`). **A new `demo` build gets a new link:** if you rebuild,
   update `README.md` and the dashboard.
 
 ## 4. Nice to have
