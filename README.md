@@ -8,7 +8,7 @@ transaction.
 - **X:** [@stridemon](https://x.com/stridemon) (the product) and [@yash_mittal_dev](https://x.com/yash_mittal_dev) (the builder)
 - **Demo video:** <https://youtu.be/2faqgOi0d8Y>
 - **Pitch video:** <https://youtu.be/vUiliHJ99YY>
-- **Android demo build:** <https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265> (Install on the phone, or scan its QR code. Google Play review is in progress.)
+- **Android demo build:** <https://expo.dev/accounts/yashmittal/projects/stridemon/builds/175c7ab4-84bf-4a55-82a0-78acab665731> (Install on the phone, or scan its QR code. Google Play review is in progress.)
 - **Network:** Monad testnet (chain id 10143)
 
 > **Monad testnet. STRIDE has no monetary value.** It's a testnet game token, not issued or
@@ -107,7 +107,7 @@ You need an Android phone (7 or later) with MetaMask.
 1. **Add Monad Testnet to MetaMask first** (chain id `10143`, RPC `https://testnet-rpc.monad.xyz`),
    and make sure it's enabled. If MetaMask's connect sheet doesn't list Monad Testnet, it connects
    with no accounts and the app can't sign you in.
-2. Open the [demo build's page](https://expo.dev/accounts/yashmittal/projects/stridemon/builds/f62511df-a727-40ca-aff1-d2aaa1096265) on your phone and tap **Install**
+2. Open the [demo build's page](https://expo.dev/accounts/yashmittal/projects/stridemon/builds/175c7ab4-84bf-4a55-82a0-78acab665731) on your phone and tap **Install**
    (allow installs from your browser when Android asks).
 3. Open StrideMon, connect MetaMask and sign the sign-in message. You get a free starter Sneaker
    and 0.1 testnet MON for gas. You don't need any MON of your own.

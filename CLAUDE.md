@@ -348,4 +348,5 @@ sitemap to Bing): never run it without `--dry-run` yourself.
 ("Fresh" by Bransboynd, Pixabay license, added by `cut-demo-video.sh`) and a sound button. Every
 "Get the app" opens the `demo` build's expo.dev page (`appInstallPageUrl`), never the bare APK,
 with "App review is in progress" in the hero until Google Play is live: update the link with each
-new `demo` build.
+new `demo` build. **EAS deletes a build 14 days after it's made**, so the link dies with it: the live
+one is `175c7ab4` (2026-10-30, expires 2026-11-12).

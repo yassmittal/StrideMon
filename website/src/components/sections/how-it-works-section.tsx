@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { howItWorksContent, howItWorksSteps } from '@/content/how-it-works'
 import { sectionIds } from '@/content/site'
 import { buildRevealDelayStyle } from '@/lib/build-reveal-delay-style'
@@ -29,7 +30,16 @@ export function HowItWorksSection() {
           data-reveal
           className="font-mono text-sm text-ink-secondary-small md:max-w-[19em] md:text-right"
         >
-          {howItWorksContent.loopLabels.join(' → ')}
+          {/* Each step keeps its arrow, so a line never starts with one (D-072). */}
+          {howItWorksContent.loopLabels.map((loopLabel, labelIndex) =>
+            labelIndex < howItWorksContent.loopLabels.length - 1 ? (
+              <Fragment key={loopLabel}>
+                <span className="whitespace-nowrap">{loopLabel} →</span>{' '}
+              </Fragment>
+            ) : (
+              <span key={loopLabel}>{loopLabel}</span>
+            ),
+          )}
         </p>
       </div>
 

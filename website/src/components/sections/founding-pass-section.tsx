@@ -67,7 +67,7 @@ export function FoundingPassSection() {
                 href={buildPassPagePath(design.designNumber)}
                 className="group flex flex-col gap-2.5"
               >
-                <span className="overflow-hidden rounded-panel transition-opacity duration-300 ease-standard group-hover:opacity-85">
+                <span className="overflow-hidden rounded-panel transition-transform duration-500 ease-standard group-hover:-translate-y-1.5">
                   <PassArt design={design} view="card" />
                 </span>
                 <span className="flex items-baseline justify-between gap-2 text-sm">
