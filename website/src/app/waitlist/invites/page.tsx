@@ -33,7 +33,6 @@ export default function WaitlistInvitesPage() {
           <div className="flex flex-col gap-6 md:col-span-5">
             <SectionHeading
               id={headingId}
-              metaLabels={waitlistInvitesPageContent.metaLabels}
               heading={waitlistInvitesPageContent.heading}
               headingLevel="h1"
             />

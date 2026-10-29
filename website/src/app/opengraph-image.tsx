@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { heroContent } from '@/content/hero'
-import { siteTitle } from '@/content/site'
+import { siteName, siteTitle } from '@/content/site'
 import { loadSatoshiFontData } from '@/lib/load-satoshi-font-data'
 import { readPublicTextFile } from '@/lib/read-public-file'
 import { sneakerArtPath } from '@/lib/read-sneaker-art'
@@ -35,17 +35,7 @@ export default async function OpenGraphImage() {
           flex: 1,
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 20,
-            fontWeight: 500,
-            letterSpacing: 1.6,
-            opacity: 0.6,
-          }}
-        >
-          {heroContent.metaLabels.join(' • ').toUpperCase()}
-        </div>
+        <div style={{ display: 'flex', fontSize: 30, letterSpacing: -0.3 }}>{siteName}</div>
         <div
           style={{
             display: 'flex',

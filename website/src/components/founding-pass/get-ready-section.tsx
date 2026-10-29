@@ -6,7 +6,6 @@ import { reopenPassReveal, usePassMintFlow } from '@/lib/founding-pass/pass-mint
 import { usePassMintReadiness } from '@/lib/founding-pass/pass-mint-readiness'
 import { isMintingPhase } from '@/lib/founding-pass/pass-schedule'
 import { usePassSchedule } from '@/lib/founding-pass/use-pass-schedule'
-import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { EmailCheckStep } from './email-check-step'
 import { FounderPassPanel } from './founder-pass-panel'
@@ -60,7 +59,6 @@ export function GetReadySection() {
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            <MetaLabel items={getReadyContent.metaLabels} />
             <h2
               id="get-ready-heading"
               className="-ml-[0.03em] max-w-[16em] text-[clamp(2rem,5vw,3.25rem)] leading-[0.95] tracking-[-0.01em] text-balance"

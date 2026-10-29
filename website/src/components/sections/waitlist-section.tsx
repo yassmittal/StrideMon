@@ -22,7 +22,6 @@ export function WaitlistSection({ isPageHeading = false }: WaitlistSectionProps)
       <div className="flex flex-col gap-6 md:col-span-6">
         <SectionHeading
           id={headingId}
-          metaLabels={waitlistContent.metaLabels}
           heading={waitlistContent.heading}
           headingLevel={isPageHeading ? 'h1' : 'h2'}
         />

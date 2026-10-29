@@ -10,46 +10,30 @@ export type HowItWorksStep = {
 }
 
 export const howItWorksContent = {
-  metaLabels: ['The loop', 'Six steps'],
   heading: 'How it works',
-  loopLabels: ['Own', 'Energy', 'Move', 'Earn', 'Upgrade', 'Move again'],
 } as const
 
+// Four steps, one short line each (D-073). Energy lives in Under the hood → The rules.
 export const howItWorksSteps: readonly HowItWorksStep[] = [
   {
-    title: 'Own',
-    description:
-      'Sign in with your wallet and get a free starter Sneaker NFT, plus a little test MON for gas.',
-    screenshots: [screenshots.welcome],
-  },
-  {
-    title: 'Energy',
-    description:
-      'Each Sneaker holds up to 10 energy. One point is one rewarded minute, and a point comes back every 30 minutes.',
+    title: 'Get a Sneaker',
+    description: 'Sign in with your wallet. Your first Sneaker NFT is free, and it’s yours.',
     screenshots: [screenshots.home],
   },
   {
-    title: 'Move',
-    description:
-      'Press START and walk or run. Time, distance, speed and your estimated reward are live on screen.',
+    title: 'Walk or run',
+    description: 'Press START and go. Your reward counts up as you move.',
     screenshots: [screenshots.activeRun],
     loopVideoPath: walkLoopVideoPath,
   },
   {
-    title: 'Earn',
-    description:
-      'Press STOP. The run is checked, then settled on Monad in seconds, and STRIDE lands in your wallet.',
+    title: 'Earn STRIDE',
+    description: 'Press STOP. STRIDE lands in your wallet in seconds.',
     screenshots: [screenshots.runSummary],
   },
   {
-    title: 'Upgrade',
-    description:
-      'Spend STRIDE to repair durability or to level the Sneaker up. Each level adds efficiency, so the next run pays more.',
+    title: 'Level up',
+    description: 'Spend STRIDE to repair and upgrade. A better Sneaker earns more.',
     screenshots: [screenshots.sneakerTab, screenshots.repairReview],
-  },
-  {
-    title: 'Own it, really',
-    description: 'Send the Sneaker to any wallet. Its level, efficiency and durability go with it.',
-    screenshots: [screenshots.transfer],
   },
 ]

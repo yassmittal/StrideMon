@@ -9,11 +9,9 @@ import { siteUrl, waitlistPagePath, xAccountHandle } from './site'
 // anything about value.
 
 export const waitlistContent = {
-  metaLabels: ['Waitlist', 'Founding Pass'],
-  heading: 'Join the waitlist to mint 48 hours before everyone else.',
-  /** What and when. The early hour waits until after joining (D-059). */
-  intro:
-    '1,000 free Founding Passes, each a different Sneaker design. The waitlist mints first, from 28 November.',
+  heading: 'Mint 48 hours before everyone else.',
+  /** What and when, in one line (D-073). The early hour waits until after joining (D-059). */
+  intro: 'Join the waitlist for a free Founding Pass. Minting opens 28 November.',
   googleInAppBrowserNote:
     'Google sign-in doesn’t work inside this app. Use your email, or open this page in Chrome or Safari.',
   orLabel: 'or',
@@ -122,7 +120,6 @@ export const waitlistInvitesPageContent = {
   title: 'Your invites',
   description:
     'Your StrideMon waitlist invite link, how many friends have confirmed, and whether you have the early hour.',
-  metaLabels: ['Waitlist', 'Invites'],
   heading: 'Your invites',
   checkIntro: 'Check the email you joined with to see your link and your friends.',
   checkingLabel: 'Loading your invites',
@@ -273,7 +270,6 @@ export const waitlistPageContent = {
     'Leave your email to mint a free StrideMon Founding Pass 48 hours before everyone else. We email you a code to check it’s you, your invite link, and once when the waitlist window opens.',
   shareImageAlt:
     'Join the StrideMon waitlist: mint a free Founding Pass 48 hours before everyone else.',
-  shareImageMetaLabels: ['StrideMon', 'Waitlist', 'Founding Pass'],
   shareImageHeadlineWords: ['Join the', 'waitlist'],
   shareImageSubline: 'Mint a free Founding Pass 48 hours before everyone else.',
   shareImageFacts: [

@@ -39,10 +39,11 @@ Lint from the repo root: `bun run lint`. Typecheck here: `bun run typecheck`.
 | `src/lib/founding-pass/` | The design table's helpers, the gallery's filters and quiz, the schedule, the live state and favourites stores, and the mint: its API calls, "Get ready" store, mint flow, Turnstile and chain reads |
 | `src/lib/founding-pass/wallet/` | The wallet code (AppKit + wagmi), loaded on demand only (D-045) |
 | `src/components/founding-pass/` | The gallery, cards, detail sheet, finder, schedule panel, "Get ready", the mint dialog and the reveal |
-| `src/content/under-the-hood.ts` | The landing page's Under the hood section and its four tabs (D-050). Each tab keeps its old section's id, so `/#on-chain` still works |
+| `src/content/under-the-hood.ts` | The landing page's Under the hood section and its three tabs (D-050). Each tab keeps its old section's id, so `/#on-chain` still works |
+| `src/content/why-monad.ts` | The Why Monad section, its own dark band after How it works, always shown (D-073); `/#why-monad` lands on it |
 | `src/content/game-rules.ts` | `SneakerGame`'s launch config, from `docs/architecture/game-rules.md` |
 | `src/components/sections/` | One component per page section |
-| `src/components/ui/` | Pills, labels, cross marks, phone frame, the apps' logos (X, YouTube, WhatsApp, Telegram: Simple Icons' glyphs, CC0), and the client components (reveal, count-up, copy, video, waitlist form, share links) |
+| `src/components/ui/` | Pills, the 3D store button (`showroom-button.tsx`, the one button that isn't a flat pill, D-073), the hover tooltip (`hover-tip.tsx`: hover and keyboard focus only, never anything needed to go on), cross marks, phone frame, the apps' logos (X, YouTube, WhatsApp, Telegram: Simple Icons' glyphs, CC0), and the client components (reveal, count-up, copy, video, waitlist form, share links) |
 | `src/app/` | Layout, home page, `pass/`, `pass/all/` (every pass by number, D-051) and `pass/[number]/` (with their Open Graph images), `waitlist/` (the page a shared post links to, with its own Open Graph image, D-055), `privacy/` and `delete-account/`, `not-found.tsx`, icons, sitemap, robots |
 | `src/lib/build-page-metadata.ts` | Every page's title, description, canonical and share cards (D-051). Use it for a new page: Next merges metadata shallowly, so a page that sets `openGraph` by hand loses the layout's image and site name |
 | `src/lib/llms/` | `/llms.txt`, `/llms-full.txt` and the pages' Markdown copies (`/index.md`, `/pass.md`, `/pass/all.md`, `/help.md`), built from `src/content/` (D-061). Their own few words are in `src/content/llms.ts` |

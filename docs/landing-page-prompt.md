@@ -81,8 +81,8 @@ Match the app: `docs/architecture/design-system.md`, a Lusion-style look. In sho
   Plex Mono loads 400 only, since nothing uses 500. Small secondary text uses black at 0.6, because
   0.5 is 3.9:1 on the page, under WCAG AA. 0.5 stays for large text.
 - **Huge headlines** with tight tracking (line height 0.9–1.0, letter spacing −0.01 to −0.02 em),
-  tiny uppercase metadata separated by bullets (`STRIDEMON • MOVE TO EARN • MONAD`), "+" cross
-  marks on section corners, dark panels (radius 10) set into the light page, and whole sections
+  tiny uppercase metadata separated by bullets (`STRIDEMON • MOVE TO EARN • MONAD`; *removed from
+  the website by D-073*), "+" cross marks on section corners, dark panels (radius 10) set into the light page, and whole sections
   that flip to black.
 - **Pill buttons with an arrow** (D-029: an arrow, not Lusion's dot). On hover the label rolls
   (it slides up and a copy slides in from below) and the arrow nudges right. **No blue flood** on
@@ -118,7 +118,7 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
 2. **Hero:**
    - *Changed (D-050):* the CTAs are **Get your Founding Pass** (`/pass`) and **Get the app**
      (the Android build). "See the contracts" moved into Under the hood.
-   - Meta: `STRIDEMON • MOVE TO EARN • MONAD TESTNET`
+   - Meta: `STRIDEMON • MOVE TO EARN • MONAD TESTNET` (*removed by D-073*, with the art's caption)
    - Headline (the app's welcome screen): **Walk. Earn. Upgrade.**
    - Intro: "Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then spend STRIDE to
      repair and level it up."
@@ -138,7 +138,11 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
    - *Changed (D-052):* the demo has music and plays with sound (still only from a click, so never
      autoplaying), with a sound button in the bottom corner (or M) beside the chapter bars. "Get the
      Android app" opens the build's expo.dev page, with "App review is in progress" under it.
-3. **How it works:** the loop as six numbered steps, each with one line and, where there is one, a
+   - *Changed (D-073):* the intro is "Your Sneaker is an NFT on Monad. Walk or run with it to earn
+     STRIDE, then level it up.", and "App review is in progress" is a tooltip on Get the Android
+     app (hover and keyboard focus), not a line under the buttons.
+3. **How it works:** *Changed (D-073):* four steps (Get a Sneaker, Walk or run, Earn STRIDE, Level
+   up), one short line each, no loop line. Before that: the loop as six numbered steps, each with one line and, where there is one, a
    screenshot. *Changed (D-050):* a compact grid (three across on a desktop, two on a phone), one
    smaller phone per step:
    1. **Own:** sign in with your wallet and get a free starter Sneaker NFT, plus a little test MON
@@ -201,11 +205,13 @@ The copy below is a starting draft. Keep it short, plain and confident, with no 
 
    Explorer links: `https://testnet.monadvision.com/address/<address>`. Source of truth:
    `packages/contracts/deployments/10143.json`; copy from it, don't retype.
-8. **Why Monad:** three short points. Every run settles as its own transaction, fast enough that
+8. **Why Monad:** *Changed (D-073):* its own dark section after How it works, always shown, not a
+   tab. Three short points. Every run settles as its own transaction, fast enough that
    the reward shows on the summary screen seconds after STOP. Gas is cheap enough to give each new
    player a drip so they can repair, upgrade and transfer from their own wallet. It's EVM, so
    standard ERC-721 and ERC-20 contracts work in standard wallets like MetaMask.
-9. **FAQ** (plain `<details>` elements, also in the JSON-LD):
+9. **FAQ** (plain `<details>` elements, also in the JSON-LD). *Changed (D-073):* six questions,
+   the rest on `/help`:
    - *Is it live?* Yes, on Monad testnet, on Android. iOS comes later.
    - *Do I need crypto?* A wallet such as MetaMask with Monad Testnet added. New players get a
      small amount of test MON for gas.

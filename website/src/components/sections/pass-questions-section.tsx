@@ -1,7 +1,6 @@
 import {
   PASS_QUESTIONS_SHOWN_FIRST,
   type PassQuestion,
-  passPromiseLine,
   passQuestions,
   passQuestionsContent,
   passSectionIds,
@@ -26,17 +25,7 @@ export function PassQuestionsSection() {
       className="page-gutter page-container grid gap-10 py-16 md:grid-cols-12 md:gap-6 md:py-24"
     >
       <div className="flex flex-col gap-8 md:col-span-4">
-        <SectionHeading
-          id={headingId}
-          metaLabels={passQuestionsContent.metaLabels}
-          heading={passQuestionsContent.heading}
-        />
-        <p
-          data-reveal
-          className="max-w-[26em] text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase"
-        >
-          {passPromiseLine}
-        </p>
+        <SectionHeading id={headingId} heading={passQuestionsContent.heading} />
         <div data-reveal className="flex flex-col gap-1 text-base leading-[1.4]">
           <a
             href={passQuestionsContent.helpPath}

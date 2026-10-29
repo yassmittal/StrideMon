@@ -974,7 +974,8 @@ D-037's "never a wallet" for the `/pass` page only.
   12. **Words.** Founding Pass, founder, waitlist, waitlist window, open mint, one of one. Never
       *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Every
       surface with the pass says it's free and can't be sent or sold, in those plain words, not
-      "soulbound".
+      "soulbound". (*Changed by D-073:* on the website it's said in the mint dialog and in
+      Questions, not on every pass.)
 - **Why:** a pass someone picks and owns gives a reward on mint day, where a place in a line only
   gives a wait (the brief's v1). Two NFTs, because a soulbound record and a game item that's
   repaired and upgraded are different things, and a pass that could be traded would turn the
@@ -1543,6 +1544,8 @@ and trims D-044's `/pass`, D-045's "Get ready" and the landing page (`landing-pa
   visitor says they couldn't find the schedule or the contracts.
 - **Changed in part (2026-10-18):** by D-058, "Get ready" shows from 24 hours before the early
   hour (19:00 IST on 11-28), not the waitlist window.
+- **Changed in part (2026-10-30):** by D-073, How it works is four steps, Why Monad is its own
+  section (Under the hood keeps three tabs), and the promise line leaves one pass's details.
 
 ## D-051 — Search engine fixes from a Screaming Frog crawl
 
@@ -1608,6 +1611,8 @@ Made 2026-10-13, from Yash's feedback on the live site.
 - **Trade-off:** EAS build pages expire with the free plan's artifacts (about 30 days), and a new
   `demo` build gets a new page, so the link is updated by hand with each build until Google Play
   replaces it. The music adds 0.9 MB, loaded only after a press on play.
+- **Changed in part (2026-10-30):** by D-073, "App review is in progress" is a tooltip on the
+  hero's Get the Android app, not a line under the buttons.
 
 ## D-053 — StrideMon on Instagram, from `social/instagram/`
 
@@ -2486,3 +2491,84 @@ Made 2026-10-24, asked for by Yash.
 - **Trade-off:** a visitor who reads only the showroom learns that the pass is free on the website
   instead.
 - **Revisit when:** the waitlist shows showroom visitors confused about the price.
+
+## D-072 — The website's feel: a hero that arrives in order, a closing choice, smooth answers
+
+Recorded 2026-10-30 from the website code of 2026-10-25 ("Improve website feel"), which cites
+D-072 but had no entry here.
+
+- **Decision:**
+  1. **The hero arrives in order on the first view.** Each headline word rises from its own mask,
+     90 ms apart, then the art, the intro and the buttons fade up. The headline only moves, never
+     fades, because it's the page's largest paint.
+  2. **The home page ends on a choice:** a dark closing section ("Pick your Sneaker. Then go for a
+     walk.") with See all 1,000 and Join the waitlist, running into the footer.
+  3. **FAQ answers open and close smoothly** (`::details-content` with `interpolate-size`), and a
+     chosen tab's panel fades in.
+  4. **How it works' loop line keeps each arrow with its step**, so no line starts with one.
+     (Undone by D-073, which removes the loop line.)
+
+  Reduced motion turns all of it off.
+- **Why:** the page should feel finished on the first view, not static.
+- **Trade-off:** browsers without `::details-content` open answers at once (nothing breaks).
+- **Revisit when:** the hero's largest paint gets slower in a Lighthouse run.
+
+## D-073 — The website, simplified: less text, one idea per screen
+
+Made 2026-10-30, asked for by Yash: "when user comes, it should feel the projects value, making it
+as simple as possible, we should not show all the information at once." It changes the landing page
+(`landing-page-prompt.md` §3 and §5, D-050 #9, D-052 #2) and one pass's details (D-044, D-050 #6).
+Nothing about the contracts, the API, the schedule, the art or the designs changes.
+
+- **Decision:**
+  1. **No eyebrow lines on the website.** The small uppercase words joined by bullets
+     (`STRIDEMON • MOVE TO EARN • MONAD TESTNET`, `FOUNDING PASS • #0005 • ONE OF ONE`) leave every
+     page, dialog and share image, and `MetaLabel` is deleted. Share images show the StrideMon
+     name in their place. The app's welcome screen keeps its own until the app changes.
+  2. **The hero:** a shorter intro ("Your Sneaker is an NFT on Monad. Walk or run with it to earn
+     STRIDE, then level it up."), no caption under the Sneaker art, and no line under the buttons.
+     "App review is in progress" becomes a tooltip on **Get the Android app**, shown on hover and
+     on keyboard focus. Nothing in it is needed to install: a phone taps straight through to the
+     Expo page, which explains the install. It replaces D-052 #2's line under the buttons.
+  3. **How it works is four steps:** Get a Sneaker, Walk or run, Earn STRIDE, Level up, each one
+     short line and a phone. Energy is in Under the hood → The rules, sending the Sneaker is in the
+     first step's line, and the loop line above the cards goes. It replaces D-050 #9's six steps.
+  4. **The Founding Pass section:** one short line ("Mint one free. It gets you into the app early,
+     in that same Sneaker."), the six cards without captions (each card shows its own name and
+     number), **See all 1,000** and the 3D store button. Its Join the waitlist pill goes: the
+     header, the waitlist section and the closing still have it.
+  5. **The 3D store link is a 3D button** on the landing page, in `/pass`'s collection and in a
+     pass's details: a lime face on a dark olive edge, with a cube icon, that rises on hover and
+     presses down when pressed. No colour flood (D-031 holds). It's the one exception to the
+     brief's pill buttons.
+  6. **Why Monad is its own section**, always shown: dark, after How it works, three points of a
+     title and one line each. `#why-monad` lands on it. Under the hood keeps three tabs (The rules,
+     Fair play, Contracts) with a shorter intro.
+  7. **The home FAQ shows six questions:** Can I play now, What is the Founding Pass, Is it free,
+     Do I need crypto, Is STRIDE worth money, Can I cheat by driving. The rest stay on `/help`. The
+     FAQPage JSON-LD follows the list.
+  8. **One pass's details** (the gallery's sheet and the pass's page): no eyebrow and no line under
+     the card, since the card already says Founding Pass, the number and 1 of 1. Whether it's
+     available is a status pill (Available is a black pill with a lime dot). Before minting, the
+     next step is one line, "Minting opens soon. The waitlist goes first.", and a Join the waitlist
+     button. The layers are tiles (the label above the value, a swatch for the colour family, a
+     badge on a rarer layer) with the rarity note under them, which replaces the separate Rarity
+     section. The laced line is one sentence.
+  9. **The promise line** ("Free. It can't be sent or sold. It isn't a token and never turns into
+     one.") stays in the mint dialog, where someone decides, and in `/pass` Questions' answers and
+     the Markdown copies (D-061). It leaves the pass's details, the pass's share image, the reveal,
+     the founder panel, and the line above `/pass` Questions. This changes D-041 #12 ("every
+     surface with the pass") and D-050 #6.
+  10. **`/pass`'s hero intro is shorter** in the same way: "Pick one of 1,000 Sneakers and mint it
+      free. It gets you into the app early, in that same Sneaker."
+- **Why:** the page read as a wall of text. People read about 20% of a page's words (Nielsen Norman
+  Group, "How Little Do Users Read?"), and Unbounce's 2024 benchmark found pages written at a 5th to
+  7th grade reading level convert about twice as well as professional-level copy. Move-to-earn
+  sites lead with a few words (Sweatcoin: "It pays to walk", STEPN: "Make your steps count!") and a
+  handful of short feature lines. Nielsen Norman Group's tooltip guidelines: hover and keyboard
+  focus, and nothing needed to finish a task.
+- **Trade-off:** energy, the transfer step and five FAQ answers are a click away (Under the hood,
+  `/help`). A phone never sees the install tooltip. The pass's details say it can't be sent or sold
+  only in the mint dialog and in Questions.
+- **Revisit when:** a visitor says they couldn't find the price, the rules or the schedule, or
+  Google Play goes live (the tooltip goes then).

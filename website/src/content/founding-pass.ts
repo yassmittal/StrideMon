@@ -38,7 +38,7 @@ export const passSectionIds = {
   questions: 'questions',
 } as const
 
-/** Every surface for one pass says this, and Questions does (brief §9, D-050). */
+/** Said in the mint dialog, where someone decides, and in Questions' answers (D-073). */
 export const passPromiseLine =
   'Free. It can’t be sent or sold. It isn’t a token and never turns into one.'
 
@@ -46,10 +46,9 @@ export const passPageContent = {
   title: 'Founding Pass: 1,000 one-of-one Sneakers',
   description:
     '1,000 Founding Passes, each a different Sneaker design and each one of one. Mint yours free on Monad testnet. It’s your early access to StrideMon.',
-  metaLabels: ['Founding Pass', '1,000 designs', 'Free'],
   headlineWords: ['Founding', 'Pass'],
   intro:
-    'Pick one of 1,000 Sneaker designs and mint it free. It’s your early access to StrideMon, and the app gives you a Founder Sneaker in the same design.',
+    'Pick one of 1,000 Sneakers and mint it free. It gets you into the app early, in that same Sneaker.',
 } as const
 
 export type PassPhaseContent = {
@@ -65,9 +64,9 @@ export type PassPhaseContent = {
 export const passPhaseContent: Record<PassSchedulePhase, PassPhaseContent> = {
   preview: {
     label: 'Preview',
-    headline: 'Minting hasn’t started. Browse and heart your favourites.',
+    headline: 'Minting opens soon.',
     countdownLabel: 'The waitlist window opens in',
-    nextStep: 'Join the waitlist to mint 48 hours before everyone else.',
+    nextStep: 'The waitlist mints first, for 48 hours.',
   },
   waitlistWindow: {
     label: 'Waitlist window',
@@ -243,7 +242,6 @@ export const passQuizContent = {
 } as const
 
 export const passGalleryContent = {
-  metaLabels: ['The collection', '1,000 designs'],
   heading: 'All 1,000',
   filtersLabel: 'Filters',
   hideFiltersLabel: 'Hide filters',
@@ -287,19 +285,14 @@ export const passCardContent = {
 
 export const passDetailContent = {
   closeLabel: 'Close',
-  oneOfOne: 'One of one',
   layersHeading: 'Layers',
   templateLabel: 'Template',
-  colorFamilyLabel: 'Colour family',
+  colorFamilyLabel: 'Colour',
   colorwayLabel: 'Colourway',
   lacesLabel: 'Laces',
-  rarityHeading: 'Rarity',
-  rarityCommonReason: 'Every layer is a common one.',
-  rarityReasonJoiner: 'for',
   rarityNote: 'A pass is as rare as its rarest layer. Rarity is only for looks.',
   lacedHeading: 'After your first walk',
-  lacedText:
-    'Your first walk in the app laces the pass and your Founder Sneaker. The laces go in and the card says LACED.',
+  lacedText: 'Your first walk in the app laces it up.',
   lacedAltSuffix: 'laced after the first walk',
   similarHeading: 'Similar passes',
   similarTakenNote: 'Nobody has minted these yet.',
@@ -314,18 +307,16 @@ export const passDetailContent = {
   nextPassLabel: 'Next pass',
   allPassesLinkLabel: 'Every pass by number',
   statusUnknown: 'We can’t tell right now whether it’s minted.',
-  takenNextStep: 'This one is taken. These look like it and nobody has minted them yet.',
+  takenNextStep: 'This one is taken. Nobody has minted the similar ones below yet.',
 } as const
 
 /** What a pass page or the detail sheet says to do next, by phase. Minting phases add the mint. */
 export const passNextStepContent: Record<PassSchedulePhase, string> = {
-  preview:
-    'Minting hasn’t started. Heart it, and join the waitlist to mint 48 hours before everyone else.',
-  waitlistWindow:
-    'The waitlist window is open: people on the waitlist mint first. Anyone can mint from the open mint.',
-  openMint: 'The open mint is on: anyone can mint a pass nobody has taken.',
-  allMinted: 'All 1,000 are minted. StrideMon is open to everyone, with a free Sneaker.',
-  openToAll: 'Minting has closed. StrideMon is open to everyone, with a free Sneaker.',
+  preview: 'Minting opens soon. The waitlist goes first.',
+  waitlistWindow: 'The waitlist is minting now. Everyone else goes next.',
+  openMint: 'Anyone can mint it now.',
+  allMinted: 'All 1,000 are minted. StrideMon is open to everyone.',
+  openToAll: 'Minting has closed. StrideMon is open to everyone.',
 }
 
 /** The X post for sharing a pass before it's minted (D-036: one tag, the site link with a source). */
@@ -339,7 +330,6 @@ export function buildPassShareMessage(passNumberText: string, passName: string):
 }
 
 export const passHowItWorksContent = {
-  metaLabels: ['How it works', 'Four steps'],
   heading: 'From waitlist to your first walk',
   helpLabel: 'Read the full help',
   helpPath,
@@ -376,7 +366,6 @@ export type PassQuestion = {
 export const PASS_QUESTIONS_SHOWN_FIRST = 6
 
 export const passQuestionsContent = {
-  metaLabels: ['Questions', 'Founding Pass'],
   heading: 'Questions',
   moreQuestionsLabel: (hiddenCount: number) => `${hiddenCount} more questions`,
   helpLabel: 'Read the full help',
@@ -475,12 +464,9 @@ export const passQuestions: readonly PassQuestion[] = [
 /** The landing page's section (D-044). */
 export const foundingPassSectionContent = {
   id: sectionIds.foundingPass,
-  metaLabels: ['Founding Pass', 'Free', 'Early access'],
   heading: '1,000 Sneaker designs. Pick yours.',
-  intro:
-    'Before StrideMon opens to everyone, 1,000 Founding Passes go out free. Each is a different Sneaker design and your early access: the app gives you a Founder Sneaker in the same design.',
+  intro: 'Mint one free. It gets you into the app early, in that same Sneaker.',
   galleryLabel: 'See all 1,000',
-  waitlistLabel: 'Join the waitlist',
   /** The 3D showroom (D-063). */
   showroomLabel: 'Walk into the store in 3D',
   showcaseDesignNumbers: [137, 185, 162, 153, 155, 200],
@@ -491,7 +477,6 @@ export const passIndexContent = {
   metaTitle: 'All 1,000 Founding Passes by number',
   description:
     'Every StrideMon Founding Pass from #0001 to #1000, by number and name. Each is a one-of-one Sneaker design, free to mint on Monad testnet.',
-  metaLabels: ['The collection', 'By number'],
   title: 'All 1,000 passes',
   intro:
     'Every Founding Pass by number and name. The gallery has the pictures, filters and search.',

@@ -19,11 +19,7 @@ export function PassHowItWorksSection() {
       className="page-gutter page-container flex flex-col gap-10 py-16 md:py-24"
     >
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <SectionHeading
-          id={headingId}
-          metaLabels={passHowItWorksContent.metaLabels}
-          heading={passHowItWorksContent.heading}
-        />
+        <SectionHeading id={headingId} heading={passHowItWorksContent.heading} />
         <a
           data-reveal
           href={passHowItWorksContent.helpPath}

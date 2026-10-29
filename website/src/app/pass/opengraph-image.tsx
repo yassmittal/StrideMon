@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { foundingPassSectionContent, passPageContent } from '@/content/founding-pass'
+import { siteName } from '@/content/site'
 import { PASS_CARD_SHOE_WINDOW } from '@/lib/founding-pass/pass-design'
 import { readPassShoeArtDataUri } from '@/lib/founding-pass/read-pass-share-art'
 import { loadSatoshiFontData } from '@/lib/load-satoshi-font-data'
@@ -34,17 +35,7 @@ export default async function PassGalleryOpenGraphImage() {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 20,
-              fontWeight: 500,
-              letterSpacing: 1.6,
-              opacity: 0.6,
-            }}
-          >
-            {passPageContent.metaLabels.join(' • ').toUpperCase()}
-          </div>
+          <div style={{ display: 'flex', fontSize: 30, letterSpacing: -0.3 }}>{siteName}</div>
           <div style={{ display: 'flex', fontSize: 96, lineHeight: 0.9, letterSpacing: -2 }}>
             {passPageContent.headlineWords.join(' ')}
           </div>

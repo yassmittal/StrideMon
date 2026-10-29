@@ -172,7 +172,7 @@ The token is **STRIDE** (D-038, 2026-10-06), renamed from SOLE in all code, copy
 were redeployed for it the same day (new addresses in `packages/contracts/README.md`), and the local
 database was reset (the waitlist kept). Older decisions and `launch-video/FOOTAGE.md` keep SOLE on purpose.
 To change the art, deploy a new renderer and call `setArtRenderer`: never redeploy `SneakerNft`
-for it. The next free decision number is D-072.
+for it. The next free decision number is D-074.
 **X (D-036):** `social/` holds the posts for [@stridemon](https://x.com/stridemon) and Yash's
 [@yash_mittal_dev](https://x.com/yash_mittal_dev), one Markdown file each (`account:` in the
 front-matter), with the rules in `social/voice.md` (plan: `docs/social-plan.md`). Claude drafts
@@ -254,6 +254,11 @@ the live site's old form sends no Turnstile token, which the new API refuses.
 **Never send cold email through Brevo** (its policy bans it, and that account sends the mint's
 codes). At 300 a day it can't send the window email to 10,000 people, or check every minter's email
 on the night. The kits are in `social/youtube/`, `social/linkedin/` and `social/hacker-news/`.
+**The website, simplified (D-073, 2026-10-30):** no eyebrow lines (`STRIDEMON • MOVE TO EARN • …`)
+anywhere on the site (`MetaLabel` is gone: don't bring it back), short plain copy, How it works in
+four steps, Why Monad as its own section, the 3D store link as a 3D button (`ShowroomButton`), the
+app-review note as a tooltip on Get the Android app, and one pass's details without the promise
+line (it stays in the mint dialog and Questions). D-072 records the 2026-10-25 "website feel" pass.
 **8.8 is done** (2026-10-06). **Now: the Metropolis submission**, tracked in
 `docs/hackathon-submission.md`. Done 2026-10-07: `LICENSE` (MIT), the README rewrite (Monad, "Try it",
 "Run your own stack", the session's transaction hashes), the dashboard copy and the submission post

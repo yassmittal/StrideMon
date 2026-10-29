@@ -1,7 +1,6 @@
 'use client'
 
 import { shortenAddress } from '@/content/contracts'
-import { passPromiseLine } from '@/content/founding-pass'
 import { founderContent, revealContent } from '@/content/founding-pass-mint'
 import {
   buildPassPagePath,
@@ -9,7 +8,6 @@ import {
   readPassDesign,
 } from '@/lib/founding-pass/pass-design'
 import { HelpTopicLink } from '../ui/help-topic-link'
-import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { PassArt } from './pass-art'
 
@@ -52,7 +50,6 @@ export function FounderPassPanel({
       <div
         className={`flex flex-col gap-4 ${design === undefined ? 'md:col-span-12' : 'md:col-span-7 md:justify-center'}`}
       >
-        <MetaLabel items={founderContent.metaLabels} />
         <Heading
           id={headingId}
           className="-ml-[0.03em] text-[clamp(2rem,5vw,3rem)] leading-[0.95] tracking-[-0.01em]"
@@ -110,9 +107,6 @@ export function FounderPassPanel({
           ) : null}
         </div>
         <HelpTopicLink helpTopicId="already-a-founder" />
-        <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-          {passPromiseLine}
-        </p>
       </div>
     </div>
   )

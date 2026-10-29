@@ -147,7 +147,6 @@ export const helpPageContent = {
   metaTitle: 'Help: the Founding Pass and the StrideMon app',
   description:
     'Plain-words help for StrideMon: the Founding Pass, setting up MetaMask and Monad Testnet, minting, the app, and what to do when something goes wrong.',
-  metaLabels: ['Help', 'Founding Pass', 'The app'],
   intro:
     'Everything from “what is this?” to your first walk, in plain words. Stuck on a message? Find it under “When something goes wrong”, or write to us.',
   contentsLabel: 'On this page',

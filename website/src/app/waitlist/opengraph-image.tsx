@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { siteUrl, waitlistPagePath } from '@/content/site'
+import { siteName, siteUrl, waitlistPagePath } from '@/content/site'
 import { waitlistJoinedContent, waitlistPageContent } from '@/content/waitlist'
 import { PASS_CARD_SHOE_WINDOW } from '@/lib/founding-pass/pass-design'
 import { readPassShoeArtDataUri } from '@/lib/founding-pass/read-pass-share-art'
@@ -58,17 +58,7 @@ export default async function WaitlistOpenGraphImage() {
           flex: 1,
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 20,
-            fontWeight: 500,
-            letterSpacing: 1.6,
-            opacity: 0.6,
-          }}
-        >
-          {waitlistPageContent.shareImageMetaLabels.join(' • ').toUpperCase()}
-        </div>
+        <div style={{ display: 'flex', fontSize: 30, letterSpacing: -0.3 }}>{siteName}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           <div
             style={{

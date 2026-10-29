@@ -82,7 +82,8 @@ Everyone after the 1,000 gets a **normal Sneaker**: free, today's look, and it c
   is fine when it makes the experience better. Still ask before broadcasting.
 - **Words.** Say Founding Pass, founder, waitlist, waitlist window, open mint, one of one. Never
   *whitelist*, *WL*, *allowlist*, *airdrop*, *alpha* or *sold out* (say "all minted"). Every
-  surface with the pass says it's free and can't be sent or sold. STRIDE stays "Monad testnet.
+  surface with the pass says it's free and can't be sent or sold (on the website, D-073: the mint
+  dialog and Questions). STRIDE stays "Monad testnet.
   STRIDE has no monetary value."
 - **Nobody gets stuck.** This is Yash's main ask. Every screen on the website and in the app
   answers three things in plain words: what is happening, what to do next, and where to get help.

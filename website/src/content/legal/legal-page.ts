@@ -9,7 +9,6 @@ export type LegalSection = {
 }
 
 export type LegalPageContent = {
-  metaLabels: readonly string[]
   title: string
   description: string
   /** ISO date, shown as "Last updated". */

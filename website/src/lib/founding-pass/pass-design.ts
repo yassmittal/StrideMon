@@ -126,26 +126,6 @@ export function compareRarity(first: PassRarity, second: PassRarity): number {
   return PASS_RARITIES.indexOf(first) - PASS_RARITIES.indexOf(second)
 }
 
-/**
- * The layers that make a design rarer than Common, in words ("the Gold family", "its Cage heel",
- * "its lime laces"), so its label has a reason you can see.
- */
-export function listRareLayers(design: PassDesign): string[] {
-  const rareLayers: string[] = []
-  if (design.colorFamily.rarity !== 'common') {
-    rareLayers.push(`the ${design.colorFamily.label} family`)
-  }
-  for (const option of design.options) {
-    if (option.value.rarity !== 'common') {
-      rareLayers.push(`its ${option.value.label} ${option.slot.label.toLowerCase()}`)
-    }
-  }
-  if (design.laceColor.rarity !== 'common') {
-    rareLayers.push(`its ${design.laceColor.label.toLowerCase()} laces`)
-  }
-  return rareLayers
-}
-
 // How much each shared layer counts, as the API ranks "3 similar passes" (D-043).
 const SAME_TEMPLATE_SCORE = 8
 const SAME_COLOR_FAMILY_SCORE = 4

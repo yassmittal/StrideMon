@@ -3,7 +3,6 @@ import type { LegalPageContent } from './legal-page'
 
 // Must match the app and the Play Data safety form (play-store-release.md 2.1 and 5.6).
 export const privacyPolicyContent: LegalPageContent = {
-  metaLabels: [siteName, 'Privacy policy'],
   title: 'Privacy policy',
   description:
     'What the StrideMon app and website collect, what goes on the Monad blockchain, and how to delete your data.',

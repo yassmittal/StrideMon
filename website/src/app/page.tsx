@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
 import { UnderTheHoodSection } from '@/components/sections/under-the-hood-section'
 import { WaitlistSection } from '@/components/sections/waitlist-section'
+import { WhyMonadSection } from '@/components/sections/why-monad-section'
 import { RevealObserver } from '@/components/ui/reveal-observer'
 import { StructuredDataScript } from '@/components/ui/structured-data-script'
 import { demoVideo } from '@/content/demo-video'
@@ -32,6 +33,7 @@ export default function HomePage() {
         <HeroSection hasDemoVideo={hasDemoVideo} />
         <FoundingPassSection />
         <HowItWorksSection />
+        <WhyMonadSection />
         <WaitlistSection />
         <UnderTheHoodSection />
         <FaqSection />

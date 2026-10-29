@@ -20,7 +20,6 @@ import {
 import { screenshots } from '@/content/screenshots'
 import { AddMonadTestnetButton } from '../help/add-monad-testnet-button'
 import { ArrowIcon } from '../ui/arrow-icon'
-import { MetaLabel } from '../ui/meta-label'
 import { PhoneFrame } from '../ui/phone-frame'
 import { XLogoIcon } from '../ui/x-logo-icon'
 import { SiteFooter } from './site-footer'
@@ -42,7 +41,6 @@ export function HelpPage() {
       <SiteHeader />
       <main className="page-gutter page-container pt-10 pb-16 md:pt-16 md:pb-24">
         <header className="flex max-w-[44rem] flex-col gap-5">
-          <MetaLabel items={helpPageContent.metaLabels} />
           <h1 className="-ml-[0.04em] text-heading text-balance">{helpPageContent.title}</h1>
           <p className="text-intro">{helpPageContent.intro}</p>
           <nav aria-label={helpPageContent.contentsLabel} className="pt-2">

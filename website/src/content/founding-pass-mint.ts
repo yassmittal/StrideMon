@@ -9,7 +9,6 @@ export const mintHelpLabel = 'Get help'
 
 export const getReadyContent = {
   sectionId: 'get-ready',
-  metaLabels: ['Get ready', 'Two steps'],
   heading: 'Get ready, then mint in one tap.',
   intro:
     'Check your email and sign in with your wallet now. Then one tap on any pass mints it, which helps when someone else wants the same one.',
@@ -84,7 +83,9 @@ export const mintStepContent = {
 } as const
 
 export const mintPendingContent = {
-  metaLabel: 'Minting',
+  /** The card's back while it turns. */
+  cardLabel: 'Founding Pass',
+  statusLabel: 'Minting',
   heading: 'Minting on Monad',
   text: 'This takes a few seconds. Keep this open to see your founder number.',
   slowText:
@@ -97,7 +98,6 @@ export const mintPendingContent = {
 export const revealContent = {
   founderLabel: 'Founder',
   ofLabel: 'of 1,000',
-  oneOfOne: 'One of one',
   goldFrameLine: 'It rolled a gold frame. About 1 in 10 passes do. It’s only for looks.',
   imageUnavailableLine:
     'We couldn’t load the minted card from Monad just now, so this is the gallery card. Your pass is minted all the same.',
@@ -146,7 +146,6 @@ export function buildMintedShareText(
 }
 
 export const founderContent = {
-  metaLabels: ['Founder', 'Founding Pass'],
   heading: 'You’re a founder.',
   walletText: 'This wallet holds',
   emailText: 'This email already has a Founding Pass:',

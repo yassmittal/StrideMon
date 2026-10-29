@@ -10,7 +10,6 @@ import {
   MAX_HELP_CHAT_MESSAGE_LENGTH,
 } from '@/lib/help-chat-request'
 import { ArrowIcon } from '../ui/arrow-icon'
-import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 
 type HelpChatDialogProps = {
@@ -108,7 +107,6 @@ export function HelpChatDialog({ isOpen, onClose }: HelpChatDialogProps) {
       <div className="flex w-full flex-col">
         <header className="flex items-start justify-between gap-4 border-b border-hairline px-4 pt-4 pb-3 md:px-6 md:pt-5">
           <div className="flex flex-col gap-2 pt-1">
-            <MetaLabel items={helpChatContent.metaLabels} />
             <h2 id={headingId} className="text-2xl leading-[1.1]">
               {helpChatContent.title}
             </h2>

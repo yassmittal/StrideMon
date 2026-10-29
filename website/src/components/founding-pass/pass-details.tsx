@@ -1,13 +1,12 @@
 'use client'
 
-import { type MouseEvent, type ReactNode, useEffect, useState } from 'react'
+import { type MouseEvent, useEffect, useState } from 'react'
 import { buildExplorerTokenUrl, foundingPassContract } from '@/content/contracts'
 import {
   buildPassShareMessage,
   buildPassShareText,
   passDetailContent,
   passNextStepContent,
-  passPromiseLine,
   passScheduleContent,
 } from '@/content/founding-pass'
 import { buildShowroomPassUrl, sectionIds, siteUrl } from '@/content/site'
@@ -20,9 +19,7 @@ import {
   buildPassPagePath,
   findSimilarPassDesigns,
   formatPassNumber,
-  listRareLayers,
   type PassDesign,
-  passRarityLabels,
   readPassDesign,
 } from '@/lib/founding-pass/pass-design'
 import { isMintingPhase } from '@/lib/founding-pass/pass-schedule'
@@ -30,12 +27,13 @@ import { retryPassCollection, usePassCollection } from '@/lib/founding-pass/use-
 import { usePassSchedule } from '@/lib/founding-pass/use-pass-schedule'
 import { useOwnInviteCode } from '@/lib/waitlist-invites'
 import { ArrowIcon } from '../ui/arrow-icon'
-import { MetaLabel } from '../ui/meta-label'
+import { PillButton } from '../ui/pill-button'
 import { ShareLinks } from '../ui/share-links'
+import { ShowroomButton } from '../ui/showroom-button'
 import { FavouriteButton } from './favourite-button'
 import { MintPassButton } from './mint-pass-button'
 import { PassArt } from './pass-art'
-import { PassAvailabilityText } from './pass-availability-text'
+import { PassStatusPill } from './pass-availability-text'
 import { PassRarityBadge } from './pass-rarity-badge'
 
 type PassDetailsProps = {
@@ -54,8 +52,9 @@ const SIMILAR_PASS_COUNT = 3
 const SCHEDULE_REFRESH_MILLISECONDS = 30_000
 
 /**
- * One pass, in full (D-044): the card, what's happening with it, what to do next, its rarity and
- * layers, the laced look, and three similar passes nobody has minted.
+ * One pass, in full (D-044): the card, what's happening with it, what to do next, its layers, the
+ * laced look, and three similar passes nobody has minted. The card already says Founding Pass, its
+ * number and 1 of 1, so nothing above the name repeats it (D-073).
  */
 export function PassDetails({
   designNumber,
@@ -80,51 +79,41 @@ export function PassDetails({
   const Heading = headingLevel
   // The sections sit one level under the name, so the outline never skips a level.
   const SectionHeading = headingLevel === 'h1' ? 'h2' : 'h3'
-  const rareLayers = listRareLayers(design)
   const passNumberText = formatPassNumber(design.designNumber)
 
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
-      <div className="flex flex-col gap-2.5 md:sticky md:top-4 md:col-span-6 md:self-start">
-        <div className="overflow-hidden rounded-panel ring-1 ring-hairline">
-          <PassArt design={design} view="card" isEager={isArtEager} />
-        </div>
-        <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-          {passPromiseLine}
-        </p>
+      <div className="overflow-hidden rounded-panel ring-1 ring-hairline md:sticky md:top-4 md:col-span-6 md:self-start">
+        <PassArt design={design} view="card" isEager={isArtEager} />
       </div>
 
       <div className="flex flex-col gap-8 md:col-span-6">
         <header className="flex flex-col gap-4">
-          <MetaLabel items={['Founding Pass', passNumberText, passDetailContent.oneOfOne]} />
           <Heading
             id={headingId}
             className="-ml-[0.03em] text-[clamp(2.25rem,6vw,3.75rem)] leading-[0.95] tracking-[-0.01em] text-balance"
           >
             {design.name}
           </Heading>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-            <PassRarityBadge rarity={design.rarity} />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <AvailabilityLine
               availability={availability}
               hasCollection={collection !== null}
               recentMint={recentMint}
             />
+            <PassRarityBadge rarity={design.rarity} />
           </div>
           {isTaken ? (
             <p className="text-lg leading-[1.4]">{passDetailContent.takenNextStep}</p>
           ) : position !== null ? (
-            <p className="text-lg leading-[1.4]">
-              {passNextStepContent[position.phase]}{' '}
-              {position.phase === 'preview' ? (
-                <a
-                  href={`/pass#${sectionIds.waitlist}`}
-                  className="underline decoration-hairline underline-offset-4"
-                >
-                  {passScheduleContent.joinWaitlistLabel}
-                </a>
-              ) : null}
-            </p>
+            <p className="text-lg leading-[1.4]">{passNextStepContent[position.phase]}</p>
+          ) : null}
+          {position?.phase === 'preview' && !isTaken ? (
+            <PillButton
+              href={`/pass#${sectionIds.waitlist}`}
+              label={passScheduleContent.joinWaitlistLabel}
+              className="self-start"
+            />
           ) : null}
           {position !== null && isMintingPhase(position.phase) && !isTaken ? (
             <MintPassButton designNumber={design.designNumber} />
@@ -148,13 +137,11 @@ export function PassDetails({
             messageText={buildPassShareMessage(passNumberText, design.name)}
             xPostText={buildPassShareText(passNumberText, design.name)}
           />
-          <a
+          <ShowroomButton
             href={buildShowroomPassUrl(design.designNumber)}
-            className="group inline-flex min-h-11 items-center gap-2 self-start text-label font-medium tracking-[0.08em] uppercase"
-          >
-            {passDetailContent.showroomLabel}
-            <ArrowIcon className="transition-transform duration-300 ease-standard group-hover:translate-x-[3px]" />
-          </a>
+            label={passDetailContent.showroomLabel}
+            className="mt-2 self-start"
+          />
           {availability === 'minted' ? (
             <a
               href={buildExplorerTokenUrl(foundingPassContract.address, design.designNumber)}
@@ -170,55 +157,40 @@ export function PassDetails({
 
         <section className="flex flex-col gap-3 border-t border-hairline pt-5">
           <SectionHeading className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-            {passDetailContent.rarityHeading}
-          </SectionHeading>
-          <p className="text-lg leading-[1.4]">
-            {rareLayers.length === 0
-              ? passDetailContent.rarityCommonReason
-              : `${passRarityLabels[design.rarity]} ${passDetailContent.rarityReasonJoiner} ${joinWords(rareLayers)}.`}
-          </p>
-          <p className="text-sm leading-[1.4] text-ink-secondary-small">
-            {passDetailContent.rarityNote}
-          </p>
-        </section>
-
-        <section className="flex flex-col gap-3 border-t border-hairline pt-5">
-          <SectionHeading className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
             {passDetailContent.layersHeading}
           </SectionHeading>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-base leading-[1.35]">
-            <LayerRow label={passDetailContent.templateLabel} value={design.template.label}>
-              <span className="block text-sm text-ink-secondary-small">
-                {design.template.description}
-              </span>
-            </LayerRow>
-            <LayerRow
+          {/* Tiles, not a list: the label above its value, a badge on a rarer layer (D-073). */}
+          <dl className="grid grid-cols-2 gap-2">
+            <LayerTile
+              label={passDetailContent.templateLabel}
+              value={design.template.label}
+              note={design.template.description}
+              className="col-span-2"
+            />
+            <LayerTile
               label={passDetailContent.colorFamilyLabel}
               value={design.colorFamily.label}
               rarity={design.colorFamily.rarity}
-              prefix={
-                <span
-                  aria-hidden="true"
-                  className="mr-2 inline-block size-3 rounded-full align-[-1px]"
-                  style={{ backgroundColor: design.colorFamily.swatchColor }}
-                />
-              }
+              swatchColor={design.colorFamily.swatchColor}
             />
-            <LayerRow label={passDetailContent.colorwayLabel} value={design.colorway.label} />
+            <LayerTile label={passDetailContent.colorwayLabel} value={design.colorway.label} />
             {design.options.map((option) => (
-              <LayerRow
+              <LayerTile
                 key={option.slot.key}
                 label={option.slot.label}
                 value={option.value.label}
                 rarity={option.value.rarity}
               />
             ))}
-            <LayerRow
+            <LayerTile
               label={passDetailContent.lacesLabel}
               value={design.laceColor.label}
               rarity={design.laceColor.rarity}
             />
           </dl>
+          <p className="text-sm leading-[1.4] text-ink-secondary-small">
+            {passDetailContent.rarityNote}
+          </p>
         </section>
 
         <section className="flex flex-col gap-3 border-t border-hairline pt-5">
@@ -279,42 +251,45 @@ function AvailabilityLine({
       </span>
     )
   }
-  return (
-    <PassAvailabilityText
-      availability={availability}
-      recentMint={recentMint}
-      isAvailableShown
-      className="font-mono text-sm"
-    />
-  )
+  return <PassStatusPill availability={availability} recentMint={recentMint} />
 }
 
-/** One layer: its value, a badge when it's rarer than common, and an optional note below. */
-function LayerRow({
+/** One layer as a tile: its label, its value, and a badge when it's rarer than common. */
+function LayerTile({
   label,
   value,
   rarity,
-  prefix,
-  children,
+  swatchColor,
+  note,
+  className = '',
 }: {
   label: string
   value: string
   rarity?: PassDesign['rarity']
-  prefix?: ReactNode
-  children?: ReactNode
+  swatchColor?: string
+  note?: string
+  className?: string
 }) {
   return (
-    <>
-      <dt className="text-ink-secondary-small">{label}</dt>
-      <dd>
-        {prefix}
-        {value}
-        {rarity !== undefined && rarity !== 'common' ? (
-          <PassRarityBadge rarity={rarity} className="ml-2" />
+    <div className={`flex flex-col gap-1.5 rounded-panel bg-surface px-4 pt-3 pb-3.5 ${className}`}>
+      <dt className="flex items-center justify-between gap-2 text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
+        {label}
+        {rarity !== undefined && rarity !== 'common' ? <PassRarityBadge rarity={rarity} /> : null}
+      </dt>
+      <dd className="flex items-center gap-2 text-lg leading-[1.2]">
+        {swatchColor !== undefined ? (
+          <span
+            aria-hidden="true"
+            className="size-3.5 shrink-0 rounded-full ring-1 ring-hairline"
+            style={{ backgroundColor: swatchColor }}
+          />
         ) : null}
-        {children}
+        {value}
       </dd>
-    </>
+      {note !== undefined ? (
+        <dd className="text-sm leading-[1.35] text-ink-secondary-small">{note}</dd>
+      ) : null}
+    </div>
   )
 }
 
@@ -382,10 +357,4 @@ function CopyPassLinkButton({ designNumber }: { designNumber: number }) {
       </span>
     </button>
   )
-}
-
-/** "a, b and c". */
-function joinWords(words: readonly string[]): string {
-  if (words.length <= 1) return words.join('')
-  return `${words.slice(0, -1).join(', ')} and ${words.at(-1)}`
 }

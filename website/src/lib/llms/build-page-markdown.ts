@@ -93,7 +93,7 @@ export function buildHomeMarkdown(): string {
     heroContent.intro,
     renderBulletList([
       renderMarkdownLink(heroContent.getPassLabel, passGalleryPath),
-      `${renderMarkdownLink(heroContent.getAppLabel, appInstallPageUrl)}. ${heroContent.appReviewNote}`,
+      `${renderMarkdownLink(heroContent.getAppLabel, appInstallPageUrl)}. ${heroContent.getAppTooltip}`,
     ]),
     `## ${foundingPassSectionContent.heading}`,
     foundingPassSectionContent.intro,
@@ -101,6 +101,8 @@ export function buildHomeMarkdown(): string {
     renderMarkdownLink(foundingPassSectionContent.galleryLabel, passGalleryPath),
     `## ${howItWorksContent.heading}`,
     renderNumberedList(howItWorksSteps.map((step) => `**${step.title}.** ${step.description}`)),
+    `## ${whyMonadContent.heading}`,
+    renderBulletList(whyMonadPoints.map((point) => `**${point.title}.** ${point.description}`)),
     `## ${rulesContent.heading}`,
     renderTable(
       ['Rule', 'Value', 'What it means'],
@@ -130,8 +132,6 @@ export function buildHomeMarkdown(): string {
     ),
     `### ${onChainContent.artHeading}`,
     onChainContent.artText,
-    `## ${whyMonadContent.heading}`,
-    renderBulletList(whyMonadPoints.map((point) => `**${point.title}.** ${point.description}`)),
     `## ${waitlistContent.heading}`,
     waitlistContent.intro,
     waitlistContent.promise,

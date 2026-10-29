@@ -431,8 +431,9 @@ own page at build time**:
 - **Every surface with the pass says:** "Free. It can't be sent or sold. It isn't a token and never
   turns into one." Plain words, never "soulbound" in user-facing copy. *As built (D-050):* that's
   every surface for one pass (the detail sheet, the pass page, the mint, the reveal, the founder
-  panel) and Questions; the `/pass` hero and the landing page's section say "Free". STRIDE stays "Monad
-  testnet. STRIDE has no monetary value."
+  panel) and Questions; the `/pass` hero and the landing page's section say "Free". *Changed
+  (D-073):* the website says it in the mint dialog and in Questions only, not on every pass.
+  STRIDE stays "Monad testnet. STRIDE has no monetary value."
 - **Testnet** for the contracts (CLAUDE.md: testnet until Phase 10).
 - **One pass per email and per wallet**, enforced by the API and (per wallet) the contract.
 - **Bots will go for the Legendaries.** One-of-ones give a bot a reason to snipe the rare ones the

@@ -21,9 +21,9 @@ import {
 } from '@/lib/founding-pass/pass-gallery-view'
 import { useFavouritePasses } from '@/lib/founding-pass/use-favourite-passes'
 import { retryPassCollection, usePassCollection } from '@/lib/founding-pass/use-pass-collection'
-import { MetaLabel } from '../ui/meta-label'
-import { buildPillClassName, PillButton, PillContent } from '../ui/pill-button'
+import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { SelectMenu } from '../ui/select-menu'
+import { ShowroomButton } from '../ui/showroom-button'
 import { PassCard } from './pass-card'
 import { PassDetailSheet } from './pass-detail-sheet'
 import { PassFinderActions, PassQuiz } from './pass-finder'
@@ -111,18 +111,10 @@ export function PassGallery() {
         className="page-gutter page-container flex flex-col gap-6 pt-10 pb-16 md:pt-16 md:pb-24"
       >
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
-          <div className="flex flex-col gap-5">
-            <MetaLabel items={passGalleryContent.metaLabels} />
-            <h2 id="pass-gallery-heading" className="-ml-[0.04em] text-heading text-balance">
-              {passGalleryContent.heading}
-            </h2>
-          </div>
-          <PillButton
-            href={showroomUrl}
-            label={passGalleryContent.showroomLabel}
-            variant="secondary"
-            size="compact"
-          />
+          <h2 id="pass-gallery-heading" className="-ml-[0.04em] text-heading text-balance">
+            {passGalleryContent.heading}
+          </h2>
+          <ShowroomButton href={showroomUrl} label={passGalleryContent.showroomLabel} />
         </div>
 
         <div className="flex flex-col gap-3">

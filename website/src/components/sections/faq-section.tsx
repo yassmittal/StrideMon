@@ -13,11 +13,7 @@ export function FaqSection() {
       className="page-gutter page-container grid gap-10 py-16 md:grid-cols-12 md:gap-6 md:py-24"
     >
       <div className="flex flex-col gap-8 md:col-span-4">
-        <SectionHeading
-          id={headingId}
-          metaLabels={faqContent.metaLabels}
-          heading={faqContent.heading}
-        />
+        <SectionHeading id={headingId} heading={faqContent.heading} />
         <a
           data-reveal
           href={faqContent.helpPath}

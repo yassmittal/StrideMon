@@ -6,7 +6,6 @@ import { helpPath } from './site'
 
 export const helpChatContent = {
   launcherLabel: 'Ask a question',
-  metaLabels: ['Help', 'Ask a question'],
   title: 'Ask about StrideMon',
   closeLabel: 'Close',
   introLines: [

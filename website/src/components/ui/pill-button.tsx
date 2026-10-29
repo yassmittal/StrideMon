@@ -9,6 +9,8 @@ type PillButtonProps = {
   variant?: PillVariant
   size?: PillSize
   isExternal?: boolean
+  /** A tooltip's id (`HoverTip`), read after the label. */
+  describedById?: string
   className?: string
 }
 
@@ -51,11 +53,17 @@ export function PillButton({
   variant = 'primary',
   size = 'regular',
   isExternal = false,
+  describedById,
   className = '',
 }: PillButtonProps) {
   const externalProps = isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {}
   return (
-    <a href={href} className={buildPillClassName(variant, size, className)} {...externalProps}>
+    <a
+      href={href}
+      aria-describedby={describedById}
+      className={buildPillClassName(variant, size, className)}
+      {...externalProps}
+    >
       <PillContent label={label} />
     </a>
   )

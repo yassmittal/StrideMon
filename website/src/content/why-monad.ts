@@ -1,25 +1,32 @@
+import { sectionIds } from './site'
+
 export type WhyMonadPoint = {
+  icon: 'fast' | 'cheap' | 'wallet'
   title: string
   description: string
 }
 
+/** Its own section, always shown (D-073). */
 export const whyMonadContent = {
+  id: sectionIds.whyMonad,
   heading: 'Why Monad',
 } as const
 
 export const whyMonadPoints: readonly WhyMonadPoint[] = [
   {
-    title: 'Fast settlement',
-    description:
-      'Every run settles as its own transaction, fast enough that the reward shows on the summary screen seconds after STOP.',
+    icon: 'fast',
+    title: 'Settles in seconds',
+    description: 'Every run is its own transaction. Your STRIDE shows up right after STOP.',
   },
   {
-    title: 'Cheap gas',
+    icon: 'cheap',
+    title: 'Gas is almost free',
     description:
-      'Gas is cheap enough to give each new player a drip, so they can repair, upgrade and transfer from their own wallet.',
+      'So every new player gets some free, to repair, upgrade and send from their wallet.',
   },
   {
-    title: 'Plain EVM',
-    description: 'Standard ERC-721 and ERC-20 contracts work in standard wallets like MetaMask.',
+    icon: 'wallet',
+    title: 'Works with MetaMask',
+    description: 'Plain ERC-721 and ERC-20 contracts. No new wallet to learn.',
   },
 ]

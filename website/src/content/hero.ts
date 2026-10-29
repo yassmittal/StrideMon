@@ -1,12 +1,10 @@
 export const heroContent = {
-  metaLabels: ['StrideMon', 'Move to earn', 'Monad testnet'],
   headlineWords: ['Walk.', 'Earn.', 'Upgrade.'],
-  intro:
-    'Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then spend STRIDE to repair and level it up.',
+  intro: 'Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then level it up.',
   getPassLabel: 'Get your Founding Pass',
   getAppLabel: 'Get the Android app',
-  /** Under the buttons until the Google Play listing is live (D-052). */
-  appReviewNote:
-    'App review is in progress. Until then, the Android test build installs from Expo.',
-  sneakerArtCaption: 'Sneaker #0002 • Drawn on-chain',
+  /** A tooltip on Get the app until the Google Play listing is live (D-052, D-073). */
+  getAppTooltip: 'Installs the test build from Expo. Google Play is on the way.',
+  /** The Sneaker art's name for screen readers: it has no caption (D-073). */
+  sneakerArtLabel: 'Sneaker #0002 at level 2, drawn on-chain',
 } as const

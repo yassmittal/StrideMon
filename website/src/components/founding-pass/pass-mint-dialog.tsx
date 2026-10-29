@@ -30,7 +30,6 @@ import { usePassMintReadiness } from '@/lib/founding-pass/pass-mint-readiness'
 import { isMintingPhase } from '@/lib/founding-pass/pass-schedule'
 import { usePassSchedule } from '@/lib/founding-pass/use-pass-schedule'
 import { useNow } from '@/lib/use-now'
-import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { EmailCheckStep } from './email-check-step'
 import { FavouriteButton } from './favourite-button'
@@ -184,7 +183,6 @@ function MintSetup({ design, headingId }: { design: PassDesign; headingId: strin
     <div className="flex flex-col gap-6">
       <header className="grid grid-cols-[1fr_auto] items-end gap-4">
         <div className="flex flex-col gap-3">
-          <MetaLabel items={[mintStepContent.title, passNumberText, revealContent.oneOfOne]} />
           <h2
             id={headingId}
             className="-ml-[0.03em] text-[clamp(2rem,6vw,3.25rem)] leading-[0.95] tracking-[-0.01em] text-balance"

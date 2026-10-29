@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { buildExplorerTransactionUrl, shortenAddress } from '@/content/contracts'
-import { passPromiseLine } from '@/content/founding-pass'
 import {
   buildMintedShareMessage,
   buildMintedShareText,
@@ -19,7 +18,6 @@ import {
 import { usePassMintReadiness } from '@/lib/founding-pass/pass-mint-readiness'
 import { useOwnInviteCode } from '@/lib/waitlist-invites'
 import { ArrowIcon } from '../ui/arrow-icon'
-import { MetaLabel } from '../ui/meta-label'
 import { buildPillClassName, PillContent } from '../ui/pill-button'
 import { ShareLinks } from '../ui/share-links'
 import { describePassArt, PassArt } from './pass-art'
@@ -64,7 +62,9 @@ export function PassMintProgress({
       <div className="pass-reveal-card" data-turned={isTurned}>
         <div className="pass-reveal-card-inner">
           <div className="pass-reveal-face flex flex-col justify-between bg-dark-panel p-6 text-on-dark">
-            <MetaLabel items={['StrideMon', 'Founding Pass']} tone="dark" />
+            <p className="font-mono text-sm tracking-[0.08em] uppercase">
+              {mintPendingContent.cardLabel}
+            </p>
             <p className="font-mono text-[clamp(3rem,10vw,5rem)] leading-none tracking-[-0.02em]">
               {passNumberText}
             </p>
@@ -73,7 +73,7 @@ export function PassMintProgress({
                 aria-hidden="true"
                 className="pass-mint-pulse size-[7px] rounded-full bg-lime"
               />
-              {mintPendingContent.metaLabel}
+              {mintPendingContent.statusLabel}
             </p>
           </div>
           <div className="pass-reveal-face pass-reveal-face-front overflow-hidden bg-page ring-1 ring-hairline">
@@ -96,7 +96,6 @@ export function PassMintProgress({
       <div aria-live="polite" className="flex flex-col gap-5 md:justify-center">
         {isRevealed ? (
           <>
-            <MetaLabel items={['Founding Pass', passNumberText, revealContent.oneOfOne]} />
             <h2
               id={headingId}
               className="-ml-[0.03em] text-[clamp(2rem,5vw,3rem)] leading-[0.95] tracking-[-0.01em] text-balance"
@@ -136,7 +135,6 @@ export function PassMintProgress({
           </>
         ) : (
           <>
-            <MetaLabel items={[mintPendingContent.metaLabel, passNumberText]} />
             <h2
               id={headingId}
               className="-ml-[0.03em] text-[clamp(2rem,5vw,3rem)] leading-[0.95] tracking-[-0.01em] text-balance"
@@ -207,9 +205,6 @@ function RevealNextSteps({
         messageText={buildMintedShareMessage(passNumberText, design.name)}
         xPostText={buildMintedShareText(passNumberText, design.name, founderNumber)}
       />
-      <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
-        {passPromiseLine}
-      </p>
     </div>
   )
 }

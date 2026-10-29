@@ -6,7 +6,7 @@ import { appInstallPageUrl, passGalleryPath } from '@/content/site'
 import { hasPublicFile } from '@/lib/read-public-file'
 import { readSneakerArtForDrawing } from '@/lib/read-sneaker-art'
 import { DemoVideoPlayer } from '../ui/demo-video-player'
-import { MetaLabel } from '../ui/meta-label'
+import { HoverTip } from '../ui/hover-tip'
 import { PhoneFrame } from '../ui/phone-frame'
 import { PillButton } from '../ui/pill-button'
 
@@ -15,13 +15,15 @@ type HeroSectionProps = {
 }
 
 const phoneClassName = 'w-[38%] max-w-[296px] shrink-0 self-end'
+const getAppTooltipId = 'hero-get-app-tip'
 
 function buildHeroDelayStyle(delayMilliseconds: number): CSSProperties {
   return { '--hero-delay': `${delayMilliseconds}ms` } as CSSProperties
 }
 
-// The buttons are what a visitor can do (D-050): get a pass, or try the app. With the demo video in public/, it stands beside the Sneaker art in place of the Home screenshot
-// (its poster is that same screen).
+// The buttons are what a visitor can do (D-050): get a pass, or try the app, whose install note is a
+// tooltip (D-073). With the demo video in public/, it stands beside the Sneaker art in place of the
+// Home screenshot (its poster is that same screen).
 export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
   const sneakerArtMarkup = readSneakerArtForDrawing()
   return (
@@ -30,7 +32,6 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
       className="page-gutter page-container grid gap-10 pt-10 pb-16 md:pt-16 md:pb-24 lg:grid-cols-12 lg:items-end lg:gap-6"
     >
       <div className="flex flex-col gap-6 lg:col-span-6 lg:pb-4">
-        <MetaLabel items={heroContent.metaLabels} />
         <h1 id="hero-heading" className="-ml-[0.05em] text-display">
           {/* Each word rises from its own mask on the first view (D-072). */}
           {heroContent.headlineWords.map((word, wordIndex) => (
@@ -47,35 +48,31 @@ export function HeroSection({ hasDemoVideo }: HeroSectionProps) {
         </p>
         <div className="hero-enter flex flex-wrap gap-2.5 pt-2" style={buildHeroDelayStyle(450)}>
           <PillButton href={passGalleryPath} label={heroContent.getPassLabel} />
-          <PillButton
-            href={appInstallPageUrl}
-            label={heroContent.getAppLabel}
-            variant="secondary"
-            isExternal
-          />
+          <HoverTip id={getAppTooltipId} text={heroContent.getAppTooltip}>
+            <PillButton
+              href={appInstallPageUrl}
+              label={heroContent.getAppLabel}
+              variant="secondary"
+              isExternal
+              describedById={getAppTooltipId}
+            />
+          </HoverTip>
         </div>
-        <p
-          className="hero-enter max-w-[26em] text-sm leading-[1.45] text-ink-secondary-small"
-          style={buildHeroDelayStyle(550)}
-        >
-          {heroContent.appReviewNote}
-        </p>
       </div>
 
       <div
         className="hero-enter flex items-stretch gap-2.5 lg:col-span-6 lg:justify-end"
         style={buildHeroDelayStyle(250)}
       >
-        <figure className="relative flex min-w-0 flex-1 flex-col justify-center rounded-panel bg-dark-panel lg:max-w-[440px]">
+        <div className="relative flex min-w-0 flex-1 flex-col justify-center rounded-panel bg-dark-panel lg:max-w-[440px]">
           <div
+            role="img"
+            aria-label={heroContent.sneakerArtLabel}
             className="sneaker-art w-full"
             // biome-ignore lint/security/noDangerouslySetInnerHtml: our own on-chain SVG, read from public/ at build time.
             dangerouslySetInnerHTML={{ __html: sneakerArtMarkup }}
           />
-          <figcaption className="px-5 pb-5 text-center text-label font-medium tracking-[0.08em] text-on-dark-secondary uppercase md:pb-6">
-            {heroContent.sneakerArtCaption}
-          </figcaption>
-        </figure>
+        </div>
         {hasDemoVideo ? (
           <DemoVideoPlayer
             filePath={demoVideo.filePath}

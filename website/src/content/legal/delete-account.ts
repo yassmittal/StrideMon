@@ -3,7 +3,6 @@ import type { LegalPageContent } from './legal-page'
 
 // Google Play's account deletion page (play-store-release.md 2.2, D-039).
 export const deleteAccountContent: LegalPageContent = {
-  metaLabels: [siteName, 'Account'],
   title: 'Delete your account',
   description:
     'How to delete your StrideMon account and data, what is deleted, and what stays on the Monad blockchain.',

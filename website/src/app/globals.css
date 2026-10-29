@@ -211,6 +211,92 @@
   }
 }
 
+/* ---------- The 3D store button: a key that rises on hover and presses down (D-073) ---------- */
+
+/* The face sits 5px up off its edge (7px on hover): give it that much room above. */
+.showroom-button {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.showroom-button:focus-visible {
+  outline-offset: 5px;
+}
+
+.showroom-button-shadow,
+.showroom-button-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.showroom-button-shadow {
+  background: rgba(0, 0, 0, 0.3);
+  filter: blur(4px);
+  transform: translateY(3px);
+  transition: transform 500ms var(--ease-standard);
+}
+
+/* Darker at the ends, so the rounded sides read as turning away from the light. */
+.showroom-button-edge {
+  background: linear-gradient(to right, #3a4d00, #6a8c00 14%, #6a8c00 86%, #3a4d00);
+}
+
+.showroom-button-face {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding-inline: 20px 18px;
+  border-radius: inherit;
+  background-color: var(--color-lime);
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.15;
+  text-transform: uppercase;
+  transform: translateY(-5px);
+  transition: transform 500ms var(--ease-standard);
+}
+
+.showroom-button-cube,
+.showroom-button-arrow {
+  transition: transform 500ms var(--ease-emphasized);
+}
+
+@media (hover: hover) {
+  .showroom-button:hover .showroom-button-face {
+    transform: translateY(-7px);
+    transition-duration: 250ms;
+  }
+  .showroom-button:hover .showroom-button-shadow {
+    transform: translateY(5px);
+    transition-duration: 250ms;
+  }
+  /* A sixth of a turn: the outline lands on itself, so the cube looks like it spun. */
+  .showroom-button:hover .showroom-button-cube {
+    transform: rotate(60deg);
+  }
+  .showroom-button:hover .showroom-button-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* The press is quick, about two frames; the release eases back. */
+.showroom-button:active .showroom-button-face {
+  transform: translateY(-1px);
+  transition-duration: 40ms;
+}
+
+.showroom-button:active .showroom-button-shadow {
+  transform: translateY(1px);
+  transition-duration: 40ms;
+}
+
 /* ---------- Demo player: the play button grows a little on hover ---------- */
 
 .demo-player-button {

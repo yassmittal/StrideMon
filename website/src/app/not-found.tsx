@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
-import { MetaLabel } from '@/components/ui/meta-label'
 import { PillButton } from '@/components/ui/pill-button'
 import { notFoundContent } from '@/content/not-found'
 import { helpPath, passGalleryPath } from '@/content/site'
@@ -20,7 +19,6 @@ export default function NotFoundPage() {
       <SiteHeader />
       <main className="page-gutter page-container pt-10 pb-16 md:pt-16 md:pb-24">
         <div className="flex max-w-[44rem] flex-col gap-5">
-          <MetaLabel items={notFoundContent.metaLabels} />
           <h1 className="-ml-[0.04em] text-heading text-balance">{notFoundContent.title}</h1>
           <p className="text-intro">{notFoundContent.intro}</p>
           <div className="flex flex-wrap gap-2.5 pt-2">

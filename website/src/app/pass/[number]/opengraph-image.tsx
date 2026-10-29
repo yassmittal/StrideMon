@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { passPromiseLine } from '@/content/founding-pass'
 import {
   formatPassNumber,
   PASS_CARD_SHOE_WINDOW,
@@ -24,7 +23,8 @@ const SHOE_HEIGHT = Math.round(
   (SHOE_WIDTH * PASS_CARD_SHOE_WINDOW.height) / PASS_CARD_SHOE_WINDOW.width,
 )
 
-// The pass's share image (brief §8): the shoe from its on-chain card, its number and name.
+// The pass's share image (brief §8): the shoe from its on-chain card, its number, name and rarity
+// (no bullets or promise line, D-073).
 export default async function PassOpenGraphImage({
   params,
 }: {
@@ -64,30 +64,15 @@ export default async function PassOpenGraphImage({
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 20,
-              fontWeight: 500,
-              letterSpacing: 1.6,
-              opacity: 0.6,
-            }}
-          >
-            {`FOUNDING PASS • ${formatPassNumber(design.designNumber)}`}
+          <div style={{ display: 'flex', fontSize: 28, opacity: 0.6 }}>
+            {`Founding Pass ${formatPassNumber(design.designNumber)}`}
           </div>
           <div style={{ display: 'flex', fontSize: 64, lineHeight: 0.95, letterSpacing: -1 }}>
             {design.name}
           </div>
-          <div style={{ display: 'flex', fontSize: 20, fontWeight: 500, letterSpacing: 1.6 }}>
-            {`${passRarityLabels[design.rarity].toUpperCase()} • ONE OF ONE`}
-          </div>
+          <div style={{ display: 'flex', fontSize: 28 }}>{passRarityLabels[design.rarity]}</div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'flex', fontSize: 20, lineHeight: 1.3, opacity: 0.6 }}>
-            {passPromiseLine}
-          </div>
-          <div style={{ display: 'flex', fontSize: 26 }}>stridemon.xyz/pass</div>
-        </div>
+        <div style={{ display: 'flex', fontSize: 26 }}>stridemon.xyz/pass</div>
       </div>
     </div>,
     { ...size, fonts },

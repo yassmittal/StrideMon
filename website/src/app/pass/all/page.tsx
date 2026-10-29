@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { SiteFooter } from '@/components/sections/site-footer'
 import { SiteHeader } from '@/components/sections/site-header'
-import { MetaLabel } from '@/components/ui/meta-label'
 import { PillButton } from '@/components/ui/pill-button'
 import { StructuredDataScript } from '@/components/ui/structured-data-script'
 import { passIndexContent } from '@/content/founding-pass'
@@ -49,7 +48,6 @@ export default function PassIndexPage() {
       <SiteHeader />
       <main className="page-gutter page-container flex flex-col gap-12 pt-10 pb-16 md:pt-16 md:pb-24">
         <header className="flex max-w-[44rem] flex-col gap-5">
-          <MetaLabel items={passIndexContent.metaLabels} />
           <h1 className="-ml-[0.04em] text-heading text-balance">{passIndexContent.title}</h1>
           <p className="text-intro">{passIndexContent.intro}</p>
           <div className="pt-2">

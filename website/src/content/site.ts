@@ -169,8 +169,6 @@ export const siteTitle = 'StrideMon: walk, earn and upgrade a Sneaker NFT on Mon
 export const siteDescription =
   'A move-to-earn game on Monad. Own a Sneaker NFT, walk or run to earn STRIDE, and spend it to repair and level up your Sneaker.'
 
-export const siteMetaLabels = ['StrideMon', 'Move to earn', 'Monad'] as const
-
 // Links start at `/` so they also work from the other pages.
 export type NavigationLink = {
   label: string

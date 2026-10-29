@@ -1,4 +1,4 @@
-import { buildExplorerAddressUrl, listedContracts, monadTestnetChainId } from '@/content/contracts'
+import { buildExplorerAddressUrl, listedContracts } from '@/content/contracts'
 import {
   footerContent,
   githubRepositoryUrl,
@@ -110,10 +110,9 @@ export function SiteFooter() {
             </ul>
           </nav>
         </div>
-        <div className="flex flex-col gap-2 border-t border-hairline-on-dark pt-6 text-label font-medium tracking-[0.08em] uppercase sm:flex-row sm:justify-between">
-          <p className="text-lime">{footerContent.noValueLine}</p>
-          <p className="text-on-dark-secondary">Monad testnet • Chain {monadTestnetChainId}</p>
-        </div>
+        <p className="border-t border-hairline-on-dark pt-6 text-label font-medium tracking-[0.08em] text-lime uppercase">
+          {footerContent.noValueLine}
+        </p>
       </div>
     </footer>
   )

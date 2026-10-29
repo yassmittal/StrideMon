@@ -1,5 +1,4 @@
 import type { LegalBlock, LegalPageContent } from '@/content/legal/legal-page'
-import { MetaLabel } from '../ui/meta-label'
 import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
 
@@ -22,7 +21,6 @@ export function LegalPage({ content }: LegalPageProps) {
       <main className="page-gutter page-container pt-10 pb-16 md:pt-16 md:pb-24">
         <article className="flex max-w-[44rem] flex-col gap-10">
           <header className="flex flex-col gap-5">
-            <MetaLabel items={content.metaLabels} />
             <h1 className="-ml-[0.04em] text-heading text-balance">{content.title}</h1>
             <p className="text-label font-medium tracking-[0.08em] text-ink-secondary-small uppercase">
               Last updated{' '}
