@@ -6,7 +6,11 @@
 # `bash scripts/render.sh pass-chat-16x9` for the Pass chat film, or
 # `bash scripts/render.sh app-tour-9x16` for the App tour film, or
 # `bash scripts/render.sh showroom-9x16` for the Showroom film, or
-# `bash scripts/render.sh crush-9x16` for the Crush film.
+# `bash scripts/render.sh crush-9x16` for the Crush film, or
+# `bash scripts/render.sh dial-9x16` for the Dial film, or
+# `bash scripts/render.sh stash-9x16` for the Stash film, or
+# `bash scripts/render.sh one-thing-9x16` for the One thing film, or
+# `bash scripts/render.sh pass-mint-16x9` for the Pass mint film.
 # Needs ffmpeg and jq.
 # `bash scripts/render.sh 4x5 --audio-only` keeps the last picture render and redoes only the sound
 # (after a music or mix change).
@@ -20,7 +24,7 @@
 #      embeds.
 set -euo pipefail
 
-FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5|sneaker-drop-4x5|sneaker-drop-9x16|pass-chat-16x9|app-tour-9x16|showroom-9x16|crush-9x16 [--audio-only]}
+FORMAT=${1:?usage: bash scripts/render.sh 4x5|16x9|9x16|waitlist-4x5|sneaker-drop-4x5|sneaker-drop-9x16|pass-chat-16x9|app-tour-9x16|showroom-9x16|crush-9x16|dial-9x16|stash-9x16|one-thing-9x16|pass-mint-16x9 [--audio-only]}
 IS_AUDIO_ONLY=$([ "${2:-}" = --audio-only ] && echo yes || echo no)
 # The launch film is 2700 frames (45 s); the waitlist film 1364 (src/waitlist/beats.ts); the
 # Sneaker drop film 1802 (src/sneaker-drop/beats.ts).
@@ -39,6 +43,18 @@ SHOWROOM_POSTER_FRAME=525
 # The Crush film is 634 frames (src/crush/timeline.ts). Its poster is the pair on the bench under
 # the name, before the wash to white.
 CRUSH_POSTER_FRAME=505
+# The Pass mint film is 1497 frames (src/pass-mint/timeline.ts). Its poster is the reveal: #0039's
+# card, "Founder 2 of 1,000" and "One of one. Mine."
+PASS_MINT_POSTER_FRAME=1290
+# The Dial film is 420 frames (src/dial/timeline.ts). Its poster is the keypad full of Sneakers,
+# just before the call button is pressed.
+DIAL_POSTER_FRAME=99
+# The Stash film is 431 frames (src/stash/timeline.ts). Its poster is the case close up and tilted,
+# full of Sneakers (shot B's keyframe).
+STASH_POSTER_FRAME=300
+# The One thing film is 489 frames (src/one-thing/timeline.ts). Its poster is #0137 under
+# "STRIDEMON", once the sparkle has settled.
+ONE_THING_POSTER_FRAME=200
 RENDER_PROPS=()
 case "$FORMAT" in
   4x5) COMPOSITION_ID=Launch4x5 FILM_NAME=stridemon-launch-4x5 LAST_FRAME=$LAUNCH_LAST_FRAME ;;
@@ -83,6 +99,26 @@ case "$FORMAT" in
     COMPOSITION_ID=Crush9x16 FILM_NAME=stridemon-crush-9x16 LAST_FRAME=$CRUSH_POSTER_FRAME
     # The reference's own hook, people and music, by Yash's choice (2026-10-23): unlicensed (CREDITS.md).
     echo "Note: the Crush film uses the reference's footage and music, which StrideMon holds no licence for." >&2
+    ;;
+  dial-9x16)
+    COMPOSITION_ID=Dial9x16 FILM_NAME=stridemon-dial-9x16 LAST_FRAME=$DIAL_POSTER_FRAME
+    # The reference's own café plates and music, by Yash's ask (2026-10-26): unlicensed (CREDITS.md).
+    echo "Note: the Dial film uses the reference's footage and music, which StrideMon holds no licence for." >&2
+    ;;
+  stash-9x16)
+    COMPOSITION_ID=Stash9x16 FILM_NAME=stridemon-stash-9x16 LAST_FRAME=$STASH_POSTER_FRAME
+    # The reference's own hook, hand, case and music, by Yash's ask (2026-10-26): unlicensed (CREDITS.md).
+    echo "Note: the Stash film uses the reference's footage and music, which StrideMon holds no licence for." >&2
+    ;;
+  one-thing-9x16)
+    COMPOSITION_ID=OneThing9x16 FILM_NAME=stridemon-one-thing-9x16 LAST_FRAME=$ONE_THING_POSTER_FRAME
+    # The reference's own hook and music, by Yash's ask (2026-10-26): unlicensed (CREDITS.md).
+    echo "Note: the One thing film uses the reference's footage and music, which StrideMon holds no licence for." >&2
+    ;;
+  pass-mint-16x9)
+    COMPOSITION_ID=PassMint16x9 FILM_NAME=stridemon-pass-mint-16x9 LAST_FRAME=$PASS_MINT_POSTER_FRAME
+    # Its pops are the Pass chat film's, so its limiter sits a dB lower too.
+    LIMITER_CEILING_LINEAR=0.708
     ;;
   *) echo "Unknown format: $FORMAT" >&2 && exit 1 ;;
 esac
@@ -142,7 +178,9 @@ ffmpeg -nostdin -v error -y -i "$PICTURE_FILE" -i "$NORMALISED_MIX_FILE" \
   -c:a aac -b:a 320k -ar 48000 -ac 2 -movflags +faststart "$FILM_FILE"
 
 if [ "$FORMAT" = 4x5 ] || [ "$FORMAT" = waitlist-4x5 ] || [ "$FORMAT" = sneaker-drop-4x5 ] ||
-  [ "$FORMAT" = pass-chat-16x9 ] || [ "$FORMAT" = app-tour-9x16 ] || [ "$FORMAT" = showroom-9x16 ] || [ "$FORMAT" = crush-9x16 ]; then
+  [ "$FORMAT" = pass-chat-16x9 ] || [ "$FORMAT" = app-tour-9x16 ] || [ "$FORMAT" = showroom-9x16 ] || [ "$FORMAT" = crush-9x16 ] || [ "$FORMAT" = dial-9x16 ] ||
+  [ "$FORMAT" = stash-9x16 ] || [ "$FORMAT" = one-thing-9x16 ] ||
+  [ "$FORMAT" = pass-mint-16x9 ]; then
   ffmpeg -nostdin -v error -y -i "$FILM_FILE" -map 0:v:0 -c:v copy -an -movflags +faststart \
     "$OUTPUT_DIRECTORY/$FILM_NAME-silent.mp4"
 fi

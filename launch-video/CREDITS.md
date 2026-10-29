@@ -329,3 +329,125 @@ Google Fonts by `@remotion/google-fonts` (`src/fonts.ts`): the reference's own c
 wordmark is Satoshi, as on the website.
 
 No sound effects: the reference has none.
+
+# The Dial film
+
+The Dial film (`Dial9x16`, `docs/dial-video-prompt.md`). Its media is made by
+`bash scripts/copy-dial-media.sh` into `public/dial/` and `public/audio/` (both gitignored).
+
+## Backgrounds and music
+
+**The reference's own frames and music** (`../iphone.mp4`, untracked): a "Dial a slice" ad for a
+cake shop. The film shows ten of its café frames with the cakes, plates and captions taken out (LaMa,
+big-lama, Apache 2.0, the same ONNX file as the Crush film, run by `scripts/build-dial-plates.py`). The
+music is its track, unidentified, with 6 of its own beats repeated so it carries the longer end card
+(`public/audio/dial-music.wav`).
+
+**StrideMon holds no licence for any of it.** Yash's ask (2026-10-26), following the Crush film: it
+isn't for Instagram, YouTube may claim it, and the rights holder can ask for it to be taken down.
+
+## Font
+
+**Fraunces** by Undercase Type, **SIL Open Font License 1.1**, loaded from Google Fonts by
+`@remotion/google-fonts` (`src/fonts.ts`): close to the reference's serif, for the tagline, captions
+and headline. The rest is Satoshi, as on the website.
+
+No sound effects: the reference has none.
+
+# The Pass mint film
+
+The Pass mint film (`PassMint16x9`, `src/pass-mint/`): Yash's own screen recording, so the picture
+needs no licence. Its sound is the Pass chat film's, already in `public/audio/`.
+
+## Music
+
+**"Brazilian Phonk" by ScrewedQueen**, the Pass chat film's track (above): Pixabay Content License,
+**Content ID registered** (X has no Content ID; on YouTube, dispute a claim with the licence). The
+whole track is levelled to −19 LUFS as `pass-mint-music.wav` by `scripts/fetch-audio.sh`, and the
+film plays it from two places (`src/pass-mint/sound-cues.ts`): the drop under the hook (it lands on
+the card's flip), cut dead for the rewind; then the bass-less stretch under the four steps, timed so
+the drop comes back on the reveal's flip, fading out over the end card.
+
+## Sound effects
+
+The Pass chat film's Pixabay effects (whip, whoosh, pop, swoosh, riser, pill; above) and Kenney's
+`sfx-tap.wav` (CC0) as each mouse click. Cues in `src/pass-mint/sound-cues.ts`.
+
+# The One thing film
+
+The One thing film (`OneThing9x16`, `docs/one-thing-video-prompt.md`). Its media is made by
+`bash scripts/copy-one-thing-media.sh` into `public/one-thing/` and `public/audio/` (both gitignored).
+
+## Footage and music
+
+**The reference's own hook and music** (`../menWantOneThing.mp4`, untracked): a "Men only want one
+thing" ad for a plot of land. The film plays its first 5.17 s as they are (a real person), then its
+music, unidentified, with the ad's second voice taken out by demucs (`htdemucs_ft`, MIT), and two
+of its own 2.405 s periods repeated so it carries the end card
+(`public/audio/one-thing-soundtrack.wav`).
+
+**StrideMon holds no licence for any of it.** Yash's ask (2026-10-26), following the Crush and Dial
+films: it isn't for Instagram, YouTube may claim it, and the rights holder can ask for it to be
+taken down.
+
+## Font
+
+**Bebas Neue** by Dharma Type, **SIL Open Font License 1.1**, loaded from Google Fonts by
+`@remotion/google-fonts` (`src/fonts.ts`): close to the reference's gold captions. The rest is
+Satoshi, as on the website.
+
+No sound effects: the reference has none.
+
+# The Rain film
+
+The Rain film (`Rain9x16`, `docs/rain-video-prompt.md`). Its media is made by
+`bash scripts/copy-rain-media.sh` into `public/rain/` and `public/audio/` (both gitignored).
+
+## Footage and music
+
+**The reference's own footage and music** (`../keywordType.mp4`, untracked): the "I always wondered
+what the rain would say..." trend, ending on a white Corvette. The film plays its first 7.3 s as
+they are, then its laptop frames with the typed words wiped (`scripts/build-rain-plates.py`), and
+its five car shots with the car taken out (LaMa, big-lama, Apache 2.0, the same ONNX file as the
+Crush film). The music is its track, unidentified and untouched (`public/audio/rain-music.wav`).
+
+**StrideMon holds no licence for any of it.** Yash's ask (2026-10-26), following the Crush, Dial and
+One thing films: it isn't for Instagram, YouTube may claim it, and the rights holder can ask for it
+to be taken down.
+
+## Font
+
+**Arial**, the reference doc's own font, from macOS (`/System/Library/Fonts/Supplemental/Arial.ttf`):
+the plate script measures the doc with it and the film draws the typed words in it, as the doc did.
+It's a system font, used only at render time and never shipped or copied into the repo.
+
+No sound effects: the reference has none.
+
+# The Stash film
+
+The Stash film (`Stash9x16`, `docs/stash-video-prompt.md`). Its media is made by
+`bash scripts/copy-stash-media.sh` into `public/stash/` and `public/audio/` (both gitignored).
+
+## Footage and music
+
+**The reference's own footage and music** (`../nailpaints.mp4`, untracked): a press-on nail brand's
+ad ("Yoobin. nailingit") on the "what is bro filming 💀" trend. The film plays its frames as they
+are up to the case (the brand's credit inpainted out), then its hand, case and camera with the
+nails inpainted out. The music is its track, untouched up to the end card, then the same track
+again from one bar back, fading out (`public/audio/stash-music.wav`), unidentified.
+
+**StrideMon holds no licence for any of it, and the person in the hook never agreed to appear in a
+StrideMon video.** Yash's ask (2026-10-26), with the risk known: it isn't for Instagram, YouTube may
+claim it, and the rights holder or the person in it can ask for it to be taken down anywhere it's
+posted.
+
+## The clean frames
+
+LaMa (big-lama, Apache 2.0), the same ONNX export as the Crush film (`out/work/crush/lama_fp32.onnx`),
+run locally on the CPU by `scripts/build-stash-plates.py`.
+
+## Font
+
+**Satoshi** and **IBM Plex Mono**, as on the website (`src/fonts.ts`).
+
+No sound effects: the reference has none.

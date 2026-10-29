@@ -1,4 +1,6 @@
 import { loadFont as loadLocalFont } from '@remotion/fonts'
+import { loadFont as loadBebasNeue } from '@remotion/google-fonts/BebasNeue'
+import { loadFont as loadFraunces } from '@remotion/google-fonts/Fraunces'
 import { loadFont as loadIbmPlexMono } from '@remotion/google-fonts/IBMPlexMono'
 import { loadFont as loadKnewave } from '@remotion/google-fonts/Knewave'
 import { loadFont as loadPoppins } from '@remotion/google-fonts/Poppins'
@@ -21,6 +23,13 @@ export function loadFilmFonts(): void {
   // The Crush film's captions and title: Poppins, the reference's own face, by Indian Type Foundry
   // and Jonny Pinhorn, SIL Open Font License 1.1, which allows use in video. Only that film uses it.
   loadPoppins('normal', { weights: ['600', '800'], subsets: ['latin'] })
+  // The Dial film's serif, close to the reference's: Fraunces by Undercase Type, SIL Open Font
+  // License 1.1, which allows use in video. Only that film uses it.
+  loadFraunces('normal', { weights: ['400'], subsets: ['latin'] })
+  loadFraunces('italic', { weights: ['400'], subsets: ['latin'] })
+  // The One thing film's gold captions, close to the reference's: Bebas Neue by Dharma Type, SIL
+  // Open Font License 1.1, which allows use in video. Only that film uses it.
+  loadBebasNeue('normal', { weights: ['400'], subsets: ['latin'] })
   // Satoshi Bold, for the App tour film's headlines only (Yash, 2026-10-17): Fontshare's file from
   // the same release as the app's (its Medium is byte-identical), under the same licence.
   void loadLocalFont({

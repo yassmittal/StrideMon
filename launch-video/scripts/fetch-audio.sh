@@ -124,6 +124,9 @@ level_music "$WAITLIST_MUSIC_FILE_NAME" "$WAITLIST_MUSIC_START_SECONDS" \
   "$WAITLIST_MUSIC_DURATION_SECONDS" waitlist-music.wav
 level_music "$PASS_CHAT_MUSIC_FILE_NAME" "$PASS_CHAT_MUSIC_START_SECONDS" \
   "$PASS_CHAT_MUSIC_DURATION_SECONDS" pass-chat-music.wav
+# The Pass mint film plays the same track from two places (src/pass-mint/sound-cues.ts), so it
+# gets the whole track, levelled the same way, with its own 0 s.
+level_music "$PASS_CHAT_MUSIC_FILE_NAME" 0 84 pass-mint-music.wav
 if [ -s "$APP_TOUR_REFERENCE_FILE" ]; then
   # From its first sample (the film is cut to the reference's own timing), levelled like the others.
   ffmpeg -nostdin -v error -y -i "$APP_TOUR_REFERENCE_FILE" -vn "${TO_WAV[@]}" \

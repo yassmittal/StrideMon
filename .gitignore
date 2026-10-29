@@ -65,6 +65,16 @@ launch-video/public/pass-chat/
 launch-video/public/showroom/
 # The Crush film's reference copy, plates and Sneaker, by launch-video/scripts/copy-crush-media.sh
 launch-video/public/crush/
+# The Dial film's plates and Sneakers, by launch-video/scripts/copy-dial-media.sh
+launch-video/public/dial/
+launch-video/public/pass-mint/
+# The One thing film's reference copy, art and voice-free music stems, by
+# launch-video/scripts/copy-one-thing-media.sh
+launch-video/public/one-thing/
+# The Stash film's cleaned reference and Sneakers, by launch-video/scripts/copy-stash-media.sh
+launch-video/public/stash/
+# The Rain film's reference copy, plates and Sneakers, by launch-video/scripts/copy-rain-media.sh
+launch-video/public/rain/
 # Social (social/, D-036): X-only images and clips, each rebuilt from the command in its post file
 social/media/
 # The Metropolis submission video: Recordly takes and the render cut from them (about 330 MB)

@@ -62,6 +62,16 @@ music and plates in `CREDITS.md`. **Its footage (including four real people) and
 reference's own, which StrideMon holds no licence for** (Yash's choice): it isn't for Instagram, and
 YouTube may claim it.
 
+The **Pass mint film** (`PassMint16x9`, 1920 × 1080, 60 fps, 25 s): Yash's desktop recording of
+minting #0039 (`../desktopFounderPassMint.mp4`), cut payoff first. The card's flip and "This
+Sneaker exists once.", a rewind to the start, then the four steps (pick, email, wallet, mint) with a
+tracker across the top, the flip again and the end card. The recording plays on one remapped clock
+(speed ramps, the rewind, and the terminal detour for the code cut out); its email and the browser's
+autofill list are blurred by boxes tracked to the dialog's title. Its code is in `src/pass-mint/`
+(every frame in `timeline.ts`), its words in `FACTS.md` §19, its sound in `CREDITS.md`. Media:
+`bash scripts/copy-pass-mint-media.sh` (needs ffmpeg and uv); render: `bash scripts/render.sh
+pass-mint-16x9`.
+
 The **Metropolis pitch video** (`Pitch16x9`, 1920 × 1080, 30 fps, about 1:24) lives here too:
 Yash's voiceover over the submission reel, one scene per part of the script, captions burned in.
 Its code is in `src/pitch/`, its words in `src/pitch/script.ts`, and it is cut to the voice's
@@ -121,6 +131,7 @@ six scenes, and `Checks/SneakerDropSync` is its sync check (a flash per hit over
 `AppTour9x16` is the App tour film, and `AppTourScenes-9x16` has its seven sections.
 `Showroom9x16` is the Showroom film.
 `Crush9x16` is the Crush film.
+`PassMint16x9` is the Pass mint film.
 Motion blur (the walk's fast stretch) needs Chrome 149+ with
 `chrome://flags/#canvas-draw-element` to show in the Studio; renders don't need it.
 

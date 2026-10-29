@@ -54,6 +54,54 @@ export const passChatColors = {
 } as const
 
 /**
+ * The Dial film's keypad and end card (docs/dial-video-prompt.md): the reference's warm paper and
+ * its phone's green call button. The ink and the link pill are the brand's own.
+ */
+export const dialColors = {
+  /** The page behind the keypad: the reference's warm off-white, lighter in the middle. */
+  paper: '#F4EFE6',
+  paperLight: '#FBF8F3',
+  key: colors.surface,
+  keyShadow: 'rgba(110, 84, 50, 0.12)',
+  /** The digits and the keypad's letters: a warm near-black, as the reference's. */
+  keyInk: '#3A332D',
+  /** The phone's own call green. */
+  call: '#34C759',
+  callRing: 'rgba(52, 199, 89, 0.35)',
+  /** The captions over the shots: the reference's cream, with a soft shadow to lift them. */
+  caption: '#FFF9F0',
+  captionShadow: 'rgba(30, 20, 10, 0.45)',
+  ink: colors.darkPanel,
+  inkSecondary: 'rgba(20, 21, 21, 0.62)',
+} as const
+
+/**
+ * The One thing film's reveal and end card (docs/one-thing-video-prompt.md): the reference's gold
+ * captions with their glow and its red map pin, on a dark stage with a plum light, from #0137's own
+ * colours.
+ */
+export const oneThingColors = {
+  gold: '#FFE34D',
+  goldGlowNear: 'rgba(255, 214, 0, 0.85)',
+  goldGlowFar: 'rgba(255, 176, 0, 0.45)',
+  pinHead: '#E5323B',
+  pinHighlight: 'rgba(255, 255, 255, 0.55)',
+  pinNeedle: '#C9CDD2',
+  stageLight: '#3A1838',
+  stageDark: '#07060A',
+  floorShadow: 'rgba(0, 0, 0, 0.75)',
+  cardShadow: 'rgba(0, 0, 0, 0.6)',
+} as const
+
+/** The Stash film (src/stash/): the Sneakers' shadow on the case floor, and the end card over the held case. */
+export const stashColors = {
+  sneakerShadow: 'rgba(20, 16, 18, 0.38)',
+  /** Darkens the blurred, held case under the end card's words. */
+  veil: 'rgba(8, 7, 9, 0.66)',
+  bodyText: 'rgba(255, 255, 255, 0.78)',
+} as const
+
+/**
  * The App tour film's realistic phone (a STOP 1 prototype, Yash asked for a more real phone): a
  * graphite metal rim, black glass and a soft shadow. Only on the device, never on the page.
  */
@@ -76,6 +124,10 @@ export const fontFamilies = {
   script: 'Knewave',
   /** The Crush film's captions and title, the reference's own face (fonts.ts). */
   crushCaption: 'Poppins',
+  /** The Dial film's tagline, captions and end card headline, close to the reference's serif (fonts.ts). */
+  dialSerif: 'Fraunces',
+  /** The One thing film's gold captions, close to the reference's condensed face (fonts.ts). */
+  oneThingCaption: 'Bebas Neue',
 } as const
 
 /** Satoshi 400 for everything readable, 500 only for uppercase meta and pills. */

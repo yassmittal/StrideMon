@@ -206,6 +206,36 @@ choice): never for Instagram; YouTube may claim it.
 reference's hook, its cup-free plates (LaMa, `scripts/build-crush-plates.py`) and its tracked camera.
 **Its footage (four real people) and music are the reference's own, unlicensed** (Yash's choice):
 never for Instagram; YouTube may claim it.
+**Dial film (2026-10-26):** `Dial9x16` in `launch-video/` (`src/dial/`, brief
+`docs/dial-video-prompt.md`), a 14 s Founding Pass ad remade from `iphone.mp4` at the repo root (a
+cake shop's "Dial a slice"): a keypad fills with ten Sneakers, zooms into key 1, then each Sneaker
+stands in the reference's café (LaMa plates, `scripts/build-dial-plates.py`), ending on the waitlist
+line. **Its backgrounds and music are the reference's own, unlicensed:** never for Instagram;
+YouTube may claim it.
+**Rain film (2026-10-26):** `Rain9x16` in `launch-video/` (`src/rain/`, brief
+`docs/rain-video-prompt.md`), the "I always wondered what the rain would say..." trend remade from
+`keywordType.mp4` at the repo root: the rain types `WAITLIST YOURSELF NOW!!!!!` on the reference's
+own laptop (its words wiped, ours in Arial on its tracked doc, `scripts/build-rain-plates.py`), and
+five Founding Pass Sneakers stand where its car stood (LaMa plates). **Its footage and music are
+the reference's own, unlicensed:** never for Instagram; YouTube may claim it.
+**Pass mint film (2026-10-26):** `PassMint16x9` in `launch-video/` (`src/pass-mint/`), Yash's
+desktop recording of minting #0039 (`desktopFounderPassMint.mp4` at the repo root) cut payoff
+first: the reveal, a rewind, the four steps with a tracker, the reveal again, the end card. His
+email and the browser's autofill list (with a phone number) are blurred by tracked boxes
+(`scripts/track-pass-mint-redactions.py`): keep them if the cut changes.
+**One thing film (2026-10-26):** `OneThing9x16` in `launch-video/` (`src/one-thing/`, brief
+`docs/one-thing-video-prompt.md`), a 16 s waitlist ad on the "Men only want one thing… it's not
+money, it's not power, it's not love" trend (`menWantOneThing.mp4` at the repo root): its hook as
+it is, then #0137 in its gold captions ("STRIDEMON", "SNEAKER", "FREE 📍 MONAD TESTNET") and the
+waitlist line. Its music has the second voice taken out by demucs (`scripts/copy-one-thing-media.sh`).
+**Its hook (a real person) and music are the reference's own, unlicensed:** never for Instagram;
+YouTube may claim it.
+**Stash film (2026-10-26):** `Stash9x16` in `launch-video/` (`src/stash/`, brief
+`docs/stash-video-prompt.md`), a 14 s waitlist ad remade from `nailpaints.mp4` at the repo root (a
+nail brand on the "what is bro filming 💀" trend): its hook as it is, then six Sneakers in its case
+instead of nails, on the reference's own hand and tracked camera (`scripts/build-stash-plates.py`),
+ending on the waitlist line. **Its hook (a real person) and music are the reference's own,
+unlicensed:** never for Instagram; YouTube may claim it.
 **3D showroom (D-063, 2026-10-22):** the Showroom film's store, live and interactive, at
 `https://showroom.stridemon.xyz`, in `showroom/` at the repo root (its own Next.js app like
 `website/`, created in Part 1). Ported from the film's code, not rebuilt; **the Sneakers stay

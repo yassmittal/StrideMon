@@ -334,3 +334,95 @@ an app screen, or anything of Naisnow's (its cup, logo, name or drink).
 | `ROSE HIKER` / `NIGHT` | #0137's name (`src/showroom/sneakers.ts`, the design table) | ✓ |
 | The pair on the bench | Two copies of #0137: a pair of the same shoe, not two passes | ✓ Each pass is one of one; the film never says or shows "two" |
 | The mark, `StrideMon`, `stridemon.xyz/pass` | `website/src/app/icon.svg`'s strokes; D-040 | ✓ |
+
+## 18. The Dial film (2026-10-26)
+
+`Dial9x16`, `docs/dial-video-prompt.md`. The backgrounds are the reference's own café frames, with
+their cakes, plates and captions taken out.
+
+**Never on screen in this film:** a STRIDE amount, a price, a date, a user count, a wallet, an app
+screen, or anything of the reference's shop (its cakes, logo or name).
+
+| On screen | Source | Status |
+|---|---|---|
+| Ten laced Sneakers, one per key | `website/public/pass-art/laced/`, the contract renderer's own art (DESIGNS_FROZEN_ON), shown as they are | ✓ |
+| `#0049 “Gold Skate Night”` and the nine other captions | Each design's number and name in the frozen design table (`@stridemon/chain/founding-pass-designs`) | ✓ |
+| `Dial a Sneaker` | A line, no claim | ✓ |
+| `Want a Founding Pass?` | A question, no claim | ✓ |
+| `Join the waitlist and mint it free, 48 hours before everyone else.` | The waitlist window is 48 hours before the open mint (`website/src/content/founding-pass.ts`: `waitlistWindowStartsAt` 2026-11-28 14:30 UTC, `openMintStartsAt` 2026-11-30 14:30 UTC), and minting is free with no gas to pay (same file, "How it works") | ✓ |
+| The mark, `StrideMon`, `stridemon.xyz/pass →` | `website/src/app/icon.svg`'s strokes; D-040 | ✓ |
+
+## 19. The Pass mint film (2026-10-26)
+
+The Pass mint film (`PassMint16x9`, `src/pass-mint/`): Yash's desktop recording of minting #0039 on
+the local stack (`../desktopFounderPassMint.mp4`, 2026-10-08), cut payoff first. `src/pass-mint/content.ts`
+mirrors this section. The recording's email, the browser's autofill list (two emails and a phone
+number) and every "We sent a code to" / "Checked" line are blurred (`scripts/track-pass-mint-redactions.py`).
+The recording's trip to the terminal for the code (the local stack logs it; a player gets an
+email) is cut, and the email cut is labelled.
+
+**Never on screen in this film:** a STRIDE amount, a price, worth or floor, "airdrop", "whitelist",
+"limited", any date, mainnet.
+
+| On screen | Source | Status |
+|---|---|---|
+| `This Sneaker exists once.` | Every design is one of one (`founding-pass.ts`, `passPageContent`; brief §1) | ✓ |
+| `Here’s the whole mint. It’s free.` | "Free, with no gas to pay" (the mint dialog; `help.ts`: "Minting is free, and there’s no gas to pay") | ✓ |
+| `Pick one of 1,000` / `Each design exists once.` | `passPageContent` (1,000 designs, one of one) | ✓ |
+| `Check your email` / `A 6-digit code. One pass per person.` | The mint dialog's own words ("We send a 6-digit code…", "One pass per person") | ✓ |
+| `Code from your inbox` | Over the cut: production emails the code (D-043); the local stack only logs it | ✓ |
+| `Sign in with your wallet` / `A free signature. Nothing is sent on-chain.` | The mint dialog ("A free signature proves the wallet is yours. Nothing is sent on-chain.") and MetaMask's message ("It costs nothing.") | ✓ |
+| `Mint it` / `No gas to pay. StrideMon pays it.` | `help.ts` ("StrideMon pays the gas") | ✓ |
+| `One of one. Mine.` / `The app gives me a Founder Sneaker in the same design.` | `passPageContent.intro` ("the app gives you a Founder Sneaker in the same design") | ✓ In Yash's voice ("me") |
+| `1,000 Founding Passes.` / `Free. Each one exists once.` | `passPageContent` | ✓ |
+| `The waitlist mints 48 hours before everyone else.` | `passPhaseContent.preview.nextStep` ("mint 48 hours before everyone else") | ✓ |
+| #0039's card on the end card | `website/public/pass-art/cards/0039.svg`, unchanged | ✓ |
+| `stridemon.xyz/pass` | D-040 | ✓ |
+| The recording: `localhost:3000`, "Monad Testnet", `Founder 2 of 1,000`, `0xe4ae…356f` | The local stack, as recorded. The film's camera keeps the address bar out of most shots | ⚠ It's a local-stack recording: say "Monad testnet" in the post's text |
+
+## 20. The One thing film (2026-10-26)
+
+`OneThing9x16`, `docs/one-thing-video-prompt.md`. The hook is the reference's own footage, untouched
+(its burned-in word captions are its own); the reveal and end card are the film's.
+
+**Never on screen in this film:** a STRIDE amount, a price, worth, "early access" for the 48 hours
+on its own, a date, a wallet, or anything of the reference's land ad (its plot, price or place).
+
+| On screen | Source | Status |
+|---|---|---|
+| #0137's laced Sneaker and its Founding Pass card | `website/public/pass-art/laced/0137.svg` and `cards/0137.svg`, the contract renderer's own art (DESIGNS_FROZEN_ON), shown as they are | ✓ |
+| `STRIDEMON` / `SNEAKER` | The answer to the hook: a line, no claim | ✓ |
+| `FREE` / `📍 MONAD TESTNET` | The Founding Pass mints free with no gas to pay (`founding-pass.ts`, "How it works"), on Monad testnet | ✓ |
+| `JOIN THE WAITLIST NOW` | A call to action, no claim | ✓ |
+| `Mint your Founding Pass 48 hours before everyone else. It’s your early access to StrideMon.` | The waitlist window is 48 hours before the open mint (`founding-pass.ts`: `waitlistWindowStartsAt` 2026-11-28 14:30 UTC, `openMintStartsAt` 2026-11-30 14:30 UTC); "It’s your early access to StrideMon" (`passPageContent.intro`) | ✓ |
+| The mark, `StrideMon`, `stridemon.xyz/pass →` | `website/src/app/icon.svg`'s strokes; D-040 | ✓ |
+
+## 21. The Rain film (2026-10-26)
+
+`Rain9x16`, `docs/rain-video-prompt.md`. The hook (its burnt-in caption "I always wondered what the
+rain would say..." included), the laptop, its gibberish and every background are the reference's own
+footage; the typed words and the Sneakers are the film's.
+
+**Never on screen in this film:** a STRIDE amount, a price, "free", a date, a user count, a wallet,
+an app screen, the reference's car or its number plate.
+
+| On screen | Source | Status |
+|---|---|---|
+| `WAITLIST` / `YOURSELF` / `NOW!!!!!` | A call to action, no claim | ✓ |
+| #0500, #0159, #0185 Afterglow, #0279 and #0678 Moonbow, one per shot | `website/public/pass-art/laced/`, the contract renderer's own art (DESIGNS_FROZEN_ON), only dimmed to each shot's light | ✓ No names or numbers on screen; Afterglow and Moonbow are Legendaries (the design table) |
+
+## 22. The Stash film (2026-10-26)
+
+`Stash9x16`, `docs/stash-video-prompt.md`. The reference's own frames throughout, with its nail
+brand's credit ("Yoobin. nailingit") taken out of the hook and its nails taken out of the case.
+
+**Never on screen in this film:** a STRIDE amount, a price, a date, a user count, a wallet, an app
+screen, or anything of the reference's brand (its nails, credit or name).
+
+| On screen | Source | Status |
+|---|---|---|
+| `what is bro filming 💀` | The reference's own caption, burnt into its hook | ✓ Not ours, no claim |
+| Six laced Sneakers in the case (#0137, #0220, #0110, #0363, #0082, #0713) | `website/public/pass-art/laced/`, the contract renderer's own art (DESIGNS_FROZEN_ON), shown as they are | ✓ |
+| `Want a Founding Pass?` | A question, no claim | ✓ |
+| `Join the waitlist.` / `Mint free, 48 hours early.` | The waitlist window is 48 hours before the open mint (`website/src/content/founding-pass.ts`: "Join the waitlist to mint 48 hours before everyone else."), and minting is free with no gas to pay (same file, "How it works") | ✓ |
+| The mark, `stridemon.xyz/pass` | `website/src/app/icon.svg`'s strokes; D-040 | ✓ |

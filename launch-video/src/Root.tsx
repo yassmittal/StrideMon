@@ -8,6 +8,8 @@ import {
 } from './app-tour/beats'
 import { RebuildCheck, rebuildCheckNames } from './app-tour/checks/RebuildCheck'
 import { type AppTourSceneName, appTourScenes } from './app-tour/timeline'
+import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
+import { RunScreenCheck } from './checks/RunScreenCheck'
 import { CrushFilm, defaultCrushProps } from './crush/CrushFilm'
 import {
   CRUSH_DURATION_IN_FRAMES,
@@ -15,9 +17,21 @@ import {
   CRUSH_HEIGHT,
   CRUSH_WIDTH,
 } from './crush/timeline'
-import { FILM_DURATION_IN_FRAMES, FRAMES_PER_SECOND, readSceneDurationInFrames } from './beats'
-import { RunScreenCheck } from './checks/RunScreenCheck'
+import { DialFilm, defaultDialProps } from './dial/DialFilm'
+import {
+  DIAL_DURATION_IN_FRAMES,
+  DIAL_FRAMES_PER_SECOND,
+  DIAL_HEIGHT,
+  DIAL_WIDTH,
+} from './dial/timeline'
 import { LaunchFilm } from './LaunchFilm'
+import { defaultOneThingProps, OneThingFilm } from './one-thing/OneThingFilm'
+import {
+  ONE_THING_DURATION_IN_FRAMES,
+  ONE_THING_FRAMES_PER_SECOND,
+  ONE_THING_HEIGHT,
+  ONE_THING_WIDTH,
+} from './one-thing/timeline'
 import { PassChatFilm, PassChatScene } from './pass-chat/PassChatFilm'
 import {
   PASS_CHAT_DURATION_IN_FRAMES,
@@ -27,6 +41,13 @@ import {
   type PassChatSceneName,
   passChatScenes,
 } from './pass-chat/timeline'
+import { defaultPassMintProps, PassMintFilm } from './pass-mint/PassMintFilm'
+import {
+  PASS_MINT_DURATION_IN_FRAMES,
+  PASS_MINT_FRAMES_PER_SECOND,
+  PASS_MINT_HEIGHT,
+  PASS_MINT_WIDTH,
+} from './pass-mint/timeline'
 import { PitchFilm } from './pitch/PitchFilm'
 import {
   PITCH_DURATION_IN_FRAMES,
@@ -34,7 +55,20 @@ import {
   PITCH_HEIGHT,
   PITCH_WIDTH,
 } from './pitch/timeline'
+import { defaultRainProps, RainFilm } from './rain/RainFilm'
+import {
+  RAIN_DURATION_IN_FRAMES,
+  RAIN_FRAMES_PER_SECOND,
+  RAIN_HEIGHT,
+  RAIN_WIDTH,
+} from './rain/timeline'
 import { EarnScene } from './scenes/EarnScene'
+import { EndCardScene } from './scenes/EndCardScene'
+import { GetSneakerScene } from './scenes/GetSneakerScene'
+import { IntroScene } from './scenes/IntroScene'
+import { OwnItScene } from './scenes/OwnItScene'
+import { UpgradeScene } from './scenes/UpgradeScene'
+import { WalkScene } from './scenes/WalkScene'
 import { defaultShowroomProps, ShowroomFilm } from './showroom/ShowroomFilm'
 import {
   SHOWROOM_DURATION_IN_FRAMES,
@@ -42,12 +76,6 @@ import {
   SHOWROOM_HEIGHT,
   SHOWROOM_WIDTH,
 } from './showroom/timeline'
-import { EndCardScene } from './scenes/EndCardScene'
-import { GetSneakerScene } from './scenes/GetSneakerScene'
-import { IntroScene } from './scenes/IntroScene'
-import { OwnItScene } from './scenes/OwnItScene'
-import { UpgradeScene } from './scenes/UpgradeScene'
-import { WalkScene } from './scenes/WalkScene'
 import {
   readSneakerDropSceneDurationInFrames,
   SNEAKER_DROP_DURATION_IN_FRAMES,
@@ -58,6 +86,13 @@ import { sneakerDropLayouts } from './sneaker-drop/layout'
 import { SneakerDropFilm } from './sneaker-drop/SneakerDropFilm'
 import { SneakerDropScene } from './sneaker-drop/SneakerDropScene'
 import { SneakerDropSyncCheck } from './sneaker-drop/SyncCheck'
+import { defaultStashProps, StashFilm } from './stash/StashFilm'
+import {
+  STASH_DURATION_IN_FRAMES,
+  STASH_FRAMES_PER_SECOND,
+  STASH_HEIGHT,
+  STASH_WIDTH,
+} from './stash/timeline'
 import {
   readWaitlistSceneDurationInFrames,
   WAITLIST_DURATION_IN_FRAMES,
@@ -331,6 +366,51 @@ export function RemotionRoot() {
         fps={CRUSH_FRAMES_PER_SECOND}
         durationInFrames={CRUSH_DURATION_IN_FRAMES}
         defaultProps={defaultCrushProps}
+      />
+      <Composition
+        id="Stash9x16"
+        component={StashFilm}
+        width={STASH_WIDTH}
+        height={STASH_HEIGHT}
+        fps={STASH_FRAMES_PER_SECOND}
+        durationInFrames={STASH_DURATION_IN_FRAMES}
+        defaultProps={defaultStashProps}
+      />
+      <Composition
+        id="PassMint16x9"
+        component={PassMintFilm}
+        width={PASS_MINT_WIDTH}
+        height={PASS_MINT_HEIGHT}
+        fps={PASS_MINT_FRAMES_PER_SECOND}
+        durationInFrames={PASS_MINT_DURATION_IN_FRAMES}
+        defaultProps={defaultPassMintProps}
+      />
+      <Composition
+        id="Dial9x16"
+        component={DialFilm}
+        width={DIAL_WIDTH}
+        height={DIAL_HEIGHT}
+        fps={DIAL_FRAMES_PER_SECOND}
+        durationInFrames={DIAL_DURATION_IN_FRAMES}
+        defaultProps={defaultDialProps}
+      />
+      <Composition
+        id="OneThing9x16"
+        component={OneThingFilm}
+        width={ONE_THING_WIDTH}
+        height={ONE_THING_HEIGHT}
+        fps={ONE_THING_FRAMES_PER_SECOND}
+        durationInFrames={ONE_THING_DURATION_IN_FRAMES}
+        defaultProps={defaultOneThingProps}
+      />
+      <Composition
+        id="Rain9x16"
+        component={RainFilm}
+        width={RAIN_WIDTH}
+        height={RAIN_HEIGHT}
+        fps={RAIN_FRAMES_PER_SECOND}
+        durationInFrames={RAIN_DURATION_IN_FRAMES}
+        defaultProps={defaultRainProps}
       />
       <Folder name="Checks">
         <Composition
