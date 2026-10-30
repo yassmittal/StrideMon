@@ -9,7 +9,6 @@ import { fairPlayColumns, fairPlayContent } from '@/content/fair-play'
 import { gameRules, rulesContent, starterSneakerStats } from '@/content/game-rules'
 import { screenshots } from '@/content/screenshots'
 import { underTheHoodContent, underTheHoodTabs } from '@/content/under-the-hood'
-import { whyMonadContent, whyMonadPoints } from '@/content/why-monad'
 import { ArrowIcon } from '../ui/arrow-icon'
 import { CopyAddressButton } from '../ui/copy-address-button'
 import { CountUp } from '../ui/count-up'
@@ -23,15 +22,14 @@ const headingId = `${underTheHoodContent.id}-heading`
 const panelHeadingClass = 'text-[clamp(1.75rem,4vw,3rem)] leading-[1.05] tracking-[-0.01em]'
 
 /**
- * Under the hood (D-050): the rules, fair play and privacy, the contracts and why Monad, once
- * four sections, now four tabs on one dark band after the waitlist.
+ * Under the hood (D-050): the rules, fair play and privacy, and the contracts, as three tabs on one
+ * dark band after the waitlist. Why Monad is its own section (D-073).
  */
 export function UnderTheHoodSection() {
   const panelsById: Record<(typeof underTheHoodTabs)[number]['id'], HashTab['panel']> = {
     rules: <RulesPanel />,
     'fair-play': <FairPlayPanel />,
     'on-chain': <ContractsPanel />,
-    'why-monad': <WhyMonadPanel />,
   }
   const tabs: HashTab[] = underTheHoodTabs.map((tab) => ({ ...tab, panel: panelsById[tab.id] }))
 
@@ -44,12 +42,7 @@ export function UnderTheHoodSection() {
       <CrossMarks tone="dark" />
       <div className="page-gutter page-container flex flex-col gap-10 py-16 md:gap-12 md:py-24">
         <div className="flex flex-col gap-6">
-          <SectionHeading
-            id={headingId}
-            metaLabels={underTheHoodContent.metaLabels}
-            heading={underTheHoodContent.heading}
-            tone="dark"
-          />
+          <SectionHeading id={headingId} heading={underTheHoodContent.heading} />
           <p data-reveal className="max-w-[30em] text-lg leading-[1.4] text-on-dark-secondary">
             {underTheHoodContent.intro}
           </p>
@@ -166,10 +159,13 @@ function ContractsPanel() {
             className="grid gap-2 border-b border-hairline-on-dark py-5 md:grid-cols-12 md:items-center md:gap-6"
           >
             <div className="flex flex-col gap-1 md:col-span-4">
-              <span className="font-mono text-lg">{contract.name}</span>
-              <span className="text-sm text-on-dark-secondary">
-                {contract.standard} • {contract.role}
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="font-mono text-lg">{contract.name}</span>
+                <span className="rounded-full border border-hairline-on-dark px-2 py-0.5 font-mono text-[0.6875rem] text-on-dark-secondary">
+                  {contract.standard}
+                </span>
               </span>
+              <span className="text-sm text-on-dark-secondary">{contract.role}</span>
             </div>
             <div className="md:col-span-6">
               <CopyAddressButton
@@ -209,30 +205,6 @@ function ContractsPanel() {
           />
         </div>
       </div>
-    </div>
-  )
-}
-
-function WhyMonadPanel() {
-  return (
-    <div className="flex flex-col gap-8">
-      <h3 className={panelHeadingClass}>{whyMonadContent.heading}</h3>
-      <ol className="grid gap-2.5 md:grid-cols-3">
-        {whyMonadPoints.map((point, pointIndex) => (
-          <li
-            key={point.title}
-            className="flex flex-col gap-10 rounded-panel bg-dark-panel p-6 md:p-[30px]"
-          >
-            <span className="font-mono text-sm text-lime">
-              {String(pointIndex + 1).padStart(2, '0')}
-            </span>
-            <div className="flex flex-col gap-3">
-              <h4 className="text-[1.625rem] leading-[1.1]">{point.title}</h4>
-              <p className="leading-[1.4] text-on-dark-secondary">{point.description}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
     </div>
   )
 }

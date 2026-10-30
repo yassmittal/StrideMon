@@ -1,6 +1,7 @@
 export const heroContent = {
   headlineWords: ['Walk.', 'Earn.', 'Upgrade.'],
-  intro: 'Your Sneaker is an NFT on Monad. Walk or run with it to earn STRIDE, then level it up.',
+  intro:
+    'A move-to-earn game on Monad. Walk or run with your Sneaker NFT to earn STRIDE, then level it up.',
   getPassLabel: 'Get your Founding Pass',
   getAppLabel: 'Get the Android app',
   /** A tooltip on Get the app until the Google Play listing is live (D-052, D-073). */

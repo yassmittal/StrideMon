@@ -2561,6 +2561,10 @@ Nothing about the contracts, the API, the schedule, the art or the designs chang
      surface with the pass") and D-050 #6.
   10. **`/pass`'s hero intro is shorter** in the same way: "Pick one of 1,000 Sneakers and mint it
       free. It gets you into the app early, in that same Sneaker."
+  11. **The 3D store button opens in a new tab** (with `rel="noopener"`, so the showroom still sees
+      the referrer), everywhere it shows. This changes D-069's and D-071's "the website's links into
+      the showroom are unchanged" for the button. The hero intro starts "A move-to-earn game on
+      Monad." so the page's visible text names what it is (the eyebrow carried that phrase).
 - **Why:** the page read as a wall of text. People read about 20% of a page's words (Nielsen Norman
   Group, "How Little Do Users Read?"), and Unbounce's 2024 benchmark found pages written at a 5th to
   7th grade reading level convert about twice as well as professional-level copy. Move-to-earn

@@ -12,12 +12,14 @@ type ShowroomButtonProps = {
  */
 export function ShowroomButton({ href, label, className = '' }: ShowroomButtonProps) {
   return (
-    <a href={href} className={`showroom-button ${className}`}>
+    // A new tab, so the visit here stays open (D-073). `noopener` only: the showroom keeps the referrer.
+    <a href={href} target="_blank" rel="noopener" className={`showroom-button ${className}`}>
       <span aria-hidden="true" className="showroom-button-shadow" />
       <span aria-hidden="true" className="showroom-button-edge" />
       <span className="showroom-button-face">
         <CubeIcon />
         {label}
+        <span className="sr-only"> (opens in a new tab)</span>
         <ArrowIcon className="showroom-button-arrow" />
       </span>
     </a>
